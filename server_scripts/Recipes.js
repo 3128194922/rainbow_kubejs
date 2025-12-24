@@ -202,6 +202,8 @@ ServerEvents.recipes(event => {
     //超经验配方
     event.remove({ id: 'create_enchantment_industry:mixing/hyper_experience' })
     event.recipes.create.mixing(Fluid.of("create_enchantment_industry:hyper_experience", 100), ['#rainbow:oldbook', 'minecraft:lapis_lazuli', Fluid.of("create_enchantment_industry:experience", 1000)]).superheated()
+    //SFM电脑配方
+    event.replaceInput({input:"minecraft:repeater"},"minecraft:repeater",'rainbow:super_mechanism');
     //子弹模具制作
     /*    event.shaped('2x rainbow:shaped_mode',[
             ['minecraft:clay_ball','minecraft:clay_ball','minecraft:clay_ball'],

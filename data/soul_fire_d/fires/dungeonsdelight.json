@@ -1,0 +1,9 @@
+{
+    "mod": "dungeonsdelight",
+    "fires": [
+      {
+        "fire": "living",
+        "damage": 2.0
+      }
+    ]
+  }

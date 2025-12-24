@@ -1,0 +1,20 @@
+{
+  "itemGroup.pet_connect_tab": "收容手镜",
+  "key.petconnect.toggle": "收容手镜切换形态",
+  "item.petconnect.pet_connect": "收容手镜(收容)",
+  "item.petconnect.pet_connect1": "收容手镜(释放)",
+  "item.petconnect.pet_connect.desc": "收容成功",
+  "item.petconnect.pet_connect.desc1": "糟糕，收容失败，未知错误",
+  "item.petconnect.pet_connect.desc2": "宠物空间未加载或被禁止访问",
+  "item.petconnect.pet_connect.desc3": "收容成功，但是已经达到收容上限",
+  "item.petconnect.pet_connect.desc4": "已到达收容宠物上限",
+  "item.petconnect.pet_connect.desc5": "附近没有可以收容的宠物",
+  "item.petconnect.pet_connect.desc6": "就决定是你了",
+  "item.petconnect.pet_connect.desc7": "宠物空间目前没有任何宠物",
+  "item.petconnect.pet_connect.desc8": "切换为收容宠物",
+  "item.petconnect.pet_connect.desc9": "切换为释放宠物",
+  "tooltip.petconnect.pet_connect": "§6右键即可收容周围§r%.1f格§6内宠物",
+  "tooltip.petconnect.pet_connect1": "§6当前宠物空间内有§r%d个§6宠物，最多可收容§r%d个",
+  "tooltip.petconnect.pet_connect2": "§6右键即可释放宠物空间内所有宠物",
+  "tooltip.petconnect.pet_connect3": "§6切换状态键: "
+}

@@ -1,0 +1,61 @@
+let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
+let resilience = 0;
+
+NetworkEvents.dataReceived("resilience_gui", event => { 
+    resilience = event.data.resilience;
+})
+
+ClientEvents.tick(event => {
+    let player = event.player;
+    if (!player) return;
+
+    let window = $Minecraft.getWindow();
+    let width = window.getGuiScaledWidth();
+    let height = window.getGuiScaledHeight();
+
+    let guiOpen = $Minecraft.screen != null;
+
+    let width_x = width/2 + 10;
+    let width_y = height/2 + 10;
+
+    // 先保证元素存在（初始化时创建一次）
+    player.paint({
+        resilience_img: {
+            type: 'rectangle',
+            x: width_x-10,
+            y: width_y-10,
+            w: 56,
+            h: 16,
+            color: '#7E8B92',
+            visible: !guiOpen,
+            draw: 'always',
+            alignX: "left",
+            alignY: "top",
+            texture: 'rainbow:textures/gui/adrenaline_meter.png'
+        },
+        resilience_bk: {
+            type: 'rectangle',
+            x: width_x,
+            y: width_y,
+            w: 50,
+            h: 5,
+            color: '#7E8B92',
+            visible: !guiOpen,
+            draw: 'always',
+            alignX: "left",
+            alignY: "top"
+        },
+        resilience: {
+            type: 'rectangle',
+            x: width_x,
+            y: width_y,
+            w: resilience / 2,
+            h: 5,
+            color: '#00FF00',
+            visible: !guiOpen,
+            draw: 'always',
+            alignX: "left",
+            alignY: "top"
+        }
+    })
+})

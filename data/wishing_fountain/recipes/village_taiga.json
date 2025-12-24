@@ -1,0 +1,19 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:village_taiga",
+  "ingredients": [
+    { 
+      "item": "minecraft:white_bed" 
+    },
+    { 
+      "item": "minecraft:hay_block" 
+    },
+    { 
+      "item": "minecraft:spruce_log" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "hello_world",
+  "title": "Hello World",
+  "description": "A simple dialog",
+  "start": "start",
+  "entries": [
+    {
+      "id": "start",
+      "speaker": "System",
+      "text": "欢迎来到屎山服务器！！",
+	  "next": "zheng",
+      "portraits":[
+       {"path": "character.png"} 
+      ]           
+    },
+	{
+      "id": "zheng",
+      "speaker": "System",
+      "text": "我们的服务器正在蒸蒸日上哦！",
+      "portraits":[
+       {"path": "character.png"} 
+      ]           
+    },
+  ]
+}

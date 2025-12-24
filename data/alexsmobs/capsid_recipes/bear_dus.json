@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "atmospheric:ender_dragon_fruit"
+    }
+  ],
+  "result": {
+    "item": "alexsmobs:bear_dust",
+    "count": 1
+  },
+  "time": 120
+}

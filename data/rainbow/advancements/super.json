@@ -1,0 +1,36 @@
+{
+    "parent":"rainbow:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"rainbow:super_mechanism"
+        },
+        "title":{
+            "text":"遥遥领先",
+            "color":"blue"
+        },
+        "description":"我们先进的...",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "rainbow:super_mechanism"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

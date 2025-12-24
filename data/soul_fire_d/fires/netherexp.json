@@ -1,0 +1,9 @@
+{
+    "mod": "netherexp",
+    "fires": [
+      {
+        "fire": "ancient",
+        "damage": 0.0
+      }
+    ]
+  }

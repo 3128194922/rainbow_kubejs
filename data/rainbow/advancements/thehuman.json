@@ -1,0 +1,36 @@
+{
+    "parent":"rainbow:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"minecraft:netherite_scrap"
+        },
+        "title":{
+            "text":"文明的碎片",
+            "color":"dark_purple"
+        },
+        "description":"获得下界合金碎片",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "minecraft:netherite_scrap"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

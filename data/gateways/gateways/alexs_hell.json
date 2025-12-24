@@ -1,0 +1,152 @@
+{
+	"conditions": [
+	{
+		"type": "forge:mod_loaded",
+		"modid": "alexsmobs"
+	}
+],
+	"size": "large",
+	"color": "#8B0000",
+	"waves": [
+        {
+			"entities": [
+                {
+                    "entity": "alexsmobs:crimson_mosquito",
+                    "count": 5
+                }
+            ],
+			"modifiers": [],
+			"rewards": [
+                {
+                    "type": "gateways:stack",
+                    "stack": {
+			"item": "youkaishomecoming:blood_bottle",
+                    "count": 8
+               	 }
+                }
+            ],
+			"max_wave_time": 600,
+			"setup_time": 100
+		},
+        {
+			"entities": [
+                {
+                    "entity": "alexsmobs:crimson_mosquito",
+                    "count": 8
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+                    "operation": "MULTIPLY_TOTAL",
+                    "value": 0.20
+                }
+            ],
+			"rewards": [
+                {
+                    "type": "gateways:entity_loot",
+                    "entity": "alexsmobs:crimson_mosquito",
+                    "rolls": 10
+                }
+            ],
+			"max_wave_time": 1800,
+			"setup_time": 200
+		},
+        {
+			"entities": [
+                {
+                    "entity": "alexsmobs:crimson_mosquito",
+                    "count": 12
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.30
+                },
+                {
+                    "attribute": "generic.movement_speed",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.15
+                }
+            ],
+			"rewards": [
+                {
+                    "type": "gateways:entity_loot",
+					"entity": "alexsmobs:straddler",
+					"rolls": 10
+                }
+            ],
+			"max_wave_time": 1600,
+			"setup_time": 400
+		},
+        {
+			"entities": [
+                {
+                    "entity": "alexsmobs:warped_mosco",
+                    "count": 1,
+                    "finalize_spawn": false
+                },
+                {
+                    "entity": "alexsmobs:crimson_mosquito",
+                    "count": 5
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.40
+                },
+                {
+                    "attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 5
+								},
+								{
+										"attribute": "attributeslib:armor_pierce",
+					"operation": "ADDITION",
+					"value": 3
+								}
+            ],
+			"rewards": [
+                {
+                    "type": "gateways:entity_loot",
+					"entity": "alexsmobs:warped_mosco",
+					"rolls": 20
+                },
+                {
+                    "type": "gateways:entity_loot",
+					"entity": "alexsmobs:crimson_mosquito",
+					"rolls": 15
+                }
+            ],
+			"max_wave_time": 2400,
+			"setup_time": 400
+		}
+    ],
+	"rewards": [
+        {
+            "type": "gateways:loot_table",
+			"loot_table": "minecraft:chests/end_city_treasure",
+			"rolls": 2,
+			"desc": "End City Treasure Loot"
+        }
+    ],
+	"failures": [
+        {
+            "type": "gateways:explosion",
+			"strength": 5,
+			"fire": false,
+			"block_damage": true
+        },
+        {
+            "type": "gateways:summon",
+			"entity": {
+                "entity": "alexsmobs:crimson_mosquito",
+				"count": 5
+            }
+        }
+    ]
+}

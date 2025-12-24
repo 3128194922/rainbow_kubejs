@@ -1,0 +1,16 @@
+{
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+  "title": {"text": "彩虹动力"},
+    "description": {"text": "包含所有服务器相关的成就"},
+    "icon": {"item": "minecraft:command_block"},
+    "frame": "task",
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "show_toast": false,
+    "announce_to_chat": false
+  }
+}

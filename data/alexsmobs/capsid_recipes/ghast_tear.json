@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "hmag:ender_plasm"
+    }
+  ],
+  "result": {
+    "item": "minecraft:ghast_tear",
+    "count": 1
+  },
+  "time": 120
+}

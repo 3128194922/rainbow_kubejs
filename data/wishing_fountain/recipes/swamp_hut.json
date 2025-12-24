@@ -1,0 +1,16 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:swamp_hut",
+  "ingredients": [
+    { 
+      "item": "minecraft:spider_eye" 
+    },
+    { 
+      "item": "minecraft:cauldron" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

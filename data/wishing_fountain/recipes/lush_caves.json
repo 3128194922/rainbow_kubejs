@@ -1,0 +1,15 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "biome",
+  "target": "minecraft:lush_caves",
+  "ingredients": [
+    { "item": "minecraft:oak_sapling" },
+    { "item": "minecraft:dirt" },
+    { "item": "minecraft:vine" },
+    { "item": "minecraft:dandelion" },
+    { "item": "minecraft:poppy" },
+    { "item": "minecraft:blue_orchid" },
+    { "item": "minecraft:bone_meal" },
+    { "item": "minecraft:emerald" }
+  ]
+}

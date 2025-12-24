@@ -1,0 +1,11 @@
+{
+    "type": "forge:add_features",
+    "biomes": [
+      "the_end",
+      "end_highlands",
+      "end_barrens",
+      "small_end_islands"
+    ],
+    "features": "rainbow:end_ore_placed",
+    "step": "underground_ores"
+  }

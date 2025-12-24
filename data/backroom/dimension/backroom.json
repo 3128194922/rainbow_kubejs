@@ -1,0 +1,24 @@
+{
+    "type": "backroom:backroom",
+    "generator": {
+        "type": "minecraft:flat",
+        "settings": {
+            "features": true,
+            "layers": [
+                {
+                    "block": "minecraft:bedrock",
+                    "height": 1
+                },
+                {
+                    "block": "minecraft:grass_block",
+                    "height": 1
+                }
+            ],
+            "biome": "backroom:backroom",
+            "lakes": false,
+            "structures": {
+                "structures": {}
+            }
+        }
+    }
+}

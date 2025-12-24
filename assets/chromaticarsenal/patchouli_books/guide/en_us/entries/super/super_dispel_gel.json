@@ -1,0 +1,16 @@
+{
+  "name": "Dispelling Crystal",
+  "icon": "chromaticarsenal:super_ward_crystal",
+  "category": "chromaticarsenal:super_curios",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The Dispelling Crystal inherits the abilities of the Ward Crystal, as well as greatly reducing the duration of potion effects, both positive and negative. Despite being a super curio, it still adheres to the damage source blacklist."
+    },
+    {
+      "type": "patchouli:crafting",
+      "text": "$(o)Off-brand Ankh Shield",
+      "recipe": "chromaticarsenal:super_ward_crystal"
+    }
+  ]
+}

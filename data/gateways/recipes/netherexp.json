@@ -1,0 +1,27 @@
+{
+  "type": "gateways:gate_recipe",
+  "group": "gateways",
+  "pattern": [
+    "CAC",
+    "#D#",
+    "#C#"
+  ],
+  "key": {
+    "#": {
+      "item": "netherexp:lightspores"
+    },
+	"A": {
+      "item": "netherexp:wisp_bottle"
+    },
+	"C": {
+      "item": "netherexp:nightspores"
+    },
+	"D": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "item": "gateways:gate_pearl"
+  },
+  "gateway": "gateways:netherexp"
+}

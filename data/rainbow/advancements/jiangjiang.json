@@ -1,0 +1,60 @@
+{
+    "parent":"server_achievements:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"minecraft:elytra"
+        },
+        "title":{
+            "text":"风之翼",
+            "color":"blue"
+        },
+        "description":"芜湖，起飞",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false  
+
+    },
+    "criteria":{
+        "air":{
+            "trigger":"minecraft:location",
+            "conditions":{
+                "position":{
+                    "y":{
+                        "max": 256,
+                        "min": 254
+                    }
+                }
+            }
+        },
+        "get_elytra":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "minecraft:elytra"
+                        ]
+                    }
+                ]
+
+            }
+        },
+        "get_firework":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "minecraft:firework_rocket"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "World Anchor",
+  "icon": "chromaticarsenal:world_anchor",
+  "category": "chromaticarsenal:main",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "text": "The World Anchor is a $(4)challenge curio$() created by combining an Anvil with a Chroma Shard in a smithing table. It increases the wearer's gravity and knockback resistance, and lowers their speed depending on their vertical position in the world. At the world's lowest point, there is no effect, and at the height limit the effect is the greatest.",
+      "item": "chromaticarsenal:world_anchor"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The World Anchor supports the following enchantments:$(br2)$(l)Curse of Binding$(): In addition to the standard effects, grants an additional level of fortune$(br2)$(l)Curse of Chromatic Twisting$(): Grants an additional level of fortune, however gravity effects are increased"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Default Attribute modifiers:$()$(br)$(4)+0% - +100%$() Entity Gravity$(br)$(4)-0% - -50%$() Movement Speed$(br)$(2)+0 - +10$() Knockback Resistance"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:ruined_portal",
+  "ingredients": [
+    {
+       "item": "minecraft:obsidian"
+    },
+    { 
+      "item": "minecraft:netherrack" 
+    },
+    { 
+      "item": "minecraft:quartz" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

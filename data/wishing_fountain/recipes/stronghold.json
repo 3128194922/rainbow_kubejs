@@ -1,0 +1,22 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:stronghold",
+  "ingredients": [
+    { 
+      "item": "minecraft:ender_eye" 
+    },
+    { 
+      "item": "minecraft:mossy_stone_bricks" 
+    },
+    { 
+      "item": "minecraft:bookshelf" 
+    },
+    { 
+      "item": "minecraft:cobweb" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

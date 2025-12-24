@@ -1,0 +1,19 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:shipwreck_beached",
+  "ingredients": [
+    { 
+      "item": "minecraft:oak_boat" 
+    },
+    { 
+      "item": "minecraft:chest" 
+    },
+    { 
+      "item": "minecraft:tnt" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

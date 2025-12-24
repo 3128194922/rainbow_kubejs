@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "collectorsreap:lime"
+    }
+  ],
+  "result": {
+    "item": "hmag:lemon",
+    "count": 1
+  },
+  "time": 120
+}

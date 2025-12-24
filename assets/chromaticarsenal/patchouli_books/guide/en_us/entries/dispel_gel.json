@@ -1,0 +1,24 @@
+{
+  "name": "Ward Crystal",
+  "icon": "chromaticarsenal:ward_crystal",
+  "category": "chromaticarsenal:main",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The Ward Crystal protects you from magic damage, but also reduces the magic damage you deal. Be warned that not all types of incoming magic damage are reduced. By default, the Warden's sonic boom damage will not be reduced. Your modpack may add additional damage sources to this list."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Default Attribute modifiers:$()$(br)$(2)+75%$() Magic Damage Reduction$(br)$(4)-75%$() Magic Damage$(br)"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The Ward Crystal supports the following enchantments:$(br2)$(l)Protection$(): Further reduces magic damage dealt and taken$(br2)$(l)Curse of Chromatic Twisting$(): Removes the penalty to magic damage dealt, however taking non-magic damage inflicts Weakness II"
+    },
+    {
+      "type": "patchouli:crafting",
+      "text": "$(o)It looks like an amethyst, but is in fact just some crystallized sunscreen with an added dose of Fermented Spider Eye.",
+      "recipe": "chromaticarsenal:ward_crystal"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+	"conditions": [
+		{
+			"type": "forge:mod_loaded",
+			"modid": "netherexp"
+		}
+	],
+	"size": "medium",
+	"color": "#64DFED",
+	"waves": [
+		{
+			"entities": [
+				{
+					"entity": "netherexp:apparition",
+					"count": 6
+				}
+			],
+			"modifiers": [],
+			"rewards": [
+				{
+					"type": "gateways:entity_loot",
+					"entity": "netherexp:apparition",
+					"rolls": 5
+				}
+			],
+			"max_wave_time": 800,
+			"setup_time": 80
+		},
+		{
+			"entities": [
+				{
+					"entity": "netherexp:vessel",
+					"count": 5
+				}
+			],
+			"modifiers": [],
+			"rewards": [
+				{
+					"type": "gateways:entity_loot",
+					"entity": "netherexp:vessel",
+					"rolls": 5
+				}
+			],
+			"max_wave_time": 1000,
+			"setup_time": 100
+		},
+		{
+			"entities": [
+				{
+					"entity": "netherexp:banshee",
+					"count": 4
+				}
+			],
+			"modifiers": [],
+			"rewards": [
+				{
+					"type": "gateways:entity_loot",
+					"entity": "netherexp:banshee",
+					"rolls": 5
+				}
+			],
+			"max_wave_time": 1200,
+			"setup_time": 120
+		}
+	],
+	"rewards": [
+		{
+			"type": "gateways:loot_table",
+			"loot_table": "minecraft:chests/nether_bridge",
+			"rolls": 5,
+			"desc": "Nether Fortress Loot"
+		}
+	],
+	"failures": [
+		{
+			"type": "gateways:explosion",
+			"strength": 4,
+			"fire": true,
+			"block_damage": false
+		},
+		{
+			"type": "gateways:summon",
+			"entity": {
+				"entity": "netherexp:apparition",
+				"count": 4
+			}
+		}
+	]
+}

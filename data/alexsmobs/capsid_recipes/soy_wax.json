@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "minecraft:honeycomb"
+    }
+  ],
+  "result": {
+    "item": "brewincompatdelight:soy_wax",
+    "count": 1
+  },
+  "time": 120
+}

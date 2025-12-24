@@ -1,0 +1,21 @@
+{
+    "parent": "rainbow:root",
+    "rewards": {
+      "experience": 100
+    },
+    "display": {
+      "icon": { "item": "rainbow:golden_finger" },
+      "title": { "text": "踩踩背！", "color": "dark_purple" },
+      "description": "让大象骑乘村民",
+      "frame": "task",
+      "show_toast": true,
+      "announce_to_chat": true,
+      "hidden": false
+    },
+    "criteria": {
+      "dummy": {
+        "trigger": "minecraft:impossible"
+      }
+    }
+  }
+  

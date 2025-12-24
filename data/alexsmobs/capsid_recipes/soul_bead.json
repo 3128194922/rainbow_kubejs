@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "endergetic:portaplasm"
+    }
+  ],
+  "result": {
+    "item": "quark:soul_bead",
+    "count": 1
+  },
+  "time": 120
+}

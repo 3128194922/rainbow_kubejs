@@ -1,0 +1,15 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/terasword"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "kubejs:powers": 1
+        },
+        "model": "rainbow:item/terasword_power"
+      }
+    ]
+}
+  

@@ -1,0 +1,16 @@
+{
+  "name": "Introduction",
+  "icon": "minecraft:book",
+  "category": "chromaticarsenal:general_lore",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Greetings. You may refer to me, the writer of this book, as $(#0000ff)Luna$(). I wrote this book as a sort of \"personal journal\" to archive my experiences in this world, and to preserve the history of this land."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "This is actually a copy of my journal, and holds similar powers to other ender-powered objects. As you find noteworthy items, I will write about them in my journal and the pages should magically appear in your copy."
+    }
+  ]
+}

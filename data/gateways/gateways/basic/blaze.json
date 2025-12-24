@@ -1,0 +1,188 @@
+{
+	"size": "large",
+	"color": "#FFFF84",
+	"waves": [
+		{
+			"entities": [{
+				"entity": "infinitygolem:infinity_golem",
+				"count": 3
+			}],
+			"rewards": [{
+				"type": "gateways:entity_loot",
+				"entity": "infinitygolem:infinity_golem",
+				"rolls": 10
+			}],
+			"max_wave_time": 1200,
+			"setup_time": 100
+		},
+		{
+			"entities": [{
+				"entity": "infinitygolem:infinity_golem",
+				"count": 4
+			}],
+			"modifiers": [{
+					"attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.15
+				},
+				{
+					"attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 2
+				},
+				{
+					"attribute": "generic.attack_damage",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.15
+				},
+				{
+					"attribute": "generic.knockback_resistance",
+					"operation": "ADDITION",
+					"value": 0.05
+				},
+				{
+					"attribute": "generic.movement_speed",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.05
+				}
+			],
+			"rewards": [{
+				"type": "gateways:entity_loot",
+				"entity": "infinitygolem:infinity_golem",
+				"rolls": 15
+			}],
+			"max_wave_time": 1200,
+			"setup_time": 150
+		},
+		{
+			"entities": [{
+					"entity": "infinitygolem:infinity_golem",
+                    "count": 5
+				}
+			],
+			"modifiers": [{
+					"attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.20
+				},
+				{
+					"attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 3
+				},
+				{
+					"attribute": "generic.attack_damage",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.20
+				},
+				{
+					"attribute": "generic.knockback_resistance",
+					"operation": "ADDITION",
+					"value": 0.15
+				},
+				{
+					"attribute": "generic.movement_speed",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.10
+				}
+			],
+			"rewards": [{
+				"type": "gateways:entity_loot",
+				"entity": "infinitygolem:infinity_golem",
+				"rolls": 20
+			}],
+			"max_wave_time": 1200,
+			"setup_time": 200
+		},
+		{
+			"entities": [{
+					"entity": "infinitygolem:infinity_golem",
+                    "count": 6
+				}
+			],
+			"modifiers": [{
+					"attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.25
+				},
+				{
+					"attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 5
+				},
+				{
+					"attribute": "generic.attack_damage",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.30
+				},
+				{
+					"attribute": "generic.knockback_resistance",
+					"operation": "ADDITION",
+					"value": 0.15
+				},
+				{
+					"attribute": "generic.movement_speed",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.15
+				}
+			],
+			"rewards": [{
+				"type": "gateways:entity_loot",
+				"entity": "infinitygolem:infinity_golem",
+				"rolls": 25
+			}],
+			"max_wave_time": 1200,
+			"setup_time": 280
+		},
+		{
+			"entities": [{
+					"entity": "infinitygolem:infinity_golem",
+                    "count": 7
+				}
+			],
+			"modifiers": [{
+					"attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.35
+				},
+				{
+					"attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 5
+				},
+				{
+					"attribute": "generic.attack_damage",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.50
+				},
+				{
+					"attribute": "generic.knockback_resistance",
+					"operation": "ADDITION",
+					"value": 0.20
+				},
+				{
+					"attribute": "generic.movement_speed",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.15
+				}
+			],
+			"rewards": [
+				{
+					"type": "gateways:experience",
+					"experience": 500,
+                    "orb_size": 25
+				}
+			],
+			"max_wave_time": 2400,
+			"setup_time": 340
+		}
+	],
+    "rewards": [{
+            "type": "gateways:entity_loot",
+            "entity": "infinitygolem:infinity_golem",
+            "rolls": 75
+        }
+    ],
+    "failures": [
+    ]
+}

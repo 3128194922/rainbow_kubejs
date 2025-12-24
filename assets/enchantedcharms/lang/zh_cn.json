@@ -1,0 +1,92 @@
+{
+
+  "itemGroup.enchantedcharms": "魔法护符",
+
+
+
+  "item.enchantedcharms.copper_charm": "铜护符",
+"block.atmospheric.arid_glass": "干燥沙玻璃",
+"block.atmospheric.arid_glass_pane": "干燥沙玻璃板",
+  "enchantment.enchantedcharms.masterwork": "杰作",
+
+  "enchantment.enchantedcharms.masterwork.desc": "铁砧不再毁坏，但会增加装备维修成本",
+
+  "enchantment.enchantedcharms.ordnance": "军火",
+
+  "enchantment.enchantedcharms.ordnance.desc": "由玩家点燃的TNT威力提升",
+
+  "enchantment.enchantedcharms.grappler": "抓取者",
+
+  "enchantment.enchantedcharms.grappler.desc": "被钓鱼竿钓到的生物受到的拉力更强",
+
+  "enchantment.enchantedcharms.golemancer": "魔像师",
+
+  "enchantment.enchantedcharms.golemancer.desc": "在 5 格内建造的铁傀儡提升 12 护甲，\n在 5 格内建造的雪傀儡提升8血且不再融化",
+
+ 
+
+  "item.enchantedcharms.obsidian_charm": "黑曜石护符",
+
+  "enchantment.enchantedcharms.hunters_mark": "猎人印记",
+
+  "enchantment.enchantedcharms.hunters_mark.desc": "对发光的生物多 20% 伤害，远程攻击有 40% 使目标发光",
+
+  "enchantment.enchantedcharms.defusing": "无害处理",
+
+  "enchantment.enchantedcharms.defusing.desc": "有概率使 5 格内爆炸移除，越近几率越高",
+
+  "enchantment.enchantedcharms.bulwark": "壁垒",
+
+  "enchantment.enchantedcharms.bulwark.desc": "盾牌格挡无视单次伤害低于 8 的攻击，高于 8 的伤害获得抗性提升I",
+
+  "enchantment.enchantedcharms.focus": "专注",
+
+  "enchantment.enchantedcharms.focus.desc": "每次攻击并造成伤害后，自身攻击力 +6% (至多 30% )，受伤减少加成",
+
+ 
+
+  "item.enchantedcharms.amethyst_charm": "紫水晶护符",
+
+  "enchantment.enchantedcharms.survivalist": "生存专家",
+
+  "enchantment.enchantedcharms.survivalist.desc": "食物可额外回复 40% 饱和度 ，饥饿持续时间少 40% ",
+
+  "enchantment.enchantedcharms.potency": "效力",
+
+  "enchantment.enchantedcharms.potency.desc": "获得的效果状态 +40% 持续时间",
+
+  "enchantment.enchantedcharms.antidote": "解毒剂",
+
+  "enchantment.enchantedcharms.antidote.desc": "饮用具有负面效果的药水时可免疫其负面效果(建议搭配神龟药水使用)",
+
+  "enchantment.enchantedcharms.cluster_brew": "分裂瓶",
+
+  "enchantment.enchantedcharms.cluster_brew.desc": "投掷喷溅/滞留型药水会裂成两瓶",
+
+ 
+
+  "item.enchantedcharms.emerald_charm": "绿宝石护符",
+
+  "enchantment.enchantedcharms.repository": "宝库",
+
+  "enchantment.enchantedcharms.repository.desc": "存储经验，并有 20% 概率获得双倍经验\n用砂轮可取出经验",
+
+  "enchantment.enchantedcharms.prospecting": "勘探",
+
+  "enchantment.enchantedcharms.prospecting.desc": "附近( 3*3*5 格)有矿物时挖掘方块会迸出粒子",
+
+  "enchantment.enchantedcharms.anglers_boon": "渔夫的恩赐",
+
+  "enchantment.enchantedcharms.anglers_boon.desc": "提高钓宝概率，翻倍钓出物品",
+
+  "enchantment.enchantedcharms.gilded": "淘金者",
+
+  "enchantment.enchantedcharms.gilded.desc": "挖掘石头/沙子/沙砾/泥土及其相关变体时有概率掉落金子",
+
+ 
+
+  "enchantedcharms.immunity": "免疫",
+
+  "enchantedcharms.repository_xp": "等级 %1$s (%2$s/%3$s) 经验值"
+
+  }

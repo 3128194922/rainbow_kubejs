@@ -1,0 +1,11 @@
+{
+  "replace": true, // 最高优先级
+  "values": [
+    //"minecraft:sharpness",//标准附魔ID
+    //"#minecraft:treasure",//禁用所有宝藏附魔
+    {
+       "id": "domesticationinnovation:void_cloud",
+       "required": false
+    }
+  ]
+}

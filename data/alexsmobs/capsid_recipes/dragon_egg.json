@@ -1,0 +1,12 @@
+{
+  "ingredients": [
+    {
+      "item": "endergetic:eetle_egg"
+    }
+  ],
+  "result": {
+    "item": "minecraft:dragon_egg",
+    "count": 1
+  },
+  "time": 120
+}

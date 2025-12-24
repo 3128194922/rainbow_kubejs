@@ -1,0 +1,36 @@
+{
+    "parent":"rainbow:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"youkaishomecoming:cooked_flesh"
+        },
+        "title":{
+            "text":"为什么我的嘴里常含口水",
+            "color":"dark_purple"
+        },
+        "description":"因为太香了",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "youkaishomecoming:cooked_flesh"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

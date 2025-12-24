@@ -1,0 +1,26 @@
+{
+  "voice.man": {
+    "subtitle": "sounds.rainbow.man",
+    "sounds": [
+      "rainbow:man"
+    ]
+  },
+   "music.grinder": {
+    "subtitle": "sounds.rainbow.grinder",
+    "sounds": [
+      "rainbow:grinder"
+    ]
+  },
+  "music.pervitin": {
+    "subtitle": "sounds.rainbow.pervitin",
+    "sounds": [
+      "rainbow:pervitin"
+    ]
+  },
+  "voice.fte": {
+    "subtitle": "sounds.rainbow.fte",
+    "sounds": [
+      "rainbow:fte"
+    ]
+  }
+}

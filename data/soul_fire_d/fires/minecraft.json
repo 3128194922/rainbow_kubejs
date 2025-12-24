@@ -1,0 +1,13 @@
+{
+    "mod": "minecraft",
+    "fires": [
+      {
+        "fire": "fire",
+        "damage": 1.0
+      },
+      {
+        "fire": "soul_fire",
+        "damage": 2.0
+      }
+    ]
+  }

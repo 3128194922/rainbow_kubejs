@@ -1,0 +1,35 @@
+{
+    "parent":"server_achievements:root",
+    "rewards":{
+      "experience":100
+    },
+    "display":{
+        "icon":{
+            "item":"minecraft:wooden_sword"
+        },
+        "title":{
+            "text":"偷袭！",
+            "color":"red"
+        },
+        "description":"被小白射中",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:entity_hurt_player",
+            "conditions": {
+                "damage": {
+                  "source_entity": {
+                    "type": "skeleton"
+                  },
+                  "direct_entity": {
+                    "type": "arrow"
+                  }
+                }
+        }
+    }
+}}

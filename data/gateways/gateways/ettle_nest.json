@@ -1,0 +1,178 @@
+{
+	"conditions": [
+	{
+		"type": "forge:mod_loaded",
+		"modid": "endergetic"
+	}
+],
+	"size": "small",
+	"color": "#46008b",
+	"waves": [
+        {
+			"entities": [
+                {
+                    "entity": "endergetic:charger_eetle",
+                    "count": 6
+                }
+            ],
+			"modifiers": [],
+			"rewards": [
+                {
+                    "type": "gateways:stack",
+                    "stack": {
+			"item": "endergetic:bolloom_fruit",
+                    "count": 8
+               	 }
+                }
+            ],
+			"max_wave_time": 600,
+			"setup_time": 100
+		},
+        {
+			"entities": [
+                {
+                    "entity": "endergetic:charger_eetle",
+                    "count": 5
+                },
+                {
+                    "entity": "endergetic:glider_eetle",
+                    "count": 4
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+                    "operation": "MULTIPLY_TOTAL",
+                    "value": 0.20
+                }
+            ],
+				"rewards": [{
+				"type": "gateways:stack_list",
+				"stacks": [
+                    {
+                        "item": "endergetic:eetle_egg",
+                        "count": 4
+                    },
+                    {
+                        "item": "endergetic:bolloom_fruit",
+                        "count": 8
+                    }
+                ]
+			}],
+			"max_wave_time": 1800,
+			"setup_time": 200
+		},
+        {
+			"entities": [
+                {
+                    "entity": "endergetic:glider_eetle",
+                    "count": 8
+                },
+				{
+                    "entity": "endergetic:purpoid",
+                    "count": 4
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.30
+                },
+                {
+                    "attribute": "generic.attack_damage",
+					"operation": "ADDITION",
+					"value": 3
+                }
+            ],
+						"rewards": [{
+				"type": "gateways:stack_list",
+				"stacks": [
+                    {
+                        "item": "endergetic:eetle_egg",
+                        "count": 4
+                    },
+                    {
+                        "item": "quark:dragon_scale",
+                        "count": 4
+                    }
+                ]
+			}],
+			"max_wave_time": 1600,
+			"setup_time": 400
+		},
+        {
+			"entities": [
+                {
+                    "entity": "endergetic:brood_eetle",
+                    "count": 1,
+                    "finalize_spawn": true
+                },
+                {
+                    "entity": "hmag:ender_executor",
+                    "count": 2
+                }
+            ],
+			"modifiers": [
+                {
+                    "attribute": "generic.max_health",
+					"operation": "MULTIPLY_TOTAL",
+					"value": 0.40
+                },
+				{
+                    "attribute": "generic.attack_damage",
+					"operation": "ADDITION",
+					"value": 4
+                },
+                {
+                    "attribute": "generic.armor",
+					"operation": "ADDITION",
+					"value": 5
+								},
+								{
+					"attribute": "attributeslib:armor_pierce",
+					"operation": "ADDITION",
+					"value": 3
+								}
+            ],
+				"rewards": [{
+				"type": "gateways:stack_list",
+				"stacks": [
+                    {
+                        "item": "rainbow:raw_endore",
+                        "count": 4
+                    },
+                    {
+                        "item": "hmag:ender_plasm",
+                        "count": 4
+                    }
+                ]
+			}],
+			"max_wave_time": 7200,
+			"setup_time": 400
+		}
+    ],
+	"rewards": [
+        {
+            "type": "gateways:loot_table",
+			"loot_table": "minecraft:chests/end_city_treasure",
+			"rolls": 1,
+			"desc": "末地城战利品"
+        }
+    ],
+	"failures": [
+        {
+            "type": "gateways:explosion",
+			"strength": 5,
+			"fire": false,
+			"block_damage": false
+        },
+        {
+            "type": "gateways:summon",
+			"entity": {
+                "entity": "endergetic:glider_eetle",
+				"count": 5
+            }
+        }
+    ]
+}

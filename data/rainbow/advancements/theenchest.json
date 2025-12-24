@@ -1,0 +1,36 @@
+{
+    "parent":"rainbow:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"minecraft:ender_chest"
+        },
+        "title":{
+            "text":"超时空传送",
+            "color":"material_amethyst"
+        },
+        "description":"末影的力量，小子！",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "minecraft:ender_chest"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

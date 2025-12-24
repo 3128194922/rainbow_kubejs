@@ -1,0 +1,22 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:igloo",
+  "ingredients": [
+    { 
+      "item": "minecraft:snow_block" 
+    },
+    { 
+      "item": "minecraft:campfire" 
+    },
+    { 
+      "item": "minecraft:white_bed" 
+    },
+    { 
+      "item": "minecraft:rotten_flesh" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

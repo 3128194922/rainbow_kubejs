@@ -1,0 +1,19 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:trail_ruins",
+  "ingredients": [
+    { 
+      "item": "minecraft:terracotta" 
+    },
+    { 
+      "item": "minecraft:bricks" 
+    },
+    { 
+      "item": "minecraft:mud" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

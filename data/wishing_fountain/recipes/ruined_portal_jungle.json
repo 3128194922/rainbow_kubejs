@@ -1,0 +1,22 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:ruined_portal_jungle",
+  "ingredients": [
+    {
+       "item": "minecraft:obsidian"
+    },
+    { 
+      "item": "minecraft:netherrack" 
+    },
+    { 
+      "item": "minecraft:quartz" 
+    },
+    { 
+      "item": "minecraft:cocoa_beans" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

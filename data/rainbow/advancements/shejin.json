@@ -1,0 +1,36 @@
+{
+    "parent":"server_achievements:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"minecraft:gold_ore"
+        },
+        "title":{
+            "text":"摄金了！",
+            "color":"dark_purple"
+        },
+        "description":"恭喜摄金！",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "minecraft:gold_ore"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

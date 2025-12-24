@@ -1,0 +1,10 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "biome",
+  "target": "minecraft:ice_spikes",
+  "ingredients": [
+    { "item": "minecraft:packed_ice" },
+    { "item": "minecraft:snow_block" },
+    { "item": "minecraft:emerald" }
+  ]
+}

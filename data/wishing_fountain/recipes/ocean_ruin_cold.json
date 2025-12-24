@@ -1,0 +1,19 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "structure",
+  "target": "minecraft:ocean_ruin_cold",
+  "ingredients": [
+    {
+       "item": "minecraft:prismarine_shard"
+    },
+    { 
+      "item": "minecraft:water_bucket" 
+    },
+    { 
+      "item": "minecraft:stone_bricks" 
+    },
+    { 
+      "item": "minecraft:emerald" 
+    }
+  ]
+}

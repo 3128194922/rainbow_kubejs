@@ -1,0 +1,13 @@
+{
+  "type": "wishing_fountain:wishing_fountain_recipe",
+  "wish_type": "biome",
+  "target": "minecraft:jungle",
+  "ingredients": [
+    {
+      "item": "minecraft:emerald"
+    },
+    {
+      "item": "minecraft:vine"
+    }
+  ]
+}

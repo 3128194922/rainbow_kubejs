@@ -1,0 +1,36 @@
+{
+    "parent":"server_achievements:root",
+    "rewards":{
+        "experience":100
+      },
+    "display":{
+        "icon":{
+            "item":"alexsmobs:moose_headgear"
+        },
+        "title":{
+            "text":"鹿管",
+            "color":"dark_purple"
+        },
+        "description":"难道你不喜欢鹿管？",
+        "frame":"task",
+        "show_toast":true,
+        "announce_to_chat":true,
+        "hidden":false 
+
+    },
+    "criteria":{
+        "get_scrap":{
+            "trigger":"minecraft:inventory_changed",
+            "conditions":{
+                "items":[
+                    {
+                        "items":[
+                            "alexsmobs:moose_headgear"
+                        ]
+                    }
+                ]
+
+            }
+        }
+    }
+}

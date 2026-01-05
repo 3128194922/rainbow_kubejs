@@ -1,4 +1,4 @@
-let $Button = Java.loadClass("net.minecraft.client.gui.components.Button");
+/*let $Button = Java.loadClass("net.minecraft.client.gui.components.Button");
 let $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen");
 
 let buttons = []; // 存储按钮
@@ -12,9 +12,9 @@ ClientEvents.tick((event) => {
         // 如果按钮数组为空，说明需要创建按钮
         if (buttons.length === 0) {
             // ======== 末影箱按钮 ========
-            /*let enderButton = $Button.builder(Text.of("末影箱"), (button) => {
+            let enderButton = $Button.builder(Text.of("末影箱"), (button) => {
                 player.sendData("server", { open_menu: "enderchest" });
-            }).bounds(0, 0, 60, 20).build();*/
+            }).bounds(0, 0, 60, 20).build();
 
             // ======== 帮助按钮 ========
             let helpButton = $Button.builder(Text.of("帮助"), (button) => {
@@ -43,3 +43,4 @@ ClientEvents.tick((event) => {
         }
     }
 });
+*/

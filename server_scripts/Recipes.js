@@ -345,8 +345,8 @@ ServerEvents.recipes(event => {
 
 // 物品同化表（只要在这里写数组即可）
 // AofB[x] 代表一组互相可转化的物品
-const AofB_A = ["alexsmobs:flying_fish"]
-const AofB_B = ["shifted_lens:flying_fish"]
+const AofB_A = ['alexsmobs:flying_fish','collectorsreap:pomegranate']
+const AofB_B = ['tome_of_wonders:flying_fish','fruitfulfun:pomegranate']
 
 ServerEvents.recipes(event => {
     for(let i=0;i<AofB_A.length;i++)

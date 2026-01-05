@@ -371,14 +371,12 @@ StartupEvents.registry('entity_type', event => {
             let server = entity.getServer();
 
             if (level.isClientSide()) return;
-            server.scheduleInTicks(40, () => {
                 level.createExplosion(entity.x, entity.y - 1, entity.z)
                     .causesFire(false)
                     .exploder(entity)
                     .explosionMode("none")
                     .strength(3)
                     .explode();
-            })
             entity.discard()
         })
 

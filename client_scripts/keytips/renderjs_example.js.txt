@@ -1,0 +1,141 @@
+// renderjs 使用示例
+// 基于 renderjs 源码编写
+// 示例功能：在生存模式物品栏（InventoryScreen）显示自定义提示和渲染元素
+
+// 导入必要的类
+const $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen")
+const $Color = Java.loadClass("java.awt.Color")
+
+// 辅助函数：RGBA转整数颜色
+function getRGBA(r, g, b, a) {
+    return new $Color(r / 255, g / 255, b / 255, a / 100).getRGB()
+}
+
+/**
+ * RenderJS 提供了几个主要的事件入口：
+ * 1. RenderJSEvents.AddGuiRender - 用于在 GUI 界面（如背包、主菜单）上进行绘制
+ * 2. RenderJSEvents.AddWorldRender - 用于在世界中进行绘制（如 3D 物品展示台）
+ * 3. RenderJSEvents.REGISTER_ITEM_DECORATIONS - 用于物品栏内的物品装饰渲染
+ */
+
+// ==========================================
+// 示例 1: GUI 渲染 (AddGuiRender)
+// ==========================================
+RenderJSEvents.AddGuiRender(event => {
+    /**
+     * addRender 接收一个回调函数，参数为 context (renderContext)
+     * context 包含:
+     * - guiGraphics: 绘图工具 (net.minecraft.client.gui.GuiGraphics)
+     * - window: 窗口信息 (com.mojang.blaze3d.platform.Window)
+     * - partialTick: 部分刻
+     */
+    event.addRender(context => {
+        // 检查当前屏幕是否为玩家背包
+        // 注意：context 中不直接包含 screen，需要通过 Client.screen 获取
+        if (Client.screen instanceof $InventoryScreen) {
+            
+            const gfx = context.guiGraphics
+            const font = Client.font
+            
+            // 获取屏幕相关坐标
+            // 注意：GuiGraphics 的坐标系通常已经相对于 GUI 左上角或屏幕左上角
+            // 对于 InventoryScreen，我们通常需要知道 guiLeft 和 guiTop
+            const guiLeft = Client.screen.guiLeft
+            const guiTop = Client.screen.guiTop
+            
+            // 1. 绘制文本 (drawString)
+            // 参数: 字体, 文本, x, y, 颜色, 是否有阴影
+            gfx.drawString(font, "RenderJS 示例", guiLeft, guiTop - 10, 0xFFFFFF, true)
+            
+            // 2. 绘制矩形 (fill)
+            // 参数: x1, y1, x2, y2, color (int)
+            // 这里在背包右侧画一个半透明红色框
+            gfx.fill(guiLeft + 180, guiTop, guiLeft + 200, guiTop + 20, getRGBA(255, 0, 0, 50))
+            
+            // 3. 使用 RenderJSUtils 进行高级绘制 (如旋转图片)
+            // RenderJSUtils.blit(guiGraphics, texture, x, y, scaleX, scaleY, rotate, u, v, uw, vh, tw, th)
+            /*
+            RenderJSUtils.blit(
+                gfx, 
+                new ResourceLocation("minecraft", "textures/item/diamond.png"),
+                guiLeft + 190, guiTop + 30, // x, y
+                1.0, 1.0, // scale
+                45.0, // rotation (degrees)
+                0, 0, 16, 16, 16, 16 // uv texture mapping
+            )
+            */
+            
+            // 4. 使用 RenderJSRenderSystem 设置渲染状态
+            // 例如开启混合模式以支持透明度
+            RenderJSRenderSystem.enableBlendJS()
+            
+            // 模仿 invScreen.js 中的连接线绘制
+            // 使用 PoseStack 进行位移和绘制
+            const poseStack = gfx.pose()
+            poseStack.pushPose()
+            // 移动到指定位置
+            poseStack.translate(guiLeft + 180, guiTop + 50, 0)
+            
+            // 画一条线 (GuiGraphics 没有直接画线的方法，通常用 fill 模拟细长矩形)
+            gfx.fill(0, 0, 50, 1, 0xFF00FF00) // 绿色横线
+            
+            gfx.drawString(font, "自定义模块", 55, -4, 0x00FF00, false)
+            
+            poseStack.popPose()
+        }
+    })
+})
+
+// ==========================================
+// 示例 2: 世界渲染 (AddWorldRender)
+// ==========================================
+RenderJSEvents.AddWorldRender(event => {
+    /**
+     * addWorldRender 接收回调，参数为 renderer (WorldRender)
+     * 可以在这里获取 camera 位置，并在世界坐标中渲染内容
+     */
+    event.addWorldRender(renderer => {
+        // 示例：获取所有掉落物并在其上方显示标记 (仅为逻辑演示)
+        /*
+        let entities = Client.level.getEntities()
+        entities.forEach(entity => {
+            if (entity.type == "minecraft:item") {
+                const camera = renderer.camera
+                const camX = camera.position.x
+                const camY = camera.position.y
+                const camZ = camera.position.z
+                
+                renderer.poseStack.pushPose()
+                // 转换坐标到实体上方
+                renderer.poseStack.translate(entity.x - camX, entity.y + 1.0 - camY, entity.z - camZ)
+                
+                // 始终面向相机
+                renderer.poseStack.mulPose(renderer.camera.rotation())
+                renderer.poseStack.scale(-0.025, -0.025, 0.025)
+                
+                // 绘制文本
+                // 注意：这里需要 Font 渲染器，WorldRender 可能不直接提供，通常用于绘制形状或物品
+                // RenderJSWorldRender.renderItem(...) 可以渲染物品
+                
+                renderer.poseStack.popPose()
+            }
+        })
+        */
+    })
+})
+
+// ==========================================
+// 示例 3: 物品装饰 (ItemDecorations)
+// ==========================================
+/*
+RenderJSEvents.REGISTER_ITEM_DECORATIONS(event => {
+    // 为特定物品注册装饰器（例如左上角的角标）
+    event.register("minecraft:apple", (guiGraphics, font, stack, x, y) => {
+        guiGraphics.pose().pushPose()
+        guiGraphics.pose().translate(x, y, 200) // z-index 200 确保在物品上方
+        guiGraphics.pose().scale(0.5, 0.5, 1)
+        guiGraphics.drawString(font, "New", 0, 0, 0xFF0000, true)
+        guiGraphics.pose().popPose()
+    })
+})
+*/

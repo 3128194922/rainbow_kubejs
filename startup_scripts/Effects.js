@@ -1,14 +1,26 @@
 // priority: 1000
+// ==========================================
+// 药水效果注册
+// Potion Effect Registration
+// ==========================================
+// 注册自定义的药水效果，包括有益和有害效果
+// Registers custom potion effects, including beneficial and harmful ones
+
+// 注册自定义药水效果
 StartupEvents.registry("mob_effect", event => {
+    // 民主保佑：有益，黄色
     event.create("rainbow:democratic_save")
         .beneficial() // 标记为有益效果
         .color(0xFFFF00) // 设置颜色为黄色
+    // 标记：有害，红色
     event.create("rainbow:tag")
         .harmful()
         .color(0xFF0000)
+    // 曼巴：有益，淡黄色
     event.create("rainbow:manba")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
+    // 嘲讽效果：有害，每20tick嘲讽周围生物攻击自己
     event.create('rainbow:taunt_effect')
         .harmful()
         .effectTick((mob, lvl) => {
@@ -41,6 +53,7 @@ StartupEvents.registry("mob_effect", event => {
             })
         })
 
+    // 服从命令：有益，使生物攻击被标记（tag）的目标
     event.create('rainbow:obey_command')
         .beneficial()
         .effectTick((mob, lvl) => {
@@ -77,28 +90,35 @@ StartupEvents.registry("mob_effect", event => {
             }
         })
 
+    // 下班时间：有益
     event.create("rainbow:off_work_time")
     .beneficial() // 标记为有益效果
 
+    // 力量之剑：有益
     event.create("rainbow:power_sword")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
+    // 韧性：有益，增加攻击力和减伤
     event.create("rainbow:resilience")
         .beneficial()
         .color(0xEAF044)
         .modifyAttribute("generic.attack_damage", "resilience", 1.5, "multiply_total") // 每级攻击力提升 1.5 倍
         .modifyAttribute("l2damagetracker:damage_reduction", "resilience", 0.5, "addition") // 每级额外增加 0.5 的减伤
+    // 伤害积蓄：有益
     event.create("rainbow:damage_num")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
+    // 邪眼：有害
     event.create("rainbow:evil_eye")
         .harmful()
         .color(0xAA00FF)
         .effectTick((living, amplifier) => { })
+    // 肢解：有害，减少最大生命值
     event.create("rainbow:dismember")
         .harmful()
         .color(0xEAF044)
         .modifyAttribute("minecraft:generic.max_health", "dismember", 0.05, "multiply_total")
+    // APTX4869：有益，加速幼崽成长
     event.create("rainbow:apty4869")
         .beneficial()
         .color(0xEAF044)
@@ -121,17 +141,4 @@ StartupEvents.registry("mob_effect", event => {
                 living.setNbt(tag)
             }
         })
-    
-    
-    /*
-    event.create("rainbow:youkaified") 
-    .tag("minecraft:neutral")
-    .color(0x8A5A83)
-    .modifyAttribute("generic.movement_speed","youkaified",0.3,"multiply_total")
-    .modifyAttribute("generic.attack_damage","youkaified",0.5,"multiply_total")
-    .modifyAttribute("minecraft:generic.max_health","youkaified",20,"addition")
-    .effectTick(event => {
-        if(event.age % 20) return;
-        event.getFoodData().setExhaustion(event.getFoodData().getExhaustionLevel() + 1)
-    })*/
 });

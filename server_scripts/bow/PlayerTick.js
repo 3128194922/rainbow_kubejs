@@ -1,3 +1,8 @@
+// priority: 0
+// ==========================================
+// 🏹 弓箭蓄力进度显示脚本
+// ==========================================
+
 // server_scripts/bow_progress.js
 PlayerEvents.tick(event => {
     let player = event.player;
@@ -8,15 +13,16 @@ PlayerEvents.tick(event => {
         let stack = player.getUseItem();
         if (stack && stack.id === "minecraft:bow") {
             let usedTicks = player.getTicksUsingItem();
-            // 最大20tick为满拉弓
+            // 最大20tick为满拉弓 (1秒)
             let progress = Math.min(100, Math.floor((usedTicks / 20) * 100));
 
-            // 检测满弓并执行指令（只触发一次）
+            // 检测满弓并执行指令（只触发一次，播放音效）
             if (progress >= 100 && !player.persistentData.bowFullyDrawn) {
                 player.persistentData.bowFullyDrawn = true;
                 player.server.runCommandSilent(`/playsound minecraft:ui.button.click player ${player.getDisplayName().getString()} ${player.x} ${player.y} ${player.z}`)
             }
 
+            // 发送拉弓进度数据包给客户端
             player.sendData("bow_progress", { progress: progress });
         }
     } else {

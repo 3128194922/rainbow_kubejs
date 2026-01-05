@@ -1,4 +1,10 @@
 // priority: 1000
+// ==========================================
+// 全局工具函数库
+// Global Utility Functions
+// ==========================================
+// 包含各种通用的辅助函数，如材质获取、时间转换、按键映射等
+// Contains various generic helper functions, such as material retrieval, time conversion, key mapping, etc.
 
 /**
  * 返回 Minecraft 1.19.4 中 MaterialJS 支持的材质
@@ -343,16 +349,22 @@ function hasCurios(entity, stack) {
 
 /**
 * 在实体饰品栏中寻找饰品
+* 遍历所有饰品栏槽位和其中的物品
 * @param {Internal.Item} stack 饰品
 * @param {Internal.LivingEntity_} entity 实体
 */
 function hasCurios(player, id) {
+    // 检查玩家对象是否为空
     if (player == null) return false;
+    // 获取饰品库存
     let curios = player.curiosInventory;
     if (curios == null) return false;
 
+    // 遍历所有饰品槽位
     for (let slot of curios.curios.values()) {
+        // 遍历槽位中的所有物品
         for (let stack of slot.getStacks().getAllItems()) {
+            // 检查物品ID是否匹配
             if (stack.getId().toString() === id) {
                 return true;
             }
@@ -465,7 +477,8 @@ global.getKeyMappingById = (keyId) => {
       let entry = iter.next();
       let id = entry.getKey();             // 例如 "key.attack"
       let km = entry.getValue();           // KeyMapping 实例
-  
+      let category = km.getCategory();     // 分类ID，例如 "key.categories.movement"
+
       if (id === keyId) {
         return {
           id: id,

@@ -1,85 +1,47 @@
 // priority: 500
+// ==========================================
+// 🛠️ 物品事件处理脚本
+// ==========================================
+
 const Integer = Java.loadClass("java.lang.Integer");
+
+// 物品右键事件
 ItemEvents.rightClicked(event => {
     let { player, item, level, server, hand } = event;
     //let ender_chest = player.getEnderChestInventory().getAllItems();
     if (level.isClientSide()) return;
-/*
-    // 爆破之星（下界之星）
-    if (item.id === "minecraft:nether_star") {
-        level.createExplosion(player.x, player.y - 1, player.z).explode();
-    }
-    */
-    // 粘液块平台（粘液棒）
+
+    // --- 粘液棒：生成粘液块平台 ---
     if (item.id === "rainbow:slime_rod") {
         let playerName = player.getName().getString();
         if (player.shiftKeyDown) {
-            // 生成大型粘液块平台
+            // 潜行右键：生成大型粘液块平台（用于救援接住玩家）
             server.runCommandSilent(`/execute at ${playerName} run fill ~-2 ~-1 ~-2 ~2 ~3 ~2 minecraft:slime_block replace air`);
             server.runCommandSilent(`/execute at ${playerName} run fill ~-1 ~0 ~-1 ~1 ~2 ~1 minecraft:air replace slime_block`);
         } else {
-            // 生成小型粘液块平台
+            // 普通右键：生成小型粘液块平台
             server.runCommandSilent(`/execute as ${playerName} at @s run fill ~-1 ~-3 ~-1 ~1 ~-3 ~1 minecraft:slime_block replace air`);
         }
         player.setStatusMessage('救命之恩！');
         player.setItemInHand("main_hand", 'minecraft:air');
     }
 
-    // 拉屎行为（纸+潜行）
+    // --- 恶搞物品：拉屎 ---
+    // 纸 + 潜行 = 获得 "rainbow:shit"
     if (item.id === "minecraft:paper" && player.shiftKeyDon) {
         item.shrink(1);
         player.addItem("rainbow:shit");
         player.setStatusMessage('你拉屎了');
     }
-    /*
-      // 太刀冲刺
-      if (item.id === "smc:katana" && !player.cooldowns.isOnCooldown("smc:katana")) {
-          player.setDeltaMovement(player.getLookAngle().scale(3.0));
-          player.hurtMarked = true;
-          player.cooldowns.addCooldown("smc:katana", 60); // 3秒冷却
-      }*/
-    /*
-      // 闹钟（时钟）
-      if (item.id === "minecraft:clock" && !player.cooldowns.isOnCooldown("minecraft:clock")) {
-          let isDay = level.dayTime <= 13000;
-          server.runCommandSilent(`/time set ${isDay ? "night" : "day"}`);
-          server.tell(`${player.getName().getString()} 将时间调到${isDay ? "傍晚" : "清晨"}`);
-          player.cooldowns.addCooldown("minecraft:clock", 60);
-      }
-    */
-    /*
-      // 指南针（月相显示）
-      if (item.id === "minecraft:compass" && !player.cooldowns.isOnCooldown("minecraft:compass")) {
-          let moonPhaseList = ["满", "亏凸", "下弦", "残", "新", "峨嵋", "满", "满"];
-          player.setStatusMessage(`今天的月像是${moonPhaseList[level.moonPhase]}月`);
-          player.cooldowns.addCooldown("minecraft:compass", 60);
-      }
-    */
-    /*
-      // 回溯指针（重生指南针）
-      if (item.id === "minecraft:recovery_compass" && !player.cooldowns.isOnCooldown("minecraft:recovery_compass")) {
-          let name = player.getDisplayName().getString();
-          if (!global.deathRecords[name]) {
-              player.setStatusMessage("纵使一罪，仍有百善");
-          } else {
-              player.setStatusMessage("不要相信时间，吾将给带来光明");
-              server.runCommandSilent(`/tp ${name} ${global.deathRecords[name].x} ${global.deathRecords[name].y} ${global.deathRecords[name].z}`);
-          }
-          player.cooldowns.addCooldown("minecraft:recovery_compass", 60);
-      }
-    */
-    // 末影戒指（末影箱）
+    
+    // --- 末影戒指：打开末影箱 ---
     if (item.id === "rainbow:enderchest" && !player.isShiftKeyDown()) {
         player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
     }
 
-    // 饕餮之锅
+    // --- 饕餮之锅：食物收集 ---
     if (item.id === "rainbow:eldritch_pan") {
-        // 检查末影箱是否有物品
-        //if (ender_chest.length === 0) return; // 末影箱为空，直接返回
-
-        //let targetItemId = ender_chest[0].id; // 获取末影箱第一个物品的ID
-
+        // 逻辑：将副手食物“吃掉”并记录到锅的NBT中，增加计数
         let targetItem = player.getItemInHand("off_hand");
         let tag = global.foodlist.indexOf(targetItem.id); // 查找在 foodlist 中的索引
 
@@ -92,6 +54,7 @@ ItemEvents.rightClicked(event => {
             item.nbt.foodnumber = 0;
         }
 
+        // 检查是否已经吃过这种食物
         for (let i = 0; i < item.nbt.foodlist.length; i++) {
             if (item.nbt.foodlist[i] == tag) {
                 player.setStatusMessage("这个食物已经吃过了！");
@@ -100,23 +63,24 @@ ItemEvents.rightClicked(event => {
             }
         }
 
-        // 减少末影箱物品数量
-        //ender_chest[0].shrink(1);
+        // 消耗副手食物
         targetItem.shrink(1);
         level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
 
-        // 将 tag 添加到 foodlist
+        // 将 tag 添加到 foodlist 并更新计数
         item.nbt.foodlist.push(Integer.valueOf(tag));
         item.nbt.foodnumber = item.nbt.foodlist.length;
     }
 
+    // --- 泰拉刃：发射射弹 ---
     if (item.id === 'rainbow:terasword') {
         if (item.getNbt().getInt("power")) {
+            // 消耗能量
             item.getNbt().putInt("power",item.getNbt().getInt("power") - 1)
 
             let projectileName = "rainbow:trea";
 
-            // 计算发射数据
+            // 计算发射方向和位置
             let viewVector = player.getViewVector(1.0)
             let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
             let nor_x = viewVector.x() / length
@@ -126,7 +90,7 @@ ItemEvents.rightClicked(event => {
             let new_y = player.y + player.getEyeHeight()
             let new_z = player.z + nor_z * 2
 
-            // 发送数据到服务端
+            // 发送数据到客户端进行渲染或逻辑处理
             Client.player.sendData("projectlie", {
                 x: new_x,
                 y: new_y,
@@ -142,13 +106,16 @@ ItemEvents.rightClicked(event => {
         }
     }
 
+    // --- 苦力怕护符：随机传送 ---
     if(item.id === 'rainbow:creeper_charm')
         {
+            // 随机传送到主世界某处，并给予保护效果
             player.teleportTo("minecraft:overworld", getRandomInt(-14999992, 14999992), 300, getRandomInt(-14999992, 14999992), player.yaw, player.pitch)
             player.potionEffects.add("rainbow:democratic_save", 10 * 20, 0, false, false)
             player.cooldowns.addCooldown("rainbow:creeper_charm",SecoundToTick(60*60))
         }
 
+    // --- 月光水晶：看月亮获得物品 ---
     if(item.id === 'chromaticarsenal:lunar_crystal')
         {
             if(PlayerLookAtMoon(player))
@@ -158,6 +125,7 @@ ItemEvents.rightClicked(event => {
                 }
         }
     
+    // --- 棒球棍：充能 ---
     if(item.id === 'rainbow:baseball_bat')
         {
             let nbt = item.getNbt()
@@ -165,6 +133,7 @@ ItemEvents.rightClicked(event => {
             player.setItemInHand("main_hand",Item.of("rainbow:baseball_power",`${nbt}`))
         }    
     
+    // --- 乐谱：播放音乐 ---
     if(item.id == "rainbow:musical_score")
         {
             if(!item.nbt) return;
@@ -174,6 +143,8 @@ ItemEvents.rightClicked(event => {
                 music: intArrayTagToNumbers(item.nbt.music)
             })
         }
+    
+    // --- 群系之剑：收集群系 ---
     if (item.id === "rainbow:biome_of_sword") {
 
         // 确保全局群系列表已初始化
@@ -218,7 +189,7 @@ ItemEvents.rightClicked(event => {
     }
 });
 
-//音乐
+// 音乐系统：山羊角记录音乐
 ItemEvents.rightClicked(event => {
     let player = event.player;
     let item = event.item;
@@ -226,7 +197,7 @@ ItemEvents.rightClicked(event => {
     if (item.id == "minecraft:goat_horn") {
         let music = item.getNbt().getString("instrument"); // 获取 instrument 的字符串值
 
-        // 对应数组
+        // 对应乐器ID数组
         let instrumentIds = [
             "minecraft:ponder_goat_horn",
             "minecraft:sing_goat_horn",
@@ -271,7 +242,7 @@ ItemEvents.rightClicked(event => {
             offHand.setNbt(offHandNbt); // 保存回去
         }
 
-        // 如果是 dream_goat_horn（编号为 7），发送数据
+        // 如果是 dream_goat_horn（编号为 7），发送数据进行播放或其他处理
         if (instrumentNumber == 7) {
             Client.player.sendData("music", {
                 music: player.persistentData.music
@@ -281,9 +252,11 @@ ItemEvents.rightClicked(event => {
     }
 });
 
-// 吃下屎后关闭客户端
+// 食物事件
+// 吃下屎后关闭客户端（恶搞）
 ItemEvents.foodEaten('rainbow:shit', () => Client.close())
-//超级饰品
+
+// 超级饰品：大蒜面包增加饰品栏
 ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{
     let player = event.getPlayer();
 
@@ -347,7 +320,7 @@ ItemEvents.entityInteracted("rainbow:golden_finger", event => {
 });
 
 
-// nbt工具
+// NBT工具：输出实体NBT到日志
 ItemEvents.entityInteracted("rainbow:nbt_util", event => {
     let player = event.getPlayer();
     let target = event.getTarget();
@@ -360,6 +333,7 @@ ItemEvents.entityInteracted("rainbow:nbt_util", event => {
     player.tell("NBT已以JSON格式输出到日志");
 });
 
+// --- FruitfulFun 蜜蜂基因相关逻辑 ---
 const Allele = Java.loadClass('snownee.fruits.bee.genetics.Allele');
 const CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag');
 
@@ -387,9 +361,6 @@ global.ffNormalizeAsciiCodeKey = (code) => {
 
 /**
  * 伪装代号 -> 真实基因位点名（RC/FC/FT1/FT2）
- * - 输入可为字母代号（'A'）或数字字符串（'81'）
- * - 若输入本身是真实位点名（'RC' 等），原样返回
- * - 世界未初始化或找不到映射时返回 null
  */
 global.ffCodeToRealGene = (code) => {
     if (code == null) return null;
@@ -445,7 +416,7 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
   });
   
 
-//远古之庇护
+// 远古之庇护：绑定UUID
 ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
     let player = event.getPlayer();
     let hand = event.getHand();
@@ -468,7 +439,8 @@ ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
 
 })
 
-//矿车和箱子右键安装
+// 矿车和箱子右键安装逻辑
+// 将箱子、熔炉等安装到船或矿车上
 ItemEvents.entityInteracted(event => {
     let player = event.getPlayer();
     let hand = event.getHand();
@@ -537,7 +509,8 @@ ItemEvents.entityInteracted(event => {
         return;
     }
 });
-//宠物收容
+
+// --- 宠物收容系统 ---
 
 // 收容宠物（普通右键）
 ItemEvents.entityInteracted(event => {
@@ -623,13 +596,14 @@ ItemEvents.rightClicked(event => {
 })
 
 
-//夸克回旋镖
+// --- 夸克回旋镖逻辑 ---
 // Java 类加载
 let Pickarang = Java.loadClass("org.violetmoon.quark.content.tools.entity.rang.Pickarang");
 let ServerPlayer = Java.loadClass("net.minecraft.server.level.ServerPlayer");
 let PickarangModule = Java.loadClass("org.violetmoon.quark.content.tools.module.PickarangModule");
 let ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack");
 
+// 抛掷回旋镖
 ItemEvents.rightClicked(event => {
     let { hand, player, level, server,item } = event;
     if(!item.hasTag("rainbow:pika")) return;

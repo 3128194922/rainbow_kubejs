@@ -1,6 +1,13 @@
 // priority: 1000
+// ==========================================
+// 悬赏物品坐标提示
+// Bounty Item Coordinate Tooltips
+// ==========================================
+// 为 'bountiful:bounty' 物品添加高级提示
+// 显示关联副本的坐标信息
+// Adds advanced tooltips to 'bountiful:bounty' items
+// Shows coordinate information for the associated dungeon instance
 
-// 为悬赏物品添加坐标提示
 ItemEvents.tooltip(event => {
     event.addAdvanced("bountiful:bounty", (item, advanced, text) => {
         let nbt = item.nbt;

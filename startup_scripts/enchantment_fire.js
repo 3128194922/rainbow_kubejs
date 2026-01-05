@@ -1,4 +1,10 @@
 // priority: 500
+// ==========================================
+// 自定义火焰附魔逻辑
+// Custom Fire Enchantment Logic
+// ==========================================
+// 实现生灵火和末影火的附魔效果，攻击时给予目标特殊的火焰效果
+// Implements custom fire enchantment effects (Living Fire, Ender Fire), applying special fire effects to targets on attack
 
 let $EnchantmentHelper = Java.loadClass("net.minecraft.world.item.enchantment.EnchantmentHelper");
 let FireManager = Java.loadClass("it.crystalnest.soul_fire_d.api.FireManager");

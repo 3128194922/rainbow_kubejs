@@ -1,3 +1,10 @@
+// ==========================================
+// 获取敌对生物命令
+// Get Hostile Mobs Command
+// ==========================================
+// 注册 /gethostilemobs 命令，列出所有注册的敌对生物(Monster类别)
+// Registers /gethostilemobs command to list all registered hostile mobs (Monster category)
+
 ServerEvents.commandRegistry(event => {
     const { commands: Commands } = event;
     const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");

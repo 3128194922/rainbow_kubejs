@@ -1,4 +1,8 @@
 // priority: 0
+// ==========================================
+// 🐾 自定义实体驯服与AI行为系统
+// ==========================================
+
 let NearestAttackableTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal")
 let SpiderTargetGoal = Java.loadClass("net.minecraft.world.entity.monster.Spider$SpiderTargetGoal")
 let HurtByTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal")
@@ -12,15 +16,11 @@ let FlyingMob = Java.loadClass("net.minecraft.world.entity.FlyingMob")
 let TamableAnimal = Java.loadClass("net.minecraft.world.entity.TamableAnimal")
 let ClipContext = Java.loadClass("net.minecraft.world.level.ClipContext")
 let HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
+
 /**
- * Maps entity types to the item required to tame them.
- *
- * This list controls which mobs can be tamed during gameplay and
- * what item is needed to tame each.
- *
- * ⚠️ Note: A similar list exists in the startup script (`tameableMobs` array used in `EntityJSEvents.modifyEntity`).
- * If you add or remove entries here, you should update the startup script as well
- * to ensure custom behaviors (like riding, sitting, or attacking logic) are correctly applied.
+ * 驯服物品映射表
+ * 定义了哪些实体可以被驯服，以及需要使用什么物品。
+ * 格式: "实体ID": "驯服物品ID"
  */
 let tameableMobs = {
     "minecraft:iron_golem": 'create_connected:control_chip',
@@ -30,26 +30,25 @@ let tameableMobs = {
     'minecraft:husk': 'rainbow:grinder',
     'windswept:chilled': 'rainbow:grinder'
 }
+
 /**
- * Resets and reapplies the defensive targeting behavior for tamed mobs.
- *
- * - Removes existing `NearestAttackableTargetGoal`s to prevent unwanted aggression.
- * - Re-adds a filtered goal that only targets:
- *   - The last mob attacked by the owner.
- *   - The last mob that attacked the owner.
- * - Ignores other tamed mobs and the owner.
- *
- * Also called on entity spawn to restore tame behavior.
+ * 重置并重新应用驯服生物的目标选择逻辑
+ * 
+ * - 移除原有的攻击目标，防止误伤。
+ * - 添加自定义的攻击目标逻辑：
+ *   - 攻击主人最后攻击的目标。
+ *   - 攻击最后攻击主人的目标。
+ * - 忽略其他被同一主人驯服的生物。
  */
 function reviseTamedPetGoals(mob) {
     if (mob instanceof PathfinderMob) {
-        // simply stop all goals to reset aggro
+        // 停止当前所有目标
         mob.targetSelector.getRunningGoals().forEach(goal => goal.stop())
-        // here we remove all nearest attackable target goals so it doesnt attack us or other mobs on sight
-        // the entity goal to remove will vary depending on the mob tamed, so you may need to add more cases for other mobs
+        // 移除所有 NearestAttackableTargetGoal，防止主动攻击
         mob.targetSelector.removeAllGoals(goal => goal instanceof NearestAttackableTargetGoal)
+        
         if (mob.goalSelector.availableGoals.some(goal => goal.goal instanceof MeleeAttackGoal)) {
-            // re-add the NearestAttackableTargetGoal & HurtByTargetGoal to make it only attack the last entity the player attacked
+            // 延迟1tick添加自定义目标选择器
             mob.server.scheduleInTicks(1, () => {
                 mob.targetSelector.addGoal(1, new NearestAttackableTargetGoal(mob, LivingEntity, 1, true, false, t => {
                     if (mob.persistentData.OwnerName) {
@@ -57,9 +56,12 @@ function reviseTamedPetGoals(mob) {
                         if (owner) {
                             let lastAttackedId = owner.persistentData.LastAttackedMobId
                             let lastAttackedMeId = owner.persistentData.LastMobToAttackMe
+                            
+                            // 攻击主人攻击的目标
                             if (lastAttackedId) {
                                 let entityRef = mob.level.getEntities().filter(e => e.getUuid().toString() == lastAttackedId)[0]
                                 if (entityRef) {
+                                    // 不攻击主人自己的宠物
                                     if (entityRef.persistentData.OwnerName == owner.getUuid().toString() ||
                                         (t instanceof TamableAnimal && t.isOwnedBy(owner))
                                     ) {
@@ -75,6 +77,8 @@ function reviseTamedPetGoals(mob) {
                                     owner.persistentData.remove("LastAttackedMobId")
                                 }
                             }
+                            
+                            // 攻击攻击主人的目标
                             if (lastAttackedMeId) {
                                 let entityRef = mob.level.getEntities().filter(e => e.getUuid().toString() == lastAttackedMeId)[0]
                                 if (entityRef) {
@@ -95,6 +99,7 @@ function reviseTamedPetGoals(mob) {
                             }
                         }
                     }
+                    // 默认不攻击主人
                     let fallback = t instanceof Player && mob.persistentData.OwnerName != t.getUuid().toString()
                     return fallback
                 }))
@@ -102,21 +107,18 @@ function reviseTamedPetGoals(mob) {
         }
     }
 }
+
+// 实体生成时应用驯服逻辑（如果是已驯服的实体）
 EntityEvents.spawned(event => {
     let { entity } = event
     let tamingItem = tameableMobs[entity.type]
     if (tamingItem && entity.persistentData.OwnerName)
         reviseTamedPetGoals(entity)
 })
+
 /**
- * Allows players to toggle the sitting state of their tamed flying mobs from a distance
- * by right-clicking while holding their taming item.
- *
- * - Performs a raytrace up to 40 blocks in the direction the player is looking.
- * - Finds the closest flying mob owned by the player within the ray.
- * - If the player is sneaking and holding the correct taming item, toggles the mob's sitting state.
- *
- * Useful for managing flying pets from afar without needing to click them directly.
+ * 远程控制飞行宠物坐下/起立
+ * 玩家潜行并手持驯服物品右键，可远程切换宠物的坐下状态
  */
 ItemEvents.rightClicked(event => {
     let { player, item, level, target } = event
@@ -160,35 +162,39 @@ ItemEvents.rightClicked(event => {
 })
 
 /**
- * Handles taming, saddling, and sitting for custom tameable mobs.
- *
- * - Right-click with the taming item: 50% chance to tame if unowned.
- * - Right-click with saddle (if owner): equips the mob with a saddle.
- * - Shift-right-click (if owner): toggles sitting state.
- *
- * Consumes items as needed and cancels default interaction behavior where appropriate.
+ * 实体交互逻辑：驯服、装鞍、坐下
+ * 
+ * - 手持驯服物品右键未驯服实体：50% 概率驯服。
+ * - 手持鞍右键已驯服实体：装备鞍。
+ * - 潜行右键已驯服实体：切换坐下/跟随状态。
  */
 ItemEvents.entityInteracted(event => {
     let { target, player, player: { mainHandItem } } = event
     let tamingItem = tameableMobs[target.type]
     if (event.hand != "main_hand") return
     if (!target.persistentData.HasSaddle) target.persistentData.HasSaddle = 0
+    
+    // 驯服逻辑
     if (tamingItem && mainHandItem.id == tamingItem) {
         let randomChancetoFail = Math.random()
         if (!target.persistentData.OwnerName) {
             player.level.playSound(null, target.x, target.y, target.z, "minecraft:entity.generic.eat", "players", 0.5, 0.9)
+            // 50% 失败概率
             if (randomChancetoFail < 0.5) {
                 target.level.spawnParticles('minecraft:campfire_cosy_smoke', true, target.x + 0.5, target.y + 1.05, target.z + 0.5, 0, 0.3, 0, 2, 0.1)
                 mainHandItem.count--
                 return
             }
+            // 成功驯服
             target.level.spawnParticles('minecraft:heart', true, target.x + 0.5, target.y + 1.05, target.z + 0.5, 0, 0.3, 0, 2, 0.1)
             target.persistentData.OwnerName = player.getUuid().toString()
             mainHandItem.count--
             player.swing("main_hand")
             reviseTamedPetGoals(target)
         }
-    } else if (target.persistentData.OwnerName &&
+    } 
+    // 装鞍逻辑
+    else if (target.persistentData.OwnerName &&
         target.persistentData.OwnerName == player.getUuid().toString() &&
         mainHandItem.id == "minecraft:saddle") {
         if (target.persistentData.HasSaddle == 0) {
@@ -198,6 +204,7 @@ ItemEvents.entityInteracted(event => {
             event.cancel()
         }
     }
+    // 坐下逻辑
     if (target.persistentData.OwnerName &&
         target.persistentData.OwnerName == player.getUuid().toString() &&
         player.isShiftKeyDown()
@@ -208,8 +215,11 @@ ItemEvents.entityInteracted(event => {
     }
 
 })
+
+// 为可驯服生物添加自定义AI目标
 Object.keys(tameableMobs).forEach(id => {
     EntityJSEvents.addGoalSelectors(id, event => {
+        // 目标：跟随主人
         event.customGoal("follow_owner",
             3,
             e => e.persistentData.OwnerName != undefined &&
@@ -230,6 +240,8 @@ Object.keys(tameableMobs).forEach(id => {
                     }
                 }
             })
+        
+        // 目标：坐下/停留
         event.customGoal("pet_sit", 0,
             e => e.persistentData.OwnerName != undefined,
             e => e.persistentData.OwnerName != undefined,
@@ -246,6 +258,7 @@ Object.keys(tameableMobs).forEach(id => {
                         }
                         return
                     }
+                    // 飞行生物的降落逻辑
                     if (e instanceof FlyingMob) {
                         if (!e.persistentData.LandTarget) {
                             let level = e.level
@@ -286,6 +299,7 @@ Object.keys(tameableMobs).forEach(id => {
                             e.setPitch(pitch)
                         }
                     } else {
+                        // 地面生物停止移动
                         e.targetSelector.availableGoals.forEach(goal => {
                             if (!(goal.goal instanceof CustomGoal)) {
                                 goal.stop()
@@ -305,18 +319,12 @@ Object.keys(tameableMobs).forEach(id => {
         )
     })
 })
+
 /**
- * Tracks combat interactions to support retaliatory targeting by tamed mobs.
- *
- * - Sets `LastAttackedMobId` on the attacking player when they damage a mob,
- *   unless the mob is their own tamed pet.
- *
- * - Sets `LastMobToAttackMe` on the player when they are attacked,
- *   unless the attacker is their own tamed pet.
- *
- * These values can be used in a `NearestAttackableTargetGoal` to let
- * tamed mobs automatically retaliate when their owner is hurt or when
- * the owner attacks something.
+ * 记录战斗状态，用于宠物复仇逻辑
+ * 
+ * - 记录玩家攻击的目标。
+ * - 记录攻击玩家的生物。
  */
 EntityEvents.hurt(event => {
     let { entity, source } = event
@@ -330,6 +338,7 @@ EntityEvents.hurt(event => {
         if (
             attacker.persistentData.OwnerName && attacker.persistentData.OwnerName == entity.getUuid().toString()
         ) {
+            // 防止宠物攻击主人
             attacker.targetSelector.getRunningGoals().forEach(goal => goal.stop())
             event.cancel()
         }
@@ -337,10 +346,11 @@ EntityEvents.hurt(event => {
             entity.persistentData.LastMobToAttackMe = attacker.getUuid().toString()
     }
 })
+
 /**
- * Prevents infighting between tamed mobs by canceling damage events
- * when a mob attempts to hurt its owner or another mob owned by the same player.
- * Also stops attack goals for pathfinding mobs to prevent aggressive behavior.
+ * 防止友军伤害（PVP保护）
+ * - 宠物不能攻击主人。
+ * - 宠物不能攻击同一主人的其他宠物。
  */
 EntityEvents.hurt(event => {
     let { entity, source } = event

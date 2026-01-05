@@ -1,3 +1,11 @@
+// priority: 0
+// ==========================================
+// 物品栏界面引导提示
+// Inventory Screen Tutorial Hints
+// ==========================================
+// 在物品栏界面绘制指向特定槽位（饰品、属性、时装）的引导线和文本
+// Draws guide lines and text pointing to specific slots (Curios, Attributes, Fashion) in the inventory screen
+
 let $ScreenEvent$Init$Post = Java.loadClass("net.minecraftforge.client.event.ScreenEvent$Init$Post")
 let $Button = Java.loadClass("net.minecraft.client.gui.components.Button")
 let $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen")

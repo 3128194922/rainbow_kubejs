@@ -1,4 +1,11 @@
 // priority: 500
+// ==========================================
+// 屹立不倒附魔逻辑
+// Last Stand Enchantment Logic
+// ==========================================
+// 当玩家受到致命伤害时，消耗经验值来抵消伤害并维持 1 点生命值
+// When a player takes fatal damage, consumes XP to negate damage and maintain 1 HP
+
 let $EnchantmentHelper = Java.loadClass("net.minecraft.world.item.enchantment.EnchantmentHelper");
 
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", (event) => {
@@ -32,5 +39,3 @@ function getExperienceForLevel(level) {
 function getPlayerXP(player) {
     return getExperienceForLevel(player.experienceLevel) + player.totalExperience;
 }
-
-

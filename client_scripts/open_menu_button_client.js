@@ -1,15 +1,22 @@
+// priority: 500
+// ==========================================
+// 🖥️ 客户端界面UI按钮脚本
+// ==========================================
+
 let $Button = Java.loadClass("net.minecraft.client.gui.components.Button");
 let $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen");
 
-let buttons = []; // 存储按钮
+let buttons = []; // 存储按钮实例
 let lastScreen = null;
 let lastWidth = 0;
 let lastHeight = 0;
 
+// 每帧更新UI
 ClientEvents.tick((event) => {
     let screen = Client.screen;
     let player = event.player;
 
+    // 仅在玩家背包界面执行
     if (screen instanceof $InventoryScreen) {
 
         // 检测屏幕变化或尺寸变化（解决全屏切换导致按钮消失的问题）
@@ -30,6 +37,7 @@ ClientEvents.tick((event) => {
             */
 
             // ======== 帮助按钮 ========
+            // 点击发送 "trashcan" 菜单请求 (注：显示文本为"帮助"，但实际功能可能是打开垃圾桶或菜单)
             let helpButton = $Button.builder(Text.of("帮助"), (button) => {
                 player.sendData("server", { open_menu: "trashcan" });
             }).bounds(0, 0, 60, 20).build();
@@ -37,7 +45,7 @@ ClientEvents.tick((event) => {
             // buttons.push(enderButton);
             buttons.push(helpButton);
 
-            // 添加到界面
+            // 添加到界面渲染列表
             buttons.forEach(btn => screen.addRenderableWidget(btn));
         }
 

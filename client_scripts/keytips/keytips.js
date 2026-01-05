@@ -1,4 +1,11 @@
-// ==============================
+// priority: 0
+// ==========================================
+// 界面按键提示系统 (RenderJS Version)
+// UI Key Tips System (RenderJS Version)
+// ==========================================
+// 根据当前打开的界面，在屏幕左侧显示相关的快捷键提示
+// Displays relevant shortcut key hints on the left side of the screen based on the currently open GUI
+
 // 🎨 UI 按键提示系统 (RenderJS Version)
 // UI Key Tips System (RenderJS Version)
 // ==============================

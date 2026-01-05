@@ -1,5 +1,20 @@
 // priority: 1000
-//死亡回放
+// ==========================================
+// 插件功能模拟与玩家事件处理
+// Plugin Simulation & Player Event Handling
+// ==========================================
+// 包含功能：
+// 1. 死亡记录与 /back 命令
+// 2. /tpa 传送请求命令
+// 3. 登录/注册系统 (已注释)
+// 4. 玩家进入/退出服务器事件处理 (饰品初始化, 数据统计)
+// Included Features:
+// 1. Death recording & /back command
+// 2. /tpa teleport request command
+// 3. Login/Register system (Commented out)
+// 4. Player login/logout handling (Curios init, stats logging)
+
+// 死亡回放
 global.deathRecords = {};
 /*
 PlayerEvents.respawned(event => {
@@ -30,6 +45,8 @@ PlayerEvents.respawned(event => {
     console.log(`玩家 ${playerName} 死亡位置记录：`, global.deathRecords[playerName]);
 });
 */
+
+// 玩家死亡事件：记录死亡坐标
 EntityEvents.death(event => {
     if (!event.getPlayer()) return;
     if (event.level.isClientSide()) return;
@@ -40,7 +57,7 @@ EntityEvents.death(event => {
     let playerName = event.getPlayer().getDisplayName().getString();
 
 
-    //战斗维度死亡惩罚
+    // 战斗维度死亡惩罚：Backroom维度死亡清空背包
     if (level.name.getString() === "backroom:backroom") {
         player.inventory.clear();
         return;
@@ -70,10 +87,11 @@ EntityEvents.death(event => {
     //console.log(`玩家 ${playerName} 死亡位置记录：`, global.deathRecords[playerName]);
 })
 
+// 命令注册
 ServerEvents.commandRegistry(event => {
     let { commands: Commands, arguments: Arguments } = event;
 
-    // /tpa <target>
+    // /tpa <target> - 请求传送到玩家
     event.register(
         Commands.literal("tpa")
             .requires(src => src.hasPermission(0))
@@ -94,6 +112,7 @@ ServerEvents.commandRegistry(event => {
                             return 0;
                         }
 
+                        // 禁止传送到 Backroom
                         if (targetPlayer.level.name.getString() === "backroom:backroom") {
                             requester.tell(`神秘力量阻止了你的传送`);
                             return 0;
@@ -114,7 +133,7 @@ ServerEvents.commandRegistry(event => {
             )
     );
 
-    // /back
+    // /back - 返回死亡地点
     event.register(
         Commands.literal("back")
             .requires(src => src.hasPermission(0))
@@ -227,11 +246,12 @@ ServerEvents.commandRegistry(event => {
                         }
                     })
             )
-    );*/
+    );
+*/
 
 });
 
-//统一进入世界事件
+// 统一进入世界事件：玩家登录处理
 PlayerEvents.loggedIn(event => {
     if (event.level.isClientSide()) return;
     let player = event.player;
@@ -253,18 +273,19 @@ PlayerEvents.loggedIn(event => {
 
     if(event.getPlayer().stages.has("curios_is_ok_update3")) return;
 
-    //饰品初始化
+    // 饰品初始化：移除旧饰品
     let Curios = ["body", "belt", "bracelet", "curio", "hands", "necklace", "ring", "feet", "hands","super_curio"]
 
     Curios.forEach(curio=>{
         server.runCommandSilent(`/curios remove ${curio} ${player.getDisplayName().getString()} 10`);
     })
 
-    //护符实际数量
+    // 护符实际数量设置
     server.runCommandSilent(`/curios set charm ${player.getDisplayName().getString()} ${global.CURIONUMBER}`);
 /*
     server.runCommandSilent(`/execute as ${player.getDisplayName().getString()} run dialog show hello_world`)
 */
+    // 初始化玩家持久化数据
     if(!player.persistentData.getInt("resilience"))
         {
             player.persistentData.putInt("resilience",0);
@@ -274,9 +295,10 @@ PlayerEvents.loggedIn(event => {
             player.persistentData.putFloat("damage_num",0);
         }
 });
-//玩家统计数据上传
+
+// 玩家统计数据上传 (Logged Out Event)
 PlayerEvents.loggedOut(event => {
-    if (true) return;
+    if (true) return; // 当前已禁用
 
     let player = event.getPlayer();
     let playerUUID = player.getUuid().toString();

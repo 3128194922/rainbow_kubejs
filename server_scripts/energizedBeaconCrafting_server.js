@@ -1,4 +1,17 @@
 // priority: 0
+// ==========================================
+// 信标光束互动与能量转换
+// Beacon Beam Interaction & Energy Conversion
+// ==========================================
+// 功能：
+// 1. 玩家手持红石右键点击信标，触发光束扫描。
+// 2. 扫描光束经过的实体，并根据光束颜色给予实体着火效果 (能量注入模拟)。
+// 3. 检测光束路径上的刚玉簇 (rainbow:corundum_cluster)，并激活其反方向的靶子方块。
+// Features:
+// 1. Player right-clicks beacon with Redstone to scan the beam.
+// 2. Scans entities in beam path and sets them on fire (energy injection sim) based on color.
+// 3. Detects Corundum Clusters in beam path and activates Target Blocks in opposite direction.
+
 const directionMap = {
   north: "south",
   south: "north",
@@ -20,6 +33,7 @@ const COLORS = {
   黑: [0.06, 0.06, 0.06]
 };*/
 
+// 将RGB颜色转换为能量强度
 function rgbToPower(r, g, b) {
   const minV = 0.02
   const maxV = 1.00

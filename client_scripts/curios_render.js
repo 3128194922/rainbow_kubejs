@@ -1,3 +1,8 @@
+// priority: 500
+// ==========================================
+// 🎨 饰品自定义渲染脚本
+// ==========================================
+
 CuriosJSEvents.registerRenderer(event => {
     // remove curios render
     //event.remove('test')

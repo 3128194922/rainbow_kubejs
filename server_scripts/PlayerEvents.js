@@ -1,12 +1,20 @@
 // priority: 500
+// ==========================================
+// 🧘 玩家事件处理脚本
+// ==========================================
+
 const SkillSlotsHandler = player => Java.loadClass('snownee.skillslots.SkillSlotsHandler').of(player)
-//玩家统一Tick事件
+
+// 玩家统一Tick事件（每秒20次）
 PlayerEvents.tick((event) => {
     const { player, server } = event;
     if (player.level.isClientSide()) return;
 
+    // 每秒执行一次 (20 ticks)
     if (player.age % 20) return;
 
+    // --- 韧性恢复机制 ---
+    // 韧性 (resilience) 会随时间自动恢复，受伤会减少韧性
     if(player.persistentData.getInt("resilience")<100)
       {
         player.hasEffect("rainbow:resilience")?player.persistentData.putInt("resilience",player.persistentData.getInt("resilience")-20):player.persistentData.putInt("resilience",player.persistentData.getInt("resilience")+3);
@@ -15,7 +23,9 @@ PlayerEvents.tick((event) => {
       {
         player.persistentData.putInt("resilience",player.persistentData.getInt("resilience")-3)
       }
-    //渲染////////////////////////
+
+    // --- 数据同步渲染 ---
+    // 发送数据包到客户端用于GUI渲染
       player.sendData("resilience_gui",{
         resilience: player.persistentData.getInt("resilience"),
         curios: hasCurios(player,'rainbow:resilience_syringe'),
@@ -27,20 +37,9 @@ PlayerEvents.tick((event) => {
         curios_list: listCuriosCooldown(player),
         curios_id: listCurios(player)
       })
-/*      if(player.isUsingItem() && player.getUseItem().id == "fruitfulfun:inspector")
-        {
-          let hit = player.rayTrace(3);
-          if (hit && hit.type === "ENTITY" && hit.entity) {
-              let target = hit.entity;
-              if (isEnemy(player, target) && target.getType() == "minecraft:bee") {
-                player.sendData("bee_nbt",{
-                  entity: target
-                })
-              }
-          }
-        }*/
-    //////////////////////
-    //主动饰品(必须放在最后)
+
+    // --- 主动饰品栏位同步 ---
+    // 将带有 "rainbow:skill_charm" 标签的饰品同步到技能槽位
     if(getCuriosItems(player,"charm") == null)
       {
         for(let i=0;i<4;i++)
@@ -60,13 +59,15 @@ PlayerEvents.tick((event) => {
     if (player.age % 200) return;
 });
 
+// 玩家物品栏变更事件
 PlayerEvents.inventoryChanged((event) => {
     const { item, player, slot } = event;
+    // 检查赏金任务物品
     BountyItemEvent(player)
 })
 
 
-//传送门挑战
+// 传送门挑战 (已注释)
 /*ItemEvents.rightClicked(event => {
   const player = event.player;
   const heldItem = player.getMainHandItem();

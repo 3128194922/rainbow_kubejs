@@ -1,7 +1,14 @@
 // priority: 0
+// ==========================================
+// 📡 饰品技能网络事件处理脚本
+// ==========================================
+
+// 接收 "primaryCharm" 数据包：处理主动饰品技能触发
 NetworkEvents.dataReceived("primaryCharm", (event) => {
     let player = event.player;
 /*
+    // --- 念力墙 (rainbow:mind) ---
+    // 逻辑：根据玩家视角方向生成念力墙实体
     if (hasCurios(player, "rainbow:mind")) {
 
         if(player.cooldowns.isOnCooldown("rainbow:mind")) return;
@@ -14,6 +21,7 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
         let dz = 0;
         let wallDirection = "";
 
+        // 判断垂直方向
         if (pitch < -60) {
             // 玩家仰头（朝上）
             dy = 2;
@@ -23,6 +31,7 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
             dy = -2;
             wallDirection = "up";
         } else {
+            // 判断水平方向
             let yaw360 = yaw < 0 ? yaw + 360 : yaw;
 
             if (yaw360 >= 45 && yaw360 < 135) {
@@ -39,6 +48,7 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
                 wallDirection = "north";
             }
         }
+        // 反转方向以匹配念力墙的生成逻辑
         wallDirection = reverseDirection(wallDirection);
 
         let summonX = Math.floor(player.x) + dx;
@@ -55,6 +65,7 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
         };
         let wallDirVal = directionMap[wallDirection];
 
+        // 执行召唤命令
         event.server.runCommandSilent(
             `execute as ${player.displayName.getString()} at @s run summon domesticationinnovation:psychic_wall ${summonX} ${summonY} ${summonZ} ` +
             `{Lifespan:1200, BlockWidth:5, WallDirection:${wallDirVal}}`
@@ -62,6 +73,9 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
 
         player.cooldowns.addCooldown("rainbow:mind",SecoundToTick(30))
     }
+    
+    // --- 韧性注射器 (rainbow:resilience_syringe) ---
+    // 逻辑：当韧性值满时，消耗韧性给予保护效果
     if(hasCurios(player,'rainbow:resilience_syringe'))
         {
             //console.log(player.persistentData.getInt("resilience"))
@@ -73,6 +87,9 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
                     //player.server.runCommandSilent()
                 }        
         }
+    
+    // --- 狂暴注射器 (rainbow:rage_syringe) ---
+    // 逻辑：增加伤害次数计数
     if(hasCurios(player,'rainbow:rage_syringe'))
         {
             if(!player.cooldowns.isOnCooldown("rainbow:damage_num"))
@@ -81,6 +98,9 @@ NetworkEvents.dataReceived("primaryCharm", (event) => {
                     player.cooldowns.addCooldown("rainbow:damage_num",SecoundToTick(10))
                 }
         }
+    
+    // --- 怪物护符 (rainbow:monster_charm) ---
+    // 逻辑：召唤铁傀儡助战
     if (hasCurios(player, 'rainbow:monster_charm') && !player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
         // 创建铁傀儡
         let entity = event.player.level.createEntity("minecraft:iron_golem");
@@ -118,7 +138,7 @@ const curioConfigs = [
     }
 ];
 
-// 遍历所有配置
+// 遍历所有配置，处理心脏系列饰品的召唤逻辑
 curioConfigs.forEach(config => {
     // 检查玩家是否佩戴当前饰品且该饰品的冷却时间已过
     if (hasCurios(player, config.itemId) && !player.cooldowns.isOnCooldown(config.itemId)) {
@@ -129,7 +149,7 @@ curioConfigs.forEach(config => {
         entity.setNbt('{IsBaby:1b}');
         // 记录实体的所有者，避免误伤
         entity.persistentData.OwnerName = player.getUuid().toString();
-        // 设置实体不可被拾取
+        // 设置实体不可被拾取（防止刷怪塔滥用等）
         entity.persistentData.putBoolean("CanTake", false);
         
         // 获取玩家位置，并在其位置生成实体
@@ -144,6 +164,7 @@ curioConfigs.forEach(config => {
         entity.setItemSlot("head", helmet);
         // 生成实体
         entity.spawn();
+        // 给予短暂的 "下班时间" (off_work_time) 效果，可能用于防止立即消失或特殊AI行为
         entity.potionEffects.add("rainbow:off_work_time",COOLDOWN/2,0,false,false)
         // 为该饰品添加冷却时间（20秒）
         player.cooldowns.addCooldown(config.itemId,COOLDOWN);

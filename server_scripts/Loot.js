@@ -1,5 +1,9 @@
 // priority: 0
-//钓鱼修改
+// ==========================================
+// 📦 战利品表修改脚本
+// ==========================================
+
+// 钓鱼战利品修改 (已注释)
 /*ServerEvents.genericLootTables(e=>{
     e.modify("netherdepthsupgrade:gameplay/nether_fishing/treasure",loot=>{
         let json = [{
@@ -11,7 +15,8 @@
         poolArr.addAll(json)
     })
 })*/
-//猫礼物
+
+// 猫的晨礼：添加粑粑
 ServerEvents.genericLootTables(e => {
     e.modify("minecraft:gameplay/cat_morning_gift", loot => {
         let json = [{
@@ -23,7 +28,8 @@ ServerEvents.genericLootTables(e => {
         poolArr.addAll(json)
     })
 })
-//修改堆肥
+
+// 修改堆肥配方：粑粑可以堆肥
 ServerEvents.compostableRecipes((e) => {
     const recipes = [
         {
@@ -36,9 +42,11 @@ ServerEvents.compostableRecipes((e) => {
         e.add(recipe.input, recipe.chance);
     });
 });
-//闰土战利品表
+
+// 幸运方块（rainbow:luckyblock）战利品表
 ServerEvents.blockLootTables(e => {
     e.modifyBlock('rainbow:luckyblock', loot => {
+        // 定义幸运方块可能掉落的物品池
         let pool = [{
             "type": "minecraft:item",
             "name": "rainbow:pistol_blue"
@@ -304,7 +312,8 @@ ServerEvents.blockLootTables(e => {
         arr.addAll(pool)
     })
 })
-//村民礼物
+
+// 村民礼物：根据职业添加额外礼物
 ServerEvents.genericLootTables(event => {
     // 覆盖战利品表event.addGeneric(战利品表id, loot => {})
     event.addGeneric('minecraft:gameplay/hero_of_the_village/fletcher_gift', loot => {
@@ -358,21 +367,22 @@ ServerEvents.genericLootTables(event => {
         })
     })
 })
-//添加生物战利品
+
+// 添加生物战利品
 ServerEvents.entityLootTables(event => {
-    //疣猪掉mod火腿
+    // 疣猪掉mod火腿
     event.modifyEntity('minecraft:hoglin', Loot => {
         Loot.addPool(pool => {
             pool.addItem('netherexp:hogham').lootingEnchant(1, 2)
         })
     })
-    //流浪商人掉绿宝石
+    // 流浪商人掉绿宝石
     event.modifyEntity('minecraft:wandering_trader', Loot => {
         Loot.addPool(pool => {
             pool.addItem('minecraft:emerald').weight(1).count([1, 2]).lootingEnchant(1, 5)
         })
     })
-    //蟑螂710元素
+    // 蟑螂掉落粑粑
     event.modifyEntity('alexsmobs:cockroach', Loot => {
         Loot.addPool(pool => {
             pool.addItem('rainbow:shit')
@@ -381,7 +391,7 @@ ServerEvents.entityLootTables(event => {
                 .lootingEnchant(1, 5)
         })
     })
-    //笼头怪
+    // 笼头怪掉落废料
     event.modifyEntity('spawnerhead:spawner_head', Loot => {
         Loot.addPool(pool => {
             pool.addItem('dungeonsdelight:stained_scrap')
@@ -390,7 +400,7 @@ ServerEvents.entityLootTables(event => {
                 .lootingEnchant(1, 5)
         })
     })
-    //女仆妖精 糖果
+    // 女仆妖精掉落糖果
     event.modifyEntity('touhou_little_maid:fairy', Loot => {
         Loot.addPool(pool => {
             pool.addItem('youkaishomecoming:fairy_candy')
@@ -401,7 +411,7 @@ ServerEvents.entityLootTables(event => {
         });
     });
 /*
-    //覆盖战利品
+    //覆盖战利品 (已注释)
     //利维坦
     event.addEntity("cataclysm:the_leviathan", loot => {
         loot.addPool(pool => {
@@ -415,9 +425,10 @@ ServerEvents.entityLootTables(event => {
         })
     })*/ 
 })
-//方块战利品
+
+// 方块战利品
 ServerEvents.blockLootTables(event => {
-    //旗帜工作台掉落
+    // 旗帜工作台掉落
     event.addBlock('betsyross:embroidery_table', loot => {
         loot.addPool(pool => {
             // 添加战利品
@@ -434,7 +445,7 @@ ServerEvents.blockLootTables(event => {
             let arr = loot.pools.get(0).asJsonObject.get("entries").asJsonArray
             arr.addAll(pool)
         })*/
-    //末影篝火
+    // 末影篝火
     event.modifyBlock('endergetic:ender_campfire',loot=>{
         let pool = [
         {
@@ -444,14 +455,14 @@ ServerEvents.blockLootTables(event => {
         let arr = loot.pools.get(0).asJsonObject.get("entries").asJsonArray
         arr.addAll(pool)
     })
-    //始冰
+    // 始冰
     event.addBlock('rainbow:origin_ice_ore', loot => {
         loot.addPool(pool => {
             // 添加战利品
             pool.addItem('legendary_monsters:primal_ice_shard')
         })
     })
-    //末地矿
+    // 末地矿
     event.addBlock('rainbow:end_ore', loot => {
         loot.addPool(pool => {
             // 添加战利品
@@ -460,6 +471,7 @@ ServerEvents.blockLootTables(event => {
     })
 })
 
+// 通用战利品表：彩虹箱子
 ServerEvents.genericLootTables(event => {
     event.addGeneric("rainbow_chest", loot => {
         loot.addPool(item => {
@@ -467,56 +479,8 @@ ServerEvents.genericLootTables(event => {
         })
     })
 })
-/*
-//战斗维度战利品
-LootJS.modifiers((event) => {
-    const monsters = ["minecraft:spider","minecraft:zombie","minecraft:zombie_villager","minecraft:skeleton","minecraft:creeper","minecraft:slime","minecraft:enderman","minecraft:witch"]
-    monsters.forEach(entity=>{
-        event
-        .addEntityLootModifier(entity)
-        .anyDimension("backroom:backroom") 
-        .removeLoot(Ingredient.all)
-        .addSequenceLoot(
-            LootEntry.of("rainbow:cursed_stone").when((c) => c.randomChance(0.3)),
-            LootEntry.of("rainbow:cursed_stone_power").when((c) => c.randomChance(0.3)),
-            LootEntry.of("rainbow:cursed_stone_end").when((c) => c.randomChance(0.3))
-        )
-    })
 
-    event
-    .addEntityLootModifier("minecraft:villager")
-    .anyDimension("backroom:backroom") 
-    .removeLoot(Ingredient.all)
-    .addSequenceLoot(
-        LootEntry.of('youkaishomecoming:flesh').when((c) => c.randomChance(0.3)),
-        LootEntry.of('youkaishomecoming:flesh_slice').when((c) => c.randomChance(0.3)),
-        LootEntry.of('minecraft:emerald').when((c) => c.randomChance(0.3))
-    )
-});
-*/
-/*
-LootJS.modifiers((event) => {
-    event
-    .addEntityLootModifier("minecraft:villager")
-    .addLoot("rainbow:flesh")
-    .matchMainHand(Ingredient.of('#forge:tools/knives'))
-});*/
-/*
-LootJS.modifiers((event) => {
-    event
-    .addBlockLootModifier("rainbow:tiberium_ore")
-    .randomChance(0.5)
-    .playerAction(event => {
-        if(event.level.isClientSide()) return; 
-        if(!event.isPlayer()) return;
-        event.level.createExplosion(event.getBlockX(),event.getBlockY(),event.getBlockZ())
-        .explosionMode("none")
-        .explode()
-    })
-    .addLoot(Item.of("rainbow:tiberium_ore"));
-});
-*/
-//佣兵无掉落
+// 佣兵无掉落逻辑（如果被驯服，则不掉落任何物品）
 LootJS.modifiers((event) => {
     let tameableMobs = ["minecraft:iron_golem","minecraft:zombie",'minecraft:drowned','dungeonsdelight:rotten_zombie','minecraft:husk','windswept:chilled']
     tameableMobs.forEach(entityid=>{
@@ -526,7 +490,8 @@ LootJS.modifiers((event) => {
         .removeLoot(Ingredient.all)
     })
 });
-//灵脂蜡块
+
+// 灵脂蜡块战利品：根据实体 docker 数据添加掉落
 LootJS.modifiers((event) => {
     event
         .addLootTypeModifier(LootType.ENTITY)

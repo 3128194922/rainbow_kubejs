@@ -1,9 +1,14 @@
 // priority: 0
-//修改配方
+// ==========================================
+// 📜 配方修改脚本
+// ==========================================
+
+// 修改配方
 ServerEvents.recipes(event => {
-    //删除金苹果
+    // 删除金苹果配方
     event.remove({ output: 'minecraft:enchanted_golden_apple' })
-    //永恒之门配方
+
+    // 移除永恒之门相关珍珠配方
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:basic/blaze"}') })//删除输出为指定物品和NBT的配方
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:basic/enderman"}') })
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:basic/slime"}') })
@@ -11,33 +16,40 @@ ServerEvents.recipes(event => {
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:endless/blaze"}') })
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:overworldian_nights"}') })
     event.remove({ output: Item.of('gateways:gate_pearl', '{gateway:"gateways:hellish_fortress"}') })
-    //CCK实验性物品配方
+
+    // 移除 CCK 实验性物品配方
     event.remove({ output: 'environmental:cherry_pie' })//删除配方，通过物品ID
     event.remove({ output: 'environmental:truffle_pie' })
-    //单元箱
+
+    // 修改单元箱配方：将铁粒替换为潜影盒
     event.replaceInput({ output: 'backpack_pixel:unitbox' }, 'minecraft:iron_nugget', 'minecraft:shulker_box')
-    //虚空矿
+
+    // 移除虚空钢锭的混合配方
     event.remove({ id: "createutilities:mixing/void_steel_ingot" })
-    //音乐播放器
+
+    // --- 音乐播放器相关配方修改 ---
     event.remove({ output: 'netmusic:music_player' })
     event.shaped('netmusic:music_player', [
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks']])
+    
     event.remove({ output: 'netmusic:cd_burner' })
     event.shaped('netmusic:cd_burner', [
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks'],
         ['#minecraft:planks', '#forge:ingots/iron', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks']])
+    
     event.remove({ output: 'netmusic:computer' })
     event.shaped('netmusic:computer', [
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks'],
         ['#minecraft:planks', '#forge:ingots/gold', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks']])
-    //召唤祭坛
+    
+    // 召唤祭坛 (已注释)
     /*    event.shaped('summoningrituals:altar',[
             ['','minecraft:wither_skeleton_skull',''],
             ['#minecraft:candles','#minecraft:candles','#minecraft:candles'],
@@ -46,7 +58,8 @@ ServerEvents.recipes(event => {
             ['','create:sturdy_sheet',''],
             ['create:sturdy_sheet','summoningrituals:altar','create:sturdy_sheet'],
             ['','create:sturdy_sheet',''],])*/
-    //洋葱
+
+    // 农夫乐事：切洋葱获得皮
     event.recipes.farmersdelight.cutting(
         'farmersdelight:onion',
         '#farmersdelight:tools/knives', // tool
@@ -55,128 +68,156 @@ ServerEvents.recipes(event => {
         ],
         // '' // sound
     );
+
+    // 万能钥匙配方
     event.shapeless('uniyesmod:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
-    //毒化烂泥
+
+    // 毒化烂泥
     event.recipes.create.mixing(['8x alexscaves:unrefined_waste',"alexscaves:metal_barrel"], ['alexscaves:waste_drum', '8x #minecraft:dirt'])
-    //契约戒
+
+    // 契约戒配方
     event.remove({ output: 'petconnect:pet_connect' })
     event.shaped('petconnect:pet_connect', [
         ["", "waystones:warp_dust", ""],
         ["waystones:warp_dust", "oreganized:silver_mirror", 'minecraft:obsidian'],
         ["", 'minecraft:obsidian', ""]
     ])
-    //炽足兽蛋配方
+
+    // 炽足兽蛋配方：替换镐子输入
     event.replaceInput({ id: 'mynethersdelight:cutting/strider_egg' },
         Ingredient.of('#forge:tools/pickaxes'),
         Ingredient.of('#minecraft:pickaxes'))
-    //event.remove({output:'netmusic:music_player_backpack'})
-    //说明书配方
+    
+    // 说明书配方
     event.shapeless(Item.of('patchouli:guide_book', '{"patchouli:book":"patchouli:encyclopedia"}'), 'minecraft:dirt')
-    //创造蛋糕配方
+
+    // 创造蛋糕配方
     event.shapeless('create:creative_blaze_cake',['rainbow:missingno', 'rainbow:plus', 'rainbow:plus'])
-    //传送石价格降低
+
+    // 传送石价格降低
     event.remove({ output: Item.of('waystones:warp_stone', '{Damage:0}') })
     event.shapeless(Item.of('waystones:warp_stone', '{Damage:0}'), ['minecraft:emerald', 'minecraft:ender_pearl'])
-    //泥土配方
+
+    // 泥土粉碎配方
     event.recipes.create.crushing('minecraft:dirt', 'minecraft:flint').processingTime(500)//.withChance(0.12)
-    //命名牌配方
+
+    // 命名牌配方
     event.shapeless('minecraft:name_tag', ['#forge:string', '#minecraft:planks', 'minecraft:name_tag']).keepIngredient({ item: 'minecraft:name_tag' })
-    //药水箭配方
-    /*event.shapeless("rainbow:toxic_arrow",['minecraft:stick', 'minecraft:feather','minecraft:lingering_potion']).modifyResult((inventory,itemStack)=>{
-        if(inventory.find("lingering_potion").getNbt().get("Potion"))
-            {
-                return Item.of("rainbow:toxic_arrow",`{Potion:${inventory.find("lingering_potion").getNbt().get("Potion")}}`)
-            }
-            else
-            {
-                return Item.of("air")
-            }
-    })*/
-    //切石机加强
+
+    // 切石机加强
     event.stonecutting('3x minecraft:iron_bars', 'minecraft:iron_door')
     event.stonecutting('create:cogwheel', 'create:large_cogwheel')
     event.stonecutting('create:water_wheel', 'create:large_water_wheel')
     event.stonecutting('create:shaft', 'create:cogwheel')
-    //量天尺配方
+
+    // 量天尺配方
     event.shapeless('atmospheric:dragon_roots', ['atmospheric:dragon_fruit', 'minecraft:vine'])
-    //腐肉制作
+
+    // 腐肉制作
     event.recipes.create.haunting('minecraft:rotten_flesh', '#mynethersdelight:curry_meats')
-    //烈焰棒合成
+
+    // 烈焰棒合成
     event.shapeless('minecraft:blaze_rod', '6x minecraft:blaze_powder')
-    //海晶砂砾合成
+
+    // 海晶砂砾合成
     event.recipes.create.crushing(['minecraft:prismarine_crystals', Item.of('2x minecraft:prismarine_crystals').withChance(0.12)], 'minecraft:prismarine_shard').processingTime(100)//.withChance(0.12)
-    //煤炭合成
+
+    // 煤炭合成
     event.recipes.create.haunting(Item.of('minecraft:coal').withChance(0.75), 'minecraft:charcoal')
-    //细雪桶
+
+    // 细雪桶
     event.recipes.create.haunting('minecraft:powder_snow_bucket', 'minecraft:water_bucket')
-    //雪球
+
+    // 雪球
     event.recipes.create.mixing(['5x minecraft:snowball', 'minecraft:bucket'], ['minecraft:powder_snow_bucket', '#forge:cobblestone'])
-    //缠魂棒
+
+    // 缠魂棒
     event.recipes.create.haunting(Item.of('netherexp:banshee_rod').withChance(0.75), 'minecraft:blaze_rod')
-    //虚空粗矿
+
+    // 虚空粗矿
     event.blasting('rainbow:raw_voidore', 'rainbow:void_ore', 5, 2000)
-    //煤炭量产/下界合金
+
+    // 煤炭量产/下界合金
     event.recipes.create.crushing(['minecraft:coal', Item.of('minecraft:netherite_scrap').withChance(0.0001)], 'minecraft:blackstone').processingTime(150)//.withChance(0.12)
-    //鲨鱼牙齿
+
+    // 鲨鱼牙齿
     event.recipes.create.crushing(['minecraft:water_bucket', '3x alexsmobs:serrated_shark_tooth'], 'alexsmobs:frilled_shark_bucket').processingTime(150)
-    //熔渣
+
+    // 熔渣
     event.recipes.create.crushing(['create:crushed_raw_lead', 'oreganized:raw_asbestos'], 'create:scoria').processingTime(150)
     event.recipes.create.crushing(['create:crushed_raw_silver', 'oreganized:raw_asbestos'], 'create:scorchia').processingTime(150)
-    //下界岩量产
+
+    // 下界岩量产
     event.recipes.create.mixing("minecraft:netherrack", [Fluid.of("minecraft:lava", 25), 'minecraft:cobblestone', 'create:cinder_flour'])
-    //岩浆量产
+
+    // 岩浆量产
     event.recipes.create.mixing(Fluid.of("minecraft:lava", 200), [Fluid.of("minecraft:lava", 100), "minecraft:cobblestone"])
-    //鬼火瓶
+
+    // 鬼火瓶
     event.recipes.create.filling('netherexp:wisp_bottle', [Fluid.of("netherexp:ectoplasm", 200), 'quark:bottled_cloud'])
-    //鲸液
+
+    // 鲸液
     event.recipes.create.filling('alexsmobs:ambergris', [Fluid.of("youkaishomecoming:suigei", 1000), 'rainbow:shit'])
-    //臭屁瓶
+
+    // 臭屁瓶
     event.recipes.create.mixing('alexsmobs:stink_bottle', ['rainbow:shit', 'quark:bottled_cloud'])
-    //710配方
+
+    // 710配方
     event.recipes.create.mixing(Fluid.of("rainbow:oil", 1000), ['rainbow:shit','alexsmobs:cockroach_wing_fragment']).heated()
-    //雕刻南瓜
+
+    // 雕刻南瓜
     event.stonecutting("minecraft:carved_pumpkin", "minecraft:pumpkin");
-    //凋零骷髅合成
+
+    // 凋零骷髅合成
     event.recipes.create.haunting('minecraft:wither_skeleton_skull', 'minecraft:player_head')
-    //超精密构件
+
+    // 超精密构件
     event.recipes.create.sequenced_assembly([
         // 主要输出：成功时获得，设置权重为1（占总权重的50%）
         Item.of('rainbow:super_mechanism').withChance(global.SUPER_MECHAISM),
         // 废料输出：失败时获得，也设置权重为1（占总权重的50%）
-        // 这里用了一个例子，你可以替换成任何在失败时应该返还或消耗的物品，例如原输入物品之一
         Item.of('create:precision_mechanism') // 例如，失败时返还一个精密机械结构
-        // 你可以继续添加更多的废料选项，并调整它们的权重
     ], 'create:precision_mechanism', [
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'minecraft:nether_star']),
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'rainbow:docker_nether_on']),
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'uniyesmod:nether_of_voice'])
     ]).transitionalItem('create:incomplete_precision_mechanism').loops(1)
-    //液态逻辑
+
+    // 液态逻辑
     event.recipes.create.mixing(Fluid.of("rainbow:number_water", 50), ["rainbow:super_mechanism", Fluid.of("rainbow:oil", 50)]).superheated()
-    //奇迹物质
+
+    // 奇迹物质
     event.recipes.create.filling('rainbow:miracle', [Fluid.of("rainbow:number_water", 1000), 'rainbow:rainbow_stone'])
-    //逻辑运算符
+
+    // 逻辑运算符
     event.recipes.create.crushing([Item.of('rainbow:plus').withChance(0.25), Item.of('rainbow:minus').withChance(0.25), Item.of('rainbow:multiply').withChance(0.25), Item.of('rainbow:divide').withChance(0.25)], 'rainbow:miracle').processingTime(150)
-    //熔渣-红石
+
+    // 熔渣-红石
     event.recipes.create.crushing(Item.of('minecraft:redstone').withChance(0.20), 'create:scoria').processingTime(150)
-    //焦黑熔渣-萤石
+
+    // 焦黑熔渣-萤石
     event.recipes.create.crushing(Item.of('minecraft:glowstone_dust').withChance(0.20), 'create:scorchia').processingTime(150)
-    //石灰石-银
+
+    // 石灰石-银
     event.recipes.create.crushing([Item.of('create:crushed_raw_silver').withChance(0.20), Item.of('oreganized:silver_nugget').withChance(0.20)], 'create:limestone').processingTime(150)
-    //逻辑运算符
+
+    // 逻辑运算符 - 数字
     event.recipes.create.filling('rainbow:three', [Fluid.of("rainbow:number_water", 1000), 'create:nixie_tube'])
     event.recipes.create.filling('rainbow:eight', [Fluid.of("rainbow:number_water", 1000), 'rainbow:three'])
-    //南瓜灯
+
+    // 南瓜灯
     event.recipes.create.sequenced_assembly(
         'minecraft:jack_o_lantern', 'minecraft:carved_pumpkin',
         [event.recipes.createDeploying('minecraft:carved_pumpkin', ['minecraft:carved_pumpkin', 'minecraft:torch'])]
     ).transitionalItem('minecraft:carved_pumpkin').loops(1)
-    //灵魂南瓜灯
+
+    // 灵魂南瓜灯
     event.recipes.create.sequenced_assembly(
         'netherexp:soul_jack_o_lantern', 'minecraft:carved_pumpkin',
         [event.recipes.createDeploying('minecraft:carved_pumpkin', ['minecraft:carved_pumpkin', 'minecraft:soul_torch'])]
     ).transitionalItem('minecraft:carved_pumpkin').loops(1)
-    //创造马达
+
+    // 创造马达
     event.shaped('create:creative_motor', [ 
         ['create:andesite_alloy_block', 'rainbow:super_mechanism', 'rainbow:super_mechanism', 'create:shaft', 'rainbow:super_mechanism', 'rainbow:super_mechanism', 'create:andesite_alloy_block'],
         ['rainbow:super_mechanism', 'create:cogwheel', 'create:cogwheel', 'create:flywheel', 'create:large_cogwheel', 'create:large_cogwheel', 'rainbow:super_mechanism'],
@@ -186,37 +227,34 @@ ServerEvents.recipes(event => {
         ['rainbow:super_mechanism', 'create:blaze_burner', 'create:fluid_tank', 'create:steam_engine', 'create:fluid_tank', 'create:blaze_burner', 'rainbow:super_mechanism'],
         ['create:andesite_alloy_block', 'rainbow:super_mechanism', 'rainbow:super_mechanism', 'create:rotation_speed_controller', 'rainbow:super_mechanism', 'rainbow:super_mechanism', 'create:andesite_alloy_block']
     ])
-    //生锈铜
+
+    // 生锈铜
     event.recipes.create.splashing('minecraft:weathered_copper', 'minecraft:copper_block')
     event.recipes.create.splashing('minecraft:waxed_weathered_copper', 'minecraft:waxed_copper_block')
-    //黄铜溶液
+
+    // 黄铜溶液
     event.recipes.create.mixing(Fluid.of("rainbow:brass_fluid", 1000), ["create:brass_block"]).heated()
-    //铜溶液
+
+    // 铜溶液
     event.recipes.create.mixing(Fluid.of("rainbow:copper_fluid", 1000), ['minecraft:copper_block']).heated()
-    //710元素
+
+    // 710元素 (原油)
     event.recipes.create.mixing(Fluid.of("createdieselgenerators:crude_oil", 250), ["5x rainbow:shit"]).heated()
-    //黄铜块制作
+
+    // 黄铜块制作
     event.recipes.create.mixing("2x create:brass_block", ["create:zinc_block", "minecraft:copper_block"]).heated()
-    //青金石
+
+    // 青金石
     event.recipes.create.filling('minecraft:lapis_lazuli', [Fluid.of("create_enchantment_industry:experience", 200), 'oreganized:refined_asbestos'])
-    //超经验配方
+
+    // 超经验配方
     event.remove({ id: 'create_enchantment_industry:mixing/hyper_experience' })
     event.recipes.create.mixing(Fluid.of("create_enchantment_industry:hyper_experience", 100), ['#rainbow:oldbook', 'minecraft:lapis_lazuli', Fluid.of("create_enchantment_industry:experience", 1000)]).superheated()
-    //SFM电脑配方
+
+    // SFM电脑配方
     event.replaceInput({input:"minecraft:repeater"},"minecraft:repeater",'rainbow:super_mechanism');
-    //子弹模具制作
-    /*    event.shaped('2x rainbow:shaped_mode',[
-            ['minecraft:clay_ball','minecraft:clay_ball','minecraft:clay_ball'],
-            ['minecraft:clay_ball','rainbow:shaped_mode','minecraft:clay_ball'],
-            ['minecraft:clay_ball','minecraft:clay_ball','minecraft:clay_ball']])
-        event.shaped('2x rainbow:casings_mode',[
-            ['minecraft:clay_ball','minecraft:clay_ball','minecraft:clay_ball'],
-            ['minecraft:clay_ball','rainbow:casings_mode','minecraft:clay_ball'],
-            ['minecraft:clay_ball','minecraft:clay_ball','minecraft:clay_ball']])
-        //复合火药
-        event.shapeless('rainbow:composite_gunpowder',['minecraft:gunpowder','minecraft:gunpowder','minecraft:gunpowder','minecraft:charcoal','minecraft:charcoal','minecraft:charcoal','minecraft:sugar','minecraft:sugar','minecraft:flint'])
-        */
-    //灵魂粉加工
+
+    // 灵魂粉加工
     const list = ['alexsmobs:skreecher_soul', 'netherexp:wraithing_lesion', 'netherexp:wraithing_flesh', 'netherexp:banshee_rod', 'netherexp:banshee_powder', 'quark:soul_bead', 'netherexp:phasmo_shard', 'netherexp:soul_magma_block']
     const value = [32, 64, 4, 3, 1, 16, 4, 4]
     list.forEach((item, index) => {
@@ -232,13 +270,13 @@ ServerEvents.recipes(event => {
 
     const corundoms = ['quark:red_corundum_cluster', 'quark:orange_corundum_cluster', 'quark:yellow_corundum_cluster', 'quark:green_corundum_cluster', 'quark:blue_corundum_cluster', 'quark:indigo_corundum_cluster', 'quark:violet_corundum_cluster', 'quark:white_corundum_cluster', 'quark:black_corundum_cluster']
     const creates = ['create:veridium', 'create:scorchia', 'create:scoria', 'create:ochrum', 'create:limestone', 'create:asurine', 'create:crimsite', 'quark:myalite', 'quark:dusky_myalite', 'minecraft:basalt', 'quark:limestone', 'oreganized:glance']
-    //刚玉合成七彩石
+    // 刚玉合成七彩石
     event.shapeless('9x rainbow:rainbow_stone', corundoms)
-    //七彩石合成对应材料
+    // 七彩石合成对应材料
     creates.forEach(item => {
         event.recipes.create.mixing(Item.of(item, 64), [item, "rainbow:rainbow_stone", Fluid.of("minecraft:lava", 1000)])
     })
-    //逻辑数字合成
+    // 逻辑数字合成
     const Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
     const Operaror = ['plus', 'minus', 'multiply', 'divide']
     const NumbersM = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
@@ -322,6 +360,7 @@ ServerEvents.recipes(event => {
         });
     });
 });
+
 // 光源方块合成 - 使用循环优化
 ServerEvents.recipes(event => {
     // 使用火把合成亮度等级 1-9

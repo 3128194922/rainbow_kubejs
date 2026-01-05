@@ -1,4 +1,9 @@
 // priority: 0
+// ==========================================
+// 📡 网络包接收处理脚本
+// ==========================================
+
+// 接收 "projectlie" 数据包：处理射弹逻辑
 NetworkEvents.dataReceived("projectlie", (event) => {
     let x = event.data.x
     let y = event.data.y
@@ -7,6 +12,8 @@ NetworkEvents.dataReceived("projectlie", (event) => {
     let viewY = event.data.viewY
     let viewZ = event.data.viewZ
     let projectlieName = event.data.name
+
+    // 如果玩家手持泰拉刃
     if (event.player.isHolding("rainbow:terasword")) {
         let projectlie = event.level.createEntity(projectlieName) //创建发射物
         projectlie.setPosition(x, y, z) //设置发射位置
@@ -15,6 +22,8 @@ NetworkEvents.dataReceived("projectlie", (event) => {
         projectlie.spawn() //生成发射物
         //event.server.runCommandSilent(`/playsound cataclysm:harbinger_laser voice @p ${x} ${y} ${z}`)
     }
+
+    // 如果玩家手持木棍 (测试/调试用)
     if (event.player.isHolding("minecraft:stick")) {
         // 定义随机偏移范围（单位：方块）
         let offsetRange = 0.5; // 可以在0.5格范围内随机偏移

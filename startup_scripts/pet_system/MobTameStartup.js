@@ -1,3 +1,11 @@
+// priority: 0
+// ==========================================
+// 实体驯服与骑乘逻辑
+// Entity Taming & Riding Logic
+// ==========================================
+// 修改特定生物（如铁傀儡）使其可被驯服和骑乘
+// Modifies specific mobs (e.g., Iron Golem) to be tameable and rideable
+
 let tameableMobs = [
     "minecraft:iron_golem",
 ]
@@ -10,6 +18,7 @@ let WaterAnimal = Java.loadClass("net.minecraft.world.entity.animal.WaterAnimal"
 let WallClimberNavigation = Java.loadClass("net.minecraft.world.entity.ai.navigation.WallClimberNavigation")
 let isClient = Platform.isClientEnvironment()
 let Minecraft = isClient ? Java.loadClass("net.minecraft.client.Minecraft") : null
+
 EntityJSEvents.modifyEntity(event => {
     tameableMobs.forEach(id => {
         event.modify(id, modifyBuilder => {

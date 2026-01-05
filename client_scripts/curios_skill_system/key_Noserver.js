@@ -1,3 +1,11 @@
+// priority: 0
+// ==========================================
+// 饰品技能按键监听
+// Curios Skill Key Listener
+// ==========================================
+// 监听主要护符按键，发送网络包触发技能
+// Listens for primary charm key, sends network packet to trigger skill
+
 ClientEvents.tick(event => {
     const key = global.regKeyCharm;
     if (key.isDown())

@@ -1,4 +1,11 @@
 // priority: 1000
+// ==========================================
+// 药水与酿造注册
+// Potion & Brewing Registration
+// ==========================================
+// 注册新的药水类型（普通和延长版）以及自定义酿造配方
+// Registers new potion types (normal and long) and custom brewing recipes
+
 const $PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilder")
 const $ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")
 const $DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.DeferredRegister")[
@@ -54,4 +61,4 @@ registerPotionPair("rainbow:apty4869", 90, 180)
 MoreJSEvents.registerPotionBrewing((event) => {
     event.addPotionBrewing("uniyesmod:moon","minecraft:awkward", "rainbow:flying_potion");
     event.addPotionBrewing("minecraft:redstone", "rainbow:flying_potion", "rainbow:long_flying_potion");
-}); 
+});

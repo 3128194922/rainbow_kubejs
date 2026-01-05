@@ -1,18 +1,26 @@
 // priority: 0
+// ==========================================
+// 🖱️ 饰品技能UI交互脚本
+// ==========================================
+
+// 监听物品右键
 ItemEvents.rightClicked(event => {
     SkillUi(event)
 })
 
+// 监听方块右键
 BlockEvents.rightClicked(event => {
     SkillUi(event)
 })
 
+// 监听实体交互
 ItemEvents.entityInteracted(event => {
     SkillUi(event)
 })
+
 /**
- * 判断指定 Curios 栏位是否有物品
- * @param {Internal.ItemClickedEventJS} event 玩家
+ * 处理饰品技能触发逻辑 (统一入口)
+ * @param {Internal.ItemClickedEventJS} event 事件对象
  */
 function SkillUi(event)
 {
@@ -20,6 +28,7 @@ function SkillUi(event)
     let item = event.getItem();
     let server = event.getServer();
 
+    // --- 念力墙 (rainbow:mind) ---
     if(item.id == 'rainbow:mind')
         {
             
@@ -33,6 +42,7 @@ function SkillUi(event)
         let dz = 0;
         let wallDirection = "";
 
+        // 计算生成方向
         if (pitch < -60) {
             // 玩家仰头（朝上）
             dy = 2;
@@ -74,6 +84,7 @@ function SkillUi(event)
         };
         let wallDirVal = directionMap[wallDirection];
 
+        // 召唤念力墙
         server.runCommandSilent(
             `execute as ${player.displayName.getString()} at @s run summon domesticationinnovation:psychic_wall ${summonX} ${summonY} ${summonZ} ` +
             `{Lifespan:1200, BlockWidth:5, WallDirection:${wallDirVal}}`
@@ -83,6 +94,7 @@ function SkillUi(event)
         return;
     }
 
+    // --- 韧性注射器 (rainbow:resilience_syringe) ---
     if(item.id == 'rainbow:resilience_syringe')
         {
             //console.log(player.persistentData.getInt("resilience"))
@@ -96,6 +108,7 @@ function SkillUi(event)
                 }        
         }
 
+    // --- 狂暴注射器 (rainbow:rage_syringe) ---
     if(item.id == 'rainbow:rage_syringe')
         {
             if(!player.cooldowns.isOnCooldown("rainbow:damage_num"))
@@ -106,6 +119,7 @@ function SkillUi(event)
                 }
         }
 
+    // --- 怪物护符 (rainbow:monster_charm) ---
     if (item.id == 'rainbow:monster_charm') {
         let COOLDOWN = SecoundToTick(60);
         if(player.cooldowns.isOnCooldown("rainbow:monster_charm")) return;
@@ -122,6 +136,7 @@ function SkillUi(event)
         return;
     }
 
+    // --- 时间神石 (rainbow:chronos) ---
     if(item.id == "rainbow:chronos")
         {
             server.runCommandSilent(`/execute at ${player.getDisplayName().getString()} run respawningstructures respawnClosestStructure`)
@@ -129,6 +144,7 @@ function SkillUi(event)
         }
 
     
+    // --- 信标球 (rainbow:beacon_ball) ---
         if (item.id == "rainbow:beacon_ball" && !player.cooldowns.isOnCooldown("rainbow:beacon_ball")) {
             let player = event.player;
             let server = player.server;
@@ -142,10 +158,10 @@ function SkillUi(event)
             let z = hit.block.z;
             let blockId = hit.block.id;
         
-            // 支持的机器
+            // 支持的机器列表
             let machines = ['mbd2:nuke_machine'];
         
-            // 如果命中方块在 machines 且潜行主手点击 → 绑定坐标
+            // 绑定逻辑：如果命中方块在 machines 且潜行主手点击 → 绑定坐标
             if (machines.includes(blockId) && player.shiftKeyDown && hand.toString() == "MAIN_HAND") {
                 if (!item.nbt) item.nbt = {};
                 item.nbt.putInt("X", x);
@@ -171,17 +187,19 @@ function SkillUi(event)
             let boundBlock = level.getBlock(bx, by, bz);
             let boundBlockId = boundBlock.id;
     
+            // 校验机器是否对应
             if(item.nbt.getString("MACHINE") != boundBlockId)
                 {
                     player.tell(Text.gray("绑定机器不对应！"));
                     return;
                 }
         
-            // 🎯 不同机器逻辑
+            // 🎯 不同机器触发逻辑
             switch (boundBlockId) {
-                case 'mbd2:nuke_machine':
+                case 'mbd2:nuke_machine': // 核弹发射井
                     let data = boundBlock.getEntityData();
                     let state = data ? data.getString("machineState") : "";
+                    // 检查机器状态和是否有核弹
                     if (state == "formed" && boundBlock.inventory.getStackInSlot(0).id == "alexscaves:nuclear_bomb") {
                         server.runCommandSilent(`/summon alexscaves:nuclear_bomb ${x} ${y + 1} ${z}`);
                         server.runCommandSilent(`/particle minecraft:explosion ${bx} ${by} ${bz} 10 3 10 0.5 200`);
@@ -202,6 +220,7 @@ function SkillUi(event)
             return;
         }
 
+    // --- 心脏系列饰品 ---
     // 定义Curio配置数组，每个配置指定要生成的实体类型
     const curioConfigs = [
         {
@@ -226,7 +245,7 @@ function SkillUi(event)
         }
     ];
 
-    // 遍历所有配置
+    // 遍历所有配置，右键触发召唤
     curioConfigs.forEach(config => {
         // 检查玩家是否佩戴当前饰品且该饰品的冷却时间已过
         if (item.id == config.itemId && !player.cooldowns.isOnCooldown(config.itemId)) {

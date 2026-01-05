@@ -1,77 +1,70 @@
 // priority: 1010
+// ==========================================
+// 📝 注册中心 Registry.js
+// 作用：注册游戏中的新内容，包括：
+// 1. 附魔 (Enchantment)
+// 2. 方块 (Block)
+// 3. 流体 (Fluid)
+// 4. 物品 (Item)
+// 5. 实体类型 (Entity Type)
+// 6. Docker 系列自定义机器方块
+// 7. 饰品与特殊装备 (Curios)
+// 8. 赛博义体系统 (Cyberware)
+// ==========================================
+
 const ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
 
-/*StartupEvents.registry("enchantment", event => {
-    event.create("rainbow:livingrepair", "basic")
-        .category("breakable")
-        .maxLevel(3)
-        .postHurt((source, target, level) => {
-            if (source.isLiving()) {
-                // 获取治疗量并计算应恢复的耐久值
-                let healAmount = source.getAttribute("attributeslib:healing_received").getValue();
-                let durabilityToRestore = healAmount * level;
-                
-                // 获取主手物品（假设是武器）
-                let weapon = source.getMainHandItem();
-                
-                if (!weapon.isEmpty()) {
-                    // 计算并设置新的耐久值
-                    let currentDamage = weapon.getDamageValue();
-                    let newDamage = Math.max(0, currentDamage - durabilityToRestore);
-                    weapon.setDamageValue(newDamage);
-                    
-                    // 更新物品
-                    source.setMainHandItem(weapon);
-                }
-            }
-        })
-        .displayName("生命修复");
-});*/
+// ==========================================
+// ✨ 注册附魔
+// ==========================================
 StartupEvents.registry("enchantment", (event) => {
-    //屹立不倒
+    // 屹立不倒：稀有度为 rare，适用于护甲，最高等级 2
     event.create("rainbow:last_stand")
         .rarity("rare")
         .armor()
         .maxLevel(2)
 
-    // 生灵火 - 火焰附加
+    // 生灵火 - 火焰附加：稀有度为 rare，最高等级 2，适用于武器
     event.create("rainbow:living_fire_aspect")
         .rarity("rare")
         .maxLevel(2)
         .weapon()
 
-    // 末影火 - 火焰附加
+    // 末影火 - 火焰附加：稀有度为 rare，最高等级 2，适用于武器
     event.create("rainbow:ender_fire_aspect")
         .rarity("rare")
         .maxLevel(2)
         .weapon()
 });
+
+// ==========================================
+// 🧱 注册方块
+// ==========================================
 StartupEvents.registry("block", event => {
-    //event.create(方块id, 方块类型)
+    // 幸运方块：使用 basic 类型，需要工具，草地音效，铲子挖掘，默认裁剪渲染
     event.create("rainbow:luckyblock", "basic").requiresTool(true).grassSoundType().tagBlock("minecraft:mineable/shovel").defaultCutout().box(3, 0, 3, 13, 10, 13)
-    //棱镜
-    //event.create("rainbow:prism", "basic").requiresTool(true).tagBlock("minecraft:mineable/shovel").displayName("棱镜方块").stoneSoundType()
-    //始冰
+    // 始冰矿：材质为 STONE，需要工具，镐挖掘，铁级挖掘等级，石头音效
     event.create("rainbow:origin_ice_ore", "basic").material(getMaterialJS("STONE")).requiresTool().tagBlock(getMinecraftToolTag("镐")).tagBlock(getMinecraftToolTag("铁")).stoneSoundType()
-    //虚空矿
+    // 虚空矿：材质为 STONE，需要工具，镐挖掘，铁级挖掘等级，石头音效
     event.create("rainbow:void_ore", "basic").material(getMaterialJS("STONE")).requiresTool().tagBlock(getMinecraftToolTag("镐")).tagBlock(getMinecraftToolTag("铁")).stoneSoundType()
-    //绿幕方块
-    //event.create("rainbow:greenblock", "basic").opaque(true).suffocating(false).redstoneConductor(false).transparent(true)
 })
+
+// ==========================================
+// 💧 注册流体
+// ==========================================
 StartupEvents.registry("fluid", event => {
-    //黄铜液体
+    // 黄铜液体：自定义纹理颜色，无桶，无方块
     event.create("rainbow:brass_fluid").thickTexture(0xF3E03B).noBucket().noBlock()
-    //铜液体
+    // 铜液体：自定义纹理颜色，无桶，无方块
     event.create("rainbow:copper_fluid").thickTexture(0xFA842B).noBucket().noBlock()
-    //710液体
+    // 石油 (710液体)：黑色纹理，高密度，高粘度，稀有，无方块
     event.create("rainbow:oil").thickTexture("BLACK")
         .density(2200)
         .viscosity(2200)
         .rarity('rare')
-        //.noBucket()
         .noBlock()
 
-    //液态逻辑
+    // 液态逻辑：自定义纹理，高温度，高粘度，高密度，绿色桶，稀有，无方块
     event.create("rainbow:number_water")
         .stillTexture("rainbow:fluid/number_water")
         .flowingTexture("rainbow:fluid/number_water")
@@ -79,21 +72,23 @@ StartupEvents.registry("fluid", event => {
         .viscosity(1500)
         .density(6000)
         .bucketColor("GREEN")
-        //.noBucket()
         .noBlock()
         .rarity('rare')
 })
-//物品增加
+
+// ==========================================
+// 🍎 注册物品
+// ==========================================
 StartupEvents.registry("item", event => {
 
-    //副本
+    // 副本通行证
     for (let i = 1; i <= 1; i++) {
         event.create(`rainbow:instance_pass${i}`, 'basic')
             .texture('rainbow:item/instance_pass')
             .tag('rainbow:instance_pass');
     }
 
-    //牢大饮料
+    // 牢大饮料 (冰红茶)
     event.create('rainbow:ice_tea', 'basic')
         .tooltip("§6获得曼巴之力，攻击带有根据速度的伤害加成和肘击音效")
         .tooltip("§7想你了，牢大")
@@ -111,18 +106,16 @@ StartupEvents.registry("item", event => {
             return itemstack;
         })
 
-    //event.create('frost_layer', 'helmet')
-    //苦力怕符文
-    //event.create("rainbow:creeper_charm")
-    //nbt工具
+    // nbt工具
     event.create("rainbow:nbt_util")
-    //金手指
+    // 金手指
     event.create("rainbow:golden_finger")
-    //洛阳铲
+    // 洛阳铲
     event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
-    //秘封琥珀
+    // 秘封琥珀
     event.create("rainbow:amber_bee")
-    //发条怀表
+    
+    // 发条怀表 (饰品)
     event.create("rainbow:chronos")
         .rarity("epic")
         .maxStackSize(1)
@@ -131,9 +124,7 @@ StartupEvents.registry("item", event => {
             CuriosJSCapabilityBuilder.create()
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
-
                     if (entity == null) return;
-
                     if (hasCurios(entity, 'rainbow:chronos')) {
                         return false;
                     }
@@ -143,18 +134,19 @@ StartupEvents.registry("item", event => {
                     let player = slotContext.entity();
                     if (player == null) return;
                     if (player.age % SecoundToTick(20)) return;
-
+                    // 定时给予时间相关的药水效果
                     player.potionEffects.add("runiclib:chronos", SecoundToTick(10), 0, false, false)
-                    //player.potionEffects.add("runiclib:tempus", SecoundToTick(5), 0, false, false)
                 })
         )
-    //乐谱
+    
+    // 乐谱
     event.create("rainbow:musical_score")
-    //升级模板
+    // 升级模板
     event.create("rainbow:cleaver_upgrade")
-    //收容中心
+    // 收容中心
     event.create("rainbow:mind_ctroller_detention")
-    //净化绢布
+    
+    // 净化绢布：使用后移除副手物品的诅咒附魔和修复代价
     event.create("rainbow:purified_cloth")
         .useAnimation('bow')
         .useDuration(itemstack => 60)
@@ -190,9 +182,7 @@ StartupEvents.registry("item", event => {
 
         })
 
-    //大肉面
-    //敢删我大肉面？我肘亖你！    
-
+    // 大肉面：回复大量饱食度和饱和度，给予滋养和舒适效果
     event.create("rainbow:tengzou_noodles", "basic").maxStackSize(64).rarity("epic")
         .food(foodBuilder => {
             foodBuilder
@@ -205,6 +195,7 @@ StartupEvents.registry("item", event => {
         })
         .tooltip("§6出了滕州你才发现，这面有多么好吃")
 
+    // 血肉：回复少量饱食度和饱和度
     event.create("rainbow:flesh", "basic").maxStackSize(64).rarity("epic")
         .food(foodBuilder => {
             foodBuilder
@@ -212,143 +203,87 @@ StartupEvents.registry("item", event => {
                 .meat()
                 .hunger(5)
                 .saturation(5.0)
-            //.effect("rainbow:youkaified", SecoundToTick(300), 1, 1)
         })
-    //群系之刃
+        
+    // 群系之刃：高攻击力剑
     event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
-    //决斗剑
+    
+    // 决斗剑：对同类型生物伤害增加
     event.create("rainbow:duel", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
         .tooltip("§6对同一类型生物伤害增加1.5")
-    //虚空粗矿
+        
+    // 虚空粗矿
     event.create("rainbow:raw_voidore", "basic")
-    //魔爪
+    // 魔爪
     event.create("rainbow:mozhua", "basic")
-    //金属斧
-    /*event.create("rainbow:frostium_axe", "axe").attackDamageBonus(5.0).attackDamageBaseline(3.0).maxDamage(501)
-        .tooltip("§6对霜冻buff的敌人2.0倍伤害")*/
-    //霜冻金属镐
+
+    // 霜冻金属镐：挖掘等级高，耐久高
     event.create("rainbow:frostium_pickaxe", "pickaxe")
         .maxDamage(1500)
         .maxStackSize(1)
         .tooltip("§6对硬度高的方块挖掘更快")
         .tag("minecraft:pickaxes")
         .tier(JSTier("DIAMOND"))
-    //黏液棒
+        
+    // 黏液棒：具有多种功能（生成平台、救生罩、脱装备）
     event.create("rainbow:slime_rod", "sword").unstackable().glow(true).attackDamageBonus(0.0).attackDamageBaseline(0.0)
         .tooltip("右键：生成救生平台")
         .tooltip("潜行右键：生成救生罩")
         .tooltip("左键：脱下实体装备")
         .tag("curios:charm")
-    //提尔锋
+        
+    // 提尔锋：对有护甲敌人造成额外伤害
     event.create("rainbow:tyrfing", "sword").unstackable().attackDamageBonus(3.0).attackDamageBaseline(0.0).maxDamage(511)
         .tooltip("§6对有护甲的敌人造成额外伤害")
-    //重锤
+        
+    // 重锤：根据下落速度造成伤害
     event.create("rainbow:heavy_axe", "axe").unstackable().attackDamageBonus(3.0).attackDamageBaseline(0.0).maxDamage(501)
         .tooltip("§6根据你的下落加速度造成伤害")
-    //饕餮之锅
+        
+    // 饕餮之锅：攻速慢，伤害高
     event.create("rainbow:eldritch_pan", "sword")
         .speedBaseline(-3.1)
         .attackDamageBonus(4.0)
         .rarity("epic")
         .maxDamage(0)
-    //超精密构件
+        
+    // 超精密构件：合成材料
     event.create("rainbow:super_mechanism", "basic")
         .tooltip("§6高级合成材料")
-    //屎
+        
+    // 屎：食用后反胃，甚至关闭游戏
     event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })
         .tooltip("食用关闭游戏(吃晕了")
-    //七彩石
+        
+    // 七彩石
     event.create("rainbow:rainbow_stone", "basic")
-    //奇迹物质
+    // 奇迹物质
     event.create("rainbow:miracle", "basic")
-    //货币
+    // 货币
     event.create("rainbow:coin_1", "basic")
     event.create("rainbow:coin_2", "basic")
-    //动力剑
+    
+    // 动力剑系列
     event.create("rainbow:baseball_bat", "sword").attackDamageBonus(7.0).attackDamageBaseline(0.0)
     event.create("rainbow:baseball_power", "sword")
         .attackDamageBonus(19.0)
         .attackDamageBaseline(0.0)
-    /*        .useAnimation('bow')
-            .useDuration(itemstack => 40)
-            .use((level, player, hand) => true)
-            .finishUsing((itemstack, level, entity) => {
-                let TIME = 80;
-                // 添加药水效果
-                entity.potionEffects.add("rainbow:power_sword", TIME, 0, false, false);
-                itemstack.nbt.poweroff = 1;
-                level.server.scheduleInTicks(TIME, () => {
-                    itemstack.nbt.poweroff = 0;
-                })
-                level.server.runCommandSilent(`/playsound cataclysm:emp_activated voice @p ${entity.x} ${entity.y} ${entity.z}`)
-                // 返回修改后的物品堆栈（而不是null）
-                return itemstack;
-            })*/
-    //泰拉刃
+
+    // 泰拉刃：强大的武器
     event.create("rainbow:terasword", "sword")
-    /*.useAnimation('bow')
-    .useDuration(itemstack => 40)
-    .use((level, player, hand) => true)
-    .finishUsing((itemstack, level, entity) => {
-    })
-    .releaseUsing((itemstack, level,entity, tick) => {
-    })*/
-    /**
-     * 当物品未完成useDuration的时间刻就被释放后的行为
-     * tick为距离完整的使用刻还有多少刻
-     */
-    //冲刺逻辑
-    /*    .releaseUsing((itemstack, level, entity, tick) => {
-                let far = 1-(tick/100);
-                let lookVec = entity.getLookAngle();
-                let speed = 3; // 较慢的持续速度
-                entity.deltaMovement = new Vec3d(
-                    lookVec.x()*far,
-                    lookVec.y()*far,
-                    lookVec.z()*far
-                  ).scale(speed);
-                entity.hurtMarked = true;
-        })*/
-    //逻辑数字
+
+    // 逻辑数字：用于自动化或逻辑计算的物品
     let Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'plus', 'minus', 'multiply', 'divide', 'missingno']
     Numbers.forEach(id => {
         event.create(`rainbow:${id}`, "basic").displayName(`逻辑 ${ItemToNumberF(id)}`)
     })
 })
-//实体注册
+
+// ==========================================
+// 🧟 注册实体类型
+// ==========================================
 StartupEvents.registry('entity_type', event => {
-    /*
-        event.create('rainbow:frost_arrow', 'entityjs:arrow')
-            .shouldRenderAtSqrDistance(context => {
-                let { entity, distanceToPlayer } = context;
-                // Custom logic to determine if the arrow should render based on distance, for example, rendering only if distance is less than 100 blocks
-                return distanceToPlayer < 100;
-            })
-            .tryPickup(context => {
-                // Custom logic to determine if a player can pick up the arrow, for example, allowing only non-creative mode players to pick it up
-                return !context.player.isCreative();
-            })
-            .playerTouch(context => {
-                let { player, entity } = context;
-                // Custom behavior when a player touches the arrow, for example, giving the player the arrow
-                if (!entity.getLevel().isClientSide() && (entity.onGround() || entity.noPhysics) && entity.shakeTime <= 0) {
-                    player.take(entity, 1);
-                    entity.discard();
-                }
-            })
-            .tick(entity => {
-                // Custom tick logic, for example, checking if the arrow is in lava and setting it on fire
-                if (entity.getLevel().getBlockState(entity.blockPosition()).getBlock().id == "minecraft:lava") {
-                    entity.setSecondsOnFire(5);
-                }
-            })
-            .textureLocation(entity => {
-                //Change texture resource location depending on certain information about the arrow entity.
-                //Accepts both a new ResourceLocation or a String representation.
-                //new ResourceLocation("kubejs:textures/entity/projectiles/arrow.png")
-                return "rainbow:textures/entity/frost_arrow.png"
-            })
-    */
+    // 延迟TNT箭：击中目标后延迟爆炸
     event.create('rainbow:tnt_arrow', 'entityjs:arrow')
         .setKnockback(2)
         .setBaseDamage(0.5)
@@ -368,8 +303,7 @@ StartupEvents.registry('entity_type', event => {
         .onHitEntity(context => {
             let { entity } = context;
             let level = entity.getLevel();
-            let server = entity.getServer();
-
+            
             if (level.isClientSide()) return;
                 level.createExplosion(entity.x, entity.y - 1, entity.z)
                     .causesFire(false)
@@ -399,13 +333,11 @@ StartupEvents.registry('entity_type', event => {
             })
         })
         .displayName("延迟TNT箭")
-        // 玩家触碰箭时（可选：阻止被捡起）
         .playerTouch(context => {
-            let { player, entity } = context;
             // 可选地阻止玩家捡起
-            // player.sendSystemMessage("这支箭即将爆炸！");
         });
 
+    // 泰拉弹幕：一种特殊的投射物
     event.create('rainbow:trea', 'entityjs:arrow')
         .setKnockback(2)
         .setBaseDamage(0.8)
@@ -424,53 +356,13 @@ StartupEvents.registry('entity_type', event => {
         .displayName("泰拉弹幕")
         .noItem()
 });
-/*
-// 加载必要的Java类（用于原版战利品系统）
-let $LootParams = Java.loadClass('net.minecraft.world.level.storage.loot.LootParams$Builder');
-let $LootContextParamSets = Java.loadClass('net.minecraft.world.level.storage.loot.parameters.LootContextParamSets');
-let $Blocks = Java.loadClass('net.minecraft.world.level.block.Blocks');
 
-StartupEvents.registry("block", event => {
-    event.create("rainbow:docker").woodSoundType()
-        .displayName("Docker(钓鱼型)")
-        .blockEntity((entityInfo) => {
-            entityInfo.inventory(9, 1); // 9格容器
-            entityInfo.rightClickOpensInventory();
 
-            // 每20 ticks（1秒）调用一次战利品表
-            entityInfo.serverTick(20, 0, (entity) => {
+// ==========================================
+// 📦 注册 Docker 系列方块 (自定义功能机器)
+// ==========================================
 
-                let pos = entity.blockPos.above(); // 上方方块坐标
-                let blockAbove = entity.level.getBlockState(pos).getBlock();
-
-                let blockId = blockAbove.id.toString();
-                //minecraft:lava
-                if (blockId === "minecraft:water" || blockId === "minecraft:lava") {
-
-                    let lootTable = entity.level.getServer().getLootData().getLootTable(blockId === "minecraft:water" ? "minecraft:gameplay/fishing" : "netherdepthsupgrade:gameplay/nether_fishing");
-                    let lootParams = new $LootParams(entity.level).create($LootContextParamSets.EMPTY);
-                    let lootItems = lootTable.getRandomItems(lootParams);
-
-                    lootItems.forEach(item => {
-                        entity.inventory.insertItem(item, false); // false表示不模拟
-                    });
-                }
-            });
-
-            // 红石交互（保持不变）
-            entityInfo.attachCapability(
-                CapabilityBuilder.ITEM.blockEntity()
-                    .availableOn((be, dir) => dir != Direction.up)
-                    .extractItem((be, slot, amount, simulate) => be.inventory.extractItem(slot, amount, simulate))
-                    .insertItem((be, slot, stack, simulate) => be.inventory.insertItem(slot, stack, simulate))
-                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
-                    .getSlots(be => be.inventory.slots)
-                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
-                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
-            );
-        });
-    });*/
-
+// 灵脂蜡块：Docker 基础型，标记周围实体
 StartupEvents.registry("block", event => {
     event.create("rainbow:soul_hex_block")
         .woodSoundType()
@@ -490,12 +382,12 @@ StartupEvents.registry("block", event => {
 
                 for (let e of entities) {
                     if (e.isPlayer()) continue;
+                    // 标记实体
                     e.persistentData.docker = true;
-
                 }
             });
 
-            // 红石交互能力保持不变
+            // 红石交互能力
             entityInfo.attachCapability(
                 CapabilityBuilder.ITEM.blockEntity()
                     .availableOn((be, dir) => dir != Direction.UP)
@@ -509,6 +401,7 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// Docker 射手型（单发）：自动发射物品栏中的箭矢
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter")
         .noCollision()
@@ -560,8 +453,6 @@ StartupEvents.registry("block", event => {
                     // 检查是否属于 #minecraft:arrows 标签
                     if (!itemStack.hasTag("minecraft:arrows")) continue;
 
-                    // 一直发射直到这个物品槽为空
-                    //while (!itemStack.isEmpty()) {
                     let projectileName = itemStack.id;
                     try {
                         let projectile = level.createEntity(projectileName);
@@ -583,8 +474,7 @@ StartupEvents.registry("block", event => {
                         console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         break;
                     }
-                    //}
-
+                    
                     // 找到第一个有效的槽位后，不再检查其他槽
                     break;
                 }
@@ -605,6 +495,7 @@ StartupEvents.registry("block", event => {
 });
 
 
+// Docker 射手型（火力）：高频发射箭矢
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter_fire")
         .noCollision()
@@ -618,7 +509,7 @@ StartupEvents.registry("block", event => {
             entityInfo.serverTick(5, 0, entity => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
-
+                // ... (类似射手型的逻辑，但频率更高)
                 let pos = entity.blockPos;
                 let x = pos.getX() + 0.5;
                 let y = pos.getY() + 0.5;
@@ -631,7 +522,6 @@ StartupEvents.registry("block", event => {
                 // 找到第一个有效目标
                 let target = null;
                 for (let e of entities) {
-                    //if (e.isPlayer()) continue;
                     if (e.isDeadOrDying()) continue;
                     target = e;
                     break;
@@ -648,40 +538,27 @@ StartupEvents.registry("block", event => {
                 let dirY = ty / dist;
                 let dirZ = tz / dist;
 
-                // 依次检查 9 个物品槽，优先第一个可用的
                 for (let slot = 0; slot < 9; slot++) {
                     let itemStack = entity.inventory.getItem(slot);
                     if (itemStack.isEmpty()) continue;
-
-                    // 检查是否属于 #minecraft:arrows 标签
                     if (!itemStack.hasTag("minecraft:arrows")) continue;
 
-                    // 一直发射直到这个物品槽为空
-                    //while (!itemStack.isEmpty()) {
                     let projectileName = itemStack.id;
                     try {
                         let projectile = level.createEntity(projectileName);
                         if (!projectile) break;
-
                         let randomOffsetX = (Math.random() - 0.5) * 0.05;
                         let randomOffsetY = (Math.random() - 0.5) * 0.05;
                         let randomOffsetZ = (Math.random() - 0.5) * 0.05;
-
                         projectile.setPosition(x + randomOffsetX, y + randomOffsetY, z + randomOffsetZ);
                         projectile.setMotion(dirX * 2.5, dirY * 2.5, dirZ * 2.5);
                         projectile.spawn();
-
-                        // 消耗一个物品
                         itemStack.shrink(1);
                         entity.inventory.setItem(slot, itemStack);
-
                     } catch (err) {
                         console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         break;
                     }
-                    //}
-
-                    // 找到第一个有效的槽位后，不再检查其他槽
                     break;
                 }
             });
@@ -700,6 +577,7 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// Docker 射手型（散射）：同时向多个目标发射箭矢
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter_plus")
         .noCollision()
@@ -742,30 +620,23 @@ StartupEvents.registry("block", event => {
                     for (let slot = 0; slot < 9; slot++) {
                         let itemStack = entity.inventory.getItem(slot);
                         if (itemStack.isEmpty()) continue;
-
-                        // 检查是否属于箭类物品
                         if (!itemStack.hasTag("minecraft:arrows")) continue;
 
                         let projectileName = itemStack.id;
                         try {
                             let projectile = level.createEntity(projectileName);
                             if (!projectile) break;
-
                             let randomOffsetX = (Math.random() - 0.5) * 0.05;
                             let randomOffsetY = (Math.random() - 0.5) * 0.05;
                             let randomOffsetZ = (Math.random() - 0.5) * 0.05;
-
                             projectile.setPosition(x + randomOffsetX, y + randomOffsetY, z + randomOffsetZ);
                             projectile.setMotion(dirX * 2.5, dirY * 2.5, dirZ * 2.5);
                             projectile.spawn();
-
-                            // 消耗一支箭
                             itemStack.shrink(1);
                             entity.inventory.setItem(slot, itemStack);
                         } catch (err) {
                             console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         }
-
                         // 发射一发后不再从其他槽消耗
                         break;
                     }
@@ -786,6 +657,7 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// 下界反应堆：在下界随机激活，激活后检测周围唱片机播放的音乐并给予奖励
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_nether_off")
         .randomTick(event => {
@@ -850,15 +722,12 @@ StartupEvents.registry("block", event => {
                 // 按当前唱片种类数增加计数器
                 data.tick_counter += recordSet.size;
 
-                //console.log(`[DockerNether] 唱片种类: ${recordSet.size}, 当前计数: ${data.tick_counter}`);
-
                 // === 达到1000计数时奖励物品 ===
                 if (data.tick_counter >= 1000) {
                     data.tick_counter = 0;
 
                     let reward = Item.of("uniyesmod:nether_of_voice");
                     entity.inventory.insertItem(reward, false);
-                    //console.log(`[DockerNether] 🎵 奖励已发放: ${reward}`);
                 }
             });
 
@@ -876,7 +745,7 @@ StartupEvents.registry("block", event => {
         });
 });
 
-// Docker 末影型
+// Docker 末影型：将容器内的物品转移到玩家的末影箱
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_ender")
         .woodSoundType()
@@ -942,7 +811,7 @@ StartupEvents.registry("block", event => {
         });
 });
 
-// Docker 末影加强型
+// Docker 末影加强型：将容器内的物品转移到玩家的物品栏
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_ender_player")
         .woodSoundType()
@@ -1011,7 +880,11 @@ StartupEvents.registry("block", event => {
 
 
 
-//荷鲁斯之爪
+// ==========================================
+// 💍 注册饰品与特殊装备 (Curios)
+// ==========================================
+
+// 荷鲁斯之爪
 StartupEvents.registry('item', event => {
     event.create('rainbow:clawofhorus')
         .tooltip("攻击生物概率恢复冷却")
@@ -1021,7 +894,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-//闪电瓶
+// 闪电瓶
 StartupEvents.registry('item', event => {
     event.create('rainbow:lightning')
         .rarity("epic")
@@ -1029,7 +902,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-//心灵宝石
+// 心灵宝石
 StartupEvents.registry('item', event => {
     event.create('rainbow:mind')
         .rarity("epic")
@@ -1037,7 +910,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-//赌徒骰子
+// 赌徒骰子
 StartupEvents.registry('item', event => {
     event.create('rainbow:dice')
         .rarity("epic")
@@ -1045,7 +918,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-//牺牲护符
+// 牺牲护符
 StartupEvents.registry('item', event => {
     event.create('rainbow:sacrificial_amulet')
         .rarity("epic")
@@ -1053,7 +926,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-//暴食之符
+// 暴食之符
 StartupEvents.registry('item', event => {
     event.create('rainbow:gluttony_charm')
         .rarity("epic")
@@ -1168,7 +1041,7 @@ StartupEvents.registry('item', event => {
 });
 
 
-//大胃袋
+// 大胃袋
 StartupEvents.registry('item', event => {
     event.create('rainbow:big_stomach')
         .rarity("epic")
@@ -1197,7 +1070,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//武器大师勋章
+// 武器大师勋章
 StartupEvents.registry('item', event => {
     event.create('rainbow:hero_charm')
         .rarity("epic")
@@ -1248,46 +1121,10 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-            /*                .curioTick((slotContext, stack) => {
-                                let entity = slotContext.entity();
-                                let attackspeed = entity.getAttribute("generic.attack_speed");
-                                let mainhand = entity.getItemInHand("main_hand");
-            
-                                if (attackspeed < 1.5 && mainhand.id != "minecraft:air") {
-                                    entity.modifyAttribute(
-                                        "attributeslib:armor_pierce",
-                                        "weapon_master_charm_pierce",
-                                        1.5,
-                                        "multiply_base"
-                                    );
-                                }
-                                else if (attackspeed > 1.75 && mainhand.id != "minecraft:air") {
-                                    entity.modifyAttribute(
-                                        "generic.attack_damage",
-                                        "weapon_master_charm_bonus",
-                                        3,
-                                        "addition"
-                                    );
-                                }
-                            })
-                            .onUnequip((slotContext, stack) => {
-                                let entity = slotContext.entity();
-                                entity.removeAttribute("attributeslib:armor_pierce", "weapon_master_charm_pierce");
-                                entity.removeAttribute("generic.attack_damage", "weapon_master_charm_bonus");
-                            })
-                            .onEquip((slotContext, stack) => {
-                                let entity = slotContext.entity();
-                                entity.modifyAttribute(
-                                    "generic.attack_damage",
-                                    "weapon_master_charm_base",
-                                    1.1,
-                                    "multiply_total"
-                                );
-                            })*/
         )
 })
 
-//幸运符文
+// 幸运符文
 StartupEvents.registry('item', event => {
     event.create('rainbow:lucky_charm')
         .tooltip("获得幸运，时运3")
@@ -1316,7 +1153,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//血战沙场之证
+// 血战沙场之证
 StartupEvents.registry("item", (event) => {
     event.create('rainbow:berserk_emblem')
         .rarity("epic")
@@ -1369,7 +1206,7 @@ StartupEvents.registry("item", (event) => {
         .tag("curios:charm")
 });
 
-//猎宝者护符
+// 猎宝者护符
 StartupEvents.registry('item', event => {
     event.create('rainbow:mining_charm')
         .rarity("epic")
@@ -1395,7 +1232,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//怪物猎人勋章
+// 怪物猎人勋章
 StartupEvents.registry('item', event => {
     event.create('rainbow:monster_charm')
         .displayName("怪物猎人勋章")
@@ -1765,240 +1602,14 @@ StartupEvents.registry('item', event => {
         )
 })
 
-/*
-//血战沙场之证
-StartupEvents.registry('item', event => {
-    event.create('rainbow:berserk_emblem')
-        .displayName("血战沙场之证")
-        .tooltip([
-            "§6血战沙场之证 §e[史诗]",
-            "§a-----------------------------",
-            "§b基础效果：",
-            "§d+1% 攻击伤害",
-            "§d+1% 攻击速度",
-            "§d+0.5% 移动速度",
-            "§d+0.5% 护甲韧性",
-            "§a-----------------------------",
-            "§8※ 生命值越低，加成效果越强"
-        ].join('\n'))
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    let playerMaxHP = player.getMaxHealth();
-                    let playerHP = player.getHealth();
-                    let percentage = 1 - playerHP / playerMaxHP;
-
-
-                    player.modifyAttribute("generic.attack_damage", "berserk_emblem", 1.0 + percentage, "multiply_total")
-                    player.modifyAttribute("generic.attack_speed", "berserk_emblem", 1.0 + percentage, "multiply_total")
-                    player.modifyAttribute("generic.movement_speed", "berserk_emblem", 1.0 + percentage / 2.0, "multiply_total")
-                    player.modifyAttribute("generic.armor_toughness", "berserk_emblem", 1.0 + percentage / 2.0, "multiply_total")
-                })
-                .onUnequip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    entity.removeAttribute("generic.attack_damage", "berserk_emblem");
-                    entity.removeAttribute("generic.attack_speed", "berserk_emblem");
-                    entity.removeAttribute("generic.movement_speed", "berserk_emblem");
-                    entity.removeAttribute("generic.armor_toughness", "berserk_emblem");
-                })
-        )
-})*/
-
-//自律之符
-/*
-StartupEvents.registry('item', event => {
-    event.create('rainbow:hungry_charm')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyAttribute(event => {
-                    let player = event.slotContext.entity();
-
-                    if (player == null) return;
-
-                    let hungry = player.getFoodData().getFoodLevel();
-                    if (hungry <= 2) multiplier = 0;
-
-                    // 基准点 12
-                    let diff = Math.abs(hungry - 12);
-                    let multiplier = 1 - (diff * 0.1);
-
-                    // 下限保护，避免负数
-                    if (multiplier <= 0) multiplier = 0;
-
-
-                    event.modify("generic.attack_damage", "hungry_charm_damage", 0.1 * multiplier, "multiply_total");
-                    event.modify("generic.movement_speed", "hungry_charm_damage", 0.1 * multiplier, "multiply_total");
-                    event.modify("generic.armor_toughness", "hungry_charm_damage", 5 * multiplier, "addition");
-
-                })
-                .curioTick((slotContext, stack) => {
-                    if (stack.nbt == null) {
-                        stack.nbt = {};
-                    }
-                    if (stack.nbt.getBoolean("update") == null) {
-                        stack.nbt.putBoolean("update", false)
-                    }
-                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"))
-                })
-            .curioTick((slotContext, stack) => {
-                let entity = slotContext.entity();
-                let hungry = entity.getFoodData().getFoodLevel();
-                let multiplier = 0;
-
-                if (hungry >= 12) {
-                    multiplier = 1.0;
-                } else if (hungry <= 2) {
-                    multiplier = 0.0;
-                } else {
-                    multiplier = (hungry - 2) * 0.1;
-                }
-
-                entity.modifyAttribute("generic.attack_damage", "hungry_charm_damage", 0.1 * multiplier, "multiply_total");
-                entity.modifyAttribute("generic.movement_speed", "hungry_charm_speed", 0.1 * multiplier, "multiply_total");
-                entity.modifyAttribute("generic.armor_toughness", "hungry_charm_toughness", 5 * multiplier, "addition");
-            })
-            .onUnequip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                entity.removeAttribute("generic.attack_damage", "hungry_charm_damage");
-                entity.removeAttribute("generic.movement_speed", "hungry_charm_speed");
-                entity.removeAttribute("generic.armor_toughness", "hungry_charm_toughness");
-            })
-        )
-})*/
-
-// 冒险之证
-/*
-StartupEvents.registry('item', event => {
-    event.create('rainbow:adventure_charm')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-
-                    let attack = 2.0;
-                    let speed = 0.1;
-
-                    if (hasCurios(player, "rainbow:despair_insignia")) {
-                        attack = 0.0;
-                        speed = 0.0;
-                    }
-
-                    ev.modify("generic.attack_damage", "adventure_charm", attack, "addition");
-                    ev.modify("generic.attack_speed", "adventure_charm", speed, "multiply_total");
-                })
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    if (player == null) return;
-
-                    // 每秒触发一次
-                    if (player.age % 20 !== 0) return;
-
-                    // 戴着绝望之证则失效
-                    if (hasCurios(player, "rainbow:despair_insignia")) return;
-
-                    player.potionEffects.add("runiclib:creative_shock", 60, 9, false, false);
-
-                    if (!stack.nbt) stack.nbt = {};
-                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
-                })
-        )
-})*/
-
-//魂石
-/*
-StartupEvents.registry('item', event => {
-    event.create('rainbow:wind')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    if (player == null) return;
-                    if (player.age % SecoundToTick(5)) return;
-
-                    player.potionEffects.add("alexsmobs:soulsteal", SecoundToTick(10), 0, false, false);
-                })
-        )
-})*/
-
-/*
-//分析单片眼镜
-StartupEvents.registry('item', event => {
-
-    event
-
-        .create('rainbow:lens')
-
-        .maxStackSize(1)
-
-        .tag("curios:head")
-
-        .attachCapability(CuriosCapabilityBuilder.CURIOS.itemStack()
-            .modifyAttribute("minecraft:generic.attack_damage", "attack_damage", 0.2, "multiply_total")
-        )
-
-        .rarity("epic")
-
-        .displayName("分析单片眼镜")
-
-})
-
-//掉落物分析眼镜
-StartupEvents.registry('minecraft:item', event => {
-
-    event
-
-        .create('rainbow:advancement_lens')
-
-        .maxStackSize(1)
-
-        .tag("curios:head")
-
-        .rarity("epic")
-
-        .tooltip("佩戴后杀死生物有特殊掉落物，抢夺三")
-
-        .displayName("掉落物分析眼镜")
-
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
-        )
-})*/
-
-/*
-//金猪吊坠
-StartupEvents.registry('item', event => {
-    event.create('rainbow:golden_piggy_charm')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .makesPiglinsNeutral((slotContext, stack) => true)
-        )
-})*/
 
 StartupEvents.registry('item', event => {
-    //化学内爆
+    // 化学内爆
     event.create("rainbow:rage_syringe")
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-    //肾上腺素
+    // 肾上腺素
     event.create("rainbow:resilience_syringe")
         .rarity("epic")
         .maxStackSize(1)
@@ -2018,8 +1629,11 @@ StartupEvents.registry('item', event => {
     });
 })
 
-//赛博义体系列
-//神经处理器
+// ==========================================
+// 🦾 赛博义体系统 (Cyberware)
+// ==========================================
+
+// 神经处理器
 StartupEvents.registry('item', event => {
     event.create('rainbow:cyber_nerve_cpu')
     .rarity("epic")
@@ -2056,7 +1670,7 @@ StartupEvents.registry('item', event => {
     )
 })
 
-//操作系统-斯安威斯坦
+// 操作系统-斯安威斯坦
 StartupEvents.registry('item', event => {
     event.create('rainbow:sandevistan')
     .rarity("epic")
@@ -2073,7 +1687,7 @@ StartupEvents.registry('item', event => {
                 if (hasCurios(entity, 'rainbow:sandevistan')) {
                     return false;
                 }
-                //需要神经处理器
+                // 需要神经处理器
                 if (hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
                     return false;
                 }
@@ -2097,7 +1711,7 @@ StartupEvents.registry('item', event => {
     )
 })
 
-//义体-皮下护甲-通用
+// 义体-皮下护甲-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:subcutaneous_armor')
     .rarity("epic")
@@ -2131,7 +1745,7 @@ StartupEvents.registry('item', event => {
     )
 })
 
-//义体-生物监测-通用
+// 义体-生物监测-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:biological_monitoring')
     .rarity("epic")
@@ -2182,7 +1796,7 @@ StartupEvents.registry('item', event => {
     )
 })
 
-//义体-365安全卫士-通用
+// 义体-365安全卫士-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:365_exe')
     .rarity("epic")
@@ -2223,7 +1837,7 @@ StartupEvents.registry('item', event => {
     )
 })
 
-//义体-副心脏-通用
+// 义体-副心脏-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:second_heart')
     .rarity("epic")
@@ -2265,7 +1879,7 @@ StartupEvents.registry('item', event => {
 })
 
 
-//义体-德国骨科-通用
+// 义体-德国骨科-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:german_orthopedics')
     .rarity("epic")
@@ -2298,4 +1912,3 @@ StartupEvents.registry('item', event => {
             .addAttribute("minecraft:generic.armor_toughness","german_orthopedics",+10,"addition")
     )
 })
-

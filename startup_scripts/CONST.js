@@ -1,4 +1,9 @@
 // priority: 2000
+// ==========================================
+// 全局常量定义
+// Global Constants Definition
+// ==========================================
+
 global.CURIONUMBER = 4
 global.CURSES = [
     "minecraft:binding_curse",

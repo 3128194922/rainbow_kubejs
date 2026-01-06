@@ -19,9 +19,6 @@ function RGBA(r, g, b, a) {
 // 🔥 模块化提示管理器（方向 + 偏移 + 正确连接线 + 总开关）
 // =========================
 var TutorialHints = {
-
-  enabled: true,  // ⭐ 全局开关，false 不渲染任何提示
-
   list: [
     {
       id: "curios_slot",
@@ -91,7 +88,7 @@ var TutorialHints = {
   },
 
   render: function(event) {
-    if (!this.enabled) return  // ⭐ 全局开关判断
+    if (!global.isEnabled) return  // ⭐ 全局开关判断
     if (!(event.screen instanceof $InventoryScreen)) return
 
     var GSW = Client.window.guiScaledWidth

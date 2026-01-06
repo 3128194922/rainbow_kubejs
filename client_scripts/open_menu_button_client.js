@@ -36,6 +36,13 @@ ClientEvents.tick((event) => {
             }).bounds(0, 0, 60, 20).build();
             */
 
+            // ======== 文本显示  ========
+            
+            let helpTitle = $Button.builder(Text.of("文本显示"), (button) => {
+                global.isEnabled = !global.isEnabled;
+            }).bounds(0, 0, 60, 20).build();
+            
+
             // ======== 帮助按钮 ========
             // 点击发送 "trashcan" 菜单请求 (注：显示文本为"帮助"，但实际功能可能是打开垃圾桶或菜单)
             let helpButton = $Button.builder(Text.of("帮助"), (button) => {
@@ -44,6 +51,7 @@ ClientEvents.tick((event) => {
 
             // buttons.push(enderButton);
             buttons.push(helpButton);
+            buttons.push(helpTitle);
 
             // 添加到界面渲染列表
             buttons.forEach(btn => screen.addRenderableWidget(btn));
@@ -52,7 +60,7 @@ ClientEvents.tick((event) => {
         // 每帧更新按钮位置（屏幕左下角自适应）
         let buttonWidth = 60;
         let buttonHeight = 20;
-        let padding = 5;
+        let padding = 3;
         let startX = 50;
         let startY = screen.height - buttonHeight - 5;
 

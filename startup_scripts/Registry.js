@@ -107,9 +107,9 @@ StartupEvents.registry("item", event => {
         })
 
     // nbt工具
-    event.create("rainbow:nbt_util")
+    event.create("rainbow:nbt_util").texture('fruitfulfun:item/inspector').unstackable().glow(true)
     // 金手指
-    event.create("rainbow:golden_finger")
+    event.create("rainbow:golden_finger").texture('create:item/brass_hand').unstackable().glow(true)
     // 洛阳铲
     event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
     // 秘封琥珀

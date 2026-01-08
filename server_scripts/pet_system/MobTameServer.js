@@ -24,11 +24,11 @@ let HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
  */
 let tameableMobs = {
     "minecraft:iron_golem": 'create_connected:control_chip',
-    "minecraft:zombie": 'rainbow:grinder',
-    'minecraft:drowned':'rainbow:grinder',
-    'dungeonsdelight:rotten_zombie': 'rainbow:grinder',
-    'minecraft:husk': 'rainbow:grinder',
-    'windswept:chilled': 'rainbow:grinder'
+    "minecraft:zombie": 'rainbow:gauntlet',
+    'minecraft:drowned':'rainbow:gauntlet',
+    'dungeonsdelight:rotten_zombie': 'rainbow:gauntlet',
+    'minecraft:husk': 'rainbow:gauntlet',
+    'windswept:chilled': 'rainbow:gauntlet'
 }
 
 /**

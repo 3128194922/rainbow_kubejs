@@ -5,10 +5,10 @@
       "rainbow:man"
     ]
   },
-   "music.grinder": {
-    "subtitle": "sounds.rainbow.grinder",
+   "music.gauntlet": {
+    "subtitle": "sounds.rainbow.gauntlet",
     "sounds": [
-      "rainbow:grinder"
+      "rainbow:gauntlet"
     ]
   },
   "music.pervitin": {

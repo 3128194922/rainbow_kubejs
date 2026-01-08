@@ -95,7 +95,7 @@ BlockEvents.rightClicked(event => {
     // 天空竞技场祭坛设置物品
     if(block.entityId == "skyarena:altar_block_entity")
         {
-            block.entity.setRecordItem("rainbow:grinder")
+            block.entity.setRecordItem("rainbow:gauntlet")
         }
 })
 

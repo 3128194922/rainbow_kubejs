@@ -156,41 +156,42 @@ BlockEvents.rightClicked(event => {
     block.set("minecraft:air");
 });
 
-// 末影docker绑定逻辑
+// 末影 docker 绑定逻辑
 BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player"], event => {
     let entity = event.block.entity;
     let player = event.getPlayer();
     let hand = event.getHand().toString();
+
     // 只触发主手
     if (hand === "OFF_HAND") return;
 
-    // 获取玩家是否蹲下
     let isCrouching = player.isCrouching();
 
     // 确保 entity.data 存在
     if (!entity.data) {
-        entity.data = {};  // 如果没有 entity.data，初始化它
+        entity.data = {};
     }
 
-    // 如果玩家处于蹲下状态（绑定模式）
+    // 绑定模式（蹲下）
     if (isCrouching) {
-        // 绑定模式：将玩家的 UUID 存储到 entity.data 中
         entity.data.uuid = player.getStringUuid();
-        player.tell("docker已成功绑定到你的末影箱");
+        player.tell("§a✔ §f末影 Docker 已成功绑定到你的末影箱");
     } else {
-        // 所属判定模式：检查该方块是否绑定到当前玩家
+        // 所属判定模式
         if (entity.data.uuid === player.getStringUuid()) {
-            player.tell("这个docker已经绑定到你！");
+            player.tell("§bℹ §f这个末影 Docker §a已绑定给你");
         } else if (entity.data.uuid) {
-            // 如果该方块已经绑定到其他玩家
             let otherPlayer = Server.getPlayerByUUID(entity.data.uuid);
             if (otherPlayer) {
-                player.tell("这个docker已经绑定给玩家 " + otherPlayer.getName());
+                player.tell(
+                    "§c✖ §f这个末影 Docker 已绑定给玩家 §e" +
+                    otherPlayer.getName()
+                );
             } else {
-                player.tell("这个docker已经绑定，但找不到绑定的玩家");
+                player.tell("§6⚠ §f这个末影 Docker 已绑定，但绑定的玩家不在线");
             }
         } else {
-            player.tell("这个docker尚未绑定任何玩家");
+            player.tell("§7❔ §f这个末影 Docker 目前尚未绑定任何玩家，§a潜行+右键进行绑定");
         }
     }
 });

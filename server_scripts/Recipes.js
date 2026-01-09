@@ -59,6 +59,27 @@ ServerEvents.recipes(event => {
             ['create:sturdy_sheet','summoningrituals:altar','create:sturdy_sheet'],
             ['','create:sturdy_sheet',''],])*/
 
+    //炮塔docker
+    event.shapeless('rainbow:docker_shooter_fire','rainbow:docker_shooter')
+    event.shapeless('rainbow:docker_shooter_plus','rainbow:docker_shooter_fire')
+    event.shapeless('rainbow:docker_shooter','rainbow:docker_shooter_plus')
+    event.shaped('rainbow:docker_shooter', [
+        ['minecraft:dropper', 'minecraft:dispenser', 'minecraft:redstone'],
+        ['quark:redstone_randomizer', 'minecraft:repeater', 'minecraft:comparator'],
+        ['minecraft:redstone_torch', 'minecraft:redstone_block', 'minecraft:target']])
+
+    //末影docker
+    event.shaped('rainbow:docker_ender', [
+        ['#minecraft:planks','#minecraft:planks','#minecraft:planks'],
+        ['#minecraft:planks','minecraft:ender_chest', '#minecraft:planks'],
+        ['#minecraft:planks','#minecraft:planks','#minecraft:planks']])
+    
+    //末影docker加强型
+    event.shaped('rainbow:docker_ender_player', [
+        ['createutilities:void_casing','createutilities:void_casing','createutilities:void_casing'],
+        ['createutilities:void_casing','rainbow:docker_ender','createutilities:void_casing'],
+        ['createutilities:void_casing','createutilities:void_casing','createutilities:void_casing']])
+
     // 农夫乐事：切洋葱获得皮
     event.recipes.farmersdelight.cutting(
         'farmersdelight:onion',
@@ -359,6 +380,14 @@ ServerEvents.recipes(event => {
             result: Item.of(resultItem).toJson()
         });
     });
+
+    //灵脂蜡块
+    event.custom({
+        "type":"lychee:item_inside",
+        "item_in": { "item": "netherexp:ancient_wax_block" },
+        "block_in": { "blocks": ["netherexp:ectoplasm"] },
+        "post":  {  "type": "drop_item",  "item": "rainbow:soul_hex_block"}
+    })
 });
 
 // 光源方块合成 - 使用循环优化
@@ -394,3 +423,5 @@ ServerEvents.recipes(event => {
             event.shapeless(AofB_B[i],AofB_A[i])
         }
 });
+
+

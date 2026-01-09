@@ -12,6 +12,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.man")
     // 创建一个名为 "rainbow:music.gauntlet" 的声音事件
     event.create("rainbow:music.gauntlet")
+
+    event.create("rainbow:music.tem")
 })
 
 // 注册物品
@@ -22,4 +24,9 @@ StartupEvents.registry("item", (event) => {
         .song("rainbow:music.gauntlet", 181)
         // 添加 "music_discs" 标签
         .tag("music_discs")
+    event.create("rainbow:tem", "music_disc")
+    // 设置唱片对应的音乐为 "rainbow:music.gauntlet"，时长为 181 秒
+    .song("rainbow:music.tem", 209)
+    // 添加 "music_discs" 标签
+    .tag("music_discs")
 })

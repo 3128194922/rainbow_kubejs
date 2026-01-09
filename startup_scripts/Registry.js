@@ -680,7 +680,7 @@ StartupEvents.registry("block", event => {
         .displayName("下界反应堆(激活)")
         .blockEntity(entityInfo => {
 
-            const scanRadius = 5;
+            const scanRadius = 1;
 
             entityInfo.serverTick(20, 0, entity => {
                 let level = entity.level;

@@ -17,6 +17,12 @@
       "rainbow:pervitin"
     ]
   },
+	"music.tem": {
+	"subtitle": "sounds.rainbow.tem",
+	"sounds": [
+	  "rainbow:tem"
+	]
+  },
   "voice.fte": {
     "subtitle": "sounds.rainbow.fte",
     "sounds": [

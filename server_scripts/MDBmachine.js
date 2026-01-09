@@ -6,6 +6,7 @@ const Float = Java.loadClass("java.lang.Float")
 MBDMachineEvents.onTick("mbd2:music_machine", event => {
     let machine = event.getEvent().getMachine()
     let level = machine.getLevel()
+    let machineSpirit = 0;
 
     if (level.isClientSide()) return
 
@@ -35,8 +36,13 @@ MBDMachineEvents.onTick("mbd2:music_machine", event => {
                             if (recordId) {
                                 // 强制转换为 JS String
                                 let idStr = String(recordId)
+
+                                if(idStr == "rainbow:tem")
+                                    {
+                                        machineSpirit += 1;
+                                    }
                                 
-                                if(idStr == "minecraft:music_disc_11" || idStr == "rainbow:tem") {
+                                if(idStr == "minecraft:music_disc_11") {
                                     // music_disc_11 特殊处理：视为不同唱片，使用坐标区分，使其不被去重
                                     recordSet.add(idStr + "_" + targetPos.x + "_" + targetPos.y + "_" + targetPos.z)
                                 } else {
@@ -72,7 +78,7 @@ MBDMachineEvents.onTick("mbd2:music_machine", event => {
             if (outputs) {
                 outputs.forEach(content => {
                     // 应力与唱片种类数量成正比 (512 * 种类数)
-                    content.content = new Float(512.0 * recordSet.size)
+                    content.content = new Float(512.0 * (recordSet.size + machineSpirit))
                 })
             }
         }

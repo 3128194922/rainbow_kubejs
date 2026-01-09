@@ -10,6 +10,19 @@
 // =============================================
 function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
     if (!victim.isPlayer()) return;
+
+    // --- 防化服套装效果 ---
+    if(victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask' 
+    && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate' 
+    && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings' 
+    && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots')
+    {
+        if(source.getType() == "poison_cloud" || source.getType() == "wither")
+            {
+                event.setCanceled(true)
+            }
+    }
+
     
     // --- 民主甲套装效果 ---
     // 只有穿戴全套民主装备时生效
@@ -493,6 +506,34 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
     }
 });
 
+// 监听效果赋予事件
+ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added', event => {
+    try
+    {
+        let entity = event.entity;
+        if(!entity.isPlayer()) return;
+        // 获取效果实例
+        let effectInstance = event.getEffectInstance();
+        let effectId = effectInstance.getEffect().getDescriptionId();
+        if(effectId.toString() == "effect.minecraft.poison" || effectId.toString() == "effect.alexscaves.irradiated" || effectId.toString() == "effect.minecraft.wither")
+            {
+                if(entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask' 
+                && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate' 
+                && entity.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings' 
+                && entity.getItemBySlot("feet").id == 'alexscaves:hazmat_boots')
+                    {
+                        event.setCanceled(true);
+                    }
+            }
+
+    }
+    catch(e)
+    {
+        console.log("监听buff赋予出现问题：")
+        console.log(e)
+    }
+});
+
 /*
 // 堕落之心逻辑（已注释）
 // ...
@@ -626,3 +667,4 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
+DamageSorce()

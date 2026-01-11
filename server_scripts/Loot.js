@@ -410,6 +410,14 @@ ServerEvents.entityLootTables(event => {
             pool.addEmpty(19)
         });
     });
+    // 女巫帽子
+    event.modifyEntity('minecraft:witch', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('uniyesmod:which_armor_helmet')
+            .weight(1)
+            .count([0,1])
+        })
+    })
 /*
     //覆盖战利品 (已注释)
     //利维坦

@@ -22,3 +22,9 @@ ItemEvents.modification(event => {
         //item.addAttribute("forge:entity_gravity", "1f12ad16-2bc8-40c1-952d-19412bb666ac", "Sus gravity", 20, "multiply_total")
       })*/
 });
+//修改生物类型
+/*EntityJSEvents.modifyEntity(event => {
+    event.modify("minecraft:warden", modifyBuilder => {
+        modifyBuilder.mobType('undead')
+    })
+})*/

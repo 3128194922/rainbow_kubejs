@@ -23,7 +23,6 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
             }
     }
 
-    
     // --- 民主甲套装效果 ---
     // 只有穿戴全套民主装备时生效
     if (
@@ -160,8 +159,8 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage) {
         }
     }
 
-    // 动力斧：气罐触发额外伤害
-    if (mainHand.id == "create_fantasizing:tree_cutter" && range_damage.indexOf(source.getType()) == -1) {
+    // 万能钥匙斧：气罐触发额外伤害
+    if (mainHand.id == "uniyesmod:master_key" && range_damage.indexOf(source.getType()) == -1) {
         let tank = global.backtankUtils.getFirstTank(attacker);
         if (tank && global.backtankUtils.hasAirRemaining(tank)) {
             global.backtankUtils.consumeAir(attacker, tank, 10); // 消耗10气

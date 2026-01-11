@@ -134,6 +134,12 @@ ServerEvents.recipes(event => {
     // 量天尺配方
     event.shapeless('atmospheric:dragon_roots', ['atmospheric:dragon_fruit', 'minecraft:vine'])
 
+    //tnt箭
+    event.shaped('rainbow:tnt_arrow', [['','minecraft:arrow',''],
+    ['','minecraft:tnt',''],
+    ['','','']])
+    event.shapeless('uniyesmod:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
+
     // 腐肉制作
     event.recipes.create.haunting('minecraft:rotten_flesh', '#mynethersdelight:curry_meats')
 
@@ -413,8 +419,8 @@ ServerEvents.recipes(event => {
 
 // 物品同化表（只要在这里写数组即可）
 // AofB[x] 代表一组互相可转化的物品
-const AofB_A = ['alexsmobs:flying_fish','collectorsreap:pomegranate']
-const AofB_B = ['tome_of_wonders:flying_fish','fruitfulfun:pomegranate']
+const AofB_A = ['collectorsreap:pomegranate']
+const AofB_B = ['fruitfulfun:pomegranate']
 
 ServerEvents.recipes(event => {
     for(let i=0;i<AofB_A.length;i++)

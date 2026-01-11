@@ -272,15 +272,16 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:luoyang_shovel', (item, advanced, text) => {
         text.add(1, Text.darkPurple("右键可直接提取出考古物品"));
     })
-    event.addAdvanced('rainbow:sacrificial_amulet', (item, advanced, text) => {
+    event.addAdvanced('rainbow:oceantooth_necklace', (item, advanced, text) => {
             // 先判断 NBT 是否存在
+            text.add(1, Text.darkPurple(`献祭100生物后消耗自己，产出战利品`));
             let nbt = item.getNbt();
             if (!nbt) {
                 return;
             }
             else
             {
-                text.add(1, Text.darkPurple(`献祭：${nbt.getInt("kill")}`));
+                text.add(2, Text.darkPurple(`献祭：${nbt.getInt("kill")}`));
             }
     })
     event.addAdvanced('rainbow:amber_bee', (item, advanced, text) => {

@@ -918,14 +918,6 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-// 牺牲护符
-StartupEvents.registry('item', event => {
-    event.create('rainbow:sacrificial_amulet')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-})
-
 // 暴食之符
 StartupEvents.registry('item', event => {
     event.create('rainbow:gluttony_charm')
@@ -954,7 +946,7 @@ StartupEvents.registry('item', event => {
 
                     event.modify("generic.attack_damage", "hungry_charm_damage", 0.04 * multiplier, "multiply_total");
                     event.modify("generic.movement_speed", "hungry_charm_damage", 0.0025 * multiplier, "multiply_total");
-                    event.modify("l2damagetracker:damage_reduction", "hungry_charm_damage", -0.05 * multiplier, "addition");
+                    event.modify("l2damagetracker:damage_reduction", "hungry_charm_damage", -1 * multiplier, "addition");
                     event.modify("attributeslib:crit_damage", "hungry_charm_damage", 0.0125 * multiplier, "multiply_total");
 
                 })
@@ -1321,7 +1313,7 @@ StartupEvents.registry('item', event => {
                     ev.modify("generic.attack_damage", "despair_insignia", 4.0, "addition");
                     ev.modify("generic.movement_speed", "despair_insignia", 0.05, "multiply_total");
                     ev.modify("generic.attack_speed", "despair_insignia", 0.16, "multiply_total");
-                    ev.modify("minecraft:generic.knockback_resistance", "despair_insignia", -0.05, "multiply_total");
+                    ev.modify("minecraft:generic.knockback_resistance", "despair_insignia", 0.05, "multiply_total");
                     ev.modify("minecraft:generic.max_health", "despair_insignia", playerMaxHP, "addition");
                 })
                 .curioTick((slotContext, stack) => {

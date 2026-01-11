@@ -645,7 +645,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         if (!player || !player.isPlayer()) return;
 
         // 牺牲护符：击杀计数逻辑
-        let item = getCuriosItem(player, "rainbow:sacrificial_amulet");
+        let item = getCuriosItem(player, "rainbow:oceantooth_necklace");
         if (!item) return;
 
         let nbt = item.getOrCreateTag();
@@ -657,7 +657,6 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
             nbt.putInt("kill", kills + 1);
         } else {
             nbt.putInt("kill", 0);
-            player.tell("生成战利品");
             // 这里应该有生成战利品的逻辑，但目前只提示
         }
 
@@ -666,4 +665,3 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
-DamageSorce()

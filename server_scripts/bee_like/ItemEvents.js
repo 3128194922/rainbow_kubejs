@@ -44,7 +44,7 @@ ItemEvents.entityInteracted(event => {
      */
     
     // 检查喂食的是否为肉类
-    if(Item.of(item).item.foodProperties.isMeat())
+    if(Item.of(item).item?.foodProperties.isMeat())
         {
             // 如果蜜蜂具有特定基因 (FC == 17，即 1 1 基因对)
             if(FC == 17)

@@ -14,6 +14,76 @@
 					"content": "rainbow:instance_pass"
 				}
 			]
+		},
+		"instance_obj1_rainbow2": {
+			"type": "item",
+			"content": "rainbow:instance_pass2",
+			"amount": { "min": 1, "max": 1 },
+			"unitWorth": 1700,
+		    "weightMult": 1.0,
+			"rarity": "COMMON",
+			"forbids": [
+				{
+					"type": "item_tag",
+					"content": "rainbow:instance_pass"
+				}
+			]
+		},
+		"instance_obj1_rainbow3": {
+			"type": "item",
+			"content": "rainbow:instance_pass3",
+			"amount": { "min": 1, "max": 1 },
+			"unitWorth": 1700,
+		    "weightMult": 1.0,
+			"rarity": "COMMON",
+			"forbids": [
+				{
+					"type": "item_tag",
+					"content": "rainbow:instance_pass"
+				}
+			]
+		},
+		"instance_obj1_rainbow4": {
+			"type": "item",
+			"content": "rainbow:instance_pass4",
+			"amount": { "min": 1, "max": 1 },
+			"unitWorth": 1700,
+		    "weightMult": 1.0,
+			"rarity": "COMMON",
+			"forbids": [
+				{
+					"type": "item_tag",
+					"content": "rainbow:instance_pass"
+				}
+			]
+		},
+		"instance_obj1_rainbow4": {
+			"type": "item",
+			"content": "rainbow:instance_pass4",
+			"amount": { "min": 1, "max": 1 },
+			"unitWorth": 1700,
+		    "weightMult": 1.0,
+			"rarity": "COMMON",
+			"forbids": [
+				{
+					"type": "item_tag",
+					"content": "rainbow:instance_pass"
+				}
+			]
+		},
+		"instance_obj1_rainbow5": {
+			"type": "item",
+			"content": "rainbow:instance_pass5",
+			"amount": { "min": 1, "max": 1 },
+			"unitWorth": 1700,
+		    "weightMult": 1.0,
+			"rarity": "COMMON",
+			"forbids": [
+				{
+					"type": "item_tag",
+					"content": "rainbow:instance_pass"
+				}
+			]
 		}
 	}
 }

@@ -657,6 +657,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
             nbt.putInt("kill", kills + 1);
         } else {
             nbt.putInt("kill", 0);
+            item.setDamageValue(item.getDamageValue() + Integer.valueOf("100"))
             // 这里应该有生成战利品的逻辑，但目前只提示
         }
 
@@ -665,3 +666,35 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
+
+ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
+    try {
+        let player = event.getSource().getPlayer();
+        if (event.getEntity().getLevel().isClientSide()) return;
+        if (!player || !player.isPlayer()) return;
+
+        // 牺牲护符：击杀计数逻辑
+        let item = getCuriosItem(player, "rainbow:infernotooth_necklace");
+        if (!item) return;
+
+        if(player.getItemInHand("main_hand").id == 'species:spectralibur') return;
+
+        let nbt = item.getOrCreateTag();
+
+        let Souls = nbt.getInt("Souls");
+
+        if(Souls == null)
+            {
+                nbt.putInt("Souls",0)
+            }
+        else
+        {
+            nbt.putInt("Souls",Souls + 1)
+        }
+
+    } catch (e) {
+        console.log("监听死亡出现问题：");
+        console.log(e);
+    }
+});
+

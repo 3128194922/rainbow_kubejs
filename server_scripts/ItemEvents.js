@@ -328,6 +328,7 @@ ItemEvents.entityInteracted("rainbow:nbt_util", event => {
     let targetNbt = target.getNbt();
     let playerNbt = player.getNbt();
 
+    console.log(target.getType())
     console.log(JSON.stringify(nbtToJs(targetNbt), null, 2));
 
     player.tell("NBT已以JSON格式输出到日志");

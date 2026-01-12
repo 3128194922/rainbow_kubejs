@@ -284,6 +284,18 @@ ItemEvents.tooltip((event) => {
                 text.add(2, Text.darkPurple(`献祭：${nbt.getInt("kill")}`));
             }
     })
+    event.addAdvanced('rainbow:infernotooth_necklace', (item, advanced, text) => {
+        // 先判断 NBT 是否存在
+        text.add(1, Text.darkPurple(`杀死生物后储存生物灵魂`));
+        let nbt = item.getNbt();
+        if (!nbt) {
+            return;
+        }
+        else
+        {
+            text.add(2, Text.darkPurple(`储存：${nbt.getInt("Souls")}`));
+        }
+})
     event.addAdvanced('rainbow:amber_bee', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按 [ALT] 查看详细"));
     

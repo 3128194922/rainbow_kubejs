@@ -82,7 +82,7 @@ StartupEvents.registry("fluid", event => {
 StartupEvents.registry("item", event => {
 
     // 副本通行证
-    for (let i = 1; i <= 1; i++) {
+    for (let i = 1; i <= 5; i++) {
         event.create(`rainbow:instance_pass${i}`, 'basic')
             .texture('rainbow:item/instance_pass')
             .tag('rainbow:instance_pass');
@@ -1404,11 +1404,13 @@ StartupEvents.registry('item', event => {
 // 海牙吊坠
 StartupEvents.registry('item', event => {
     event.create('rainbow:oceantooth_necklace')
+        .maxDamage(300)
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
+                .addAttribute("attributeslib:armor_pierce","oceantooth_necklace",4,"addition")
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -1439,6 +1441,28 @@ StartupEvents.registry('item', event => {
                         return false;
                     }
                     return true;
+                })
+                .addAttribute("attributeslib:armor_pierce","oceantooth_necklace",8,"addition")
+                .curioTick((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (entity.age % 20 != 0) return;
+                    let item = entity.getItemInHand("main_hand");
+                    if(item.id != 'species:spectralibur') return;
+                    else
+                    {
+                        if(stack.nbt == null)
+                            {
+                                stack.nbt = {}
+                            }
+                        if(stack.nbt.getInt("Souls") > 0)
+                            {
+                                stack.nbt.putInt("Souls",stack.nbt.getInt("Souls") - 1)
+                                item.nbt.putInt("Souls",item.nbt.getInt("Souls") + 1)
+                                entity.level.runCommandSilent(`/playsound species:item.spectralibur.collect_soul voice ${entity.getDisplayName().getString()} ${entity.x} ${entity.y} ${entity.z}`)
+                            }
+                    }
+
                 })
         )
 })

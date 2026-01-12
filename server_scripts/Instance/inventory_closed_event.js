@@ -13,14 +13,44 @@ const dungeonMobs = {
         1: [{ type: 'minecraft:zombie', count: 3 ,nbt:''}, { type: 'minecraft:zombie', count: 2,nbt:''}],
         2: [{ type: 'minecraft:zombie', count: 4,nbt:''}, { type: 'minecraft:zombie', count: 6,nbt:''}],
         3: [{ type: 'minecraft:zombie', count: 15,nbt:''}]
-    }}
+    },
+    rainbow2: {
+        1: [{ type: 'monsterexpansion:skrythe', count: 1 ,nbt:''}]
+    },
+    rainbow3: {
+        1: [{ type: 'monsterexpansion:rhyza', count: 1 ,nbt:''}]
+    },
+    rainbow4: {
+        1: [{ type: 'monsterexpansion:leivekilth', count: 1 ,nbt:''}]
+    },
+    rainbow5: {
+        1: [{ type: 'monsterexpansion:rakoth', count: 1 ,nbt:''}]
+    },
+}
 
 // 副本基础配置
 const dungeonConfig = {
     rainbow1: {
         time: 2,// 波次时间限制或者波次检测间隔 单位是秒
         totalWaves: 3,
-    }}
+    },
+    rainbow1: {
+        time: 2,
+        totalWaves: 1,
+    },
+    rainbow1: {
+        time: 2,
+        totalWaves: 1,
+    },
+    rainbow1: {
+        time: 2,
+        totalWaves: 1,
+    },
+    rainbow1: {
+        time: 2,
+        totalWaves: 1,
+    },
+}
 
 /**
  * 悬赏领取系统：为悬赏任务生成随机副本坐标

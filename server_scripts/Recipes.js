@@ -89,6 +89,11 @@ ServerEvents.recipes(event => {
         ],
         // '' // sound
     );
+    //海牙吊坠
+    event.shaped("rainbow:oceantooth_necklace", [
+        ['minecraft:kelp', 'minecraft:kelp', 'minecraft:kelp'],
+        ['minecraft:kelp', '', 'minecraft:kelp'],
+        ['alexsmobs:shark_tooth', 'alexsmobs:serrated_shark_tooth','alexsmobs:cachalot_whale_tooth']])
 
     // 万能钥匙配方
     event.shapeless('uniyesmod:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])

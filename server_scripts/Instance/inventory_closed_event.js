@@ -114,7 +114,7 @@ function BountyItemEvent(player) {
     }
 
     if (z !== null) {
-        player.tell(`§b[悬赏系统] §a已生成对应的地图路标点:X: ${x}, Y: ~, Z: ${z}`);
+        player.tell(`§b地图§a上已生成对应委托位置的路径点:X: ${x}, Y: ~, Z: ${z}`);
     }
 }
 
@@ -160,18 +160,18 @@ function BossEvent(event) {
     }
     
     if (dungeonIds.length === 0) {
-        player.tell("§c[副本系统] 未找到有效的副本目标！");
+        player.tell("§c未找到有效的委托目标！");
         return;
     }
 
-    player.tell(`§6[副本系统] §f准备启动 ${dungeonIds.length} 个悬赏任务...`);
+    player.tell(`§6悬赏委托§f预计存在${dungeonIds.length}个...`);
 
     // 2. 顺序执行副本
     let currentDungeonIndex = 0;
 
     function runNextDungeon() {
         if (currentDungeonIndex >= dungeonIds.length) {
-            player.tell("§a[副本系统] 所有悬赏波次已全部完成！");
+            player.tell("§a敌方的攻势已被全部击溃！");
             return;
         }
 
@@ -180,7 +180,7 @@ function BossEvent(event) {
         let config = dungeonConfig[dungeonId];
 
         if (!config) {
-            player.tell(`§c[副本系统] 副本配置缺失: ${dungeonId}`);
+            player.tell(`§c委托配置缺失: ${dungeonId}`);
             currentDungeonIndex++;
             runNextDungeon();
             return;
@@ -189,7 +189,7 @@ function BossEvent(event) {
         let totalWaves = config.totalWaves;
         let WavesTime = config.time;
 
-        player.tell(Text.of("§6[副本系统] §f副本 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 开始！共 " + totalWaves + " 波！"));
+        player.tell(Text.of("§6委托任务§f [").append(Text.translate('item.rainbow.instance_pass' + id)).append("] 开始！共" + totalWaves + "波攻势！"));
 
         let currentWave = 1;
         let aliveMobs = []; // 当前波的怪物引用
@@ -198,11 +198,11 @@ function BossEvent(event) {
         function spawnWave(wave) {
             let mobs = dungeonMobs[dungeonId][wave];
             if (!mobs) {
-                 player.tell(`§c[副本系统] 缺少第 ${wave} 波怪物配置，跳过。`);
+                 player.tell(`§c委托缺少第 ${wave} 波怪物配置，跳过。`);
                  return;
             }
 
-            player.tell(Text.of("§e[副本系统] §f").append(Text.translate('item.rainbow.instance_pass' + id)).append(" - 第 " + wave + " 波怪物来袭！"));
+            player.tell(Text.of("§e委托 §f").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 的第" + wave + "波怪物来袭！"));
 
             aliveMobs = []; // 重置活跃怪物列表
 
@@ -230,14 +230,14 @@ function BossEvent(event) {
                 aliveMobs = aliveMobs.filter(e => e && e.isAlive());
 
                 if (aliveMobs.length === 0) {
-                    player.tell(Text.of("§a[副本系统] ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" - 第 " + wave + " 波完成！"));
+                    player.tell(Text.of("§a委托 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 的第" + wave + "波攻势完成！"));
                     
                     if (wave < totalWaves) {
                         spawnWave(wave + 1);
                         checkWaveComplete(wave + 1);
                     } else {
                         // 当前副本完成
-                        player.tell(Text.of("§a[副本系统] 副本 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 完成！"));
+                        player.tell(Text.of("§a委托 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 圆满结束！"));
                         player.give(`rainbow:instance_pass${id}`);
                         
                         // 稍微延迟一下进入下一个副本，体验更好
@@ -276,7 +276,7 @@ ItemEvents.rightClicked(event => {
 
     let instance = nbt.get("instance");
     if (!instance || instance.type != "instance") {
-        player.tell("§c[副本系统] 这个悬赏没有生成坐标！");
+        player.tell("§c这个悬赏委托还没有定位具体的坐标位置！");
         return;
     }
 
@@ -291,10 +291,10 @@ ItemEvents.rightClicked(event => {
 
     // 只有在距离目标点 50 格内才能启动副本
     if (dist <= 50) {
-        player.tell(`§a[副本系统] 即将启动`);
+        player.tell(`§a悬赏委托即将开始！`);
         BossEvent(event);
     } else {
-        player.tell(`§c[副本系统] 你不在副本范围内！ 距离: ${dist.toFixed(1)} 格`);
+        player.tell(`§c你不在委托范围内！目前距离目标地点: ${dist.toFixed(1)} 格`);
         //player.server.runCommandSilent(`/give @p filled_map{map:1, Decorations:[{id:"marker", type:26b, x:${x}, z:${z}, rot:180.0f}], display:{Name:'{"text":"藏宝图"}'}}`)
     }
 });

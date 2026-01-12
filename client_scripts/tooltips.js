@@ -295,7 +295,24 @@ ItemEvents.tooltip((event) => {
         {
             text.add(2, Text.darkPurple(`储存：${nbt.getInt("Souls")}`));
         }
-})
+    })
+    event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
+        // 先判断 NBT 是否存在
+        text.add(1, Text.gold(`[未激活]`));
+    })
+    event.addAdvanced('rainbow:baseball_power', (item, advanced, text) => {
+        // 先判断 NBT 是否存在
+        text.add(1, Text.gold(`能量：0`));
+        let nbt = item.getNbt();
+        if (!nbt) {
+            return;
+        }
+        else
+        {
+            text.remove(1)
+            text.add(1, Text.gold(`能量：${nbt.getInt("Power")}`));
+        }
+    })
     event.addAdvanced('rainbow:amber_bee', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按 [ALT] 查看详细"));
     

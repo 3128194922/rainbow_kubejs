@@ -34,19 +34,19 @@ const dungeonConfig = {
         time: 2,// 波次时间限制或者波次检测间隔 单位是秒
         totalWaves: 3,
     },
-    rainbow1: {
+    rainbow2: {
         time: 2,
         totalWaves: 1,
     },
-    rainbow1: {
+    rainbow3: {
         time: 2,
         totalWaves: 1,
     },
-    rainbow1: {
+    rainbow4: {
         time: 2,
         totalWaves: 1,
     },
-    rainbow1: {
+    rainbow5: {
         time: 2,
         totalWaves: 1,
     },
@@ -126,88 +126,139 @@ function BossEvent(event) {
     let level = event.getLevel();
     let player = event.getPlayer();
     let item = event.getItem();
-    let instance = item.nbt.get("instance");
+    let nbt = item.nbt;
+    let instance = nbt.get("instance");
 
-    let dungeonId = `rainbow${instance.getInt("id")}`;
-    let config = dungeonConfig[dungeonId];
-    if (!config) {
-        player.tell("§c[副本系统] 无效的副本配置！");
+    // 1. 解析所有副本目标ID
+    let dungeonIds = [];
+    
+    // 尝试从 bounty_data 解析所有目标
+    let bountyDataRaw = nbt.get("bountiful:bounty_data");
+    if (bountyDataRaw) {
+         let bountyDataStr = bountyDataRaw.toString();
+         if (bountyDataStr.startsWith("'") && bountyDataStr.endsWith("'")) {
+             bountyDataStr = bountyDataStr.slice(1, -1);
+         }
+         try {
+             let bountyData = JSON.parse(bountyDataStr);
+             let objectives = bountyData.objectives || [];
+             for (let obj of objectives) {
+                 let content = obj.content || "";
+                 let match = content.match(/instance_pass(\d+)/);
+                 if (match) {
+                     dungeonIds.push(parseInt(match[1], 10));
+                 }
+             }
+         } catch (e) {
+             console.error("Error parsing bounty data in BossEvent: " + e);
+         }
+    }
+    
+    // 如果解析失败或为空，回退到 instance.id (旧逻辑兼容)
+    if (dungeonIds.length === 0 && instance.contains("id")) {
+        dungeonIds.push(instance.getInt("id"));
+    }
+    
+    if (dungeonIds.length === 0) {
+        player.tell("§c[副本系统] 未找到有效的副本目标！");
         return;
     }
 
-    let totalWaves = config.totalWaves;
-    let WavesTime = config.time;
+    player.tell(`§6[副本系统] §f准备启动 ${dungeonIds.length} 个悬赏任务...`);
 
-    player.tell(`§6[副本系统] §f副本 ${dungeonId} 开始！共 ${totalWaves} 波！`);
+    // 2. 顺序执行副本
+    let currentDungeonIndex = 0;
 
-    let currentWave = 1;
-    let aliveMobs = []; // 当前波的怪物引用
-
-    // 生成波次怪物
-    function spawnWave(wave) {
-        let mobs = dungeonMobs[dungeonId][wave];
-        if (!mobs) return;
-
-        player.tell(`§e[副本系统] §f第 ${wave} 波怪物来袭！`);
-
-        aliveMobs = []; // 重置活跃怪物列表
-
-        for (let group of mobs) {
-            for (let i = 0; i < group.count; i++) {
-                let entity = level.createEntity(group.type);
-                let dx = (Math.random() - 0.5) * 10;
-                let dz = (Math.random() - 0.5) * 10;
-                entity.setPos(player.x + dx, player.y, player.z + dz);
-
-                // 标记归属副本与波次
-                entity.persistentData.dungeonWave = wave;
-                entity.setNbt(group.nbt)
-                entity.spawn();
-                aliveMobs.push(entity);
-            }
-        }
-    }
-
-    // 检查当前波是否完成 (所有怪物被击杀)
-    function checkWaveComplete(wave, callback) {
-        Utils.server.scheduleInTicks(20 * WavesTime, () => {
-            aliveMobs = aliveMobs.filter(e => e && e.isAlive());
-
-            if (aliveMobs.length === 0) {
-                player.tell(`§a[副本系统] 第 ${wave} 波完成！`);
-                callback(); // 进入下一波
-            } else {
-                checkWaveComplete(wave, callback); // 继续等待
-            }
-        });
-    }
-
-    // 调度下一波
-    function scheduleNextWave(wave) {
-        if (wave > totalWaves) {
-            // 等待最后一波清理完
-            checkWaveComplete(totalWaves, () => {
-                player.tell("§a[副本系统] 副本结束！恭喜完成所有波次！");
-                // 发放通关证明
-                player.give(`rainbow:instance_pass${instance.getInt("id")}`);
-            });
+    function runNextDungeon() {
+        if (currentDungeonIndex >= dungeonIds.length) {
+            player.tell("§a[副本系统] 所有悬赏波次已全部完成！");
             return;
         }
 
-        currentWave = wave;
-        spawnWave(wave);
+        let id = dungeonIds[currentDungeonIndex];
+        let dungeonId = `rainbow${id}`;
+        let config = dungeonConfig[dungeonId];
 
-        // 怪物死光才进入下一波
-        checkWaveComplete(wave, () => {
-            scheduleNextWave(wave + 1);
-        });
+        if (!config) {
+            player.tell(`§c[副本系统] 副本配置缺失: ${dungeonId}`);
+            currentDungeonIndex++;
+            runNextDungeon();
+            return;
+        }
+
+        let totalWaves = config.totalWaves;
+        let WavesTime = config.time;
+
+        player.tell(Text.of("§6[副本系统] §f副本 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 开始！共 " + totalWaves + " 波！"));
+
+        let currentWave = 1;
+        let aliveMobs = []; // 当前波的怪物引用
+
+        // 生成波次怪物
+        function spawnWave(wave) {
+            let mobs = dungeonMobs[dungeonId][wave];
+            if (!mobs) {
+                 player.tell(`§c[副本系统] 缺少第 ${wave} 波怪物配置，跳过。`);
+                 return;
+            }
+
+            player.tell(Text.of("§e[副本系统] §f").append(Text.translate('item.rainbow.instance_pass' + id)).append(" - 第 " + wave + " 波怪物来袭！"));
+
+            aliveMobs = []; // 重置活跃怪物列表
+
+            for (let group of mobs) {
+                for (let i = 0; i < group.count; i++) {
+                    let entity = level.createEntity(group.type);
+                    // 稍微分散一点生成
+                    let dx = (Math.random() - 0.5) * 10;
+                    let dz = (Math.random() - 0.5) * 10;
+                    entity.setPos(player.x + dx, player.y, player.z + dz);
+
+                    // 标记归属副本与波次
+                    entity.persistentData.dungeonWave = wave;
+                    if(group.nbt) entity.setNbt(group.nbt);
+                    entity.spawn();
+                    aliveMobs.push(entity);
+                }
+            }
+        }
+
+        // 检查当前波是否完成 (所有怪物被击杀)
+        function checkWaveComplete(wave) {
+            Utils.server.scheduleInTicks(20 * WavesTime, () => {
+                // 过滤掉已死亡的实体
+                aliveMobs = aliveMobs.filter(e => e && e.isAlive());
+
+                if (aliveMobs.length === 0) {
+                    player.tell(Text.of("§a[副本系统] ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" - 第 " + wave + " 波完成！"));
+                    
+                    if (wave < totalWaves) {
+                        spawnWave(wave + 1);
+                        checkWaveComplete(wave + 1);
+                    } else {
+                        // 当前副本完成
+                        player.tell(Text.of("§a[副本系统] 副本 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 完成！"));
+                        player.give(`rainbow:instance_pass${id}`);
+                        
+                        // 稍微延迟一下进入下一个副本，体验更好
+                        Utils.server.scheduleInTicks(40, () => {
+                            currentDungeonIndex++;
+                            runNextDungeon();
+                        });
+                    }
+                } else {
+                    checkWaveComplete(wave); // 继续等待
+                }
+            });
+        }
+
+        // 启动第一波
+        spawnWave(currentWave);
+        checkWaveComplete(currentWave);
     }
 
-    // 启动第一波
-    spawnWave(currentWave);
-    checkWaveComplete(currentWave, () => {
-        scheduleNextWave(currentWave + 1);
-    });
+    // 开始执行第一个副本
+    runNextDungeon();
 }
 
 

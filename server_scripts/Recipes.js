@@ -145,6 +145,30 @@ ServerEvents.recipes(event => {
     ['','','']])
     event.shapeless('uniyesmod:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
 
+    //洛阳铲
+    event.shaped('rainbow:luoyang_shovel', [
+        ['minecraft:flint','','minecraft:flint'],
+        ['minecraft:flint','minecraft:flint','minecraft:flint'],
+        ['','minecraft:stick','']])
+
+    // 始冰镐
+    event.shaped('rainbow:frostium_pickaxe', [
+        ['legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard'],
+        ['','minecraft:stick',''],
+        ['','minecraft:stick','']])
+
+    //下界反应堆
+    event.shaped('rainbow:docker_nether_off', [
+        ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
+        ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
+        ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
+
+    //乐谱
+    event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
+
+    //密封琥珀
+    event.shapeless('rainbow:amber_bee',['alexscaves:amber_curiosity','minecraft:glass_bottle'])
+
     // 腐肉制作
     event.recipes.create.haunting('minecraft:rotten_flesh', '#mynethersdelight:curry_meats')
 

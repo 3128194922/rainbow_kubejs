@@ -164,7 +164,7 @@ function BossEvent(event) {
         return;
     }
 
-    player.tell(`§6悬赏委托§f预计存在${dungeonIds.length}个...`);
+    player.tell(`预计存在${dungeonIds.length}个§6悬赏委托§f...`);
 
     // 2. 顺序执行副本
     let currentDungeonIndex = 0;
@@ -202,7 +202,7 @@ function BossEvent(event) {
                  return;
             }
 
-            player.tell(Text.of("§e委托 §f").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 的第" + wave + "波怪物来袭！"));
+            player.tell(Text.of("§e委托§f [").append(Text.translate('item.rainbow.instance_pass' + id)).append("] 的第" + wave + "波怪物来袭！"));
 
             aliveMobs = []; // 重置活跃怪物列表
 
@@ -230,14 +230,14 @@ function BossEvent(event) {
                 aliveMobs = aliveMobs.filter(e => e && e.isAlive());
 
                 if (aliveMobs.length === 0) {
-                    player.tell(Text.of("§a委托 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 的第" + wave + "波攻势完成！"));
+                    player.tell(Text.of("§a委托§f [").append(Text.translate('item.rainbow.instance_pass' + id)).append("] 的第" + wave + "波攻势完成！"));
                     
                     if (wave < totalWaves) {
                         spawnWave(wave + 1);
                         checkWaveComplete(wave + 1);
                     } else {
                         // 当前副本完成
-                        player.tell(Text.of("§a委托 ").append(Text.translate('item.rainbow.instance_pass' + id)).append(" 圆满结束！"));
+                        player.tell(Text.of("§a委托§f [").append(Text.translate('item.rainbow.instance_pass' + id)).append("] 圆满结束！"));
                         player.give(`rainbow:instance_pass${id}`);
                         
                         // 稍微延迟一下进入下一个副本，体验更好
@@ -291,10 +291,10 @@ ItemEvents.rightClicked(event => {
 
     // 只有在距离目标点 50 格内才能启动副本
     if (dist <= 50) {
-        player.tell(`§a悬赏委托即将开始！`);
+        player.tell(`§a委托任务即将开始！`);
         BossEvent(event);
     } else {
-        player.tell(`§c你不在委托范围内！目前距离目标地点: ${dist.toFixed(1)} 格`);
+        player.tell(`§c你不在委托范围内！目前距离目标地点: ${dist.toFixed(1)}格`);
         //player.server.runCommandSilent(`/give @p filled_map{map:1, Decorations:[{id:"marker", type:26b, x:${x}, z:${z}, rot:180.0f}], display:{Name:'{"text":"藏宝图"}'}}`)
     }
 });

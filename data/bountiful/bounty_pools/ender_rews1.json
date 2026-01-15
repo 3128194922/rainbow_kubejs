@@ -1,13 +1,313 @@
 {
   "content": {
-    "armorer_trade_5": {
+    "item_1": {
       "type": "item",
       "content": "minecraft:iron_ingot",
       "amount": {
-				"min": 1,
-				"max": 1
-			},
-      "unitWorth": 100,
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_2": {
+      "type": "item",
+      "content": "rainbow:lightning",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_3": {
+      "type": "item",
+      "content": "rainbow:lucky_charm",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_4": {
+      "type": "item",
+      "content": "rainbow:dice",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_5": {
+      "type": "item",
+      "content": "rainbow:mind",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_6": {
+      "type": "item",
+      "content": "rainbow:gluttony_charm",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_7": {
+      "type": "item",
+      "content": "rainbow:berserk_emblem",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_8": {
+      "type": "item",
+      "content": "rainbow:mining_charm",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_9": {
+      "type": "item",
+      "content": "rainbow:monster_charm",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_10": {
+      "type": "item",
+      "content": "rainbow:daawnlight_spirit_origin",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_11": {
+      "type": "item",
+      "content": "rainbow:despair_insignia",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_12": {
+      "type": "item",
+      "content": "rainbow:infernotooth_necklace",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_13": {
+      "type": "item",
+      "content": "rainbow:hero_charm",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_14": {
+      "type": "item",
+      "content": "chromaticarsenal:cursed_totem",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_15": {
+      "type": "item",
+      "content": "chromaticarsenal:gravity_stone",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_16": {
+      "type": "item",
+      "content": "chromaticarsenal:vertical_stasis_stone",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_17": {
+      "type": "item",
+      "content": "chromaticarsenal:harpy_feather",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_18": {
+      "type": "item",
+      "content": "chromaticarsenal:blahaj",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_19": {
+      "type": "item",
+      "content": "chromaticarsenal:anonymity_umbrella",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_20": {
+      "type": "item",
+      "content": "chromaticarsenal:amethyst_ring",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_21": {
+      "type": "item",
+      "content": "chromaticarsenal:copper_ring",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_22": {
+      "type": "item",
+      "content": "chromaticarsenal:vital_stone",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_23": {
+      "type": "item",
+      "content": "chromaticarsenal:duality_rings",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_24": {
+      "type": "item",
+      "content": "chromaticarsenal:shadow_treads",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_25": {
+      "type": "item",
+      "content": "chromaticarsenal:ward_crystal",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_26": {
+      "type": "item",
+      "content": "chromaticarsenal:ascended_star",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_27": {
+      "type": "item",
+      "content": "chromaticarsenal:world_anchor",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_28": {
+      "type": "item",
+      "content": "chromaticarsenal:thunderguard",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_29": {
+      "type": "item",
+      "content": "chromaticarsenal:advancing_heart",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_30": {
+      "type": "item",
+      "content": "chromaticarsenal:momentum_stone",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
+      "weightMult": 0.1
+    },
+    "item_31": {
+      "type": "item",
+      "content": "chromaticarsenal:cryo_ring",
+      "amount": {
+        "min": 1,
+        "max": 1
+      },
+      "unitWorth": 1000,
       "weightMult": 0.1
     }
   }

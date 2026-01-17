@@ -512,3 +512,364 @@ global.getKeysByMod = (modid) => {
   });
   return result;
 };
+
+
+// ============================================
+// 🌬️ Backtank 工具封装（Create气罐管理）
+// ============================================
+const BacktankUtil = Java.loadClass("com.simibubi.create.content.equipment.armor.BacktankUtil");
+const ArrayList = Java.loadClass("java.util.ArrayList");
+
+global.backtankUtils = {
+
+    /**
+     * 获取实体身上所有仍有气的气罐 ItemStack
+     * @param {LivingEntity} entity 
+     * @returns {ItemStack[]}
+     */
+    getAllWithAir(entity) {
+        return BacktankUtil.getAllWithAir(entity);
+    },
+
+    /**
+     * 检查气罐是否还有气体
+     * @param {ItemStack} stack 
+     * @returns {boolean}
+     */
+    hasAirRemaining(stack) {
+        return BacktankUtil.hasAirRemaining(stack);
+    },
+
+    /**
+     * 获取气罐当前气量
+     * @param {ItemStack} stack 
+     * @returns {number}
+     */
+    getAir(stack) {
+        return BacktankUtil.getAir(stack);
+    },
+
+    /**
+     * 获取气罐最大气量（考虑附魔）
+     * @param {ItemStack} stack 
+     * @returns {number}
+     */
+    getMaxAir(stack) {
+        return BacktankUtil.maxAir(stack);
+    },
+
+    /**
+     * 消耗指定气量
+     * @param {LivingEntity} entity 
+     * @param {ItemStack} stack 
+     * @param {number} amount 
+     */
+    consumeAir(entity, stack, amount) {
+        BacktankUtil.consumeAir(entity, stack, amount);
+    },
+
+    /**
+     * 尝试为伤害吸收消耗气体（返回是否成功）
+     * @param {LivingEntity} entity 
+     * @param {number} usesPerTank 
+     * @returns {boolean}
+     */
+    tryAbsorbDamage(entity, usesPerTank) {
+        return BacktankUtil.canAbsorbDamage(entity, usesPerTank);
+    },
+
+    /**
+     * 获取所有气罐当前气体百分比平均值
+     * @param {LivingEntity} entity
+     * @returns {number} 0~1
+     */
+    getAverageAirRatio(entity) {
+        const tanks = BacktankUtil.getAllWithAir(entity);
+        if (tanks.isEmpty()) return 0;
+        let total = 0;
+        let max = 0;
+        for (let i = 0; i < tanks.size(); i++) {
+            let t = tanks.get(i);
+            total += BacktankUtil.getAir(t);
+            max += BacktankUtil.maxAir(t);
+        }
+        return total / max;
+    },
+
+    /**
+     * 快速获取玩家当前的第一个有效气罐
+     * @param {LivingEntity} entity
+     * @returns {ItemStack | null}
+     */
+    getFirstTank(entity) {
+        const list = BacktankUtil.getAllWithAir(entity);
+        return list.isEmpty() ? null : list.get(0);
+    },
+
+    /**
+     * 直接设置气罐气量（手动修改 NBT）
+     * @param {ItemStack} stack 
+     * @param {number} value 
+     */
+    setAir(stack, value) {
+        const tag = stack.getOrCreateTag();
+        const max = BacktankUtil.maxAir(stack);
+        tag.putFloat("Air", Math.min(value, max));
+        stack.setTag(tag);
+    },
+};
+// ============================================
+// ✨ MobEnchant 工具封装（Enchant With Mob 管理）
+// ============================================
+
+const MobEnchantUtilsClass = Java.loadClass("baguchan.enchantwithmob.utils.MobEnchantUtils");
+const MobEnchants = Java.loadClass("baguchan.enchantwithmob.registry.MobEnchants");
+const RandomSource = Java.loadClass("net.minecraft.util.RandomSource");
+
+global.mobEnchantUtils = {
+
+    // -------------------
+    // 基础检测与获取
+    // -------------------
+
+    /**
+     * 检查物品是否具有 Mob 附魔
+     * @param {ItemStack} stack 目标物品
+     * @returns {boolean} 是否有 Mob 附魔
+     */
+    hasMobEnchant(stack) {
+        return MobEnchantUtilsClass.hasMobEnchant(stack);
+    },
+
+    /**
+     * 获取物品上的全部 Mob 附魔
+     * @param {ItemStack} stack 目标物品
+     * @returns {java.util.Map<Holder<MobEnchant>, Integer>} 附魔及等级映射
+     */
+    getEnchantments(stack) {
+        return MobEnchantUtilsClass.getEnchantments(stack);
+    },
+
+    /**
+     * 获取物品上指定 MobEnchant 的等级
+     * @param {ItemStack} stack 目标物品
+     * @param {MobEnchant} mobEnchant 附魔对象
+     * @returns {number} 附魔等级
+     */
+    getEnchantLevel(stack, mobEnchant) {
+        const enchants = MobEnchantUtilsClass.getEnchantments(stack);
+        return enchants.containsKey(mobEnchant) ? enchants.get(mobEnchant) : 0;
+    },
+
+    /**
+     * 根据字符串 ID 获取 MobEnchant 对象
+     * @param {string} id 附魔 ID
+     * @returns {MobEnchant | null} MobEnchant 对象
+     */
+    getEnchantFromString(id) {
+        return MobEnchantUtilsClass.getEnchantFromString(id);
+    },
+
+    /**
+     * 从 NBT 获取 MobEnchant
+     * @param {CompoundTag} tag NBT 标签
+     * @returns {MobEnchant | null} MobEnchant 对象
+     */
+    getEnchantFromNBT(tag) {
+        return MobEnchantUtilsClass.getEnchantFromNBT(tag);
+    },
+
+    /**
+     * 从 NBT 获取附魔等级
+     * @param {CompoundTag} tag NBT 标签
+     * @returns {number} 附魔等级
+     */
+    getEnchantLevelFromNBT(tag) {
+        return MobEnchantUtilsClass.getEnchantLevelFromNBT(tag);
+    },
+
+    // -------------------
+    // 物品附魔
+    // -------------------
+
+    /**
+     * 为物品添加指定 Mob 附魔
+     * @param {ItemStack} stack 目标物品
+     * @param {MobEnchant} mobEnchant 附魔对象
+     * @param {number} level 附魔等级
+     */
+    addEnchant(stack, mobEnchant, level) {
+        MobEnchantUtilsClass.addMobEnchantToItemStack(stack, mobEnchant, level);
+    },
+
+    /**
+     * 随机为物品添加 Mob 附魔
+     * @param {ItemStack} stack 目标物品
+     * @param {number} [level=10] 附魔强度
+     * @param {boolean} [allowRare=true] 是否允许稀有附魔
+     * @param {boolean} [allowCurse=false] 是否允许诅咒附魔
+     * @returns {ItemStack} 修改后的物品
+     */
+    addRandomEnchant(stack, level, allowRare, allowCurse) {
+        if (!stack || stack.isEmpty()) return stack;
+        const random = RandomSource.create();
+        MobEnchantUtilsClass.addRandomEnchantmentToItemStack(random, stack, level, allowRare, allowCurse);
+        return stack;
+    },
+
+    // -------------------
+    // 实体附魔
+    // -------------------
+
+    /**
+     * 判断实体是否拥有指定 MobEnchant
+     * @param {LivingEntity} entity 目标实体
+     * @param {MobEnchant} mobEnchant 附魔对象
+     * @returns {boolean} 是否拥有
+     */
+    hasEntityEnchant(entity, mobEnchant) {
+        if (!entity || !entity.isLiving()) return false;
+        const cap = entity.getCapability(Java.loadClass("baguchan.enchantwithmob.api.IEnchantCap").class);
+        if (!cap) return false;
+        return MobEnchantUtilsClass.findMobEnchantFromHandler(cap.getEnchantCap().getMobEnchants(), mobEnchant);
+    },
+
+    /**
+     * 给实体添加 MobEnchant
+     * @param {LivingEntity} entity 目标实体
+     * @param {MobEnchant} mobEnchant 附魔对象
+     * @param {number} level 附魔等级
+     * @param {boolean} [ancient=false] 是否为远古附魔
+     */
+    addEnchantToEntity(entity, mobEnchant, level, ancient) {
+        const IEnchantCap = Java.loadClass("baguchan.enchantwithmob.api.IEnchantCap");
+        const cap = entity.getCapability(IEnchantCap.class);
+        if (!cap) return;
+        const MobEnchantmentData = Java.loadClass("baguchan.enchantwithmob.utils.MobEnchantmentData");
+        const data = new MobEnchantmentData(mobEnchant, level);
+        MobEnchantUtilsClass.addEnchantmentToEntity(entity, cap, data, ancient);
+    },
+
+    /**
+     * 将物品附魔应用到实体
+     * @param {ItemStack} stack 附魔物品
+     * @param {LivingEntity} entity 目标实体
+     * @param {LivingEntity} user 使用者实体
+     * @param {IEnchantCap} capability 附魔能力对象
+     * @returns {boolean} 是否成功
+     */
+    addItemMobEnchantToEntity(stack, entity, user, capability) {
+        return MobEnchantUtilsClass.addItemMobEnchantToEntity(stack, entity, user, capability);
+    },
+
+    /**
+     * 将不稳定附魔物品应用到实体
+     * @param {ItemStack} stack 附魔物品
+     * @param {LivingEntity} entity 目标实体
+     * @param {LivingEntity} owner 拥有者
+     * @param {IEnchantCap} capability 附魔能力对象
+     * @returns {boolean} 是否成功
+     */
+    addUnstableItemMobEnchantToEntity(stack, entity, owner, capability) {
+        return MobEnchantUtilsClass.addUnstableItemMobEnchantToEntity(stack, entity, owner, capability);
+    },
+
+    /**
+     * 移除实体所有 Mob 附魔
+     * @param {LivingEntity} entity 目标实体
+     */
+    clearEntityEnchants(entity) {
+        const IEnchantCap = Java.loadClass("baguchan.enchantwithmob.api.IEnchantCap");
+        const cap = entity.getCapability(IEnchantCap.class);
+        if (!cap) return;
+        MobEnchantUtilsClass.removeMobEnchantToEntity(entity, cap);
+    },
+
+    /**
+     * 获取实体的附魔经验总值
+     * @param {LivingEntity} entity 目标实体
+     * @returns {number} 总经验值
+     */
+    getEntityEnchantExp(entity) {
+        const IEnchantCap = Java.loadClass("baguchan.enchantwithmob.api.IEnchantCap");
+        const cap = entity.getCapability(IEnchantCap.class);
+        if (!cap) return 0;
+        return MobEnchantUtilsClass.getExperienceFromMob(cap);
+    },
+
+    /**
+     * 给实体添加随机 Mob 附魔
+     * @param {LivingEntity} entity 目标实体
+     * @param {IEnchantCap} capability 附魔能力对象
+     * @param {RandomSource} random 随机对象
+     * @param {number} level 附魔等级
+     * @param {boolean} [ancient=false] 是否为远古附魔
+     * @param {TagKey<MobEnchant>} [tag=null] 附魔标签
+     * @returns {boolean} 是否成功
+     */
+    addRandomEnchantmentToEntity(entity, capability, random, level, ancient, tag) {
+        if (tag) {
+            return MobEnchantUtilsClass.addRandomEnchantmentToEntity(entity, capability, random, level, ancient, tag);
+        }
+        return MobEnchantUtilsClass.addRandomEnchantmentToEntity(entity, capability, random, level, ancient);
+    },
+
+    /**
+     * 给实体添加不稳定随机 Mob 附魔
+     * @param {LivingEntity} entity 目标实体
+     * @param {LivingEntity} owner 拥有者
+     * @param {IEnchantCap} capability 附魔能力对象
+     * @param {RandomSource} random 随机对象
+     * @param {number} level 附魔等级
+     * @param {TagKey<MobEnchant>} [tag=null] 附魔标签
+     * @returns {boolean} 是否成功
+     */
+    addUnstableRandomEnchantmentToEntity(entity, owner, capability, random, level, tag) {
+        if (tag) {
+            return MobEnchantUtilsClass.addUnstableRandomEnchantmentToEntity(entity, owner, capability, random, level, tag);
+        }
+        return MobEnchantUtilsClass.addUnstableRandomEnchantmentToEntity(entity, owner, capability, random, level);
+    },
+
+    // -------------------
+    // 工具方法
+    // -------------------
+
+    /**
+     * 当实体存在指定附魔时执行回调
+     * @param {LivingEntity} entity 目标实体
+     * @param {MobEnchant} mobEnchant 附魔对象
+     * @param {Function} runnable 回调函数
+     */
+    executeIfPresent(entity, mobEnchant, runnable) {
+        if (entity != null && entity instanceof Java.loadClass("baguchan.enchantwithmob.api.IEnchantCap")) {
+            const cap = entity;
+            if (MobEnchantUtilsClass.findMobEnchantFromHandler(cap.getEnchantCap().getMobEnchants(), mobEnchant)) {
+                runnable();
+            }
+        }
+    },
+
+    /**
+     * 获取最终伤害值（附魔影响后的）
+     * @param {ServerLevel} level 世界
+     * @param {Entity} entity 目标实体
+     * @param {DamageSource} damageSource 伤害来源
+     * @param {number} damage 原始伤害
+     * @returns {number} 修改后的伤害
+     */
+    modifyDamage(level, entity, damageSource, damage) {
+        return MobEnchantUtilsClass.modifyDamage(level, entity, damageSource, damage);
+    },
+
+    /**
+     * 获取伤害防护值
+     * @param {ServerLevel} level 世界
+     * @param {LivingEntity} entity 目标实体
+     * @param {DamageSource} damageSource 伤害来源
+     * @returns {number} 防护值
+     */
+    getDamageProtection(level, entity, damageSource) {
+        return MobEnchantUtilsClass.getDamageProtection(level, entity, damageSource);
+    }
+};

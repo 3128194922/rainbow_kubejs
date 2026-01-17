@@ -32,7 +32,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
         victim.getItemBySlot("legs").id == "uniyesmod:democracy_leggings"
     ) {
         // 检查背罐中的空气量
-        let tank = global.backtankUtils.getFirstTank(victim);
+        /*let tank = global.backtankUtils.getFirstTank(victim);
         if (tank && global.backtankUtils.hasAirRemaining(tank)) {
             let currentAir = global.backtankUtils.getAir(tank);
             let damage = event.getAmount();
@@ -51,6 +51,28 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                 event.setAmount(reducedDamage);
                 global.backtankUtils.consumeAir(victim, tank, currentAir); // 用光剩余气体
             }
+        }*/
+        let tank = getCuriosItem(victim, 'create:copper_backtank')?getCuriosItem(victim, 'create:copper_backtank'):getCuriosItem(victim, 'create:netherite_backtank');
+        let currentAir = tank.nbt.getInt("Air");
+        if (tank && currentAir > 0) {
+            let damage = event.getAmount();
+            let airPerDamage = 10;
+            let requiredAir = damage * airPerDamage;
+
+            if(currentAir >= requiredAir)
+                {
+                    tank.nbt.putInt("Air",tank.nbt.getInt("Air") - requiredAir);
+                    event.setAmount(0);
+                    victim.level.runCommandSilent(`/playsound create:steam voice @a ${victim.x} ${victim.y} ${victim.z}`)
+                }
+            else if(currentAir > 10)
+                {
+                    // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
+                    let reducedDamage = damage * (1 - currentAir / requiredAir);
+                    event.setAmount(reducedDamage);
+                    tank.nbt.putInt("Air",0);
+                    victim.level.runCommandSilent(`/playsound create:steam voice @a ${victim.x} ${victim.y} ${victim.z}`)
+                }
         }
     }
 
@@ -697,4 +719,3 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
-

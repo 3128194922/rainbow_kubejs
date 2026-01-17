@@ -31,6 +31,11 @@ EntityEvents.hurt(event => {
             source.player.getMainHandItem().shrink(1);
         }
     }
+    //撼俑免疫动能伤害（不然会崩溃）
+    if(entity.getType() == "species:quake" && source.getType() == "generic")
+        {
+            event.cancel(); // 取消伤害
+        }
 });
 
 // 实体生成事件

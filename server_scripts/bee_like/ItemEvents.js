@@ -28,9 +28,8 @@ ItemEvents.entityInteracted(event => {
         {
             nbt.putString("like_food",Item.of(global.foodlist[Math.floor(randomInRange(0,global.foodlist.length - 1))]).getDisplayName().getString())
             High = true;
-        }
 
-    /**
+     /**
      * 基因对编码规则 (FruitfulFun)：
      * 0 0 : 0
      * 0 1 : 1
@@ -79,4 +78,5 @@ ItemEvents.entityInteracted(event => {
             const random = randomBool(0.5);
             bee.getBlock().popItem(Item.of(`${items[random?0:1]}`,64))
         } 
+        }
 })

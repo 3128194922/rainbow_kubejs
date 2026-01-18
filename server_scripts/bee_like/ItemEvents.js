@@ -43,30 +43,40 @@ ItemEvents.entityInteracted(event => {
      * 2 2 : 34
      */
     
-    // 检查喂食的是否为肉类
-    let isMeat = false;
-    let food = Item.of(item).item?.foodProperties;
-    if (food) {
-        if (typeof food.isMeat === 'function') {
-            isMeat = food.isMeat();
-        } else {
-            isMeat = !!food.isMeat;
+    if(FC == 17)
+        {
+            bee.getBlock().popItem(Item.of("minecraft:amethyst_shard",64))
         }
-    }
 
-    if(isMeat)
+    if(FC == 34)
         {
-            // 如果蜜蜂具有特定基因 (FC == 17，即 1 1 基因对)
-            if(FC == 17)
-                {
-                    // 可以在此添加特定逻辑
-                }
+            bee.getBlock().popItem(Item.of("alexscaves:uranium_shard",64))
         }
-    else
+
+    if(FT1 == 17)
         {
-            if(FC == 17)
-                {
-                    
-                }
+            bee.getBlock().popItem(Item.of("alexscaves:pewen_sap",64))
         }
+
+    if(FT1 == 34)
+        {
+            bee.getBlock().popItem(Item.of("minecraft:diamond",64))
+        }
+
+    if(FT2 == 17)
+        {
+            bee.getBlock().popItem(Item.of("minecraft:lapis_lazuli",64))
+        }  
+
+    if(FT2 == 34)
+        {
+            bee.getBlock().popItem(Item.of("heart_crystals:heart_crystal_shard",64))
+        }  
+    
+    if(RC == 17)
+        {
+            const items = ["alexscaves:raw_scarlet_neodymium","alexscaves:raw_azure_neodymium"]
+            const random = randomBool(0.5);
+            bee.getBlock().popItem(Item.of(`${items[random?0:1]}`,64))
+        } 
 })

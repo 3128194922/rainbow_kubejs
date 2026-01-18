@@ -56,7 +56,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
         let currentAir = tank.nbt.getInt("Air");
         if (tank && currentAir > 0) {
             let damage = event.getAmount();
-            let airPerDamage = 10;
+            let airPerDamage = 5;
             let requiredAir = damage * airPerDamage;
 
             if(currentAir >= requiredAir)
@@ -65,7 +65,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                     event.setAmount(0);
                     victim.level.runCommandSilent(`playsound create:steam voice ${victim.displayName.string} ${victim.x} ${victim.y} ${victim.z} 100 1`)
                 }
-            else if(currentAir > 10)
+            else
                 {
                     // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
                     let reducedDamage = damage * (1 - currentAir / requiredAir);

@@ -30,11 +30,11 @@ ClientEvents.tick((event) => {
         // 如果按钮数组为空，说明需要创建按钮
         if (buttons.length === 0) {
             // ======== 末影箱按钮 (已注释) ========
-            /*
+
             let enderButton = $Button.builder(Text.of("末影箱"), (button) => {
                 player.sendData("server", { open_menu: "enderchest" });
             }).bounds(0, 0, 60, 20).build();
-            */
+            
 
             // ======== 文本显示  ========
             
@@ -49,9 +49,9 @@ ClientEvents.tick((event) => {
                 player.sendData("server", { open_menu: "trashcan" });
             }).bounds(0, 0, 60, 20).build();
 
-            // buttons.push(enderButton);
             buttons.push(helpButton);
             buttons.push(helpTitle);
+            buttons.push(enderButton);
 
             // 添加到界面渲染列表
             buttons.forEach(btn => screen.addRenderableWidget(btn));

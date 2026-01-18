@@ -125,7 +125,6 @@ function rgbToPower(r, g, b) {
                 level.server.scheduleInTicks(60,()=>{
                   level.setBlockAndUpdate(oppositeBlock.pos,Blocks.TARGET.defaultBlockState().setValue(BlockProperties.POWER,Integer.valueOf("0")))
                 })
-              
             }      
           }
           })

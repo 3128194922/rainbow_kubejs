@@ -76,9 +76,19 @@ ServerEvents.recipes(event => {
     
     //末影docker加强型
     event.shaped('rainbow:docker_ender_player', [
-        ['createutilities:void_casing','createutilities:void_casing','createutilities:void_casing'],
-        ['createutilities:void_casing','rainbow:docker_ender','createutilities:void_casing'],
-        ['createutilities:void_casing','createutilities:void_casing','createutilities:void_casing']])
+        ['','createutilities:void_casing',''],
+        ['','rainbow:docker_ender',''],
+        ['','createutilities:void_casing','']])
+
+    //背包代理
+    event.shaped('rainbow:docker_ender_player_vpn', [
+        ['#minecraft:planks','createutilities:graviton_tube','#minecraft:planks'],
+        ['#minecraft:planks','rainbow:docker_ender_player', '#minecraft:planks'],
+        ['#minecraft:planks','createutilities:void_casing','#minecraft:planks']])
+    
+    //物品栏代理
+    event.shapeless('rainbow:docker_ender_player_hotbar','rainbow:docker_ender_player_vpn')
+    event.shapeless('rainbow:docker_ender_player_vpn','rainbow:docker_ender_player_hotbar')
 
     // 农夫乐事：切洋葱获得皮
     event.recipes.farmersdelight.cutting(

@@ -187,6 +187,98 @@ ItemEvents.rightClicked(event => {
         item.nbt.biomenum = item.nbt.biomes.length;
         player.setStatusMessage(`已收集新的群系力量：§a${biomeId}`);
     }
+
+    // --- 远程标靶信号器：激活逻辑 ---
+    if (item.id === "rainbow:controller" && !player.isCrouching()) {
+        let nbt = item.getNbt();
+        if (!nbt || !nbt.contains("targetX")) {
+            player.setStatusMessage("§c未绑定目标方块！请潜行右键点击标靶方块进行绑定。");
+            return;
+        }
+
+        let x = nbt.getInt("targetX");
+        let y = nbt.getInt("targetY");
+        let z = nbt.getInt("targetZ");
+        let dim = nbt.getString("targetDim");
+
+        let targetLevel = server.getLevel(dim);
+        if (!targetLevel) {
+            player.setStatusMessage(`§c找不到维度: ${dim}`);
+            return;
+        }
+
+        let targetPos = new BlockPos(x, y, z);
+        
+        // 检查区块是否加载
+        if (!targetLevel.isLoaded(targetPos)) {
+             player.setStatusMessage("§c目标区块未加载！无法发送信号。");
+             return;
+        }
+
+        let targetBlock = targetLevel.getBlock(targetPos);
+
+        // 检测方块是否还存在
+        if (targetBlock.id !== "minecraft:target") {
+            player.setStatusMessage(`§c目标方块已不存在或被破坏！(${x}, ${y}, ${z})`);
+            return;
+        }
+
+        // 获取信号强度和持续时间
+        let signalPower = 15; // 默认强度
+        let durationTicks = 60; // 默认持续时间 (3秒)
+
+        if (nbt.contains("display")) {
+            let displayTag = nbt.getCompound("display");
+            if (displayTag.contains("Name")) {
+                try {
+                    let nameJson = displayTag.getString("Name");
+                    // 尝试解析 JSON 字符串
+                    let nameObj = JSON.parse(nameJson);
+                    if (nameObj && nameObj.text) {
+                        let text = nameObj.text;
+                        // 检查是否包含冒号 (强度:持续时间)
+                        if (text.includes(":")) {
+                            let parts = text.split(":");
+                            if (parts.length >= 2) {
+                                let powerVal = parseInt(parts[0]);
+                                let timeVal = parseInt(parts[1]);
+                                
+                                if (!isNaN(powerVal)) {
+                                    signalPower = Math.max(0, Math.min(15, powerVal));
+                                }
+                                if (!isNaN(timeVal)) {
+                                    // 时间单位是秒，转换为 tick (1秒 = 20 tick)
+                                    durationTicks = Math.max(1, timeVal * 20);
+                                }
+                            }
+                        } else {
+                            // 仅包含强度
+                            let parsedVal = parseInt(text);
+                            if (!isNaN(parsedVal)) {
+                                 signalPower = Math.max(0, Math.min(15, parsedVal));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // 解析失败，保持默认
+                }
+            }
+        }
+
+        // 设置信号强度
+        targetLevel.setBlockAndUpdate(targetPos, targetBlock.blockState.setValue(BlockProperties.POWER, Integer.valueOf(signalPower.toString())));
+        
+        // 指定时间后复位
+        targetLevel.server.scheduleInTicks(durationTicks, () => {
+             if (targetLevel.getBlock(targetPos).id === "minecraft:target") {
+                 targetLevel.setBlockAndUpdate(targetPos, targetLevel.getBlock(targetPos).blockState.setValue(BlockProperties.POWER, Integer.valueOf("0")));
+             }
+        });
+        
+        player.setStatusMessage("§a远程信号已发送！");
+        level.playSound(null, player.blockPosition(), "minecraft:block.lever.click", "blocks", 1.0, 1.0);
+    }
+
 });
 
 // 音乐系统：山羊角记录音乐

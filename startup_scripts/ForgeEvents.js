@@ -63,7 +63,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                 {
                     tank.nbt.putInt("Air",tank.nbt.getInt("Air") - requiredAir);
                     event.setAmount(0);
-                    victim.level.runCommandSilent(`/playsound create:steam voice @a ${victim.x} ${victim.y} ${victim.z}`)
+                    victim.level.runCommandSilent(`playsound create:steam voice ${victim.displayName.string} ${victim.x} ${victim.y} ${victim.z} 100 1`)
                 }
             else if(currentAir > 10)
                 {
@@ -71,7 +71,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                     let reducedDamage = damage * (1 - currentAir / requiredAir);
                     event.setAmount(reducedDamage);
                     tank.nbt.putInt("Air",0);
-                    victim.level.runCommandSilent(`/playsound create:steam voice @a ${victim.x} ${victim.y} ${victim.z}`)
+                    victim.level.runCommandSilent(`playsound create:steam voice ${victim.displayName.string} ${victim.x} ${victim.y} ${victim.z} 100 1`)
                 }
         }
     }

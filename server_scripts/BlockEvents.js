@@ -215,3 +215,35 @@ BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_pla
         }
     }
 });
+
+// 远程标靶信号器
+BlockEvents.rightClicked("minecraft:target", event => {
+    let entity = event.block.entity;
+    let player = event.getPlayer();
+    let hand = event.getHand().toString();
+    let item = event.getItem();
+
+    // 只触发主手
+    if (hand === "OFF_HAND") return;
+    if(item.id == "rainbow:controller")
+        {
+            if(player.isCrouching()) {
+                let pos = event.block.pos;
+                let level = event.level;
+                let dimension = level.dimension.toString();
+                
+                // 记录坐标和维度到 NBT
+                let nbt = item.getOrCreateTag();
+                nbt.putInt("targetX", pos.x);
+                nbt.putInt("targetY", pos.y);
+                nbt.putInt("targetZ", pos.z);
+                nbt.putString("targetDim", dimension);
+                item.setTag(nbt);
+
+                player.tell(`§a已绑定目标方块: (${pos.x}, ${pos.y}, ${pos.z}) 在 ${dimension}`);
+                event.cancel(); // 防止打开界面或其它交互
+            }
+        }
+    
+
+});

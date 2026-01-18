@@ -1001,6 +1001,60 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// Docker 末影箱代理
+StartupEvents.registry("block", event => {
+    event.create("rainbow:docker_ender_proxy")
+        .woodSoundType()
+        .displayName("Docker(末影箱代理)")
+        .blockEntity(entityInfo => {
+            entityInfo.inventory(9, 3);
+            //entityInfo.rightClickOpensInventory();
+
+            // 每 20 ticks (即每秒) 执行一次
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+
+                if (!entity.data || !entity.data.uuid) return;
+
+                let uuid = UUID.fromString(entity.data.uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
+
+                if (player) {
+                    let enderChest = player.getEnderChestInventory();
+                    
+                    // 单向同步：玩家末影箱 -> 方块 (仅用于显示)
+                    for (let i = 0; i < 27; i++) {
+                        let pStack = enderChest.getStackInSlot(i);
+                        let bStack = entity.inventory.getStackInSlot(i);
+
+                        if (!pStack.equals(bStack)) {
+                            entity.inventory.setStackInSlot(i, pStack.copy());
+                        }
+                    }
+
+                } else {
+                    let inv = entity.inventory;
+                    for(let i=0; i<inv.slots; i++) {
+                        if (!inv.getStackInSlot(i).isEmpty()) {
+                            inv.setStackInSlot(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+            });
+            // 红石交互
+            entityInfo.attachCapability(
+                CapabilityBuilder.ITEM.blockEntity()
+                    .availableOn((be, dir) => true)
+                    .extractItem((be, slot, amount, simulate) => false)
+                    .insertItem((be, slot, stack, simulate) => false)
+                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
+                    .getSlots(be => be.inventory.slots)
+                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
+                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
+            );
+        });
+});
 
 // ==========================================
 // 💍 注册饰品与特殊装备 (Curios)

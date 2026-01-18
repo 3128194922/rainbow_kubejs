@@ -157,7 +157,7 @@ BlockEvents.rightClicked(event => {
 });
 
 // 末影 docker 绑定逻辑
-BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar"], event => {
+BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
     let entity = event.block.entity;
     let player = event.getPlayer();
     let hand = event.getHand().toString();
@@ -197,7 +197,7 @@ BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player",
 });
 
 // Docker 背包代理破坏事件：破坏时清空内部物品防止掉落
-BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar"], event => {
+BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
     let block = event.block;
     let entity = block.entity;
     

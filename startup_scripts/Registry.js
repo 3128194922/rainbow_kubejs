@@ -763,7 +763,7 @@ StartupEvents.registry("block", event => {
 
                 // 从 data 中获取玩家 UUID
                 let uuid = UUID.fromString(entity.data.uuid);
-                let player = level.getPlayerByUUID(uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
 
                 // 如果找到了玩家
                 if (player) {
@@ -830,7 +830,7 @@ StartupEvents.registry("block", event => {
 
                 // 从 data 中获取玩家 UUID
                 let uuid = UUID.fromString(entity.data.uuid);
-                let player = level.getPlayerByUUID(uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
 
                 // 如果找到了玩家
                 if (player) {
@@ -878,6 +878,125 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// Docker 背包代理
+StartupEvents.registry("block", event => {
+    event.create("rainbow:docker_ender_player_vpn")
+        .woodSoundType()
+        .displayName("docker(背包代理)")
+        .blockEntity(entityInfo => {
+            entityInfo.inventory(9, 3);
+            entityInfo.rightClickOpensInventory();
+
+            // 每 20 ticks (即每秒) 执行一次
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+
+                // 确保 entity.data 存在
+                if (!entity.data || !entity.data.uuid) return;
+
+                // 从 data 中获取玩家 UUID
+                let uuid = UUID.fromString(entity.data.uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
+
+                // 如果找到了玩家
+                if (player) {
+                    let playerInventory = player.inventory;
+                    
+                    // 单向同步：玩家 -> 方块
+                    // 遍历方块的 27 个槽位，对应玩家背包的 Slot 9-35
+                    for (let i = 0; i < 27; i++) {
+                        let playerSlot = i + 9; // 玩家背包 Slot 9-35
+                        
+                        let bStack = entity.inventory.getStackInSlot(i);
+                        let pStack = playerInventory.getItem(playerSlot);
+                        
+                        // 强制同步为玩家背包的状态
+                        if (!pStack.equals(bStack)) {
+                            entity.inventory.setStackInSlot(i, pStack.copy());
+                        }
+                    }
+
+                } else {
+                    // 玩家不在线 -> 清空方块库存
+                    let inv = entity.inventory;
+                    for(let i=0; i<inv.slots; i++) {
+                        if (!inv.getStackInSlot(i).isEmpty()) {
+                            inv.setStackInSlot(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+            });
+            // 红石交互
+            entityInfo.attachCapability(
+                CapabilityBuilder.ITEM.blockEntity()
+                    .availableOn((be, dir) => true)
+                    .extractItem((be, slot, amount, simulate) => false)
+                    .insertItem((be, slot, stack, simulate) => false)
+                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
+                    .getSlots(be => be.inventory.slots)
+                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
+                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
+            );
+        });
+});
+
+// Docker 物品栏代理
+StartupEvents.registry("block", event => {
+    event.create("rainbow:docker_ender_player_hotbar")
+        .woodSoundType()
+        .displayName("docker(物品栏代理)")
+        .blockEntity(entityInfo => {
+            entityInfo.inventory(9, 1);
+            entityInfo.rightClickOpensInventory();
+
+            // 每 20 ticks (即每秒) 执行一次
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+
+                if (!entity.data || !entity.data.uuid) return;
+
+                let uuid = UUID.fromString(entity.data.uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
+
+                if (player) {
+                    let playerInventory = player.inventory;
+                    
+                    // 单向同步：玩家 -> 方块
+                    // 遍历方块的 9 个槽位，对应玩家物品栏的 Slot 0-8
+                    for (let i = 0; i < 9; i++) {
+                        let playerSlot = i; 
+                        let pStack = playerInventory.getItem(playerSlot);
+                        let bStack = entity.inventory.getStackInSlot(i);
+
+                        if (!pStack.equals(bStack)) {
+                            entity.inventory.setStackInSlot(i, pStack.copy());
+                        }
+                    }
+
+                } else {
+                    let inv = entity.inventory;
+                    for(let i=0; i<inv.slots; i++) {
+                        if (!inv.getStackInSlot(i).isEmpty()) {
+                            inv.setStackInSlot(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+            });
+            // 红石交互
+            entityInfo.attachCapability(
+                CapabilityBuilder.ITEM.blockEntity()
+                    .availableOn((be, dir) => true)
+                    .extractItem((be, slot, amount, simulate) => false)
+                    .insertItem((be, slot, stack, simulate) => false)
+                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
+                    .getSlots(be => be.inventory.slots)
+                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
+                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
+            );
+        });
+});
 
 
 // ==========================================

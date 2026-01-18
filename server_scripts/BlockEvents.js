@@ -157,7 +157,7 @@ BlockEvents.rightClicked(event => {
 });
 
 // 末影 docker 绑定逻辑
-BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player"], event => {
+BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar"], event => {
     let entity = event.block.entity;
     let player = event.getPlayer();
     let hand = event.getHand().toString();
@@ -192,6 +192,26 @@ BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player"]
             }
         } else {
             player.tell("§7❔ §f这个末影 Docker 目前尚未绑定任何玩家，§a潜行+右键进行绑定");
+        }
+    }
+});
+
+// Docker 背包代理破坏事件：破坏时清空内部物品防止掉落
+BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar"], event => {
+    let block = event.block;
+    let entity = block.entity;
+    
+    if (entity) {
+        let inv = entity.inventory;
+        if (inv) {
+            // 清空所有槽位
+            for (let i = 0; i < inv.slots; i++) {
+                inv.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        }
+        // 清除快照数据 (如果有)
+        if (entity.persistentData && entity.persistentData.snapshot) {
+            entity.persistentData.snapshot = null;
         }
     }
 });

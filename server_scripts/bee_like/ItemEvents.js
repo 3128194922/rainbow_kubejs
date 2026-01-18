@@ -78,5 +78,5 @@ ItemEvents.entityInteracted(event => {
             const random = randomBool(0.5);
             bee.getBlock().popItem(Item.of(`${items[random?0:1]}`,64))
         } 
-        }
+    }
 })

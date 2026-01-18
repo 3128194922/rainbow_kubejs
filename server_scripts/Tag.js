@@ -94,7 +94,6 @@ ServerEvents.tags("block", event => {
     
     // 刚玉簇
     event.add("rainbow:corundum_cluster",['quark:red_corundum_cluster', 'quark:orange_corundum_cluster', 'quark:yellow_corundum_cluster', 'quark:green_corundum_cluster', 'quark:blue_corundum_cluster', 'quark:indigo_corundum_cluster', 'quark:violet_corundum_cluster', 'quark:white_corundum_cluster', 'quark:black_corundum_cluster'])
-   
 })
 
 ServerEvents.tags("worldgen/biome", event => {

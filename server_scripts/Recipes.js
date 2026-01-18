@@ -194,6 +194,12 @@ ServerEvents.recipes(event => {
     // 创造蛋糕配方
     event.shapeless('create:creative_blaze_cake',['rainbow:missingno', 'rainbow:plus', 'rainbow:plus'])
 
+    // 远程标靶遥控器
+    event.shaped("rainbow:controller", [
+        ['', 'create:transmitter', ''],
+        ['', 'minecraft:iron_ingot', ''],
+        ['', 'quark:iron_button','']])
+
     // 传送石价格降低
     event.remove({ output: Item.of('waystones:warp_stone', '{Damage:0}') })
     event.shapeless(Item.of('waystones:warp_stone', '{Damage:0}'), ['minecraft:emerald', 'minecraft:ender_pearl'])

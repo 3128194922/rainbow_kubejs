@@ -888,7 +888,7 @@ StartupEvents.registry("block", event => {
         .displayName("docker(背包代理)")
         .blockEntity(entityInfo => {
             entityInfo.inventory(9, 3);
-            entityInfo.rightClickOpensInventory();
+            //entityInfo.rightClickOpensInventory();
 
             // 每 20 ticks (即每秒) 执行一次
             entityInfo.serverTick(20, 0, entity => {
@@ -951,7 +951,7 @@ StartupEvents.registry("block", event => {
         .displayName("docker(物品栏代理)")
         .blockEntity(entityInfo => {
             entityInfo.inventory(9, 1);
-            entityInfo.rightClickOpensInventory();
+            //entityInfo.rightClickOpensInventory();
 
             // 每 20 ticks (即每秒) 执行一次
             entityInfo.serverTick(20, 0, entity => {

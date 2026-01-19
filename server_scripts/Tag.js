@@ -10,13 +10,13 @@ ServerEvents.tags("item", event => {
     })
     
     // 饰品相关标签
-    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank'])
+    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('rainbow:democracy',['uniyesmod:democracy_helmet','uniyesmod:democracy_boots','uniyesmod:democracy_chestplate','uniyesmod:democracy_leggings'])
     
     // 技能饰品
     event.add('rainbow:skill_charm',['rainbow:monster_charm', 'rainbow:rage_syringe', 'rainbow:resilience_syringe', 'rainbow:drowned_heart', 
-    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:beacon_ball'])
+    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:beacon_ball','royalvariations:royal_staff'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",
@@ -32,7 +32,7 @@ ServerEvents.tags("item", event => {
          'artifacts:vampiric_glove', 'artifacts:pocket_piston', 'artifacts:fire_gauntlet', 'artifacts:power_glove', 'artifacts:feral_claws',
           'artifacts:digging_claws'],
        "curios:charm")
-
+/*
     // 铁魔法书饰品标签
     retagItem(event,['irons_spellbooks:poisonward_ring', 'irons_spellbooks:frostward_ring', 'irons_spellbooks:emerald_stoneplate_ring',
     'irons_spellbooks:fireward_ring', 'irons_spellbooks:heavy_chain_necklace', 'irons_spellbooks:silver_ring', 'irons_spellbooks:cooldown_ring', 
@@ -56,7 +56,7 @@ ServerEvents.tags("item", event => {
         "irons_spellbooks:dragonskin_spell_book"
     ].forEach(item=>{
         event.removeAllTagsFrom(item)
-    })
+    })*/
 
     // 背部饰品标签
     retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod','alexscaves:nuclear_bomb'],

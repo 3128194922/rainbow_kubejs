@@ -608,6 +608,56 @@ CuriosJSEvents.registerRenderer(event => {
         }
     )
 
+    event.register(
+        'royalvariations:royal_staff',
+        context => {
+            let {
+                stack,
+                slotContext,
+                matrixStack,
+                renderLayerParent,
+                renderTypeBuffer,
+                light,
+                limbSwing,
+                limbSwingAmount,
+                partialTicks,
+                ageInTicks,
+                netHeadYaw,
+                headPitch
+            } = context;
+    
+            let { modelManager } = Client;
+            let entity = slotContext.entity();
+            let model = modelManager.getModel(new ModelResourceLocation(stack.id, "inventory"));
+    
+            matrixStack.pushPose();
+    
+            // 玩家蹲下时微调位置
+            CuriosRenderer.translateIfSneaking(matrixStack, entity);
+    
+            // 背部定位：偏移到背后，朝外
+            matrixStack.translate(0.0, 0.8, 0.0); // X, Y, Z位置调整（Y适应高度，Z适应后背）
+
+            matrixStack.mulPose(new Quaternionf().rotateX(JavaMath.toRadians(270)))
+
+            // 缩放饰品
+            matrixStack.scale(1, 1, 1);
+    
+            Client.itemRenderer.render(
+                stack,
+                'none', // 使用 'none' 避免触发 forge:separate_transforms 的 fixed/gui 替换逻辑，从而使用 base (手持) 模型
+                false,
+                matrixStack,
+                renderTypeBuffer,
+                light,
+                OverlayTexture.NO_OVERLAY,
+                model
+            );
+    
+            matrixStack.popPose();
+        }
+    )
+
     const banners = ['minecraft:white_banner', 'minecraft:light_gray_banner', 'minecraft:gray_banner', 'minecraft:black_banner', 'minecraft:brown_banner', 'minecraft:red_banner', 'minecraft:orange_banner', 'minecraft:yellow_banner', 'minecraft:lime_banner', 'minecraft:green_banner', 'minecraft:cyan_banner', 'minecraft:light_blue_banner', 'minecraft:blue_banner', 'minecraft:purple_banner', 'minecraft:magenta_banner', 'minecraft:pink_banner']
     banners.forEach(item=>{
         event.register(

@@ -151,7 +151,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
 // ⚔️ 模块2：武器伤害逻辑
 // 处理玩家攻击时的特殊武器效果
 // =============================================
-function handleWeaponEffects(event, attacker, victim, source, range_damage) {
+function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     const mainHand = attacker.getItemInHand("main_hand");
     const offHand = attacker.getItemInHand("off_hand");
 
@@ -206,7 +206,7 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage) {
 // 💍 模块3：饰品与状态逻辑
 // 处理攻击者佩戴饰品或拥有特定状态时的效果
 // =============================================
-function handleCuriosEffects(event, attacker, victim, source, range_damage) {
+function handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     const mainHand = attacker.getItemInHand("main_hand");
     const offHand = attacker.getItemInHand("off_hand");
 
@@ -263,6 +263,32 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage) {
 }
 
 // =============================================
+// 💍 模块4：独特伤害类型流派
+// 处理爆炸、魔法、投掷流派的伤害结算
+// =============================================
+function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage){
+    if (!attacker.isPlayer()) return;
+
+    if(thrown_damage.indexOf(source.getType()) != -1)
+        {
+            let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
+            event.setAmount(attributeValue * event.getAmount())
+        }
+
+    if(soure_magic.indexOf(source.getType()) != -1)
+        {
+            let attributeValue = attacker.getAttributeValue("rainbow:generic.magic_damage");
+            event.setAmount(attributeValue * event.getAmount())
+        }
+    
+    if(boom_damage.indexOf(source.getType()) != -1)
+        {
+            let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");
+            event.setAmount(attributeValue * event.getAmount())
+        }
+}
+
+// =============================================
 // ⚔️ 玩家受伤事件（主入口）
 // =============================================
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
@@ -275,17 +301,29 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     // 定义远程伤害类型列表
     const range_damage = [
         'atmospheric.passionFruitSeed',
-        'thrown',
         'soulBullet',
         'arrow',
-        'trident',
         'lead_bolt',
         'create.potato_cannon'
     ];
-    const soure_magic = ["indirectMagic", "magic"];
+    const thrown_damage = [
+        'thrown',
+        'trident',
+        "dungeonsdelight.cleaver"
+    ]
+    const soure_magic = [
+        "indirectMagic",
+        "magic"
+    ];
+    const boom_damage = [
+        "explosion.player",
+        "explosion"
+    ];
 
     try {
-        // ========= 魔法与防御逻辑 =========
+        // ========= 伤害计算逻辑 =========
+        handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage)
+        // ========= 玩家防御逻辑 =========
         handleVictimDefense(event, victim, source, EquipmentSlot, UUID);
     } catch(e) {
         console.log("handleVictimDefense出现问题:")
@@ -298,8 +336,8 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
         if (attacker.level.isClientSide()) return;
     
         // 执行攻击特效模块
-        handleCuriosEffects(event, attacker, victim, source, range_damage);
-        handleWeaponEffects(event, attacker, victim, source, range_damage);
+        handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+        handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
     } catch(e) {
         console.log("handleCuriosEffects\\handleWeaponEffects出现问题:")
         console.log(e)
@@ -730,3 +768,4 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
+DamageSorce()

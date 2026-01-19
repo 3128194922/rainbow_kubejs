@@ -1122,7 +1122,7 @@ StartupEvents.registry('item', event => {
 
                     event.modify("generic.attack_damage", "hungry_charm_damage", 0.04 * multiplier, "multiply_total");
                     event.modify("generic.movement_speed", "hungry_charm_damage", 0.0025 * multiplier, "multiply_total");
-                    event.modify("l2damagetracker:damage_reduction", "hungry_charm_damage", -1 * multiplier, "addition");
+                    //event.modify("l2damagetracker:damage_reduction", "hungry_charm_damage", -1 * multiplier, "addition");
                     event.modify("attributeslib:crit_damage", "hungry_charm_damage", 0.0125 * multiplier, "multiply_total");
 
                 })
@@ -1857,7 +1857,7 @@ StartupEvents.registry('item', event => {
                     'addition'
                 )
             })
-            .addAttribute("minecraft:generic.max_health","cyber_nerve_cpu",0.5,"multiply_total")
+            .addAttribute("minecraft:generic.max_health","cyber_nerve_cpu",-0.5,"multiply_total")
             .addAttribute("rainbow:generic.cyberware_capacity","cyber_nerve_cpu",10,"addition")
     )
 })

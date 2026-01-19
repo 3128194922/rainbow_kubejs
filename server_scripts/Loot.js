@@ -353,12 +353,13 @@ ServerEvents.genericLootTables(event => {
     })
     event.addGeneric('minecraft:gameplay/hero_of_the_village/mason_gift', loot => {
         loot.addPool(pool => {
-            pool.addItem('tacz:statue')
+            pool.addItem('rainbow:hero_charm')
         })
     })
     event.addGeneric('minecraft:gameplay/hero_of_the_village/weaponsmith_gift', loot => {
         loot.addPool(pool => {
-            pool.addItem('rainbow:glass_sword')
+            //pool.addItem('rainbow:glass_sword')
+            pool.addItem('rainbow:purified_cloth')
         })
     })
     event.addGeneric('minecraft:gameplay/hero_of_the_village/toolsmith_gift', loot => {
@@ -416,6 +417,42 @@ ServerEvents.entityLootTables(event => {
             pool.addItem('uniyesmod:which_armor_helmet')
             .weight(1)
             .count([0,1])
+        })
+    })
+    // 腐烂之心
+    event.modifyEntity('minecraft:zombie', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('rainbow:rotten_heart')
+            .weight(1)
+            .count([0,1])
+            pool.addEmpty(10)
+        })
+    })
+    // 沙蚀之心
+    event.modifyEntity('minecraft:husk', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('rainbow:gritty_heart')
+            .weight(1)
+            .count([0,1])
+            pool.addEmpty(10)
+        })
+    })
+    // 溺尸之心
+    event.modifyEntity('minecraft:drowned', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('rainbow:drowned_heart')
+            .weight(1)
+            .count([0,1])
+            pool.addEmpty(10)
+        })
+    })
+    // 霜冻之心
+    event.modifyEntity('windswept:chilled', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('rainbow:frozen_heart')
+            .weight(1)
+            .count([0,1])
+            pool.addEmpty(10)
         })
     })
 /*

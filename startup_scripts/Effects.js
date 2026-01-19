@@ -103,7 +103,7 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial()
         .color(0xEAF044)
         .modifyAttribute("generic.attack_damage", "resilience", 1.5, "multiply_total") // 每级攻击力提升 1.5 倍
-        .modifyAttribute("l2damagetracker:damage_reduction", "resilience", 0.5, "addition") // 每级额外增加 0.5 的减伤
+        //.modifyAttribute("l2damagetracker:damage_reduction", "resilience", 0.5, "addition") // 每级额外增加 0.5 的减伤
     // 伤害积蓄：有益
     event.create("rainbow:damage_num")
         .beneficial() // 标记为有益效果

@@ -1857,7 +1857,7 @@ StartupEvents.registry('item', event => {
                     'addition'
                 )
             })
-            .addAttribute("minecraft:generic.max_health","cyber_nerve_cpu",-10,"addition")
+            .addAttribute("minecraft:generic.max_health","cyber_nerve_cpu",0.5,"multiply_total")
             .addAttribute("rainbow:generic.cyberware_capacity","cyber_nerve_cpu",10,"addition")
     )
 })
@@ -1880,7 +1880,7 @@ StartupEvents.registry('item', event => {
                     return false;
                 }
                 // 需要神经处理器
-                if (hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
+                if (!hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
                     return false;
                 }
                 return true;

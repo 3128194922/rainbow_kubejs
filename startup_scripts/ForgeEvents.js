@@ -63,7 +63,8 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                 {
                     tank.nbt.putInt("Air",tank.nbt.getInt("Air") - requiredAir);
                     event.setAmount(0);
-                    victim.level.runCommandSilent(`playsound create:steam voice ${victim.displayName.string} ${victim.x} ${victim.y} ${victim.z} 100 1`)
+                    //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
+                    victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"create:steam","voice", 1, 1)
                 }
             else
                 {
@@ -71,7 +72,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                     let reducedDamage = damage * (1 - currentAir / requiredAir);
                     event.setAmount(reducedDamage);
                     tank.nbt.putInt("Air",0);
-                    victim.level.runCommandSilent(`playsound create:steam voice ${victim.displayName.string} ${victim.x} ${victim.y} ${victim.z} 100 1`)
+                    victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"create:steam","voice", 1, 1)
                 }
         }
     }
@@ -117,7 +118,8 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
             victim.persistentData.putFloat("damage_num", dmg);
         } else {
             // 伤害超过100，触发爆炸
-            victim.server.runCommandSilent(`/playsound rainbow:voice.fte voice @a ${victim.x} ${victim.y} ${victim.z}`);
+            //victim.server.runCommandSilent(`/playsound rainbow:voice.fte voice @a ${victim.x} ${victim.y} ${victim.z}`);
+            victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"rainbow:voice.fte","voice", 1, 1)
             victim.level.createExplosion(victim.x, victim.y, victim.z)
                 .exploder(victim)
                 .strength(dmg / 10)
@@ -183,11 +185,18 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage) {
 
     // 万能钥匙斧：气罐触发额外伤害
     if (mainHand.id == "uniyesmod:master_key" && range_damage.indexOf(source.getType()) == -1) {
-        let tank = global.backtankUtils.getFirstTank(attacker);
+        /*let tank = global.backtankUtils.getFirstTank(attacker);
         if (tank && global.backtankUtils.hasAirRemaining(tank)) {
             global.backtankUtils.consumeAir(attacker, tank, 10); // 消耗10气
             event.setAmount(event.getAmount() + 6); // 增加伤害
             attacker.level.playSound(null, attacker.blockPosition(), "create:whistle_low", "players", 1.0, 1.0);
+        }*/
+        let tank = getCuriosItem(attacker, 'create:copper_backtank')?getCuriosItem(attacker, 'create:copper_backtank'):getCuriosItem(attacker, 'create:netherite_backtank');
+        let currentAir = tank.nbt.getInt("Air");
+        if (tank && currentAir > 0) {
+            tank.nbt.putInt("Air",currentAir - 10);
+            event.setAmount(event.getAmount() + 6); // 增加伤害
+            attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"create:steam","voice", 1, 1)
         }
     }
 }
@@ -204,7 +213,8 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage) {
     // 牢大饮料/曼巴效果：速度加成伤害倍率
     if (hasCurios(attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
         event.setAmount(event.getAmount() * attacker.getSpeed().toFixed(2) * 10);
-        attacker.server.runCommandSilent(`/playsound rainbow:voice.man voice @p ${victim.x} ${victim.y} ${victim.z}`);
+        //attacker.server.runCommandSilent(`/playsound rainbow:voice.man voice @p ${victim.x} ${victim.y} ${victim.z}`);
+        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"rainbow:voice.man","voice", 1, 1)
     }
 
     // 屠夫之钉：远程攻击暴击引发爆炸
@@ -242,7 +252,8 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage) {
         lightning.setToEntityID(victim.getId());
         lightning.setChainsLeft(5);
         victim.level.addFreshEntity(lightning);
-        attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
+        //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
+        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"domesticationinnovation:chain_lightning","voice", 1, 1)
     }
 
     // 被标记目标（tag）受到远程攻击双倍伤害

@@ -223,6 +223,8 @@ ItemEvents.rightClicked(event => {
             return;
         }
 
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(),"item.lodestone_compass.lock","voice", 1, 1)
+
         // 获取信号强度和持续时间
         let signalPower = 15; // 默认强度
         let durationTicks = 60; // 默认持续时间 (3秒)

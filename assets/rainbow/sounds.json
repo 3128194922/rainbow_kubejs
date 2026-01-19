@@ -2,7 +2,10 @@
   "voice.man": {
     "subtitle": "sounds.rainbow.man",
     "sounds": [
-      "rainbow:man"
+      "rainbow:man",
+	  "rainbow:manbaout",
+	  "rainbow:wcis",
+	  "rainbow:hhh"
     ]
   },
    "music.gauntlet": {

@@ -241,6 +241,7 @@ BlockEvents.rightClicked("minecraft:target", event => {
                 item.setTag(nbt);
 
                 player.tell(`§a已绑定目标方块: (${pos.x}, ${pos.y}, ${pos.z}) 在 ${dimension}`);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(),"item.lodestone_compass.lock","voice", 1, 1)
                 event.cancel(); // 防止打开界面或其它交互
             }
         }

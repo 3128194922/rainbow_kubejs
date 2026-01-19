@@ -225,6 +225,15 @@ ServerEvents.recipes(event => {
     ['','','']])
     event.shapeless('uniyesmod:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
 
+    //牢大冰红茶配方
+    event.recipes.farmersdelight.cooking(
+        ['minecraft:ice','fruitfulfun:lemon','minecraft:sugar'],
+        'rainbow:ice_tea', // 输出
+        30, // 经验
+        10, // 烹饪时间
+        'minecraft:honey_bottle', // 容器（原文为container）
+    );
+
     //洛阳铲
     event.shaped('rainbow:luoyang_shovel', [
         ['minecraft:flint','','minecraft:flint'],

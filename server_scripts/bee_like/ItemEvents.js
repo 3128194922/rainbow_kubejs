@@ -41,7 +41,7 @@ ItemEvents.entityInteracted(event => {
         */
 
         if (RC == 17 && FC == 17 && FT1 == 17 && FT2 == 17) {
-            
+            bee.getBlock().popItem(Item.of("bosses_of_mass_destruction:brimstone_nectar", 1))
         }
 
         if (FC == 17) {
@@ -65,7 +65,7 @@ ItemEvents.entityInteracted(event => {
         }
 
         if (FT2 == 34) {
-            bee.getBlock().popItem(Item.of("heart_crystals:heart_crystal_shard", 64))
+            bee.getBlock().popItem(Item.of("zgmobs:heart_crystal_dust", 64))
         }
 
         if (RC == 17) {

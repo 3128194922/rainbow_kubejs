@@ -26,10 +26,10 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
     // --- 民主甲套装效果 ---
     // 只有穿戴全套民主装备时生效
     if (
-        victim.getItemBySlot("chest").id == "uniyesmod:democracy_chestplate" &&
-        victim.getItemBySlot("feet").id == "uniyesmod:democracy_boots" &&
-        victim.getItemBySlot("head").id == "uniyesmod:democracy_helmet" &&
-        victim.getItemBySlot("legs").id == "uniyesmod:democracy_leggings"
+        victim.getItemBySlot("chest").id == "gimmethat:democracy_chestplate" &&
+        victim.getItemBySlot("feet").id == "gimmethat:democracy_boots" &&
+        victim.getItemBySlot("head").id == "gimmethat:democracy_helmet" &&
+        victim.getItemBySlot("legs").id == "gimmethat:democracy_leggings"
     ) {
         // 检查背罐中的空气量
         /*let tank = global.backtankUtils.getFirstTank(victim);
@@ -184,7 +184,7 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
     }
 
     // 万能钥匙斧：气罐触发额外伤害
-    if (mainHand.id == "uniyesmod:master_key" && range_damage.indexOf(source.getType()) == -1) {
+    if (mainHand.id == "gimmethat:master_key" && range_damage.indexOf(source.getType()) == -1) {
         /*let tank = global.backtankUtils.getFirstTank(attacker);
         if (tank && global.backtankUtils.hasAirRemaining(tank)) {
             global.backtankUtils.consumeAir(attacker, tank, 10); // 消耗10气

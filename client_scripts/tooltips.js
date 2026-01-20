@@ -39,7 +39,7 @@ ItemEvents.tooltip((event) => {
         }
         text.add(1, Text.red("已食用食物数:").append(Text.lightPurple(`${item.nbt.foodnumber}`)));
     })
-    event.addAdvanced('uniyesmod:giants_ring', (item, advanced, text) => {
+    event.addAdvanced('gimmethat:giants_ring', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -50,7 +50,7 @@ ItemEvents.tooltip((event) => {
         text.add(Text.red("MIT License"))
         text.add(Text.red("Project: demis-enigmatic-dice"))
     })
-    event.addAdvanced('uniyesmod:moon', (item, advanced, text) => {
+    event.addAdvanced('gimmethat:moon', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -61,7 +61,7 @@ ItemEvents.tooltip((event) => {
         text.add(Text.red("MIT License"))
         text.add(Text.red("Project: demis-enigmatic-dice"))
     })
-    event.addAdvanced('uniyesmod:gravity_core', (item, advanced, text) => {
+    event.addAdvanced('gimmethat:gravity_core', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -132,7 +132,7 @@ ItemEvents.tooltip((event) => {
 		text.add(2, Text.darkPurple(`加速玩家饮食速度的同时，允许玩家在饱食度已满时进食`));
 		}
     })
-    event.addAdvanced('uniyesmod:moai_charm', (item, advanced, text) => {
+    event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
         text.add(1, Text.darkPurple("生物碰撞箱对你无影响"));
         text.add(Text.red("**Third-Party Licenses**"))
         text.add(Text.red("MIT License"))

@@ -170,7 +170,7 @@ ServerEvents.recipes(event => {
         ['', 'minecraft:stick','']])
 
     // 万能钥匙配方
-    event.shapeless('uniyesmod:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
+    event.shapeless('gimmethat:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
 
     // 毒化烂泥
     event.recipes.create.mixing(['8x alexscaves:unrefined_waste',"alexscaves:metal_barrel"], ['alexscaves:waste_drum', '8x #minecraft:dirt'])
@@ -223,7 +223,7 @@ ServerEvents.recipes(event => {
     event.shaped('rainbow:tnt_arrow', [['','minecraft:arrow',''],
     ['','minecraft:tnt',''],
     ['','','']])
-    event.shapeless('uniyesmod:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
+    event.shapeless('gimmethat:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
 
     //牢大冰红茶配方
     event.recipes.farmersdelight.cooking(
@@ -305,10 +305,10 @@ ServerEvents.recipes(event => {
     event.recipes.create.filling('alexsmobs:ambergris', [Fluid.of("youkaishomecoming:suigei", 1000), 'rainbow:shit'])
 
     //民主甲配方
-    event.recipes.create.filling('uniyesmod:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet'])
-    event.recipes.create.filling('uniyesmod:democracy_chestplate', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_chestplate'])
-    event.recipes.create.filling('uniyesmod:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings'])
-    event.recipes.create.filling('uniyesmod:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
+    event.recipes.create.filling('gimmethat:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet'])
+    event.recipes.create.filling('gimmethat:democracy_chestplate', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_chestplate'])
+    event.recipes.create.filling('gimmethat:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings'])
+    event.recipes.create.filling('gimmethat:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
 
     // 臭屁瓶
     event.recipes.create.mixing('alexsmobs:stink_bottle', ['rainbow:shit', 'quark:bottled_cloud'])
@@ -331,7 +331,7 @@ ServerEvents.recipes(event => {
     ], 'create:precision_mechanism', [
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'minecraft:nether_star']),
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'rainbow:docker_nether_on']),
-        event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'uniyesmod:nether_of_voice'])
+        event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'gimmethat:nether_of_voice'])
     ]).transitionalItem('create:incomplete_precision_mechanism').loops(1)
 
     // 液态逻辑

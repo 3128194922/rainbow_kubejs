@@ -729,7 +729,7 @@ StartupEvents.registry("block", event => {
                 if (data.tick_counter >= 1000) {
                     data.tick_counter = 0;
 
-                    let reward = Item.of("uniyesmod:nether_of_voice");
+                    let reward = Item.of("gimmethat:nether_of_voice");
                     entity.inventory.insertItem(reward, false);
                 }
             });
@@ -1222,8 +1222,8 @@ StartupEvents.registry('item', event => {
                     if (player == null) return;
                     if (player.age % SecoundToTick(5)) return;
 
-                    player.potionEffects.add("uniyesmod:lozenge", SecoundToTick(10), 0, false, false);
-                    player.potionEffects.add("uniyesmod:appetizing", SecoundToTick(10), 0, false, false);
+                    player.potionEffects.add("gimmethat:lozenge", SecoundToTick(10), 0, false, false);
+                    player.potionEffects.add("gimmethat:appetizing", SecoundToTick(10), 0, false, false);
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();

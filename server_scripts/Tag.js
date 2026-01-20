@@ -12,7 +12,7 @@ ServerEvents.tags("item", event => {
     // 饰品相关标签
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
-    event.add('rainbow:democracy',['uniyesmod:democracy_helmet','uniyesmod:democracy_boots','uniyesmod:democracy_chestplate','uniyesmod:democracy_leggings'])
+    event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     
     // 技能饰品
     event.add('rainbow:skill_charm',['rainbow:monster_charm', 'rainbow:rage_syringe', 'rainbow:resilience_syringe', 'rainbow:drowned_heart', 
@@ -22,8 +22,8 @@ ServerEvents.tags("item", event => {
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",
      "chromaticarsenal:golden_heart",'chromaticarsenal:vital_stone', 'chromaticarsenal:ascended_star', 'chromaticarsenal:harpy_feather',
       'chromaticarsenal:viewer_item','chromaticarsenal:momentum_stone', 'chromaticarsenal:bubble_amulet', 'chromaticarsenal:duality_rings',
-       'chromaticarsenal:cryo_ring', 'chromaticarsenal:copper_ring', 'chromaticarsenal:amethyst_ring','rainbow:ice_tea','uniyesmod:gravity_core',
-       'uniyesmod:giants_ring','uniyesmod:plastic_drinking_hat','uniyesmod:moai_charm','artifacts:charm_of_sinking', 'artifacts:thorn_pendant', 
+       'chromaticarsenal:cryo_ring', 'chromaticarsenal:copper_ring', 'chromaticarsenal:amethyst_ring','rainbow:ice_tea','gimmethat:gravity_core',
+       'gimmethat:giants_ring','gimmethat:plastic_drinking_hat','gimmethat:moai_charm','artifacts:charm_of_sinking', 'artifacts:thorn_pendant', 
        'artifacts:flame_pendant', 'artifacts:shock_pendant', 'artifacts:panic_necklace', 'artifacts:scarf_of_invisibility', 'artifacts:lucky_scarf',
         'artifacts:cross_necklace', 'artifacts:whoopee_cushion', 'artifacts:chorus_totem', 'artifacts:helium_flamingo', 'artifacts:crystal_heart',
          'artifacts:universal_attractor', 'artifacts:antidote_vessel', 'artifacts:obsidian_skull', 'artifacts:cloud_in_a_bottle','artifacts:aqua_dashers', 
@@ -68,7 +68,7 @@ ServerEvents.tags("item", event => {
         "curios:head")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "uniyesmod:slime_arrow", "uniyesmod:nether_of_voice", "uniyesmod:airburst_arrow"])
+    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "gimmethat:slime_arrow", "gimmethat:nether_of_voice", "gimmethat:airburst_arrow"])
     
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])

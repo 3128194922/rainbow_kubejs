@@ -8,7 +8,7 @@
 
 // 修改物品稀有度和属性
 ItemEvents.modification(event => {
-   let list = ['uniyesmod:gravity_core', 'uniyesmod:giants_ring', 'uniyesmod:moai_charm']
+   let list = ['gimmethat:gravity_core', 'gimmethat:giants_ring', 'gimmethat:moai_charm']
 
    // 批量修改稀有度为 epic
    list.forEach(item => {
@@ -48,7 +48,7 @@ ItemEvents.modification(event => {
                   // --- 判断是否穿齐民主套装 ---
                   let armor = ["head", "chest", "legs", "feet"];
                   let fullSet = armor.every(slot =>
-                     player.getItemBySlot(slot).id == `uniyesmod:democracy_${slot == "head" ? "helmet" :
+                     player.getItemBySlot(slot).id == `gimmethat:democracy_${slot == "head" ? "helmet" :
                         slot == "chest" ? "chestplate" :
                            slot == "legs" ? "leggings" : "boots"
                      }`

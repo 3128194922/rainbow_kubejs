@@ -59,6 +59,6 @@ registerPotionPair("rainbow:apty4869", 90, 180)
 // 全局酿造事件
 // ===============================
 MoreJSEvents.registerPotionBrewing((event) => {
-    event.addPotionBrewing("uniyesmod:moon","minecraft:awkward", "rainbow:flying_potion");
+    event.addPotionBrewing("gimmethat:moon","minecraft:awkward", "rainbow:flying_potion");
     event.addPotionBrewing("minecraft:redstone", "rainbow:flying_potion", "rainbow:long_flying_potion");
 });

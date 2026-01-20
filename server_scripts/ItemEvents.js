@@ -120,7 +120,7 @@ ItemEvents.rightClicked(event => {
         {
             if(PlayerLookAtMoon(player))
                 {
-                    player.give("uniyesmod:moon")
+                    player.give("gimmethat:moon")
                     item.shrink(1)
                 }
         }

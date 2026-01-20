@@ -14,7 +14,7 @@ global.MobMaskAttributeConfig = {
             OPERATION: "addition"
         },
         {
-            attribute: "uniyesmod:size_scale", // 体型缩小
+            attribute: "gimmethat:size_scale", // 体型缩小
             UUID: "34782055-835a-4deb-8151-d38f06b05b65",
             ID: "mask_bat",
             NUMBER: -0.5,

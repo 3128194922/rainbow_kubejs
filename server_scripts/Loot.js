@@ -414,7 +414,7 @@ ServerEvents.entityLootTables(event => {
     // 女巫帽子
     event.modifyEntity('minecraft:witch', Loot => {
         Loot.addPool(pool => {
-            pool.addItem('uniyesmod:which_armor_helmet')
+            pool.addItem('gimmethat:which_armor_helmet')
             .weight(1)
             .count([0,1])
         })

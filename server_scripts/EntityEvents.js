@@ -36,6 +36,33 @@ EntityEvents.hurt(event => {
         {
             event.cancel(); // 取消伤害
         }
+
+    //大哥怒了！
+    if (source.player) {
+        let nbt = entity.nbt;
+        let germoniumState = nbt.getString("Germonium");
+        let luck = source.player.getAttribute("minecraft:generic.luck").getValue();
+
+        if (germoniumState && germoniumState === "normal" && luck < 0) {
+            // 获取玩家幸运值并计算触发概率 (绝对值/100)
+            let probability = Math.abs(luck) / 100.0;
+
+            // 只有满足概率才触发
+            if (randomBool(probability)) {
+                // 50% 概率决定形态
+                let isInfernium = randomBool(0.5);
+                let newForm = isInfernium ? "infernium" : "celestium";
+                
+                // 更新 NBT
+                entity.mergeNbt({ Germonium: newForm });
+                
+                Utils.server.scheduleInTicks(1,event=>{
+                    // 恢复满血
+                    entity.setHealth(entity.getMaxHealth());
+                })
+            }
+        }
+    }
 });
 
 // 实体生成事件

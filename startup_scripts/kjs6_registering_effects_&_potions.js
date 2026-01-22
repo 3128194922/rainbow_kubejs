@@ -54,7 +54,7 @@ function registerPotionPair(effectID, normalSec, longSec) {
 // 自动注册
 // =====================================
 registerPotionPair("attributeslib:flying", 180, 480)
-registerPotionPair("rainbow:apty4869", 90, 180)
+//registerPotionPair("rainbow:apty4869", 90, 180)
 // ===============================
 // 全局酿造事件
 // ===============================

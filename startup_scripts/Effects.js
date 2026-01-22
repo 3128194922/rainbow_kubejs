@@ -93,11 +93,6 @@ StartupEvents.registry("mob_effect", event => {
     // 下班时间：有益
     event.create("rainbow:off_work_time")
     .beneficial() // 标记为有益效果
-
-    // 力量之剑：有益
-    event.create("rainbow:power_sword")
-        .beneficial() // 标记为有益效果
-        .color(0xEAF044)
     // 韧性：有益，增加攻击力和减伤
     event.create("rainbow:resilience")
         .beneficial()
@@ -108,18 +103,13 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:damage_num")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
-    // 邪眼：有害
-    event.create("rainbow:evil_eye")
-        .harmful()
-        .color(0xAA00FF)
-        .effectTick((living, amplifier) => { })
     // 肢解：有害，减少最大生命值
     event.create("rainbow:dismember")
         .harmful()
         .color(0xEAF044)
         .modifyAttribute("minecraft:generic.max_health", "dismember", 0.05, "multiply_total")
     // APTX4869：有益，加速幼崽成长
-    event.create("rainbow:apty4869")
+    /*event.create("rainbow:apty4869")
         .beneficial()
         .color(0xEAF044)
         .effectTick((living, amplifier) => {
@@ -140,5 +130,5 @@ StartupEvents.registry("mob_effect", event => {
                 tag.putInt("Age",age - tick)
                 living.setNbt(tag)
             }
-        })
+        })*/
 });

@@ -249,6 +249,13 @@ StartupEvents.registry("item", event => {
         .attackDamageBonus(4.0)
         .rarity("epic")
         .maxDamage(0)
+
+    // 饕餮剑：吞噬剑以成长
+    event.create("rainbow:eldritch_sword", "sword")
+        .speedBaseline(-2.4)
+        .attackDamageBonus(4.0)
+        .rarity("epic")
+        .maxDamage(0)
         
     // 超精密构件：合成材料
     event.create("rainbow:super_mechanism", "basic")

@@ -505,6 +505,20 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
             );
         }
 
+        // 🗡️ 饕餮剑：剑数量影响攻击力
+        let swordnum = item.getNbt().getInt("swordnumber") || 0;
+        if (item.id === "rainbow:eldritch_sword" && slotType === "mainhand") {
+            event.addModifier(
+                "generic.attack_damage",
+                new AttributeModifier(
+                    'a1234567-b890-1234-c567-d89012345678', // 随机 UUID
+                    'eldritch_sword',
+                    1 * swordnum,
+                    "addition"
+                )
+            );
+        }
+
         // 🗡️ 群系之刃：群系系数影响攻击力
         let biomenum = item.getNbt().getInt("biomenum") || 0;
         if (item.id === "rainbow:biome_of_sword" && slotType === "mainhand") {

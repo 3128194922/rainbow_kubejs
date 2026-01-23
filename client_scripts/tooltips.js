@@ -39,6 +39,11 @@ ItemEvents.tooltip((event) => {
         }
         text.add(1, Text.red("已食用食物数:").append(Text.lightPurple(`${item.nbt.foodnumber}`)));
     })
+    event.addAdvanced("rainbow:eldritch_sword", (item, advanced, text) => {
+        text.add(0, Text.darkPurple("饕餮剑"));
+        let count = item.nbt ? (item.nbt.swordnumber || 0) : 0;
+        text.add(1, Text.red("已吞噬剑数:").append(Text.lightPurple(`${count}`)));
+    })
     event.addAdvanced('gimmethat:giants_ring', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {

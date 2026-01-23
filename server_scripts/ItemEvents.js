@@ -72,6 +72,33 @@ ItemEvents.rightClicked(event => {
         item.nbt.foodnumber = item.nbt.foodlist.length;
     }
 
+    // --- 饕餮剑：剑吞噬 ---
+    if (item.id === "rainbow:eldritch_sword") {
+        let targetItem = player.getItemInHand("off_hand");
+        let tag = global.swordlist.indexOf(targetItem.id);
+
+        if (tag === -1) return;
+
+        if (!item.nbt.swordlist) {
+            item.nbt.swordlist = [];
+            item.nbt.swordnumber = 0;
+        }
+
+        for (let i = 0; i < item.nbt.swordlist.length; i++) {
+            if (item.nbt.swordlist[i] == tag) {
+                player.setStatusMessage("这把剑已经吃过了！");
+                level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
+                return;
+            }
+        }
+
+        targetItem.shrink(1);
+        level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
+
+        item.nbt.swordlist.push(Integer.valueOf(tag));
+        item.nbt.swordnumber = item.nbt.swordlist.length;
+    }
+
     // --- 泰拉刃：发射射弹 ---
     if (item.id === 'rainbow:terasword') {
         if (item.getNbt().getInt("power")) {

@@ -191,6 +191,18 @@ ServerEvents.recipes(event => {
     // 说明书配方
     event.shapeless(Item.of('patchouli:guide_book', '{"patchouli:book":"patchouli:encyclopedia"}'), 'minecraft:dirt')
 
+    //末影苦无
+    event.shaped("gimmethat:ender_kunai", [
+        ['', 'createutilities:void_steel_ingot', ''],
+        ['', 'minecraft:amethyst_shard', ''],
+        ['', 'minecraft:ender_pearl','']])
+
+    //重锤
+    event.shaped("rainbow:heavy_axe", [
+        ['', 'species:kinetic_core', ''],
+        ['', 'minecraft:blaze_rod', ''],
+        ['', '','']])
+
     // 创造蛋糕配方
     event.shapeless('create:creative_blaze_cake',['rainbow:missingno', 'rainbow:plus', 'rainbow:plus'])
 

@@ -1,0 +1,41 @@
+{
+  "display": {
+    "icon": {
+      "item": "gimmethat:democracy_chestplate"
+    },
+    "title": {
+      "text": "民主庇佑"
+    },
+    "description": {
+      "text": "穿戴完整的民主套装"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "rainbow:root",
+  "criteria": {
+    "wearing_full_set": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "player": {
+          "equipment": {
+            "head": {
+              "items": ["gimmethat:democracy_helmet"]
+            },
+            "chest": {
+              "items": ["gimmethat:democracy_chestplate"]
+            },
+            "legs": {
+              "items": ["gimmethat:democracy_leggings"]
+            },
+            "feet": {
+              "items": ["gimmethat:democracy_boots"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

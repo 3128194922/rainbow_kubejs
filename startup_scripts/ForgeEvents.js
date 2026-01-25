@@ -267,7 +267,8 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
 // 处理爆炸、魔法、投掷流派的伤害结算
 // =============================================
 function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage){
-    if (!attacker.isPlayer()) return;
+    //if (!attacker.isPlayer()) return;
+    if (!attacker.isLiving()) return;
 
     if(thrown_damage.indexOf(source.getType()) != -1)
         {

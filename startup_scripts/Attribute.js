@@ -48,21 +48,28 @@ StartupEvents.registry('attribute', event => {
     });
 });
  
-// 为玩家实体添加属性
+// 为所有生物实体（包括怪物）添加属性
 ForgeModEvents.onEvent(
     'net.minecraftforge.event.entity.EntityAttributeModificationEvent',
     (event) => {
-        if (!event.has('player', 'rainbow:generic.cyberware_capacity')) {
-            event.add('player', 'rainbow:generic.cyberware_capacity');
-        }
-        if (!event.has('player', 'rainbow:generic.boom_damage')) {
-            event.add('player', 'rainbow:generic.boom_damage');
-        }
-        if (!event.has('player', 'rainbow:generic.magic_damage')) {
-            event.add('player', 'rainbow:generic.magic_damage');
-        }
-        if (!event.has('player', 'rainbow:generic.thrown_damage')) {
-            event.add('player', 'rainbow:generic.thrown_damage');
-        }
+        const attributes = [
+            'rainbow:generic.cyberware_capacity',
+            'rainbow:generic.boom_damage',
+            'rainbow:generic.magic_damage',
+            'rainbow:generic.thrown_damage'
+        ];
+        
+        const DefaultAttributes = Java.loadClass('net.minecraft.world.entity.ai.attributes.DefaultAttributes');
+
+        event.getTypes().forEach(type => {
+            // 检查该实体类型是否有默认属性供应者（即是否为生物）
+            if (DefaultAttributes.hasSupplier(type)) {
+                attributes.forEach(attr => {
+                    if (!event.has(type, attr)) {
+                        event.add(type, attr);
+                    }
+                });
+            }
+        });
     }
 );

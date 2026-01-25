@@ -1063,6 +1063,39 @@ StartupEvents.registry("block", event => {
         });
 });
 
+// 逻辑计算机
+StartupEvents.registry("block", event => {
+    event.create("rainbow:number_computer")
+        .woodSoundType()
+        .displayName("逻辑计算机")
+        .blockEntity(entityInfo => {
+            entityInfo.inventory(9, 1);
+            entityInfo.rightClickOpensInventory();
+
+            // 每 20 ticks (即每秒) 执行一次
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+
+                let numbers = ["rainbow:three","rainbow:eight"]
+                let choose = randomBool(0.5)?1:0;
+
+                entity.inventory.insertItem(Item.of(numbers[choose]), false)
+            });
+            // 红石交互
+            entityInfo.attachCapability(
+                CapabilityBuilder.ITEM.blockEntity()
+                    .availableOn((be, dir) => true)
+                    .extractItem((be, slot, amount, simulate) => false)
+                    .insertItem((be, slot, stack, simulate) => false)
+                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
+                    .getSlots(be => be.inventory.slots)
+                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
+                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
+            );
+        });
+});
+
 // ==========================================
 // 💍 注册饰品与特殊装备 (Curios)
 // ==========================================

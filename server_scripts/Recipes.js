@@ -264,6 +264,12 @@ ServerEvents.recipes(event => {
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
 
+    //逻辑计算机
+    event.shaped('rainbow:number_computer', [
+        ['create:brass_casing', 'create:pulse_timer', 'create:brass_casing'], 
+        ['create:cogwheel', 'create:precision_mechanism', 'create:large_cogwheel'], 
+        ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
+
     //乐谱
     event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
 
@@ -365,8 +371,8 @@ ServerEvents.recipes(event => {
     event.recipes.create.crushing([Item.of('create:crushed_raw_silver').withChance(0.20), Item.of('oreganized:silver_nugget').withChance(0.20)], 'create:limestone').processingTime(150)
 
     // 逻辑运算符 - 数字
-    event.recipes.create.filling('rainbow:three', [Fluid.of("rainbow:number_water", 1000), 'create:nixie_tube'])
-    event.recipes.create.filling('rainbow:eight', [Fluid.of("rainbow:number_water", 1000), 'rainbow:three'])
+    //event.recipes.create.filling('rainbow:three', [Fluid.of("rainbow:number_water", 1000), 'create:nixie_tube'])
+    //event.recipes.create.filling('rainbow:eight', [Fluid.of("rainbow:number_water", 1000), 'rainbow:three'])
 
     // 南瓜灯
     event.recipes.create.sequenced_assembly(

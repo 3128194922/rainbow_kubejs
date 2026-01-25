@@ -1,0 +1,50 @@
+{
+  "display": {
+    "icon": {
+      "item": "rainbow:hormone_0"
+    },
+    "title": {
+      "text": "九龙抬棺"
+    },
+    "description": {
+      "text": "获得九龙的所有型号"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "rainbow:root",
+  "criteria": {
+    "has_hormone_0": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_0"] }] } },
+    "has_hormone_1": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_1"] }] } },
+    "has_hormone_2": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_2"] }] } },
+    "has_hormone_3": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_3"] }] } },
+    "has_hormone_4": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_4"] }] } },
+    "has_hormone_5": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_5"] }] } },
+    "has_hormone_6": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_6"] }] } },
+    "has_hormone_7": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_7"] }] } },
+    "has_hormone_8": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_8"] }] } },
+    "has_hormone_9": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_9"] }] } },
+    "has_hormone_10": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_10"] }] } },
+    "has_hormone_11": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_11"] }] } },
+    "has_hormone_12": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_12"] }] } },
+    "has_hormone_13": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["rainbow:hormone_13"] }] } }
+  },
+  "requirements": [
+    ["has_hormone_0"],
+    ["has_hormone_1"],
+    ["has_hormone_2"],
+    ["has_hormone_3"],
+    ["has_hormone_4"],
+    ["has_hormone_5"],
+    ["has_hormone_6"],
+    ["has_hormone_7"],
+    ["has_hormone_8"],
+    ["has_hormone_9"],
+    ["has_hormone_10"],
+    ["has_hormone_11"],
+    ["has_hormone_12"],
+    ["has_hormone_13"]
+  ]
+}

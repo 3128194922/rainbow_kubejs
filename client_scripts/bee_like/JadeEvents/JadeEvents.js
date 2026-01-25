@@ -15,7 +15,8 @@ JadeEvents.onClientRegistration((event) => {
         if (!serverData) return;
 
         let food = serverData.get("like_food_card");
-        if(!food) return;
-        tooltip.add(Text.gold(['想吃:']).append(Text.of(food)));
+        if(food) {
+            tooltip.add(Text.gold(['想吃:']).append(Text.of(food)));
+        }
     });
 });

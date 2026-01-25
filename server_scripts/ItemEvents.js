@@ -373,6 +373,22 @@ ItemEvents.rightClicked(event => {
     }
 });
 
+//逻辑运算
+ItemEvents.rightClicked(event => {
+    let player = event.player;
+    let item = event.item;
+    let item_offhand = player.getItemInHand("off_hand");
+
+    if(item_offhand.id == "minecraft:paper" && item.id == "quark:abacus")
+        {
+            item_offhand.shrink(1);
+            let numbers = ["rainbow:three","rainbow:eight"]
+            let chose = randomBool(0.5)?1:0;
+            player.block.popItem(numbers[chose]);
+            event.cancel(true)
+        }
+});
+
 // 食物事件
 // 吃下屎后关闭客户端（恶搞）
 ItemEvents.foodEaten('rainbow:shit', () => Client.close())

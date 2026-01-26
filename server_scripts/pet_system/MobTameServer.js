@@ -23,7 +23,7 @@ let HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
  * 格式: "实体ID": "驯服物品ID"
  */
 let tameableMobs = {
-    "minecraft:iron_golem": 'create_connected:control_chip',
+    "minecraft:iron_golem": 'create:transmitter',
     "minecraft:zombie": 'rainbow:gauntlet',
     'minecraft:drowned':'rainbow:gauntlet',
     'dungeonsdelight:rotten_zombie': 'rainbow:gauntlet',

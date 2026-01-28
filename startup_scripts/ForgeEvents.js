@@ -263,20 +263,41 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
 }
 
 // =============================================
+// � 模块3.5：非玩家伤害逻辑
+// 处理宠物、召唤物等非玩家实体的伤害结算
+// =============================================
+function handleNonPlayerDamage(event, actual) {
+    if (!actual || !actual.isLiving() || actual.isPlayer()) return;
+
+    let owner = null;
+    // 1. 检查自定义驯服系统 (KubeJS persistentData)
+    if (actual.persistentData.OwnerName) {
+        let ownerUuidStr = actual.persistentData.OwnerName;
+        try {
+            // 尝试通过 UUID 获取玩家
+            owner = actual.server.getPlayerList().getPlayer(java.util.UUID.fromString(ownerUuidStr));
+        } catch (e) {
+            // 如果失败，尝试通过名称获取（备用）
+            owner = actual.server.getPlayerList().getPlayer(ownerUuidStr);
+        }
+    } 
+    // 2. 检查原版驯服系统 (Vanilla TamableAnimal)
+    else if (actual.owner) {
+        owner = actual.owner;
+    }
+
+    if (owner && owner.isPlayer()) {
+        let attributeValue = owner.getAttributeValue("rainbow:generic.pet_damage");
+        event.setAmount(attributeValue * event.getAmount());
+    }
+}
+
+// =============================================
 // 💍 模块4：独特伤害类型流派
 // 处理爆炸、魔法、投掷流派的伤害结算
 // =============================================
 function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage){
-    //if (!attacker.isPlayer()) return;
-    if (!attacker.isLiving()) return;
-
-    if(!attacker.isPlayer() && (attacker.persistentData.OwnerName != null || attacker.owner != null))
-        {
-            /*let uuid = attacker.owner?attacker.owner
-            let player = attacker.server.getPlayerList().getPlayer(uuid);
-            let attributeValue = player.getAttributeValue("rainbow:generic.pet_damage");
-            event.setAmount(attributeValue * event.getAmount())*/
-        }
+    if (!attacker || !attacker.isLiving()) return;
 
     if(thrown_damage.indexOf(source.getType()) != -1)
         {
@@ -303,6 +324,7 @@ function handleDamageEvents(event, attacker, source, range_damage, thrown_damage
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
     const victim = event.entity;
     const attacker = event.source.player;
+    const actual = event.source.actual;
     const source = event.getSource();
     const EquipmentSlot = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
     const UUID = Java.loadClass("java.util.UUID");
@@ -331,7 +353,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
 
     try {
         // ========= 伤害计算逻辑 =========
+        handleNonPlayerDamage(event, actual)
         handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage)
+        
         // ========= 玩家防御逻辑 =========
         handleVictimDefense(event, victim, source, EquipmentSlot, UUID);
     } catch(e) {

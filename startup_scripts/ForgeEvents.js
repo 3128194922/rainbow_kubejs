@@ -270,6 +270,14 @@ function handleDamageEvents(event, attacker, source, range_damage, thrown_damage
     //if (!attacker.isPlayer()) return;
     if (!attacker.isLiving()) return;
 
+    if(!attacker.isPlayer() && (attacker.persistentData.OwnerName != null || attacker.owner != null))
+        {
+            /*let uuid = attacker.owner?attacker.owner
+            let player = attacker.server.getPlayerList().getPlayer(uuid);
+            let attributeValue = player.getAttributeValue("rainbow:generic.pet_damage");
+            event.setAmount(attributeValue * event.getAmount())*/
+        }
+
     if(thrown_damage.indexOf(source.getType()) != -1)
         {
             let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");

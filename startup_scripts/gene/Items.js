@@ -2,8 +2,8 @@ StartupEvents.registry('item', event => {
     for (let i = 0; i < 14; i++) {
         event.create(`rainbow:hormone_${i}`)
             .displayName(`九龙${i}型`)
-            .texture(`minecraft:item/potion_overlay`) 
-            .color(0xFF00FF) 
+            .texture(`rainbow:item/mozhua`) 
+            //.color(0x2B2C7C) 
     }
 })
 

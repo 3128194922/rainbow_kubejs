@@ -218,7 +218,7 @@ StartupEvents.registry("item", event => {
     // 虚空粗矿
     event.create("rainbow:raw_voidore", "basic")
     // 魔爪
-    event.create("rainbow:mozhua", "basic")
+    //event.create("rainbow:mozhua", "basic")
 
     // 霜冻金属镐：挖掘等级高，耐久高
     event.create("rainbow:frostium_pickaxe", "pickaxe")
@@ -1848,6 +1848,42 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
+// 连射核心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:short_core')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:short_core')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (entity.age % 20 != 0) return;
+                    let item = entity.getItemInHand("main_hand");
+                    if(item.id != 'species:crankbow') return;
+                    else
+                    {
+                        if(item.nbt.getBoolean("IsUsing")==null) return;
+                        if(item.nbt.getBoolean("IsUsing") == true)
+                            {
+                                item.nbt.putInt("Speed",Integer.valueOf("40"))
+                            }
+                    }
+
+                })
+        )
+})
 
 const hearts = ['drowned_heart', 'frozen_heart', 'gritty_heart', 'gunk_heart', 'rotten_heart'];
 

@@ -46,6 +46,15 @@ StartupEvents.registry('attribute', event => {
             1000.0
         );
     });
+    //宠物伤害
+    event.createCustom('rainbow:generic.pet_damage', () => {
+        return new $RangedAttribute(
+            'attribute.name.generic.pet_damage',
+            1.0,
+            0.0,
+            1000.0
+        );
+    });
 });
  
 // 为所有生物实体（包括怪物）添加属性
@@ -71,5 +80,7 @@ ForgeModEvents.onEvent(
                 });
             }
         });
+
+        event.add('player', 'rainbow:generic.pet_damage');
     }
 );

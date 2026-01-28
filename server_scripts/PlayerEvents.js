@@ -8,6 +8,7 @@ const SkillSlotsHandler = player => Java.loadClass('snownee.skillslots.SkillSlot
 // 玩家统一Tick事件（每秒20次）
 PlayerEvents.tick((event) => {
     const { player, server } = event;
+    //console.log(`${player.getItemInHand("main_hand").nbt.toString()}`)
     if (player.level.isClientSide()) return;
 
     // 每秒执行一次 (20 ticks)

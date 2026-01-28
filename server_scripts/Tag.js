@@ -16,7 +16,8 @@ ServerEvents.tags("item", event => {
     
     // 技能饰品
     event.add('rainbow:skill_charm',['rainbow:monster_charm', 'rainbow:rage_syringe', 'rainbow:resilience_syringe', 'rainbow:drowned_heart', 
-    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:beacon_ball','royalvariations:royal_staff'])
+    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",

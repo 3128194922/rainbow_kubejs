@@ -108,27 +108,29 @@ StartupEvents.registry("mob_effect", event => {
         .harmful()
         .color(0xEAF044)
         .modifyAttribute("minecraft:generic.max_health", "dismember", 0.05, "multiply_total")
-    // APTX4869：有益，加速幼崽成长
-    /*event.create("rainbow:apty4869")
-        .beneficial()
-        .color(0xEAF044)
-        .effectTick((living, amplifier) => {
-            let tag = living.getNbt();
-            let age = tag.getInt("Age");
-            let tick = (amplifier+1) * 100;
 
-            if (age == 0) return;
-            if (age % 20 !== 0) return;
-    
-            // 幼崽成长加速
-            if (age < 0) {
-                tag.putInt("Age",age + tick)
-                living.setNbt(tag)
+    // 装填核心 Buff
+    event.create("rainbow:reload_buff")
+        .beneficial()
+        .color(0x55FFFF)
+        .effectTick((entity, amplifier) => {
+            if (!entity || entity.level.isClientSide()) return;
+            entity.cooldowns.removeCooldown('netherexp:shotgun_fist');
+            entity.cooldowns.removeCooldown('netherexp:pump_charge_shotgun');
+        })
+
+    // 连射核心 Buff
+    event.create("rainbow:short_buff")
+        .beneficial()
+        .color(0xFF55FF)
+        .effectTick((entity, amplifier) => {
+            if (!entity || entity.level.isClientSide()) return;
+            if (entity.age % 20 != 0) return;
+            let item = entity.getItemInHand("main_hand");
+            if (item.id == 'species:crankbow') {
+                if (item.nbt.getBoolean("IsUsing") == true) {
+                    item.nbt.putInt("Speed", 40);
+                }
             }
-            else
-            if (age > 0) {
-                tag.putInt("Age",age - tick)
-                living.setNbt(tag)
-            }
-        })*/
+        })
 });

@@ -826,3 +826,24 @@ ServerEvents.commandRegistry(event => {
     );
     
 });
+
+/**
+ * 在实体饰品栏中寻找指定ID饰品并返回物品对象
+ * @param {Internal.ServerPlayer} player - 玩家对象
+ * @param {string} id - 物品ID（如 "minecraft:diamond"）
+ * @returns {Internal.ItemStack|null} 找到的饰品物品对象，未找到返回 null
+ */
+function getCuriosItem(player, id) {
+    if (player == null) return null;
+    let curios = player.curiosInventory;
+    if (curios == null) return null;
+
+    for (let slot of curios.curios.values()) {
+        for (let stack of slot.getStacks().getAllItems()) {
+            if (stack.getId().toString() === id) {
+                return stack;
+            }
+        }
+    }
+    return null;
+}

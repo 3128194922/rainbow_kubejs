@@ -293,6 +293,30 @@ function handleNonPlayerDamage(event, actual) {
 }
 
 // =============================================
+// 🔋 模块3.6：饰品充能逻辑
+// 处理玩家造成伤害时为特定饰品充能
+// =============================================
+function handleCoreCharging(event, attacker) {
+    if (!attacker || !attacker.isPlayer()) return;
+    
+    const coreIds = ['rainbow:reload_core', 'rainbow:short_core'];
+    const amount = event.getAmount();
+
+    coreIds.forEach(id => {
+        if (hasCurios(attacker, id) && !attacker.cooldowns.isOnCooldown(id)) {
+            let stack = getCuriosItem(attacker, id);
+            if (stack) {
+                if(stack.nbt == null) stack.nbt = {};
+                let energy = stack.nbt.getDouble("Energy") || 0;
+                if (energy < 100) {
+                    stack.nbt.putDouble("Energy", Math.min(100, energy + amount));
+                }
+            }
+        }
+    });
+}
+
+// =============================================
 // 💍 模块4：独特伤害类型流派
 // 处理爆炸、魔法、投掷流派的伤害结算
 // =============================================
@@ -355,6 +379,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
         // ========= 伤害计算逻辑 =========
         handleNonPlayerDamage(event, actual)
         handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage)
+        handleCoreCharging(event, attacker)
         
         // ========= 玩家防御逻辑 =========
         handleVictimDefense(event, victim, source, EquipmentSlot, UUID);

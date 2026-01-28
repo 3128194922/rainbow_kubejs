@@ -223,6 +223,12 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.darkPurple(`取消号角CD`));
     })
 
+    event.addAdvanced(['rainbow:reload_core', 'rainbow:short_core'], (item, advanced, text) => {
+        let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
+        let color = energy >= 100 ? "§a" : "§e";
+        text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
+    })
+
     const machine_name ={
         'mbd2:nuke_machine': "核弹发射井",
     }

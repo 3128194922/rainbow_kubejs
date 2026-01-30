@@ -306,10 +306,10 @@ function handleCoreCharging(event, attacker) {
         if (hasCurios(attacker, id) && !attacker.cooldowns.isOnCooldown(id)) {
             let stack = getCuriosItem(attacker, id);
             if (stack) {
-                if(stack.nbt == null) stack.nbt = {};
-                let energy = stack.nbt.getDouble("Energy") || 0;
+                let nbt = stack.getOrCreateTag();
+                let energy = nbt.getFloat("Energy") || 0;
                 if (energy < 100) {
-                    stack.nbt.putDouble("Energy", Math.min(100, energy + amount));
+                    nbt.putFloat("Energy", Math.min(100, energy + amount));
                 }
             }
         }

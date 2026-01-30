@@ -44,6 +44,8 @@
 	"effect.rainbow.damage_num": "伤害积累",
 	"effect.rainbow.obey_command": "服从指挥",
 	"effect.rainbow.obey_command.description": "有这个buff的生物会攻击带有标记的生物",
+	"effect.rainbow.reload_buff": "霰弹炮核心",
+	"effect.rainbow.reload_buff.description": "霰弹炮进入无冷却状态",
 	"enchantment.rainbow.last_stand": "屹立不倒",
 	"enchantment.rainbow.last_stand.desc": "消耗经验进行锁血",
 	"key.rainbow.charmkey": "彩虹创艺",

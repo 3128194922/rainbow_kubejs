@@ -424,6 +424,54 @@ ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{
     player.addCuriosSlotModifier("super_curio","ecb82943-df2f-41a6-a06b-072d54e44afe","magic_garlic_bread",1,"addition")
 })
 
+// --- 妖怪化相关逻辑 ---
+ItemEvents.foodEaten('#rainbow:monster_meat', event => {
+    let { player, item } = event;
+    let food = item.item.getFoodProperties();
+    if (!food) return;
+    let hunger = food.getNutrition();
+    let saturation = food.getSaturationModifier(); // 饱和度系数
+    // 1. 处于“妖怪化”状态
+    if (player.hasEffect('rainbow:youkaified')) {
+        let current = player.getEffect('rainbow:youkaified');
+        // 每次食用增加 4 分钟 (4800 ticks)
+        let newDuration = current.duration + 4800;
+        player.potionEffects.add('rainbow:youkaified', newDuration, 0, false, true)
+
+        // 数值提升至 3 倍 (补偿 2 倍)
+        player.foodLevel = Math.min(20, player.foodLevel + hunger * 2);
+        // 饱和度增加 = 饥饿值 * 饱和度系数 * 2.0 (MC默认公式)
+        player.saturationLevel = Math.min(player.foodLevel, player.saturationLevel + (hunger * saturation * 2) * 2);
+        
+        player.paint({youkai_msg: {type: 'text', text: '妖怪化持续时间延长！', x: 10, y: 10, color: 'red', draw: 'ingame', time: 3000}});
+    } 
+    // 2. 处于“半妖怪化”状态
+    else if (player.hasEffect('rainbow:youkaifying')) {
+        let current = player.getEffect('rainbow:youkaifying');
+        // 每次食用增加 1 分钟 (1200 ticks)
+        let newDuration = current.duration + 1200;
+        
+        // 检查转化机制：如果增加后超过 5 分钟 (6000 ticks)
+        if (newDuration > 6000) {
+            player.removeEffect('rainbow:youkaifying');
+            player.potionEffects.add('rainbow:youkaified', 24000, 0, false, true); // 20 分钟
+            player.tell("§6你体内的妖力彻底爆发了，进入了妖怪化状态！");
+        } else {
+            player.potionEffects.add('rainbow:youkaifying', newDuration, 0, false, true);
+            // 数值提升至 2 倍 (补偿 1 倍)
+            player.foodLevel = Math.min(20, player.foodLevel + hunger);
+            player.saturationLevel = Math.min(player.foodLevel, player.saturationLevel + (hunger * saturation * 2));
+        }
+    } 
+    // 3. 初始获得“半妖怪化” (30% 概率)
+    else {
+        if (Math.random() < 0.3) {
+            player.potionEffects.add('rainbow:youkaifying', 1200,0, false, true); // 1 分钟
+            player.tell("§d你感到一股奇怪的力量在体内流淌...（半妖怪化）");
+        }
+    }
+});
+
 // 金手指：让两个生物互相骑乘 + 授予成就 rainbow:ccb
 ItemEvents.entityInteracted("rainbow:golden_finger", event => {
     const player = event.player;

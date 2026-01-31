@@ -73,28 +73,22 @@ ServerEvents.tags("item", event => {
     
     // 怪肉类食物标签
     event.add('rainbow:monster_meat', [
-        'rainbow:flesh',
-        'minecraft:rotten_flesh',
-        'dungeonsdelight:monster_burger',
-        'dungeonsdelight:monster_cake_slice',
-        'dungeonsdelight:monster_muffin',
-        'dungeonsdelight:meef_wellington',
-        'dungeonsdelight:cooked_sniffer_shank',
-        'dungeonsdelight:sniffer_shank',
-        'dungeonsdelight:spider_meat',
-        'dungeonsdelight:smoked_spider_meat',
-        'dungeonsdelight:bug_chops',
-        'dungeonsdelight:fried_bug_chops',
-        'dungeonsdelight:ghast_calamari',
-        'dungeonsdelight:fried_ghast_calamari',
-        'dungeonsdelight:ghast_roll',
-        'dungeonsdelight:ghoulash',
-        'dungeonsdelight:gritty_flesh',
-        'dungeonsdelight:brined_flesh'
+        'rainbow:flesh'
     ])
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])
+
+    // 自动提示标签
+    event.add('rainbow:food_tooltip', [
+        'collectorsreap:portobello_quiche_slice',
+        'collectorsreap:portobello_burger',
+        'atmospheric:yucca_fruit',
+        'dungeonsdelight:sculk_dogapple',
+        'dungeonsdelight:sculk_apple',
+        'dungeonsdelight:sculk_catblueberry',
+        'dungeonsdelight:sculk_mayo'
+    ])
     
     // 回旋镖标签
     event.add("rainbow:pika", ["quark:pickarang","quark:flamerang"])

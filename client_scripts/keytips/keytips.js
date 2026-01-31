@@ -10,7 +10,7 @@
 // UI Key Tips System (RenderJS Version)
 // ==============================
 
-const $Minecraft = Java.loadClass("net.minecraft.client.Minecraft");
+let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft");
 
 // 提示注册表 / Hint Registry
 const HintRegistry = {

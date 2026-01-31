@@ -6,13 +6,61 @@
 ItemEvents.tooltip(event => {
     // 为彩虹大便添加提示
     event.add('rainbow:shit', '§6这是一坨有味道的物品')
-    
-    // 为所有带有 "rainbow:food" 标签的物品添加提示
-    event.addAdvanced('#rainbow:food', (item, advanced, text) => {
-        if (!event.isShiftKeyDown()) {
-            text.add(1, '§8[按住 Shift 查看更多信息]')
-        } else {
-            text.add(1, '§a这是一个被标记为食物的物品')
+})
+
+// 引入原版工具类用于格式化时长
+const $MobEffectUtil = Java.loadClass('net.minecraft.world.effect.MobEffectUtil')
+
+ItemEvents.tooltip(event => {
+    // 使用标签过滤器匹配目标物品
+    event.addAdvanced('#rainbow:food_tooltip', (item, advanced, text) => {
+        const food = item.item.foodProperties
+        if (!food) return
+        
+        const effects = food.effects
+        if (!effects || effects.isEmpty()) return
+        
+        // 设定插入索引：1 代表物品名称正下方
+        // 这样可以确保效果显示在最显眼的位置，与 FD 逻辑一致
+        let tooltipIndex = 1
+        
+        for (let i = 0; i < effects.size(); i++) {
+            let effectPair = effects.get(i)
+            let effectInstance = effectPair.first
+            if (!effectInstance) continue
+            
+            let effectBase = effectInstance.getEffect()
+            if (!effectBase) continue
+            
+            // 1. 获取基础名称 (例如: "安逸")
+            let effectComponent = Text.translate(effectInstance.getDescriptionId())
+            
+            // 2. 处理等级 (Amplifier)
+            if (effectInstance.getAmplifier() > 0) {
+                effectComponent = Text.translate("potion.withAmplifier", effectComponent, Text.translate("potion.potency." + effectInstance.getAmplifier()))
+            }
+            
+            // 3. 处理时长 (Duration)
+            if (effectInstance.getDuration() > 20) {
+                try {
+                    let durationText = $MobEffectUtil.formatDuration(effectInstance, 1.0)
+                    effectComponent = Text.translate("potion.withDuration", effectComponent, durationText)
+                } catch (e) {
+                    let totalSeconds = Math.floor(effectInstance.getDuration() / 20)
+                    let minutes = Math.floor(totalSeconds / 60)
+                    let seconds = totalSeconds % 60
+                    effectComponent = effectComponent.append(Text.of(` (${minutes}:${seconds < 10 ? '0' : ''}${seconds})`))
+                }
+            }
+            
+            // 4. 应用颜色样式并插入到指定位置
+            let tooltipStyle = 'blue'
+            try {
+                tooltipStyle = effectBase.getCategory().getTooltipFormatting()
+            } catch (e) {}
+            
+            // 使用 tooltipIndex++ 确保多个效果按顺序排列在顶部
+            text.add(tooltipIndex++, effectComponent.withStyle(tooltipStyle))
         }
     })
 })

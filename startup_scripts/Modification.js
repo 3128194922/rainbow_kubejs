@@ -16,6 +16,42 @@ BlockEvents.modification(event => {
 
 // 修改物品属性
 ItemEvents.modification(event => {
+    // 让原版apple食用后获得中毒效果
+    event.modify('minecraft:apple', item => {
+        item.foodProperties = food => {
+            food.hunger(4)
+            food.saturation(0.3)
+            food.effect('minecraft:poison', 100, 0, 1.0)
+        }
+    })
+
+    // 幻觉效果食物 (gimmethat:hallucinating)
+    event.modify(['collectorsreap:portobello_quiche_slice', 'collectorsreap:portobello_burger'], item => {
+        item.foodProperties = food => {
+            food.effect('gimmethat:hallucinating', 300, 0, 1.0)
+        }
+    })
+
+    // 苦涩效果食物 (gimmethat:bitterness)
+    event.modify('atmospheric:yucca_fruit', item => {
+        item.foodProperties = food => {
+            food.effect('gimmethat:bitterness', 300, 0, 1.0)
+        }
+    })
+
+    // 幽匿相关食物 (gimmethat:resonance)
+    event.modify([
+        'dungeonsdelight:sculk_dogapple',
+        'dungeonsdelight:sculk_tart_slice',
+        'dungeonsdelight:sculk_apple',
+        'dungeonsdelight:sculk_catblueberry',
+        'dungeonsdelight:sculk_mayo'
+    ], item => {
+        item.foodProperties = food => {
+            food.effect('gimmethat:resonance', 300, 0, 1.0)
+        }
+    })
+
     /*  event.modify(['hmag:iron_spear','minecraft:wooden_sword','savage_and_ravage:cleaver_of_beheading'],item=>{
         item.addAttribute("minecraft:generic.movement_speed", "d685b34c-8e34-4f4c-be7a-3e306e6656ee", "Sus speed", 1, "addition")
     

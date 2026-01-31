@@ -840,4 +840,3 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
-DamageSorce()

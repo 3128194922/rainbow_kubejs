@@ -1,4 +1,4 @@
-// priority: 0
+// priority: 500
 // ==========================================
 // 属性与饰品 HUD 渲染
 // Attribute & Curios HUD Rendering
@@ -6,7 +6,7 @@
 // 渲染玩家属性（如韧性、伤害）进度条和已装备饰品的图标
 // Renders player attribute (e.g. resilience, damage) bars and equipped curios icons
 
-let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
+const $Minecraft = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
 
 // resilience & damage
 let resilience = 0;

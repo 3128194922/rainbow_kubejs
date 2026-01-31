@@ -235,10 +235,10 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:flesh', (item, advanced, text) => {
         text.remove(0)
-        text.add(0, Text.darkPurple("怪肉"));
-        if (event.shift) {
-            text.remove(0)
+        if (Client.player && Client.player.hasEffect('rainbow:youkaified')) {
             text.add(0, Text.darkPurple("人肉"));
+        } else {
+            text.add(0, Text.darkPurple("怪肉"));
         }
     })
     event.addAdvanced('legendary_monsters:the_great_frost', (item, advanced, text) => {

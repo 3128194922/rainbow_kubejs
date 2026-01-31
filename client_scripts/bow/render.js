@@ -5,9 +5,6 @@
 // ==========================================
 // 在屏幕中央下方渲染弓箭蓄力进度条
 // Renders a bow charge progress bar at the bottom center of the screen
-
-let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
-
 let bowProgress = 0;
 
 // 接收服务端发送的弓箭蓄力进度

@@ -28,7 +28,7 @@ ItemEvents.rightClicked(event => {
 
     // --- 恶搞物品：拉屎 ---
     // 纸 + 潜行 = 获得 "rainbow:shit"
-    if (item.id === "minecraft:paper" && player.shiftKeyDon) {
+    if (item.id === "minecraft:paper" && player.shiftKeyDown) {
         item.shrink(1);
         player.addItem("rainbow:shit");
         player.setStatusMessage('你拉屎了');

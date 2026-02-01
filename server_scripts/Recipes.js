@@ -307,8 +307,8 @@ ServerEvents.recipes(event => {
     event.recipes.create.crushing(['minecraft:water_bucket', '3x alexsmobs:serrated_shark_tooth'], 'alexsmobs:frilled_shark_bucket').processingTime(150)
 
     // 熔渣
-    event.recipes.create.crushing(['create:crushed_raw_lead', 'oreganized:raw_asbestos'], 'create:scoria').processingTime(150)
-    event.recipes.create.crushing(['create:crushed_raw_silver', 'oreganized:raw_asbestos'], 'create:scorchia').processingTime(150)
+    event.recipes.create.crushing(['create:crushed_raw_lead', Item.of('oreganized:raw_asbestos')], 'create:scoria').processingTime(150)
+    event.recipes.create.crushing(['create:crushed_raw_silver', Item.of('oreganized:raw_asbestos')], 'create:scorchia').processingTime(150)
 
     // 下界岩量产
     event.recipes.create.mixing("minecraft:netherrack", [Fluid.of("minecraft:lava", 25), 'minecraft:cobblestone', 'create:cinder_flour'])
@@ -319,8 +319,8 @@ ServerEvents.recipes(event => {
     // 鬼火瓶
     event.recipes.create.filling('netherexp:wisp_bottle', [Fluid.of("netherexp:ectoplasm", 200), 'quark:bottled_cloud'])
 
-    // 鲸液
-    event.recipes.create.filling('alexsmobs:ambergris', [Fluid.of("youkaishomecoming:suigei", 1000), 'rainbow:shit'])
+    // 鲸液 (注释掉，因为缺少 suigei 流体)
+    // event.recipes.create.filling('alexsmobs:ambergris', [Fluid.of("youkaishomecoming:suigei", 1000), 'rainbow:shit'])
 
     //民主甲配方
     event.recipes.create.filling('gimmethat:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet'])
@@ -407,14 +407,14 @@ ServerEvents.recipes(event => {
     // 铜溶液
     event.recipes.create.mixing(Fluid.of("rainbow:copper_fluid", 1000), ['minecraft:copper_block']).heated()
 
-    // 710元素 (原油)
-    event.recipes.create.mixing(Fluid.of("createdieselgenerators:crude_oil", 250), ["5x rainbow:shit"]).heated()
+    // 710元素 (原油) (注释掉，因为缺少 crude_oil 流体)
+    // event.recipes.create.mixing(Fluid.of("createdieselgenerators:crude_oil", 250), ["5x rainbow:shit"]).heated()
 
     // 黄铜块制作
     event.recipes.create.mixing("2x create:brass_block", ["create:zinc_block", "minecraft:copper_block"]).heated()
 
     // 青金石
-    event.recipes.create.filling('minecraft:lapis_lazuli', [Fluid.of("create_enchantment_industry:experience", 200), 'oreganized:refined_asbestos'])
+    event.recipes.create.filling('minecraft:lapis_lazuli', [Fluid.of("create_enchantment_industry:experience", 200), Item.of('oreganized:refined_asbestos')])
 
     // 超经验配方
     event.remove({ id: 'create_enchantment_industry:mixing/hyper_experience' })
@@ -423,13 +423,15 @@ ServerEvents.recipes(event => {
     // SFM电脑配方
     event.replaceInput({input:"minecraft:repeater"},"minecraft:repeater",'rainbow:super_mechanism');
 
-    // 灵魂粉加工
+    // 灵魂粉加工 (注释掉，因为 hmag:soul_powder 无效且导致流体解析错误)
+    /*
     const list = ['alexsmobs:skreecher_soul', 'netherexp:wraithing_lesion', 'netherexp:wraithing_flesh', 'netherexp:banshee_rod', 'netherexp:banshee_powder', 'quark:soul_bead', 'netherexp:phasmo_shard', 'netherexp:soul_magma_block']
     const value = [32, 64, 4, 3, 1, 16, 4, 4]
     list.forEach((item, index) => {
         event.recipes.create.mixing(`${value[index]}x hmag:soul_powder`, [item, Fluid.of("netherexp:ectoplasm", 250)])
     })
     event.recipes.create.mixing(['8x hmag:soul_powder', 'minecraft:glass_bottle'], ['netherexp:wisp_bottle', Fluid.of("netherexp:ectoplasm", 250)])
+    */
 
     const list2 = ['hmag:repulsion_gadget', 'hmag:fortune_crystal_plus', 'hmag:fortune_crystal', 'hmag:greedy_crystal_plus', 'hmag:greedy_crystal', 'hmag:honeyed_apple', 'hmag:evil_thorn', 'hmag:evil_prismarine', 'hmag:evil_flame', Item.of('hmag:insomnia_fruit', '{hmag.level:1b}'), 'hmag:soul_apple', 'hmag:randomberry', 'hmag:copper_nugget', 'hmag:reinforcing_chain', 'hmag:multiplex_reinforcing_chain']
     list2.forEach(item => {

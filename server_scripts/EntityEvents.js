@@ -21,9 +21,10 @@ EntityEvents.hurt(event => {
         if (source.player.getMainHandItem().id === "rainbow:slime_rod") {
             // 移除受害者所有护甲（头、胸、腿、脚）
             ["chest", "feet", "head", "legs"].forEach(slot => {
-                if (entity.getItemBySlot(slot) && !entity.getItemBySlot(slot).isEmpty()) {
-                    entity.block.popItem(entity.getItemBySlot(slot).id); // 掉落护甲
-                    entity.getItemBySlot(slot).shrink(1); // 移除护甲
+                let armorItem = entity.getItemBySlot(slot);
+                if (armorItem && !armorItem.isEmpty()) {
+                    entity.popItem(armorItem.id); // 掉落护甲
+                    armorItem.shrink(1); // 移除护甲
                 }
             });
 

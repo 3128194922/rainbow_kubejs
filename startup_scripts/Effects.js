@@ -56,8 +56,12 @@ StartupEvents.registry("mob_effect", event => {
     // 服从命令：有益，使生物攻击被标记（tag）的目标
     event.create('rainbow:obey_command')
         .beneficial()
+    
+    // 杀戮欲望：有益，使生物攻击被标记（tag）的目标
+    event.create('rainbow:killing_desire')
+        .beneficial()
         .effectTick((mob, lvl) => {
-            if (!mob || mob.level.isClientSide()) returnF
+            if (!mob || mob.level.isClientSide()) return
             if (mob.age % 20 != 0) return
 
             let now = mob.level.gameTime

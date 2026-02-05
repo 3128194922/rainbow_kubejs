@@ -104,11 +104,11 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
     // 肢解：有害，减少最大生命值
-    event.create("rainbow:dismember")
+    /*event.create("rainbow:dismember")
         .harmful()
         .color(0xEAF044)
         .modifyAttribute("minecraft:generic.max_health", "dismember", 0.05, "multiply_total")
-
+*/
     // 装填核心 Buff
     event.create("rainbow:reload_buff")
         .beneficial()

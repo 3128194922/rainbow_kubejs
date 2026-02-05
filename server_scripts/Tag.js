@@ -17,7 +17,7 @@ ServerEvents.tags("item", event => {
     // 技能饰品
     event.add('rainbow:skill_charm',['rainbow:monster_charm', 'rainbow:rage_syringe', 'rainbow:resilience_syringe', 'rainbow:drowned_heart', 
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core'])
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",
@@ -27,7 +27,7 @@ ServerEvents.tags("item", event => {
        'gimmethat:giants_ring','gimmethat:plastic_drinking_hat','gimmethat:moai_charm','artifacts:charm_of_sinking', 'artifacts:thorn_pendant', 
        'artifacts:flame_pendant', 'artifacts:shock_pendant', 'artifacts:panic_necklace', 'artifacts:scarf_of_invisibility', 'artifacts:lucky_scarf',
         'artifacts:cross_necklace', 'artifacts:whoopee_cushion', 'artifacts:chorus_totem', 'artifacts:helium_flamingo', 'artifacts:crystal_heart',
-         'artifacts:universal_attractor', 'artifacts:antidote_vessel', 'artifacts:obsidian_skull', 'artifacts:cloud_in_a_bottle','artifacts:aqua_dashers', 
+         'artifacts:universal_attractor', 'artifacts:antidote_vessel', 'artifacts:  ', 'artifacts:cloud_in_a_bottle','artifacts:aqua_dashers', 
          'artifacts:bunny_hoppers', 'artifacts:kitty_slippers', 'artifacts:running_shoes', 'artifacts:snowshoes', 'artifacts:steadfast_spikes', 
          'artifacts:flippers', 'artifacts:rooted_boots', 'artifacts:pickaxe_heater', 'artifacts:onion_ring', 'artifacts:golden_hook', 
          'artifacts:vampiric_glove', 'artifacts:pocket_piston', 'artifacts:fire_gauntlet', 'artifacts:power_glove', 'artifacts:feral_claws',
@@ -79,15 +79,17 @@ ServerEvents.tags("item", event => {
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])
 
+    // 物品同化标签添加
+    global.UNIFIED_ITEMS.forEach(group => {
+        event.add(group.tag, group.items)
+    })
+
     // 自动提示标签
     event.add('rainbow:food_tooltip', [
-        'collectorsreap:portobello_quiche_slice',
-        'collectorsreap:portobello_burger',
-        'atmospheric:yucca_fruit',
-        'dungeonsdelight:sculk_dogapple',
-        'dungeonsdelight:sculk_apple',
-        'dungeonsdelight:sculk_catblueberry',
-        'dungeonsdelight:sculk_mayo'
+        '@atmospheric',
+        '@cavedelight',
+        '@dungeonsdelight',
+        '@species'
     ])
     
     // 回旋镖标签

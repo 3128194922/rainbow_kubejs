@@ -561,17 +561,24 @@ ServerEvents.recipes(event => {
     }
 });
 
-// 物品同化表（只要在这里写数组即可）
-// AofB[x] 代表一组互相可转化的物品
-const AofB_A = ['collectorsreap:pomegranate']
-const AofB_B = ['fruitfulfun:pomegranate']
-
+// 物品同化逻辑
 ServerEvents.recipes(event => {
-    for(let i=0;i<AofB_A.length;i++)
-        {
-            event.shapeless(AofB_A[i],AofB_B[i])
-            event.shapeless(AofB_B[i],AofB_A[i])
+    global.UNIFIED_ITEMS.forEach(group => {
+        const { tag, items } = group;
+
+        // 1. 实现配方兼容性：将所有输入中的具体物品替换为对应的 tag
+        items.forEach(item => {
+            event.replaceInput({ input: item }, item, `#${tag}`);
+        });
+
+        // 2. 实现物品相互转化（互转配方，方便玩家手动统一物品）
+        // 采用循环互转：A -> B, B -> C, ..., Z -> A
+        for (let i = 0; i < items.length; i++) {
+            let current = items[i];
+            let next = items[(i + 1) % items.length];
+            event.shapeless(next, current).id(`kubejs:unification/${tag.replace(':', '_')}_${i}`);
         }
+    });
 });
 
 

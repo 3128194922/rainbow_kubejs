@@ -1,0 +1,45 @@
+{
+    "version": "1.2.0",
+    "timestamp": "二月 1, 2026 6:05:52 下午 CST",
+    "minecraft_version": 2001,
+    "mod_count": 195,
+    "description": "由于数据超过 200KB，已拆分为多个模块文件以优化加载。",
+    "modules": {
+        "items": {
+            "file": "items.json",
+            "count": 7660.0
+        },
+        "foods": {
+            "file": "foods.json",
+            "count": 894.0
+        },
+        "effects": {
+            "file": "effects.json",
+            "count": 240.0
+        },
+        "entities": {
+            "file": "entities.json",
+            "count": 793.0
+        },
+        "fluids": {
+            "file": "fluids.json",
+            "count": 152.0
+        },
+        "blocks": {
+            "file": "blocks.json",
+            "count": 5248.0
+        },
+        "biomes": {
+            "file": "biomes.json",
+            "count": 110.0
+        },
+        "enchantments": {
+            "file": "enchantments.json",
+            "count": 191.0
+        },
+        "tags": {
+            "file": "tags.json",
+            "count": 4.0
+        }
+    }
+}

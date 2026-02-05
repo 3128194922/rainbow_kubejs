@@ -6,6 +6,15 @@
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
 
+// 物品同化配置
+global.UNIFIED_ITEMS = [
+    {
+        tag: 'rainbow:pomegranate',
+        items: ['collectorsreap:pomegranate', 'fruitfulfun:pomegranate']
+    }
+    // 可以在这里继续添加其他需要同化的物品组
+];
+
 // 遍历所有物品，将可食用物品加入 global.foodlist
 Ingredient.all.itemIds.forEach(itemId => {
     const item = Item.of(itemId).item;

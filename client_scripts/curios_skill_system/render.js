@@ -48,6 +48,9 @@ ClientEvents.tick(event => {
     // paint 对象
     let paints = {};
 
+    // 调试：尝试读取 persistentData
+    // console.log("Client Resilience: " + player.persistentData.getInt("resilience"));
+
     // ========= 绘制进度条 =========
     let guiOpen1 = guiOpen || !curios;
     let guiOpen2 = guiOpen || !curios2;

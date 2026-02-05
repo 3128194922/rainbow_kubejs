@@ -16,15 +16,6 @@ BlockEvents.modification(event => {
 
 // 修改物品属性
 ItemEvents.modification(event => {
-    // 让原版apple食用后获得中毒效果
-    event.modify('minecraft:apple', item => {
-        item.foodProperties = food => {
-            food.hunger(4)
-            food.saturation(0.3)
-            food.effect('minecraft:poison', 100, 0, 1.0)
-        }
-    })
-
     // 幻觉效果食物 (gimmethat:hallucinating)
     event.modify(['collectorsreap:portobello_quiche_slice', 'collectorsreap:portobello_burger'], item => {
         item.foodProperties = food => {
@@ -49,6 +40,20 @@ ItemEvents.modification(event => {
     ], item => {
         item.foodProperties = food => {
             food.effect('gimmethat:resonance', 300, 0, 1.0)
+        }
+    })
+
+    // 水上行走效果食物 (runiclib:water_walking)
+    event.modify(['tide:cooked_fish'], item => {
+        item.foodProperties = food => {
+            food.effect('runiclib:water_walking', 6000, 0, 1.0)
+        }
+    })
+
+    // 岩浆行走效果食物 (runiclib:lava_walking)
+    event.modify(['cavedelight:volcanic_chop', 'cavedelight:cooked_dino_cut'], item => {
+        item.foodProperties = food => {
+            food.effect('runiclib:lava_walking', 6000, 0, 1.0)
         }
     })
 

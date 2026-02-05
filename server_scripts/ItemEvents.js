@@ -427,6 +427,7 @@ ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{
 // --- 妖怪化相关逻辑 ---
 ItemEvents.foodEaten('#rainbow:monster_meat', event => {
     let { player, item } = event;
+    if(!item.hasTag("rainbow:monster_meat")) return;
     let food = item.item.getFoodProperties();
     if (!food) return;
     let hunger = food.getNutrition();
@@ -863,3 +864,5 @@ ItemEvents.rightClicked(event => {
 
     throwPickarang();
 });
+
+// Moved to SymbiosisBadge_Server.js

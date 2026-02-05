@@ -1741,8 +1741,8 @@ StartupEvents.registry('item', event => {
                         if (hit && hit.type === "ENTITY" && hit.entity) {
                             let target = hit.entity;
                             if (isEnemy(player, target)) {
-                                target.potionEffects.add("minecraft:glowing", SecoundToTick(3), 0);
-                                target.potionEffects.add("rainbow:tag", SecoundToTick(3), 0);
+                                target.potionEffects.add("minecraft:glowing", SecoundToTick(10), 0);
+                                target.potionEffects.add("rainbow:tag", SecoundToTick(10), 0);
                             }
                         }
                     }
@@ -1762,6 +1762,78 @@ StartupEvents.registry('item', event => {
                                 entity.potionEffects.add("minecraft:strength", SecoundToTick(20), 0, false, true);
                             }
                         });
+                    }
+
+                    // 智能分兵逻辑 (每 20 tick 执行一次)
+                    if (player.age % 20 === 0) {
+                        let range = 20;
+                        let aabb = player.boundingBox.inflate(range);
+                        let level = player.level;
+
+                        // 1. 获取单位
+                        let entities = level.getEntitiesWithin(aabb);
+                        let minions = [];
+                        let taggedEnemies = [];
+                        
+                        entities.forEach(e => {
+                            if (!e.isLiving() || !e.isAlive()) return;
+                            if (e.potionEffects.isActive("rainbow:obey_command")) {
+                                minions.push(e);
+                            } else if (e.potionEffects.isActive("rainbow:tag")) {
+                                taggedEnemies.push(e);
+                            }
+                        });
+
+                        if (taggedEnemies.length > 0 && minions.length > 0) {
+                            // 2. 建立仇恨统计表 (UUID字符串 -> 数量)
+                            let engageCounts = {};
+                            taggedEnemies.forEach(e => engageCounts[e.uuid.toString()] = 0);
+
+                            let availableMinions = [];
+
+                            // 3. 统计现状 & 抽调兵力
+                            minions.forEach(minion => {
+                                let target = minion.target;
+                                // 如果没有目标，或目标不是被标记的敌人 -> 立即征召
+                                if (!target || !engageCounts.hasOwnProperty(target.uuid.toString())) {
+                                    availableMinions.push(minion);
+                                } else {
+                                    // 如果正在攻击被标记敌人，先记录
+                                    engageCounts[target.uuid.toString()]++;
+                                }
+                            });
+
+                            // 4. 计算平均负载，从拥挤的战场二次抽调 (核心分兵逻辑)
+                            let idealCount = Math.ceil(minions.length / taggedEnemies.length);
+
+                            minions.forEach(minion => {
+                                let target = minion.target;
+                                if (target && engageCounts.hasOwnProperty(target.uuid.toString())) {
+                                    let currentCount = engageCounts[target.uuid.toString()];
+                                    if (currentCount > idealCount) {
+                                        availableMinions.push(minion);
+                                        engageCounts[target.uuid.toString()]--; // 计数修正
+                                    }
+                                }
+                            });
+
+                            // 5. 重新分配给最冷清的敌人
+                            if (availableMinions.length > 0) {
+                                availableMinions.forEach(minion => {
+                                    // 寻找当前被攻击数最少的敌人
+                                    taggedEnemies.sort((a, b) => {
+                                        return engageCounts[a.uuid.toString()] - engageCounts[b.uuid.toString()];
+                                    });
+                                    
+                                    let bestTarget = taggedEnemies[0];
+
+                                    if (bestTarget) {
+                                        minion.setTarget(bestTarget);
+                                        engageCounts[bestTarget.uuid.toString()]++;
+                                    }
+                                });
+                            }
+                        }
                     }
                 })
         )

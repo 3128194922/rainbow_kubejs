@@ -10,7 +10,7 @@ ServerEvents.tags("item", event => {
     })
     
     // 饰品相关标签
-    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff'])
+    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','gimmethat:death_eye'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     

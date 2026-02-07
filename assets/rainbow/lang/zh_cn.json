@@ -148,5 +148,9 @@
 	"item.rainbow.biological_monitoring": "生物监测",
 	"item.rainbow.365_exe": "365安全卫士",
 	"item.rainbow.german_orthopedics": "德国骨科",
-	"item.rainbow.second_heart": "副心脏"
+	"item.rainbow.second_heart": "副心脏",
+	"effect.rainbow.bitter": "苦涩",
+	"effect.rainbow.bitter.description": "饥饿值越低，伤害越高",
+	"effect.rainbow.knowledge_burst": "知识学爆",
+	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高"
 }

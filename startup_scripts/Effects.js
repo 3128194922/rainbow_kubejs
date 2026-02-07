@@ -107,6 +107,17 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:damage_num")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
+    
+    // 苦涩：有益，根据饥饿值越低伤害加成越高
+    event.create("rainbow:bitter")
+        .beneficial()
+        .color(0x556B2F)
+
+    // 知识学爆：有益，根据玩家经验等级提供伤害加成
+    event.create("rainbow:knowledge_burst")
+        .beneficial()
+        .color(0x00FF00)
+
     // 肢解：有害，减少最大生命值
     /*event.create("rainbow:dismember")
         .harmful()

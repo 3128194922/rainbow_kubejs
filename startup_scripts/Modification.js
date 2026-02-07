@@ -26,7 +26,7 @@ ItemEvents.modification(event => {
     // 苦涩效果食物 (gimmethat:bitterness)
     event.modify('atmospheric:yucca_fruit', item => {
         item.foodProperties = food => {
-            food.effect('gimmethat:bitterness', 300, 0, 1.0)
+            food.effect('rainbow:bitter', 300, 0, 1.0)
         }
     })
 

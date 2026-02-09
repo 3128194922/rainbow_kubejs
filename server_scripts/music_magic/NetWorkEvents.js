@@ -5,13 +5,14 @@
 
 // 配置多个音乐序列 (乐器编号序列)
 const Config_music_list = [
-    { numbers: [0, 1, 2, 3, 7], alias: "sequenceOne" }
+    { numbers: [0, 1, 7], alias: "democratic_save" }
 ];
 
 // 接收 "music" 数据包：处理音乐演奏序列
 NetworkEvents.dataReceived("music", (event) => {
     let music = event.data.music;
     let music_ = listTagToJSArray(music); // 转换为数字数组
+    let player = event.getPlayer();
 
     // 查找匹配的预定义序列
     let match = Config_music_list.find(seq => {
@@ -26,10 +27,8 @@ NetworkEvents.dataReceived("music", (event) => {
         }
         
     // 如果匹配到 "sequenceOne" 序列
-    if(match.alias == "sequenceOne")
+    if(match.alias == "democratic_save")
         {
-            event.getPlayer().tell("你触发了集结令")
-            // 可以在此处添加更多魔法效果
+            player.potionEffects.add("rainbow:democratic_save",SecoundToTick(2),0,false,false)
         }
-
 });

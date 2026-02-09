@@ -6,20 +6,6 @@
 global.WhileFoodList = []
 
 /**
-* 监听饰品栏添加效果
-*/
-let CuriosApi = Java.loadClass("top.theillusivec4.curios.api.CuriosApi")
-
-/**
-* 在实体饰品栏中寻找饰品
-* @param {Internal.Item} stack 饰品
-* @param {Internal.LivingEntity_} entity 实体
-*/
-function hasCurios(entity, stack) {
-    return CuriosApi.getCuriosHelper().findEquippedCurio(stack, entity).isPresent()
-}
-
-/**
 * 输出所有食物列表
 */
 
@@ -309,83 +295,6 @@ function BoatidOK(ItemStack) {
 }
 
 /**
- * 返回对应槽位物品列表
- * @param {Internal.Player} player 
- * @param {string} slot
- * @returns {ItemList: [{}]}
- */
-function getCuriosItemList(player, slot) {
-    let curio = player.nbt.ForgeCaps['curios:inventory']["Curios"].find(function (curio) {
-        return curio["Identifier"] === slot;
-    })
-    return curio ? curio.StacksHandler.Stacks.Items : [];
-}
-
-
-/**
- * 返回是否有此物品在player的slot上，及物品数量，对应槽位号(该对应槽位的第几个)，对应槽位数量
- * @param {Internal.Player} player 
- * @param {string} slot
- * @param {string} id 
- * @returns {{hasItem: boolean, count: number, SlotNum: number, SlotSize: number}}
- */
-function CuriosPlayer(player, slot, id) {
-    let result = {
-        hasItem: false,
-        count: 0,
-        SlotNum: 0,
-        SlotSize: 0
-    };
-
-    let ItemList = getCuriosItemList(player, slot)
-    result.SlotSize = player.nbt.ForgeCaps['curios:inventory']["Curios"].find(function (curio) {
-        return curio["Identifier"] === slot;
-    }).StacksHandler.Cosmetics.Size
-    ItemList.forEach(item => {
-        if (item.id === id) {
-            result.hasItem = true;
-            result.count += item.Count;
-            result.SlotNum = item.Slot;
-        }
-    })
-    return result;
-}
-
-//以下思路来源于群友落秋与curios源码
-//对饰品栏插槽的直接控制
-let $CuriosApi = Java.loadClass("top.theillusivec4.curios.api.CuriosApi")
-/**
- * 
- * @param {"shrink"|"grow"|"getfor"|"setfor"|"unlock"|"lock"} method 
- * @param {string} slot 
- * @param {Internal.Player} player 
- * @param {Number} amount 
- * @returns 
- */
-function CuriosSlotMethod(method, slot, player, amount) {
-    switch (method) {
-        case "shrink":  //减去对应玩家相应数量的对应插槽
-            $CuriosApi.getSlotHelper().shrinkSlotType(slot, amount, player)
-            break;
-        case "grow":  //添加对应玩家相应数量的对应插槽
-            $CuriosApi.getSlotHelper().growSlotType(slot, amount, player)
-            break;
-        case "getfor":  //获取对应玩家对应插槽的数量
-            console.log($CuriosApi.getSlotHelper().getSlotsForType(player, slot))
-            return $CuriosApi.getSlotHelper().getSlotsForType(player, slot)
-        case "setfor":  //设置对应玩家对应插槽的数量
-            $CuriosApi.getSlotHelper().setSlotsForType(slot, player, amount)
-            break;
-        case "unlock":  //解锁对应玩家对应插槽
-            $CuriosApi.getSlotHelper().unlockSlotType(slot, player)
-            break;
-        case "lock":   //锁定对应玩家对应插槽
-            $CuriosApi.getSlotHelper().lockSlotType(slot, player)
-            break;
-    }
-}
-
-/**
  * 将秒转化为游戏内的tick
  * @param {Number} input 单位 秒
  * @returns {Number}
@@ -529,58 +438,6 @@ function isInsideStructure(pos, level, structures) {
     return null;
 }
 
-/**
- * 获取玩家所有 Curios 饰品 ID
- * @param {Internal.ServerPlayer} player
- * @returns {string[]} 物品 ID 数组
- */
-function listCurios(player) {
-    if (player == null) return [];
-    let curios = player.curiosInventory;
-    if (curios == null) return [];
-
-    let all = [];
-
-    for (let slot of curios.curios.values()) {
-        for (let stack of slot.getStacks().getAllItems()) {
-            if (!stack.isEmpty()) {
-                all.push(stack.getId().toString());
-            }
-        }
-    }
-
-    return all;
-}
-
-/**
- * 获取玩家所有 Curios 饰品的冷却状态
- * @param {Internal.ServerPlayer} player
- * @returns {number[]} 冷却状态数组 (1 = 不在CD, 0 = 在CD)
- */
-function listCuriosCooldown(player) {
-    if (player == null) return [];
-    let curios = player.curiosInventory;
-    if (curios == null) return [];
-
-    let result = [];
-
-    for (let slot of curios.curios.values()) {
-        for (let stack of slot.getStacks().getAllItems()) {
-            if (!stack.isEmpty()) {
-                let id = stack.getId().toString();
-                // 这里要确认 cooldown 检查方式是否正确
-                let notOnCd = !player.cooldowns.isOnCooldown(id);
-                result.push(notOnCd ? 1 : 0);
-            } else {
-                // 空槽位强制 push 0
-                result.push(0);
-            }
-        }
-    }
-
-    return result;
-}
-
 const ResourceKey = Java.loadClass("net.minecraft.resources.ResourceKey");
 /**
  * 获取所有生物群系 ID
@@ -615,59 +472,6 @@ function getAllStructureIDs(server) {
     });
     return result;
 }
-
-
-/**
- * 获取指定类型饰品栏所有饰品
- * @param {Internal.ServerPlayer} player - 玩家对象
- * @param {string} slotType - 饰品槽类型 (如 "ring", "belt", "charm")
- * @returns {ItemStackJS[]} 该类型槽位上的所有饰品物品
- */
-function getCuriosItems(player, slotType) {
-    let curios = player.getCuriosInventory();
-    if (!curios) return null;
-
-    let handler = curios.getCurios().get(slotType);
-    if (!handler) return null;
-
-    let stacks = handler.getStacks();
-    let size = stacks.getSlots();
-    let result = [];
-
-    for (let i = 0; i < size; i++) {
-        let stack = stacks.getStackInSlot(i);
-        if (!stack.isEmpty()) {
-            result.push(stack);
-        }
-    }
-    return result.length > 0 ? result : null;  // 如果没有饰品，返回 null
-}
-
-/**
- * 获取指定类型饰品栏中的第一个饰品
- * @param {Internal.ServerPlayer} player
- * @param {string} slotType
- * @returns {ItemStackJS | null}
- */
-function getCuriosItemBySlot(player, slotType) {
-    let curios = player.getCuriosInventory()
-    if (!curios) return null
-
-    let handler = curios.getCurios().get(slotType)
-    if (!handler) return null
-
-    let stacks = handler.getStacks()
-    let size = stacks.getSlots()
-
-    for (let i = 0; i < size; i++) {
-        let stack = stacks.getStackInSlot(i)
-        if (!stack.isEmpty()) {
-            return stack
-        }
-    }
-    return null
-}
-
 
 function listTagToJSArray(listTag) {
     let arr = [];
@@ -827,23 +631,3 @@ ServerEvents.commandRegistry(event => {
     
 });
 
-/**
- * 在实体饰品栏中寻找指定ID饰品并返回物品对象
- * @param {Internal.ServerPlayer} player - 玩家对象
- * @param {string} id - 物品ID（如 "minecraft:diamond"）
- * @returns {Internal.ItemStack|null} 找到的饰品物品对象，未找到返回 null
- */
-function getCuriosItem(player, id) {
-    if (player == null) return null;
-    let curios = player.curiosInventory;
-    if (curios == null) return null;
-
-    for (let slot of curios.curios.values()) {
-        for (let stack of slot.getStacks().getAllItems()) {
-            if (stack.getId().toString() === id) {
-                return stack;
-            }
-        }
-    }
-    return null;
-}

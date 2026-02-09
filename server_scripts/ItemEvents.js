@@ -99,30 +99,6 @@ ItemEvents.rightClicked(event => {
         item.nbt.swordnumber = item.nbt.swordlist.length;
     }
 
-    // --- 装填核心：右键激活 ---
-    if (item.id === "rainbow:reload_core" && hand == "main_hand") {
-        let theitem = getCuriosItem(player,"rainbow:reload_core");
-        let energy = theitem.nbt.getFloat("Energy") || 0;
-        if (energy >= 100 && !player.cooldowns.isOnCooldown(item.id)) {
-            player.potionEffects.add("rainbow:reload_buff", 200, 0, false, false);
-            theitem.nbt.putDouble("Energy", 0);
-            player.cooldowns.addCooldown(item.id, 200); // 10秒冷却
-            level.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
-        }
-    }
-
-    // --- 连射核心：右键激活 ---
-    if (item.id === "rainbow:short_core" && hand == "main_hand") {
-        let theitem = getCuriosItem(player,"rainbow:short_core");
-        let energy = item.nbt.getFloat("Energy") || 0;
-        if (energy >= 100 && !player.cooldowns.isOnCooldown(item.id)) {
-            player.potionEffects.add("rainbow:short_buff", 200, 0, false, false);
-            theitem.nbt.putDouble("Energy", 0);
-            player.cooldowns.addCooldown(item.id, 200); // 10秒冷却
-            level.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
-        }
-    }
-
     // --- 泰拉刃：发射射弹 ---
     if (item.id === 'rainbow:terasword') {
         if (item.getNbt().getInt("power")) {

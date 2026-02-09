@@ -1456,7 +1456,7 @@ StartupEvents.registry('item', event => {
                     if (player.age % SecoundToTick(10)) return;
 
                     player.potionEffects.add("absorption", SecoundToTick(5), 1, false, false)
-                    player.potionEffects.add("sob:spite", SecoundToTick(5), 1, false, false)
+                    //player.potionEffects.add("sob:spite", SecoundToTick(5), 1, false, false)
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();

@@ -3,12 +3,10 @@
 // 🧘 玩家事件处理脚本
 // ==========================================
 
-const SkillSlotsHandler = player => Java.loadClass('snownee.skillslots.SkillSlotsHandler').of(player)
-
 // 玩家统一Tick事件（每秒20次）
 PlayerEvents.tick((event) => {
     const { player, server } = event;
-    //console.log(`${player.getItemInHand("main_hand").nbt.toString()}`)
+    //console.log(`${player.getInventory().armor[3]}`)
     if (player.level.isClientSide()) return;
 
     // 每秒执行一次 (20 ticks)
@@ -38,25 +36,6 @@ PlayerEvents.tick((event) => {
         curios_list: listCuriosCooldown(player),
         curios_id: listCurios(player)
       })
-
-    // --- 主动饰品栏位同步 ---
-    // 将带有 "rainbow:skill_charm" 标签的饰品同步到技能槽位
-    if(getCuriosItems(player,"charm") == null)
-      {
-        for(let i=0;i<4;i++)
-          {
-            SkillSlotsHandler(player).setItem(i,"minecraft:air")
-          }
-      }
-      else
-        {
-          getCuriosItems(player,"charm").forEach((item,index)=>{
-            if(item.hasTag("rainbow:skill_charm"))
-              {
-                SkillSlotsHandler(player).setItem(index,item)
-              }
-          })
-        }
     if (player.age % 200) return;
 });
 

@@ -339,8 +339,6 @@ function randomBool(probability) {
 /**
 * 监听饰品栏添加效果
 */
-let CuriosApi = Java.loadClass("top.theillusivec4.curios.api.CuriosApi")
-
 
 /*
 function hasCurios(entity, stack) {

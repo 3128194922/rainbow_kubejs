@@ -1,7 +1,7 @@
 {
     "parent": "item/handheld",
     "textures": {
-      "layer0": "rainbow:item/short_core"
+      "layer0": "rainbow:item/short_core_1"
     },
     "overrides": [
       {
@@ -36,7 +36,7 @@
       },
       {
         "predicate": {
-          "kubejs:energy": 0.90
+          "kubejs:energy": 1.0
         },
         "model": "rainbow:item/short_core_6"
       }

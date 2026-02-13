@@ -119,7 +119,7 @@ BlockEvents.rightClicked("create:encased_fluid_pipe", event => {
     );
     event.entity.swing()
 })
-
+/*
 // 洛阳铲逻辑 - 右键提取考古方块内容
 BlockEvents.rightClicked(event => {
     let player = event.getPlayer();
@@ -155,7 +155,7 @@ BlockEvents.rightClicked(event => {
     // 移除方块（相当于挖出来）
     block.set("minecraft:air");
 });
-
+*/
 // 末影 docker 绑定逻辑
 BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
     let entity = event.block.entity;

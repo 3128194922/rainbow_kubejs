@@ -98,7 +98,7 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:off_work_time")
     .beneficial() // 标记为有益效果
     // 韧性：有益，增加攻击力和减伤
-    event.create("rainbow:resilience")
+    /*event.create("rainbow:resilience")
         .beneficial()
         .color(0xEAF044)
         .modifyAttribute("generic.attack_damage", "resilience", 1.5, "multiply_total") // 每级攻击力提升 1.5 倍
@@ -107,7 +107,7 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:damage_num")
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
-    
+    */
     // 苦涩：有益，根据饥饿值越低伤害加成越高
     event.create("rainbow:bitter")
         .beneficial()

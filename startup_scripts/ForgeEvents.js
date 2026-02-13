@@ -99,7 +99,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
             }
         }
     }
-
+/*
     // --- 韧性注射器 ---
     // 根据韧性值百分比减免伤害
     if (victim.persistentData.getInt("resilience") > 0 &&
@@ -128,7 +128,7 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
             victim.persistentData.putFloat("damage_num", 0);
         }
     }
-
+*/
     // --- 大胃王饰品 ---
     // 消耗饱和度抵消伤害
     if (hasCurios(victim, "rainbow:big_stomach")) {
@@ -562,7 +562,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                 )
             );
         }
-
+/*
         // 🗡️ 饕餮剑：剑数量影响攻击力
         let swordnum = item.getNbt().getInt("swordnumber") || 0;
         if (item.id === "rainbow:eldritch_sword" && slotType === "mainhand") {
@@ -576,7 +576,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                 )
             );
         }
-
+*/
         // 🗡️ 群系之刃：群系系数影响攻击力
         let biomenum = item.getNbt().getInt("biomenum") || 0;
         if (item.id === "rainbow:biome_of_sword" && slotType === "mainhand") {

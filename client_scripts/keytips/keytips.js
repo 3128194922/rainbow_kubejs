@@ -9,11 +9,10 @@
 // 🎨 UI 按键提示系统 (RenderJS Version)
 // UI Key Tips System (RenderJS Version)
 // ==============================
-
-let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft");
+const $Minecraft = Java.loadClass("net.minecraft.client.Minecraft");
 
 // 提示注册表 / Hint Registry
-const HintRegistry = {
+let HintRegistry = {
   "net.minecraft.client.gui.screens.inventory.InventoryScreen": [
     "key.jei.showUses",
     "key.jei.showRecipe",
@@ -23,8 +22,8 @@ const HintRegistry = {
 
 // 获取按键显示名称的辅助函数 / Helper to get key display name
 function getKeyDisplayName(keyId) {
-    const options = $Minecraft.getInstance().options;
-    for (const keyMapping of options.keyMappings) {
+    let options = $Minecraft.getInstance().options;
+    for (let keyMapping of options.keyMappings) {
         if (keyMapping.name === keyId) {
             return keyMapping.getTranslatedKeyMessage().getString();
         }
@@ -34,30 +33,30 @@ function getKeyDisplayName(keyId) {
 
 RenderJSEvents.AddGuiRender(event => {
     event.addRender(context => {
-        const screen = Client.screen;
+        let screen = Client.screen;
         if (!screen) return;
 
-        const screenName = screen.getClass().getName();
-        const hints = HintRegistry[screenName];
+        let screenName = screen.getClass().getName();
+        let hints = HintRegistry[screenName];
 
         if (hints) {
-            const gfx = context.guiGraphics;
-            const font = Client.font;
-            const height = context.window.getGuiScaledHeight();
+            let gfx = context.guiGraphics;
+            let font = Client.font;
+            let height = context.window.getGuiScaledHeight();
             
             // 起始位置：屏幕左侧中部 / Start position: Middle left of the screen
             let startY = height / 2 - (hints.length * 12) / 2;
-            const startX = 5;
+            let startX = 5;
 
             hints.forEach(keyId => {
-                const keyName = getKeyDisplayName(keyId);
+                let keyName = getKeyDisplayName(keyId);
                 // 简单的显示格式：[按键] ID / Simple format: [Key] ID
                 // 你可以根据需要自定义显示的文本 / You can customize the text as needed
                 // 去掉 "key." 前缀让显示更干净 / Remove "key." prefix for cleaner display
-                const cleanId = keyId.replace("key.", "");
-                const text = `[${keyName}] ${cleanId}`;
+                let cleanId = keyId.replace("key.", "");
+                let text = `[${keyName}] ${cleanId}`;
                 
-                gfx.drawString(font, text, startX, startY, 0xFFFFFF, true);
+                gfx["drawString(net.minecraft.client.gui.Font,java.lang.String,float,float,int,boolean)"](font, text, startX, startY, 0xFFFFFF, true);
                 startY += 12; // 行高 / Line height
             });
         }

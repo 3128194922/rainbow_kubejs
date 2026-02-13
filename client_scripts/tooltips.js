@@ -87,11 +87,11 @@ ItemEvents.tooltip((event) => {
         }
         text.add(1, Text.red("已食用食物数:").append(Text.lightPurple(`${item.nbt.foodnumber}`)));
     })
-    event.addAdvanced("rainbow:eldritch_sword", (item, advanced, text) => {
+    /*event.addAdvanced("rainbow:eldritch_sword", (item, advanced, text) => {
         text.add(0, Text.darkPurple("饕餮剑"));
         let count = item.nbt ? (item.nbt.swordnumber || 0) : 0;
         text.add(1, Text.red("已吞噬剑数:").append(Text.lightPurple(`${count}`)));
-    })
+    })*/
     event.addAdvanced('gimmethat:giants_ring', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -129,7 +129,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.darkPurple("根据已经损失的血量增加属性"));
             text.add(2, Text.red("联动暴食之符"));
     })
-    event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -144,7 +144,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.darkPurple("显示[暴怒]条,开启化学内爆系统"));
             text.add(2, Text.darkPurple(`开启后启动化学内爆`));
         }
-    })
+    })*/
     event.addAdvanced('rainbow:dice', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -328,9 +328,9 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.gold("绑定对象ID: ").append(`${item?.nbt?.getString("UUID")}`));
         }
     })
-    event.addAdvanced('rainbow:luoyang_shovel', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:luoyang_shovel', (item, advanced, text) => {
         text.add(1, Text.darkPurple("右键可直接提取出考古物品"));
-    })
+    })*/
     event.addAdvanced('rainbow:oceantooth_necklace', (item, advanced, text) => {
             // 先判断 NBT 是否存在
             text.add(1, Text.darkPurple(`献祭100生物后消耗自己，产出战利品`));

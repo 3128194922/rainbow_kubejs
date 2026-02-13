@@ -71,7 +71,7 @@ ItemEvents.rightClicked(event => {
         item.nbt.foodlist.push(Integer.valueOf(tag));
         item.nbt.foodnumber = item.nbt.foodlist.length;
     }
-
+/*
     // --- 饕餮剑：剑吞噬 ---
     if (item.id === "rainbow:eldritch_sword") {
         let targetItem = player.getItemInHand("off_hand");
@@ -98,7 +98,7 @@ ItemEvents.rightClicked(event => {
         item.nbt.swordlist.push(Integer.valueOf(tag));
         item.nbt.swordnumber = item.nbt.swordlist.length;
     }
-
+*/
     // --- 泰拉刃：发射射弹 ---
     if (item.id === 'rainbow:terasword') {
         if (item.getNbt().getInt("power")) {

@@ -285,6 +285,7 @@ PlayerEvents.loggedIn(event => {
 /*
     server.runCommandSilent(`/execute as ${player.getDisplayName().getString()} run dialog show hello_world`)
 */
+/*
     // 初始化玩家持久化数据
     if(!player.persistentData.getInt("resilience"))
         {
@@ -293,7 +294,7 @@ PlayerEvents.loggedIn(event => {
     if(!player.persistentData.getFloat("damage_num"))
         {
             player.persistentData.putFloat("damage_num",0);
-        }
+        }*/
 });
 
 // 玩家统计数据上传 (Logged Out Event)

@@ -110,8 +110,10 @@ StartupEvents.registry("item", event => {
     event.create("rainbow:nbt_util").texture('fruitfulfun:item/inspector').unstackable().glow(true)
     // 金手指
     event.create("rainbow:golden_finger").texture('create:item/brass_hand').unstackable().glow(true)
+    
     // 洛阳铲
-    event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
+    //event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
+
     // 秘封琥珀
     event.create("rainbow:amber_bee")
 
@@ -249,14 +251,14 @@ StartupEvents.registry("item", event => {
         .attackDamageBonus(4.0)
         .rarity("epic")
         .maxDamage(0)
-
+/*
     // 饕餮剑：吞噬剑以成长
     event.create("rainbow:eldritch_sword", "sword")
         .speedBaseline(-2.4)
         .attackDamageBonus(4.0)
         .rarity("epic")
         .maxDamage(0)
-        
+        */
     // 超精密构件：合成材料
     event.create("rainbow:super_mechanism", "basic")
         .tooltip("§6高级合成材料")
@@ -1920,7 +1922,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-
+/*
 StartupEvents.registry('item', event => {
     // 化学内爆
     event.create("rainbow:rage_syringe")
@@ -1933,7 +1935,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
 })
-
+*/
 const hearts = ['drowned_heart', 'frozen_heart', 'gritty_heart', 'gunk_heart', 'rotten_heart'];
 
 // 注册僵尸之心系列物品

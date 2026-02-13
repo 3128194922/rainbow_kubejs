@@ -86,6 +86,7 @@
 	"item.rainbow.adventure_charm": "冒险者证章",
 	"item.rainbow.despair_insignia": "极限证章",
 	"item.rainbow.flesh": "怪肉",
+	"item.rainbow.short_core": "小滴答",
 	"item.minecraft.potion.effect.flying_potion": "飞升药水",
 	"item.minecraft.splash_potion.effect.flying_potion": "喷溅型飞升药水",
 	"item.minecraft.lingering_potion.effect.flying_potion": "滞留型飞升药水",
@@ -152,5 +153,7 @@
 	"effect.rainbow.bitter": "苦涩",
 	"effect.rainbow.bitter.description": "饥饿值越低，伤害越高",
 	"effect.rainbow.knowledge_burst": "知识学爆",
-	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高"
+	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高",
+	"effect.rainbow.short_core": "小滴答",
+	"effect.rainbow.short_core.description": "连弩将直接满射速"
 }

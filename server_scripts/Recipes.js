@@ -245,13 +245,13 @@ ServerEvents.recipes(event => {
         10, // 烹饪时间
         'minecraft:honey_bottle', // 容器（原文为container）
     );
-
+/*
     //洛阳铲
     event.shaped('rainbow:luoyang_shovel', [
         ['minecraft:flint','','minecraft:flint'],
         ['minecraft:flint','minecraft:flint','minecraft:flint'],
         ['','minecraft:stick','']])
-
+*/
     // 始冰镐
     event.shaped('rainbow:frostium_pickaxe', [
         ['legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard'],

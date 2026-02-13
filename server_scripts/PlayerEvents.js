@@ -11,7 +11,7 @@ PlayerEvents.tick((event) => {
 
     // 每秒执行一次 (20 ticks)
     if (player.age % 20) return;
-
+/*
     // --- 韧性恢复机制 ---
     // 韧性 (resilience) 会随时间自动恢复，受伤会减少韧性
     if(player.persistentData.getInt("resilience")<100)
@@ -25,17 +25,19 @@ PlayerEvents.tick((event) => {
 
     // --- 数据同步渲染 ---
     // 发送数据包到客户端用于GUI渲染
-      player.sendData("resilience_gui",{
+    /*  player.sendData("resilience_gui",{
         resilience: player.persistentData.getInt("resilience"),
         curios: hasCurios(player,'rainbow:resilience_syringe'),
         damage_num: player.persistentData.getFloat("damage_num"),
         curios2: hasCurios(player,'rainbow:rage_syringe')
       })
+      
       player.sendData("cooldowns_gui",{
-        curios_number: listCuriosCooldown(player).length,
+        /*curios_number: listCuriosCooldown(player).length,
         curios_list: listCuriosCooldown(player),
-        curios_id: listCurios(player)
-      })
+        curios: listCuriosStack(player)
+      })*/
+      
     if (player.age % 200) return;
 });
 

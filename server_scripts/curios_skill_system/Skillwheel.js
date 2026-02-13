@@ -105,7 +105,7 @@ registerSkill('rainbow:mind', (event, player, itemStack) => {
 
     player.cooldowns.addCooldown("rainbow:mind", SecoundToTick(30));
 });
-
+/*
 // --- 韧性注射器 ---
 registerSkill('rainbow:resilience_syringe', (event, player, itemStack) => {
     if (player.persistentData.getInt("resilience") >= 100) {
@@ -121,7 +121,7 @@ registerSkill('rainbow:rage_syringe', (event, player, itemStack) => {
         player.cooldowns.addCooldown("rainbow:damage_num", SecoundToTick(10));
     }
 });
-
+*/
 // --- 怪物护符 ---
 registerSkill('rainbow:monster_charm', (event, player, itemStack) => {
     if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {

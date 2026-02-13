@@ -1,4 +1,4 @@
-
+// priority: 1000
 let $Minecraft = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
 let isOpen = false; 
 let syncedInspiration = 100;

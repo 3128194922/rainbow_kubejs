@@ -4,7 +4,7 @@
 // ==========================================
 
 // 技能注册表
-const SkillRegistry = {};
+let SkillRegistry = {};
 
 /**
  * 注册技能处理函数
@@ -31,7 +31,7 @@ function getPacketItemStack(player, sourceType, slotIndex, slotName, itemId) {
 // ==========================================
 
 // --- 心脏系列 ---
-const heartEntityMap = {
+let heartEntityMap = {
     'rainbow:rotten_heart': 'minecraft:zombie',
     'rainbow:drowned_heart': 'minecraft:drowned',
     'rainbow:gunk_heart': 'dungeonsdelight:rotten_zombie',
@@ -234,7 +234,7 @@ registerSkill('rainbow:ccb', (event, player, itemStack) => {
     let ccbHit = player.rayTrace(5, false);
     if (ccbHit && ccbHit.entity && ccbHit.entity.isLiving()) {
         let target = ccbHit.entity;
-        const BLACKLIST = ['minecraft:wither', 'minecraft:ender_dragon'];
+        let BLACKLIST = ['minecraft:wither', 'minecraft:ender_dragon'];
 
         if (BLACKLIST.includes(target.type.toString())) {
             player.tell(Text.red("该生物无法被寄生！"));
@@ -326,7 +326,7 @@ NetworkEvents.dataReceived('skillwheel', event => {
         return;
     }
 
-    const handler = SkillRegistry[itemId];
+    let handler = SkillRegistry[itemId];
     if (!handler) return;
     try {
         handler(event, player, itemStack);

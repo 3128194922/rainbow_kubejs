@@ -64,6 +64,25 @@ function listCurios(player) {
     }
     return all
 }
+function listCuriosIdNbt(player) {
+    if (player == null) return []
+    let curios = getCuriosInventorySafe(player)
+    if (curios == null) return []
+    let all = []
+    for (let handler of curios.getCurios().values()) {
+        let stacks = handler.getStacks()
+        let size = stacks.getSlots()
+        for (let i = 0; i < size; i++) {
+            let stack = stacks.getStackInSlot(i)
+            if (!stack.isEmpty()) {
+                let id = stack.getId().toString()
+                let nbt = stack.getNbt()
+                all.push({ id: id, nbt: nbt ? String(nbt) : null })
+            }
+        }
+    }
+    return all
+}
 function listCuriosCooldown(player) {
     if (player == null) return []
     let curios = getCuriosInventorySafe(player)

@@ -1,0 +1,44 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/short_core"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "kubejs:energy": 0.15
+        },
+        "model": "rainbow:item/short_core_1"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 0.30
+        },
+        "model": "rainbow:item/short_core_2"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 0.45
+        },
+        "model": "rainbow:item/short_core_3"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 0.60
+        },
+        "model": "rainbow:item/short_core_4"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 0.75
+        },
+        "model": "rainbow:item/short_core_5"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 0.90
+        },
+        "model": "rainbow:item/short_core_6"
+      }
+    ]
+}

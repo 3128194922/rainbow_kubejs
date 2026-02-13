@@ -15,15 +15,6 @@ const SymbiosisConfig = {
 
 // 注册物品
 StartupEvents.registry('item', event => {
-    // 注册一个“假”物品用于 SkillSlots 同步
-    // 这个物品在创造模式标签页中隐藏，但具有与真物品相同的图标和名称
-    event.create('rainbow:ccb_fake')
-        .displayName('共生徽章')
-        .texture("rainbow:item/ccb") // 假设纹理路径，需要确认
-        .unstackable() // 不可堆叠
-        // 不添加到任何创造模式标签页，从而“隐藏”它
-        // .tag("curios:charm") // 不需要 Curios 标签，因为它只是个触发器
-
     event.create('rainbow:ccb')
         .displayName('共生徽章')
         .rarity("epic")

@@ -24,9 +24,11 @@ StartupEvents.registry("item", (event) => {
         .song("rainbow:music.gauntlet", 181)
         // 添加 "music_discs" 标签
         .tag("music_discs")
+        .texture('minecraft:item/music_disc_13')
     event.create("rainbow:tem", "music_disc")
-    // 设置唱片对应的音乐为 "rainbow:music.gauntlet"，时长为 181 秒
-    .song("rainbow:music.tem", 209)
-    // 添加 "music_discs" 标签
-    .tag("music_discs")
+        // 设置唱片对应的音乐为 "rainbow:music.gauntlet"，时长为 181 秒
+        .song("rainbow:music.tem", 209)
+        // 添加 "music_discs" 标签
+        .tag("music_discs")
+        .texture('minecraft:item/music_disc_13')
 })

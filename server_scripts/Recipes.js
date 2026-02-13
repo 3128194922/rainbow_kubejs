@@ -329,10 +329,10 @@ ServerEvents.recipes(event => {
     event.recipes.create.filling('gimmethat:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
 
     // 臭屁瓶
-    event.recipes.create.mixing('alexsmobs:stink_bottle', ['rainbow:shit', 'quark:bottled_cloud'])
+    event.recipes.create.mixing('alexsmobs:stink_bottle', ['alexscaves:guano', 'quark:bottled_cloud'])
 
     // 710配方
-    event.recipes.create.mixing(Fluid.of("rainbow:oil", 1000), ['rainbow:shit','alexsmobs:cockroach_wing_fragment']).heated()
+    event.recipes.create.mixing(Fluid.of("rainbow:oil", 1000), ['alexscaves:guano','alexsmobs:cockroach_wing_fragment']).heated()
 
     // 雕刻南瓜
     event.stonecutting("minecraft:carved_pumpkin", "minecraft:pumpkin");

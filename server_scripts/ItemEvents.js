@@ -27,10 +27,10 @@ ItemEvents.rightClicked(event => {
     }
 
     // --- 恶搞物品：拉屎 ---
-    // 纸 + 潜行 = 获得 "rainbow:shit"
+    // 纸 + 潜行 = 获得 "alexscaves:guano"
     if (item.id === "minecraft:paper" && player.shiftKeyDown) {
         item.shrink(1);
-        player.addItem("rainbow:shit");
+        player.addItem("alexscaves:guano");
         player.setStatusMessage('你拉屎了');
     }
     
@@ -391,7 +391,7 @@ ItemEvents.rightClicked(event => {
 
 // 食物事件
 // 吃下屎后关闭客户端（恶搞）
-ItemEvents.foodEaten('rainbow:shit', () => Client.close())
+//ItemEvents.foodEaten('rainbow:shit', () => Client.close())
 
 // 超级饰品：大蒜面包增加饰品栏
 ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{

@@ -640,6 +640,16 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
         {
             entity.discard() 
         }
+
+        if(effectId === "effect.rainbow.short_buff")
+            {
+                let item = entity.getItemInHand("main_hand");
+                if (item.id == 'species:crankbow') {
+                    if (item.nbt.getBoolean("IsUsing") == true) {
+                        item.nbt.putInt("Speed", 0);
+                    }
+                }
+            }
     }
     catch(e)
     {

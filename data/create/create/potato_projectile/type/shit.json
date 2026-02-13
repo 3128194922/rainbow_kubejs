@@ -1,6 +1,6 @@
 {
     "damage": 0,
-    "items": "rainbow:shit",
+    "items": "alexscaves:guano",
     "knockback": 0.1,
     "on_entity_hit": {
       "type": "create:potion_effect",

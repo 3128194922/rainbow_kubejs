@@ -154,6 +154,6 @@
 	"effect.rainbow.bitter.description": "饥饿值越低，伤害越高",
 	"effect.rainbow.knowledge_burst": "知识学爆",
 	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高",
-	"effect.rainbow.short_core": "小滴答",
-	"effect.rainbow.short_core.description": "连弩将直接满射速"
+	"effect.rainbow.short_buff": "小滴答",
+	"effect.rainbow.short_buff.description": "连弩将直接满射速"
 }

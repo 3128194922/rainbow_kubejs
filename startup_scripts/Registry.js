@@ -110,7 +110,7 @@ StartupEvents.registry("item", event => {
     event.create("rainbow:nbt_util").texture('fruitfulfun:item/inspector').unstackable().glow(true)
     // 金手指
     event.create("rainbow:golden_finger").texture('create:item/brass_hand').unstackable().glow(true)
-    
+
     // 洛阳铲
     //event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
 
@@ -264,8 +264,8 @@ StartupEvents.registry("item", event => {
         .tooltip("§6高级合成材料")
         
     // 屎：食用后反胃，甚至关闭游戏
-    event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })
-        .tooltip("食用关闭游戏(吃晕了")
+    /*event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })
+        .tooltip("食用关闭游戏(吃晕了")*/
         
     // 七彩石
     event.create("rainbow:rainbow_stone", "basic")

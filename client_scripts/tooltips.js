@@ -5,7 +5,7 @@
 
 ItemEvents.tooltip(event => {
     // 为彩虹大便添加提示
-    event.add('rainbow:shit', '§6这是一坨有味道的物品')
+    //event.add('rainbow:shit', '§6这是一坨有味道的物品')
 })
 
 // 引入原版工具类用于格式化时长

@@ -8,395 +8,43 @@
 // 🧱 模块1：防御逻辑（受击方）
 // 处理玩家受到伤害时的减免、特效触发等逻辑
 // =============================================
-function handleVictimDefense(event, victim, source, UUID) {
-    if (!victim.isPlayer()) return;
-
-    // --- 防化服套装效果 ---
-    if (victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
-        && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
-        && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
-        && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
-        if (source.getType() == "poison_cloud" || source.getType() == "wither") {
-            event.setCanceled(true)
-        }
-    }
-
-    // --- 民主甲套装效果 ---
-    // 只有穿戴全套民主装备时生效
-    if (
-        victim.getItemBySlot("chest").id == "gimmethat:democracy_chestplate" &&
-        victim.getItemBySlot("feet").id == "gimmethat:democracy_boots" &&
-        victim.getItemBySlot("head").id == "gimmethat:democracy_helmet" &&
-        victim.getItemBySlot("legs").id == "gimmethat:democracy_leggings"
-    ) {
-        // 检查背罐中的空气量
-        /*let tank = global.backtankUtils.getFirstTank(victim);
-        if (tank && global.backtankUtils.hasAirRemaining(tank)) {
-            let currentAir = global.backtankUtils.getAir(tank);
-            let damage = event.getAmount();
-
-            // 每点伤害需要消耗的气量（例如 10）
-            let airPerDamage = 10;
-            let requiredAir = damage * airPerDamage;
-
-            if (currentAir >= requiredAir) {
-                // 气量充足 → 消耗气量并完全免伤
-                global.backtankUtils.consumeAir(victim, tank, requiredAir);
-                event.setAmount(0);
-            } else if (currentAir > 10) {
-                // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
-                let reducedDamage = damage * (1 - currentAir / requiredAir);
-                event.setAmount(reducedDamage);
-                global.backtankUtils.consumeAir(victim, tank, currentAir); // 用光剩余气体
-            }
-        }*/
-        let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
-        let currentAir = tank.nbt.getInt("Air");
-        if (tank && currentAir > 0) {
-            let damage = event.getAmount();
-            let airPerDamage = 5;
-            let requiredAir = damage * airPerDamage;
-
-            if (currentAir >= requiredAir) {
-                tank.nbt.putInt("Air", tank.nbt.getInt("Air") - requiredAir);
-                event.setAmount(0);
-                //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
-                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
-            }
-            else {
-                // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
-                let reducedDamage = damage * (1 - currentAir / requiredAir);
-                event.setAmount(reducedDamage);
-                tank.nbt.putInt("Air", 0);
-                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
-            }
-        }
-    }
-
-
-    // --- 古代庇护饰品 ---
-    // 转移伤害给绑定的玩家
-    if (hasCurios(victim, "rainbow:ancientaegis")) {
-        let item = getCuriosItem(victim, "rainbow:ancientaegis");
-        if (item && item.nbt) {
-            let uuidStr = item.nbt.getString("UUID");
-            if (uuidStr) {
-                try {
-                    let uuid = UUID.fromString(uuidStr);
-                    let targetPlayer = victim.level.getPlayerByUUID(uuid);
-                    if (targetPlayer) {
-                        // 将伤害转移给绑定目标，自身免伤
-                        targetPlayer.attack(targetPlayer.damageSources().magic(), event.getAmount());
-                        event.setAmount(0);
-                    }
-                } catch (err) {
-                    console.log("UUID 解析失败: " + err);
-                }
-            }
-        }
-    }
-    /*
-        // --- 韧性注射器 ---
-        // 根据韧性值百分比减免伤害
-        if (victim.persistentData.getInt("resilience") > 0 &&
-            event.getAmount() != 0 &&
-            hasCurios(victim, "rainbow:resilience_syringe")) {
-            event.setAmount(event.getAmount() * (100 - victim.persistentData.getInt("resilience")) / 100);
-            // 消耗掉韧性值（一次性生效）
-            victim.persistentData.putInt("resilience", 0);
-        }
-    
-        // --- 伤害积蓄 ---
-        // 积累伤害，达到阈值后释放爆炸
-        if (victim.hasEffect("rainbow:damage_num")) {
-            let dmg = victim.persistentData.getFloat("damage_num") + event.getAmount();
-            if (dmg < 100) {
-                victim.persistentData.putFloat("damage_num", dmg);
-            } else {
-                // 伤害超过100，触发爆炸
-                //victim.server.runCommandSilent(`/playsound rainbow:voice.fte voice @a ${victim.x} ${victim.y} ${victim.z}`);
-                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"rainbow:voice.fte","voice", 1, 1)
-                victim.level.createExplosion(victim.x, victim.y, victim.z)
-                    .exploder(victim)
-                    .strength(dmg / 10)
-                    .explosionMode('none')
-                    .explode();
-                victim.persistentData.putFloat("damage_num", 0);
-            }
-        }
-    */
-    // --- 大胃王饰品 ---
-    // 消耗饱和度抵消伤害
-    if (hasCurios(victim, "rainbow:big_stomach")) {
-        if (victim.getFoodData().getSaturationLevel() > 0) {
-            victim.getFoodData().setSaturation(
-                Math.max(victim.getFoodData().getSaturationLevel() - event.getAmount(), 0)
-            );
-            event.setAmount(0);
-        }
-    }
-
-    // --- 暴食护符（免饥饿伤害） ---
-    if (source.getType() == "starve" && hasCurios(victim, "rainbow:gluttony_charm")) {
-        event.setCanceled(true);
-    }
-}
-
+// 已迁移至 ForgeEvents/onPlayerHurt.js 和 ForgeEvents/onNonPlayerHurt.js
 
 // =============================================
 // ⚔️ 模块2：武器伤害逻辑
 // 处理玩家攻击时的特殊武器效果
 // =============================================
-function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
-    const mainHand = attacker.getItemInHand("main_hand");
-    const offHand = attacker.getItemInHand("off_hand");
-
-    // 提尔锋：按目标护甲值增加伤害
-    if (mainHand.id == "rainbow:tyrfing" && range_damage.indexOf(source.getType()) == -1) {
-        event.setAmount(event.getAmount() + event.getAmount() * victim.getArmorValue());
-    }
-
-    // 重锤：下落动能增伤（根据垂直速度）
-    if (mainHand.id == "rainbow:heavy_axe" && range_damage.indexOf(source.getType()) == -1) {
-        event.setAmount(event.getAmount() + ((Math.abs(attacker.getDeltaMovement().y()).toFixed(1) - 0.1) * 40));
-        attacker.fallDistance = 0;
-    }
-
-    // 巨寒霜剑：给予冰冻效果，对特定生物（水生、防火、末影人）伤害加成
-    if (mainHand.id == "legendary_monsters:the_great_frost" && range_damage.indexOf(source.getType()) == -1) {
-        victim.potionEffects.add("legendary_monsters:freeze", SecoundToTick(3), 0, false, false);
-        if (victim.isWaterCreature() || victim.fireImmune() || victim.getType() == "minecraft:enderman") {
-            event.setAmount(event.getAmount() * 1.5);
-        }
-    }
-
-    // 盈泪之剑：点燃 + 概率性悲伤效果
-    if (mainHand.id == "rainbow:teardrop_sword" && range_damage.indexOf(source.getType()) == -1 ||
-        (offHand.id == "rainbow:teardrop_sword" && mainHand.id == "rainbow:frostium_sword")) {
-        victim.setSecondsOnFire(15);
-        if (randomBool(0.33)) {
-            victim.potionEffects.add("rainbow:temporal_sadness", SecoundToTick(5), 0, true, true);
-        }
-    }
-
-    // 万能钥匙斧：气罐触发额外伤害
-    if (mainHand.id == "gimmethat:master_key" && range_damage.indexOf(source.getType()) == -1) {
-        /*let tank = global.backtankUtils.getFirstTank(attacker);
-        if (tank && global.backtankUtils.hasAirRemaining(tank)) {
-            global.backtankUtils.consumeAir(attacker, tank, 10); // 消耗10气
-            event.setAmount(event.getAmount() + 6); // 增加伤害
-            attacker.level.playSound(null, attacker.blockPosition(), "create:whistle_low", "players", 1.0, 1.0);
-        }*/
-        let tank = getCuriosItem(attacker, 'create:copper_backtank') ? getCuriosItem(attacker, 'create:copper_backtank') : getCuriosItem(attacker, 'create:netherite_backtank');
-        let currentAir = tank.nbt.getInt("Air");
-        if (tank && currentAir > 0) {
-            tank.nbt.putInt("Air", currentAir - 10);
-            event.setAmount(event.getAmount() + 6); // 增加伤害
-            attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "create:steam", "voice", 1, 1)
-        }
-    }
-}
-
+// 已迁移至 ForgeEvents/handleWeaponEffects.js
 
 // =============================================
 // 💍 模块3：饰品与状态逻辑
 // 处理攻击者佩戴饰品或拥有特定状态时的效果
 // =============================================
-function handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
-    const mainHand = attacker.getItemInHand("main_hand");
-    const offHand = attacker.getItemInHand("off_hand");
-
-    // 牢大饮料/曼巴效果：速度加成伤害倍率
-    if (hasCurios(attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
-        event.setAmount(event.getAmount() * attacker.getSpeed().toFixed(2) * 10);
-        //attacker.server.runCommandSilent(`/playsound rainbow:voice.man voice @p ${victim.x} ${victim.y} ${victim.z}`);
-        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "rainbow:voice.man", "voice", 1, 1)
-    }
-
-    // 屠夫之钉：远程攻击暴击引发爆炸
-    if (hasCurios(attacker, "rainbow:clawofhorus") &&
-        range_damage.indexOf(source.getType()) != -1 &&
-        !attacker.cooldowns.isOnCooldown("rainbow:clawofhorus")) {
-
-        // 幸运值影响触发概率
-        if (randomBool(attacker.getAttribute("generic.luck").getValue() / 10.0)) {
-            attacker.level.createExplosion(victim.x, victim.y + 1, victim.z)
-                .causesFire(false)
-                .exploder(attacker)
-                .explosionMode("none")
-                .strength(0)
-                .explode();
-            attacker.cooldowns.addCooldown("rainbow:clawofhorus", SecoundToTick(6));
-            attacker.cooldowns.removeCooldown(offHand.id);
-        }
-    }
-
-    // 决斗剑：对已记录类型的生物造成额外伤害
-    if (mainHand.id == "rainbow:duel") {
-        if (mainHand.nbt.type == victim.getType()) {
-            event.setAmount(event.getAmount() * 1.5);
-        } else {
-            mainHand.nbt.type = victim.getType();
-        }
-    }
-
-    // 链式闪电饰品：攻击时触发链式闪电
-    if (hasCurios(attacker, "rainbow:lightning")) {
-        let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');
-        lightning.setCreatorEntityID(attacker.getId());
-        lightning.setFromEntityID(attacker.getId());
-        lightning.setToEntityID(victim.getId());
-        lightning.setChainsLeft(5);
-        victim.level.addFreshEntity(lightning);
-        //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
-        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "domesticationinnovation:chain_lightning", "voice", 1, 1)
-    }
-
-    // 被标记目标（tag）受到远程攻击双倍伤害
-    if (victim.hasEffect("rainbow:tag") && range_damage.indexOf(source.getType().toString()) != -1) {
-        event.setAmount(event.getAmount() * 2);
-    }
-}
-
-// =============================================
-// � 模块3.5：非玩家伤害逻辑
-// 处理宠物、召唤物等非玩家实体的伤害结算
-// =============================================
-function handleNonPlayerDamage(event, actual) {
-    if (!actual || !actual.isLiving() || actual.isPlayer()) return;
-
-    let owner = null;
-    // 1. 检查自定义驯服系统 (KubeJS persistentData)
-    if (actual.persistentData.OwnerName) {
-        let ownerUuidStr = actual.persistentData.OwnerName;
-        try {
-            // 尝试通过 UUID 获取玩家
-            owner = actual.server.getPlayerList().getPlayer(java.util.UUID.fromString(ownerUuidStr));
-        } catch (e) {
-            // 如果失败，尝试通过名称获取（备用）
-            owner = actual.server.getPlayerList().getPlayer(ownerUuidStr);
-        }
-    }
-    // 2. 检查原版驯服系统 (Vanilla TamableAnimal)
-    else if (actual.owner) {
-        owner = actual.owner;
-    }
-
-    if (owner && owner.isPlayer()) {
-        let attributeValue = owner.getAttributeValue("rainbow:generic.pet_damage");
-        event.setAmount(attributeValue * event.getAmount());
-    }
-}
+// 已迁移至 ForgeEvents/handleCuriosEffects.js
 
 // =============================================
 // 🔋 模块3.6：饰品充能逻辑
 // 处理玩家造成伤害时为特定饰品充能
 // =============================================
-function handleCoreCharging(event, attacker) {
-    if (!attacker || !attacker.isPlayer()) return;
-
-    const coreIds = ['rainbow:reload_core', 'rainbow:short_core'];
-    const amount = event.getAmount();
-
-    coreIds.forEach(id => {
-        if (hasCurios(attacker, id) && !attacker.cooldowns.isOnCooldown(id)) {
-            let stack = getCuriosItem(attacker, id);
-            if (stack) {
-                let nbt = stack.getOrCreateTag();
-                let energy = nbt.getFloat("Energy") || 0;
-                if (energy < 100) {
-                    nbt.putFloat("Energy", Math.min(100, energy + amount));
-                }
-            }
-        }
-    });
-}
+// 已迁移至 ForgeEvents/handleCoreCharging.js
 
 // =============================================
 // 🔋 模块3.7：非玩家受伤逻辑
 // 处理非玩家受伤
 // =============================================
-function handleNonPlayerDefense(event, victim, source) {
-    if (attacker || attacker.isPlayer()) return;
-
-}
+// 已迁移至 ForgeEvents/onNonPlayerHurt.js
 
 // =============================================
 // 💍 模块4：独特伤害类型流派
 // 处理爆炸、魔法、投掷流派的伤害结算
 // =============================================
-function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage) {
-    if (!attacker || !attacker.isLiving()) return;
-
-    if (thrown_damage.indexOf(source.getType()) != -1) {
-        let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
-        event.setAmount(attributeValue * event.getAmount())
-    }
-
-    if (soure_magic.indexOf(source.getType()) != -1) {
-        let attributeValue = attacker.getAttributeValue("rainbow:generic.magic_damage");
-        event.setAmount(attributeValue * event.getAmount())
-    }
-
-    if (boom_damage.indexOf(source.getType()) != -1) {
-        let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");
-        event.setAmount(attributeValue * event.getAmount())
-    }
-}
+// 已迁移至 ForgeEvents/customAttributeDamage.js
 
 // =============================================
 // ⚔️ 玩家受伤事件（主入口）
 // =============================================
-ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
-    const victim = event.entity;
-    const attacker = event.source.player;
-    const actual = event.source.actual;
-    const source = event.getSource();
-    //const EquipmentSlot = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
-    const UUID = Java.loadClass("java.util.UUID");
+// 已迁移至 ForgeEvents/main.js
 
-    // 定义远程伤害类型列表
-    const range_damage = [
-        'atmospheric.passionFruitSeed',
-        'soulBullet',
-        'arrow',
-        'lead_bolt',
-        'create.potato_cannon'
-    ];
-    const thrown_damage = [
-        'thrown',
-        'trident',
-        "dungeonsdelight.cleaver"
-    ]
-    const soure_magic = [
-        "indirectMagic",
-        "magic"
-    ];
-    const boom_damage = [
-        "explosion.player",
-        "explosion"
-    ];
-
-    try {
-        
-
-        // ========= 伤害计算逻辑 =========
-        handleNonPlayerDamage(event, actual)
-        handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage)
-        handleCoreCharging(event, attacker)
-
-        // ========= 玩家防御逻辑 =========
-        handleVictimDefense(event, victim, source, UUID);
-        // ========= 非玩家防御逻辑 =========
-        handleNonPlayerDefense(event, victim, source)
-        // 执行攻击特效模块
-        handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
-        handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
-    } catch (e) {
-        console.log("受伤事件出现问题:")
-        console.log(e)
-    }
-});
 
 // 抛射体撞击事件（占位）
 ForgeEvents.onEvent("net.minecraftforge.event.entity.ProjectileImpactEvent", event => {

@@ -239,7 +239,6 @@ registerSkill('rainbow:ccb', (event, player, itemStack) => {
         if (BLACKLIST.includes(target.type.toString())) {
             player.tell(Text.red("该生物无法被寄生！"));
         } else {
-            let UUID = Java.loadClass('java.util.UUID');
             let lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID");
             let HEALTH_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c801");
             let ARMOR_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c802");

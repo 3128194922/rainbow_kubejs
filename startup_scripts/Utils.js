@@ -143,72 +143,6 @@ function DamageSorce() {
     })
 }
 
-const Tiers = Java.loadClass("net.minecraft.world.item.Tiers")
-
-/**
- * 根据材质名称返回对应的挖掘等级
- * @param {string} tier - 材质名称（全大写，如 "DIAMOND"）
- * @returns {number} 对应的挖掘等级
- */
-function JSTier(tier) {
-    switch (tier) {
-        case "DIAMOND":
-            return Tiers.DIAMOND;
-        case "GOLD":
-            return Tiers.GOLD;
-        case "IRON":
-            return Tiers.IRON;
-        case "NETHERITE":
-            return Tiers.NETHERITE;
-        case "STONE":
-            return Tiers.STONE;
-        case "WOOD":
-            return Tiers.WOOD;
-        default:
-            throw new Error(`未知的材质类型: ${tier}`);
-    }
-}
-
-/**
- * 根据中文工具类型或品质返回对应的 Minecraft 标签
- * @param {string} input 中文输入（如"剑"、"石"、"钻石"等）
- * @returns {string|null} 对应的 Minecraft 标签，若无匹配则返回 null
- */
-function getMinecraftToolTag(input) {
-    // 工具类型映射
-    let toolTypeMap = {
-        "剑": "minecraft:mineable/sword",
-        "镐": "minecraft:mineable/pickaxe",
-        "斧": "minecraft:mineable/axe",
-        "锹": "minecraft:mineable/shovel",
-        "锄": "minecraft:mineable/hoe"
-    };
-
-    // 工具品质映射
-    let toolTierMap = {
-        "木": "minecraft:needs_wooden_tool",
-        "石": "minecraft:needs_stone_tool",
-        "铁": "minecraft:needs_iron_tool",
-        "金": "minecraft:needs_golden_tool",
-        "钻石": "minecraft:needs_diamond_tool",
-        "下界合金": "forge:needs_netherite_tool"
-    };
-
-    // 优先检查工具类型
-    if (toolTypeMap[input]) {
-        return toolTypeMap[input];
-    }
-
-    // 然后检查工具品质
-    if (toolTierMap[input]) {
-        return toolTierMap[input];
-    }
-
-    // 无匹配时返回 null
-    return null;
-}
-
-
 /**
  * 将秒转化为游戏内的tick
  * @param {Number} input 单位 秒
@@ -370,9 +304,6 @@ function hasCurios(player, id) {
     }
     return false;
 }
-
-// 定义 UUID 工具
-let UUID = Java.loadClass("java.util.UUID")
 
 /**
  * @param {string} str UUID 字符串

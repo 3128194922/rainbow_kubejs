@@ -12,9 +12,6 @@ const SymbiosisServerConfig = {
     ]
 }
 
-// Java 类加载
-const UUID = Java.loadClass('java.util.UUID')
-
 // 踩踩背 (共生徽章) - 右键骑乘逻辑
 ItemEvents.entityInteracted("rainbow:ccb", event => {
     // 真物品交互时，不做任何销毁处理，防止玩家手持真物品骑乘时误删

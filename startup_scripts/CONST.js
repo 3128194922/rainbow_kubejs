@@ -1,8 +1,13 @@
-// priority: 2000
+// priority: 20000
 // ==========================================
 // 全局常量定义
 // Global Constants Definition
 // ==========================================
+
+const Tiers = Java.loadClass("net.minecraft.world.item.Tiers")
+const UUID = Java.loadClass("java.util.UUID");
+const ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
+
 
 global.CURIONUMBER = 4
 global.CURSES = [

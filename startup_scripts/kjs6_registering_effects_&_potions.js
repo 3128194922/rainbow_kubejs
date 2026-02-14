@@ -32,7 +32,7 @@ function registerPotionPair(effectID, normalSec, longSec) {
         // 普通药水
         const normalBuilder = Utils.lazy(() =>
             new $PotionBuilder(`rainbow:${normalID}`)
-                .effect(effectID, SecoundToTick(normalSec), 0)
+                .effect(effectID, normalSec * 20, 0)
         )
         rainbow_POTIONS.register(normalID, () =>
             normalBuilder.get().createObject()
@@ -41,7 +41,7 @@ function registerPotionPair(effectID, normalSec, longSec) {
         // 延长药水
         const longBuilder = Utils.lazy(() =>
             new $PotionBuilder(`rainbow:${longID}`)
-                .effect(effectID, SecoundToTick(longSec), 0)
+                .effect(effectID, longSec * 20, 0)
         )
         rainbow_POTIONS.register(longID, () =>
             longBuilder.get().createObject()

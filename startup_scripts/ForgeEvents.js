@@ -8,19 +8,17 @@
 // 🧱 模块1：防御逻辑（受击方）
 // 处理玩家受到伤害时的减免、特效触发等逻辑
 // =============================================
-function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
+function handleVictimDefense(event, victim, source, UUID) {
     if (!victim.isPlayer()) return;
 
     // --- 防化服套装效果 ---
-    if(victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask' 
-    && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate' 
-    && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings' 
-    && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots')
-    {
-        if(source.getType() == "poison_cloud" || source.getType() == "wither")
-            {
-                event.setCanceled(true)
-            }
+    if (victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
+        && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
+        && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
+        && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
+        if (source.getType() == "poison_cloud" || source.getType() == "wither") {
+            event.setCanceled(true)
+        }
     }
 
     // --- 民主甲套装效果 ---
@@ -52,28 +50,26 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
                 global.backtankUtils.consumeAir(victim, tank, currentAir); // 用光剩余气体
             }
         }*/
-        let tank = getCuriosItem(victim, 'create:copper_backtank')?getCuriosItem(victim, 'create:copper_backtank'):getCuriosItem(victim, 'create:netherite_backtank');
+        let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
         let currentAir = tank.nbt.getInt("Air");
         if (tank && currentAir > 0) {
             let damage = event.getAmount();
             let airPerDamage = 5;
             let requiredAir = damage * airPerDamage;
 
-            if(currentAir >= requiredAir)
-                {
-                    tank.nbt.putInt("Air",tank.nbt.getInt("Air") - requiredAir);
-                    event.setAmount(0);
-                    //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
-                    victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"create:steam","voice", 1, 1)
-                }
-            else
-                {
-                    // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
-                    let reducedDamage = damage * (1 - currentAir / requiredAir);
-                    event.setAmount(reducedDamage);
-                    tank.nbt.putInt("Air",0);
-                    victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"create:steam","voice", 1, 1)
-                }
+            if (currentAir >= requiredAir) {
+                tank.nbt.putInt("Air", tank.nbt.getInt("Air") - requiredAir);
+                event.setAmount(0);
+                //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+            }
+            else {
+                // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
+                let reducedDamage = damage * (1 - currentAir / requiredAir);
+                event.setAmount(reducedDamage);
+                tank.nbt.putInt("Air", 0);
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+            }
         }
     }
 
@@ -99,36 +95,36 @@ function handleVictimDefense(event, victim, source, EquipmentSlot, UUID) {
             }
         }
     }
-/*
-    // --- 韧性注射器 ---
-    // 根据韧性值百分比减免伤害
-    if (victim.persistentData.getInt("resilience") > 0 &&
-        event.getAmount() != 0 &&
-        hasCurios(victim, "rainbow:resilience_syringe")) {
-        event.setAmount(event.getAmount() * (100 - victim.persistentData.getInt("resilience")) / 100);
-        // 消耗掉韧性值（一次性生效）
-        victim.persistentData.putInt("resilience", 0);
-    }
-
-    // --- 伤害积蓄 ---
-    // 积累伤害，达到阈值后释放爆炸
-    if (victim.hasEffect("rainbow:damage_num")) {
-        let dmg = victim.persistentData.getFloat("damage_num") + event.getAmount();
-        if (dmg < 100) {
-            victim.persistentData.putFloat("damage_num", dmg);
-        } else {
-            // 伤害超过100，触发爆炸
-            //victim.server.runCommandSilent(`/playsound rainbow:voice.fte voice @a ${victim.x} ${victim.y} ${victim.z}`);
-            victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"rainbow:voice.fte","voice", 1, 1)
-            victim.level.createExplosion(victim.x, victim.y, victim.z)
-                .exploder(victim)
-                .strength(dmg / 10)
-                .explosionMode('none')
-                .explode();
-            victim.persistentData.putFloat("damage_num", 0);
+    /*
+        // --- 韧性注射器 ---
+        // 根据韧性值百分比减免伤害
+        if (victim.persistentData.getInt("resilience") > 0 &&
+            event.getAmount() != 0 &&
+            hasCurios(victim, "rainbow:resilience_syringe")) {
+            event.setAmount(event.getAmount() * (100 - victim.persistentData.getInt("resilience")) / 100);
+            // 消耗掉韧性值（一次性生效）
+            victim.persistentData.putInt("resilience", 0);
         }
-    }
-*/
+    
+        // --- 伤害积蓄 ---
+        // 积累伤害，达到阈值后释放爆炸
+        if (victim.hasEffect("rainbow:damage_num")) {
+            let dmg = victim.persistentData.getFloat("damage_num") + event.getAmount();
+            if (dmg < 100) {
+                victim.persistentData.putFloat("damage_num", dmg);
+            } else {
+                // 伤害超过100，触发爆炸
+                //victim.server.runCommandSilent(`/playsound rainbow:voice.fte voice @a ${victim.x} ${victim.y} ${victim.z}`);
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(),"rainbow:voice.fte","voice", 1, 1)
+                victim.level.createExplosion(victim.x, victim.y, victim.z)
+                    .exploder(victim)
+                    .strength(dmg / 10)
+                    .explosionMode('none')
+                    .explode();
+                victim.persistentData.putFloat("damage_num", 0);
+            }
+        }
+    */
     // --- 大胃王饰品 ---
     // 消耗饱和度抵消伤害
     if (hasCurios(victim, "rainbow:big_stomach")) {
@@ -191,12 +187,12 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
             event.setAmount(event.getAmount() + 6); // 增加伤害
             attacker.level.playSound(null, attacker.blockPosition(), "create:whistle_low", "players", 1.0, 1.0);
         }*/
-        let tank = getCuriosItem(attacker, 'create:copper_backtank')?getCuriosItem(attacker, 'create:copper_backtank'):getCuriosItem(attacker, 'create:netherite_backtank');
+        let tank = getCuriosItem(attacker, 'create:copper_backtank') ? getCuriosItem(attacker, 'create:copper_backtank') : getCuriosItem(attacker, 'create:netherite_backtank');
         let currentAir = tank.nbt.getInt("Air");
         if (tank && currentAir > 0) {
-            tank.nbt.putInt("Air",currentAir - 10);
+            tank.nbt.putInt("Air", currentAir - 10);
             event.setAmount(event.getAmount() + 6); // 增加伤害
-            attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"create:steam","voice", 1, 1)
+            attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "create:steam", "voice", 1, 1)
         }
     }
 }
@@ -214,7 +210,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
     if (hasCurios(attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
         event.setAmount(event.getAmount() * attacker.getSpeed().toFixed(2) * 10);
         //attacker.server.runCommandSilent(`/playsound rainbow:voice.man voice @p ${victim.x} ${victim.y} ${victim.z}`);
-        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"rainbow:voice.man","voice", 1, 1)
+        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "rainbow:voice.man", "voice", 1, 1)
     }
 
     // 屠夫之钉：远程攻击暴击引发爆炸
@@ -253,7 +249,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         lightning.setChainsLeft(5);
         victim.level.addFreshEntity(lightning);
         //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
-        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),"domesticationinnovation:chain_lightning","voice", 1, 1)
+        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "domesticationinnovation:chain_lightning", "voice", 1, 1)
     }
 
     // 被标记目标（tag）受到远程攻击双倍伤害
@@ -280,7 +276,7 @@ function handleNonPlayerDamage(event, actual) {
             // 如果失败，尝试通过名称获取（备用）
             owner = actual.server.getPlayerList().getPlayer(ownerUuidStr);
         }
-    } 
+    }
     // 2. 检查原版驯服系统 (Vanilla TamableAnimal)
     else if (actual.owner) {
         owner = actual.owner;
@@ -298,7 +294,7 @@ function handleNonPlayerDamage(event, actual) {
 // =============================================
 function handleCoreCharging(event, attacker) {
     if (!attacker || !attacker.isPlayer()) return;
-    
+
     const coreIds = ['rainbow:reload_core', 'rainbow:short_core'];
     const amount = event.getAmount();
 
@@ -317,29 +313,35 @@ function handleCoreCharging(event, attacker) {
 }
 
 // =============================================
+// 🔋 模块3.7：非玩家受伤逻辑
+// 处理非玩家受伤
+// =============================================
+function handleNonPlayerDefense(event, victim, source) {
+    if (attacker || attacker.isPlayer()) return;
+
+}
+
+// =============================================
 // 💍 模块4：独特伤害类型流派
 // 处理爆炸、魔法、投掷流派的伤害结算
 // =============================================
-function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage){
+function handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     if (!attacker || !attacker.isLiving()) return;
 
-    if(thrown_damage.indexOf(source.getType()) != -1)
-        {
-            let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
-            event.setAmount(attributeValue * event.getAmount())
-        }
+    if (thrown_damage.indexOf(source.getType()) != -1) {
+        let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
+        event.setAmount(attributeValue * event.getAmount())
+    }
 
-    if(soure_magic.indexOf(source.getType()) != -1)
-        {
-            let attributeValue = attacker.getAttributeValue("rainbow:generic.magic_damage");
-            event.setAmount(attributeValue * event.getAmount())
-        }
-    
-    if(boom_damage.indexOf(source.getType()) != -1)
-        {
-            let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");
-            event.setAmount(attributeValue * event.getAmount())
-        }
+    if (soure_magic.indexOf(source.getType()) != -1) {
+        let attributeValue = attacker.getAttributeValue("rainbow:generic.magic_damage");
+        event.setAmount(attributeValue * event.getAmount())
+    }
+
+    if (boom_damage.indexOf(source.getType()) != -1) {
+        let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");
+        event.setAmount(attributeValue * event.getAmount())
+    }
 }
 
 // =============================================
@@ -350,9 +352,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     const attacker = event.source.player;
     const actual = event.source.actual;
     const source = event.getSource();
-    const EquipmentSlot = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
+    //const EquipmentSlot = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
     const UUID = Java.loadClass("java.util.UUID");
-    
+
     // 定义远程伤害类型列表
     const range_damage = [
         'atmospheric.passionFruitSeed',
@@ -376,28 +378,22 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     ];
 
     try {
+        
+
         // ========= 伤害计算逻辑 =========
         handleNonPlayerDamage(event, actual)
         handleDamageEvents(event, attacker, source, range_damage, thrown_damage, soure_magic, boom_damage)
         handleCoreCharging(event, attacker)
-        
-        // ========= 玩家防御逻辑 =========
-        handleVictimDefense(event, victim, source, EquipmentSlot, UUID);
-    } catch(e) {
-        console.log("handleVictimDefense出现问题:")
-        console.log(e)
-    }
 
-    try {
-        // ========= 攻击者过滤与攻击逻辑 =========
-        if (!attacker || !attacker.isPlayer()) return;
-        if (attacker.level.isClientSide()) return;
-    
+        // ========= 玩家防御逻辑 =========
+        handleVictimDefense(event, victim, source, UUID);
+        // ========= 非玩家防御逻辑 =========
+        handleNonPlayerDefense(event, victim, source)
         // 执行攻击特效模块
         handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
         handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
-    } catch(e) {
-        console.log("handleCuriosEffects\\handleWeaponEffects出现问题:")
+    } catch (e) {
+        console.log("受伤事件出现问题:")
         console.log(e)
     }
 });
@@ -417,7 +413,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.level.BlockEvent$EntityPlaceEvent"
         if (entity.level.name.getString() === "backroom:backroom") {
             event.setCanceled(true);
         }
-    } catch(e) {
+    } catch (e) {
         console.log("玩家放置方块事件出现问题：")
         console.log(e)
     }
@@ -440,7 +436,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpe
         if (entity.level.name.getString() === "backroom:backroom") {
             event.newSpeed = 0 * event.originalSpeed;
         }
-    } catch(e) {
+    } catch (e) {
         console.log("玩家破坏方块事件出现问题：")
         console.log(e)
     }
@@ -472,16 +468,16 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
             // 动力剑：充能逻辑
             if (entity.getItemInHand("main_hand") === 'rainbow:baseball_power') {
                 console.log(entity.getItemInHand("main_hand").getNbt().getInt("Power"))
-                if(!entity.getItemInHand("main_hand").getNbt().getInt("Power")) {
-                    entity.getItemInHand("main_hand").getNbt().putInt("Power",4)
+                if (!entity.getItemInHand("main_hand").getNbt().getInt("Power")) {
+                    entity.getItemInHand("main_hand").getNbt().putInt("Power", 4)
                 } else {
-                    entity.getItemInHand("main_hand").getNbt().putInt("Power",entity.getItemInHand("main_hand").getNbt().getInt("Power") - 1)
+                    entity.getItemInHand("main_hand").getNbt().putInt("Power", entity.getItemInHand("main_hand").getNbt().getInt("Power") - 1)
                 }
-        
+
                 // 充能耗尽，变回普通棒球棍
-                if(entity.getItemInHand("main_hand").getNbt().getInt("Power") == 1) {
-                    entity.setItemInHand("main_hand","rainbow:baseball_bat")
-                    entity.cooldowns.addCooldown("rainbow:baseball_bat",SecoundToTick(40))
+                if (entity.getItemInHand("main_hand").getNbt().getInt("Power") == 1) {
+                    entity.setItemInHand("main_hand", "rainbow:baseball_bat")
+                    entity.cooldowns.addCooldown("rainbow:baseball_bat", SecoundToTick(40))
                 }
             }
             // 决斗剑：初始化类型
@@ -491,7 +487,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
                 }
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.log("玩家攻击事件出现问题：")
         console.log(e)
     }
@@ -510,7 +506,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerInteractEvent$
         if (Player.isPlayer() && Player.isShiftKeyDown() && Item.getId() == "minecraft:shears" && Entity.getType() == "minecraft:creeper") {
             Entity.block.popItem("rainbow:greenblock")
         }*/
-    } catch(e) {
+    } catch (e) {
         console.log("玩家右键生物事件出现问题：")
         console.log(e)
     }
@@ -562,21 +558,21 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                 )
             );
         }
-/*
-        // 🗡️ 饕餮剑：剑数量影响攻击力
-        let swordnum = item.getNbt().getInt("swordnumber") || 0;
-        if (item.id === "rainbow:eldritch_sword" && slotType === "mainhand") {
-            event.addModifier(
-                "generic.attack_damage",
-                new AttributeModifier(
-                    'a1234567-b890-1234-c567-d89012345678', // 随机 UUID
-                    'eldritch_sword',
-                    1 * swordnum,
-                    "addition"
-                )
-            );
-        }
-*/
+        /*
+                // 🗡️ 饕餮剑：剑数量影响攻击力
+                let swordnum = item.getNbt().getInt("swordnumber") || 0;
+                if (item.id === "rainbow:eldritch_sword" && slotType === "mainhand") {
+                    event.addModifier(
+                        "generic.attack_damage",
+                        new AttributeModifier(
+                            'a1234567-b890-1234-c567-d89012345678', // 随机 UUID
+                            'eldritch_sword',
+                            1 * swordnum,
+                            "addition"
+                        )
+                    );
+                }
+        */
         // 🗡️ 群系之刃：群系系数影响攻击力
         let biomenum = item.getNbt().getInt("biomenum") || 0;
         if (item.id === "rainbow:biome_of_sword" && slotType === "mainhand") {
@@ -598,20 +594,19 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
 
 // 监听实体仇恨变更事件
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingChangeTargetEvent", event => {
-    try{
+    try {
         let entity_A = event.getEntity() // 产生仇恨的实体
         let entity_B = event.getNewTarget() // 新的目标
-    
-        if(!entity_B) return
-    
+
+        if (!entity_B) return
+
         // 佩戴对应生物面具的玩家不会被该种生物攻击
-        if(entity_B.isLiving() && entity_B.isPlayer()){
-            if(entity_B.getItemBySlot("head").id == "species:wicked_mask" && entity_B.getItemBySlot("head").getNbt().getString("id") == entity_A.getType())
-            {
+        if (entity_B.isLiving() && entity_B.isPlayer()) {
+            if (entity_B.getItemBySlot("head").id == "species:wicked_mask" && entity_B.getItemBySlot("head").getNbt().getString("id") == entity_A.getType()) {
                 event.setNewTarget(null) // 取消仇恨
             }
         }
-    }catch (e) {
+    } catch (e) {
         console.log(e);
     }
 
@@ -628,31 +623,27 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingAttackEvent",e
 
 // 监听效果过期事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expired', event => {
-    try
-    {
+    try {
         let entity = event.entity;
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
 
         // 下班时间到了，实体消失
-        if(effectId === "effect.rainbow.off_work_time")
-        {
-            entity.discard() 
+        if (effectId === "effect.rainbow.off_work_time") {
+            entity.discard()
         }
 
-        if(effectId === "effect.rainbow.short_buff")
-            {
-                let item = entity.getItemInHand("main_hand");
-                if (item.id == 'species:crankbow') {
-                    if (item.nbt.getBoolean("IsUsing") == true) {
-                        item.nbt.putInt("Speed", 0);
-                    }
+        if (effectId === "effect.rainbow.short_buff") {
+            let item = entity.getItemInHand("main_hand");
+            if (item.id == 'species:crankbow') {
+                if (item.nbt.getBoolean("IsUsing") == true) {
+                    item.nbt.putInt("Speed", 0);
                 }
             }
+        }
     }
-    catch(e)
-    {
+    catch (e) {
         console.log("监听buff过期出现问题：")
         console.log(e)
     }
@@ -660,27 +651,23 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
 
 // 监听效果赋予事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added', event => {
-    try
-    {
+    try {
         let entity = event.entity;
-        if(!entity.isPlayer()) return;
+        if (!entity.isPlayer()) return;
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
-        if(effectId.toString() == "effect.minecraft.poison" || effectId.toString() == "effect.alexscaves.irradiated" || effectId.toString() == "effect.minecraft.wither")
-            {
-                if(entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask' 
-                && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate' 
-                && entity.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings' 
-                && entity.getItemBySlot("feet").id == 'alexscaves:hazmat_boots')
-                    {
-                        event.setCanceled(true);
-                    }
+        if (effectId.toString() == "effect.minecraft.poison" || effectId.toString() == "effect.alexscaves.irradiated" || effectId.toString() == "effect.minecraft.wither") {
+            if (entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
+                && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
+                && entity.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
+                && entity.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
+                event.setCanceled(true);
             }
+        }
 
     }
-    catch(e)
-    {
+    catch (e) {
         console.log("监听buff赋予出现问题：")
         console.log(e)
     }
@@ -693,8 +680,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added
 
 // 虚空炼成系统：物品掉入虚空后转化为指定产物
 ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (event) => {
-    try
-    {
+    try {
         let { entity, level } = event;
         // 确保是物品掉入虚空
         if (level.clientSide || !entity.item || entity.getY() > level.getMinBuildHeight()) return;
@@ -723,8 +709,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (ev
         resultEntity.setGlowing(true);
 
         resultEntity.spawn();
-    }catch(e)
-    {
+    } catch (e) {
         console.log("虚空炼成系统出现问题：")
         console.log(e)
     }
@@ -741,31 +726,26 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerInteractEvent$
 
 // 监听效果移除事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remove', event => {
-    try
-    {
+    try {
         let entity = event.getEntity();
-        if(!entity.isPlayer()) return;
-        if(!event.getEffectInstance()) return;
+        if (!entity.isPlayer()) return;
+        if (!event.getEffectInstance()) return;
         let buffId = event.getEffectInstance().getDescriptionId();
         let item_main = entity.getItemInHand("main_hand").getId();
         let item_off = entity.getItemInHand("off_hand").getId();
 
         // 嗜血效果移除逻辑：如果没有打伞，则会被点燃
-        if(buffId == "effect.species.bloodlust")
-        {
-            if(item_main == 'artifacts:umbrella' || item_off == 'artifacts:umbrella')
-            {
+        if (buffId == "effect.species.bloodlust") {
+            if (item_main == 'artifacts:umbrella' || item_off == 'artifacts:umbrella') {
                 event.setCanceled(true);
             }
-            else
-            {
+            else {
                 entity.secondsOnFire = 100;
                 event.setCanceled(true);
             }
         }
 
-    }catch(e)
-    {
+    } catch (e) {
         console.log("监听玩家获取buff出现问题：")
         console.log(e)
     }
@@ -773,18 +753,15 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remov
 
 // 监听睡觉事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerSleepInBedEvent', event => {
-    try
-    {
+    try {
         let player = event.getEntity();
-        if(!player.isPlayer()) return;
+        if (!player.isPlayer()) return;
         // 10% 概率做噩梦
-        if(randomBool(0.1))
-        {
+        if (randomBool(0.1)) {
             player.tell("你做了个噩梦")
         }
     }
-    catch(e)
-    {
+    catch (e) {
         console.log("监听睡觉出现问题：")
         console.log(e)
     }
@@ -830,19 +807,17 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         let item = getCuriosItem(player, "rainbow:infernotooth_necklace");
         if (!item) return;
 
-        if(player.getItemInHand("main_hand").id == 'species:spectralibur') return;
+        if (player.getItemInHand("main_hand").id == 'species:spectralibur') return;
 
         let nbt = item.getOrCreateTag();
 
         let Souls = nbt.getInt("Souls");
 
-        if(Souls == null)
-            {
-                nbt.putInt("Souls",0)
-            }
-        else
-        {
-            nbt.putInt("Souls",Souls + 1)
+        if (Souls == null) {
+            nbt.putInt("Souls", 0)
+        }
+        else {
+            nbt.putInt("Souls", Souls + 1)
         }
 
     } catch (e) {

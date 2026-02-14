@@ -135,7 +135,7 @@ function DamageSorce() {
 
         let source = event.source.getType();
         let entity = event.entity.getType()
-        if (entity == "minecraft:iron_golem")
+        if (entity == "powerful_dummy:test_dummy")
             console.log("伤害类型：");
         console.log(source);
         console.log("实体ID：");
@@ -510,3 +510,4 @@ global.getKeysByMod = (modid) => {
   });
   return result;
 };
+DamageSorce()

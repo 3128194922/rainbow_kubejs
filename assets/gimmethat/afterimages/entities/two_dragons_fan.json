@@ -1,0 +1,7 @@
+{
+  "entity": "gimmethat:two_dragons_fan",
+  "speed_threshold": 0.05,
+  "duration": 5,
+  "color": "0xFFFFFF",
+  "start_alpha": 0.6
+}

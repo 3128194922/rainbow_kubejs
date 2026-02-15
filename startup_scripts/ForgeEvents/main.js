@@ -28,15 +28,14 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     const victim = event.entity;
     const attacker = event.source.actual;
     const source = event.source;
-    const player = event.source.player;
-
+    if(victim.level.isClientSide()) return;
     try
     {    
     // 武器特效 (仅玩家)
-    handleWeaponEffects(event, player, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+    handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     // 饰品特效 (仅玩家)
-    handleCuriosEffects(event, player, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+    handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     //玩家受伤事件
     onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
@@ -45,13 +44,13 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     onNonPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     // 宠物伤害逻辑
-    handleNonPlayerDamage(event, attacker);
+    handleNonPlayerDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     //自定义属性流派
     customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    // 核心充能逻辑 (仅玩家)
-    handleCoreCharging(event, player);
+    // 核心充能逻辑
+    handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
     }
     catch(e)
     {

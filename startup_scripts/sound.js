@@ -14,6 +14,10 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:music.gauntlet")
 
     event.create("rainbow:music.tem")
+
+    event.create("rainbow:voice.eye_of_satori")
+
+    event.create("rainbow:voice.skillwheel")
 })
 
 // 注册物品

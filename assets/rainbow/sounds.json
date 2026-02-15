@@ -31,5 +31,17 @@
     "sounds": [
       "rainbow:fte"
     ]
+  },
+  	"voice.skillwheel": {
+	"subtitle": "sounds.rainbow.skillwheel",
+	"sounds": [
+	  "rainbow:skillwheel"
+	]
+  },
+	"voice.eye_of_satori": {
+	"subtitle": "sounds.rainbow.eye_of_satori",
+	"sounds": [
+	  "rainbow:eye_of_satori"
+	]
   }
 }

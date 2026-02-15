@@ -7,7 +7,7 @@
 const Tiers = Java.loadClass("net.minecraft.world.item.Tiers")
 const UUID = Java.loadClass("java.util.UUID");
 const ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
-
+const Vec3 = Java.loadClass('net.minecraft.world.phys.Vec3');
 
 global.CURIONUMBER = 4
 global.CURSES = [

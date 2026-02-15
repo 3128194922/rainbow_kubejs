@@ -15,11 +15,11 @@ ServerEvents.tags("item", event => {
     event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     
     // 技能饰品
-    event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 
+    event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind'])
 
-    event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 
+    event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind'])
     

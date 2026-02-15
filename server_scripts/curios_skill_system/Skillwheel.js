@@ -5,6 +5,16 @@
 
 // 技能注册表
 let SkillRegistry = {};
+let SkillSoundRegistry = {};
+
+/**
+ * 注册技能音效
+ * @param {string} itemId 饰品ID
+ * @param {string} soundId 音效ID
+ */
+function registerSkillSound(itemId, soundId) {
+    SkillSoundRegistry[itemId] = soundId;
+}
 
 /**
  * 注册技能处理函数
@@ -295,6 +305,18 @@ registerSkill('royalvariations:royal_staff', (event, player, itemStack) => {
     }
 });
 
+// --- 觉之瞳 ---
+registerSkillSound('rainbow:eye_of_satori', 'rainbow:voice.eye_of_satori');
+registerSkill('rainbow:eye_of_satori', (event, player, itemStack) => {
+    if (itemStack) {
+        let Nbt = itemStack.nbt;
+        if(Nbt)
+            {
+                itemStack.nbt.putBoolean("is_open",!itemStack.nbt.getBoolean("is_open"))
+            }
+    }
+});
+
 
 // ==========================================
 // 主入口逻辑
@@ -308,6 +330,10 @@ NetworkEvents.dataReceived('skillwheel', event => {
 
     // 获取物品ID
     let itemId = packetItem.id;
+
+    // 播放音效
+    let soundId = SkillSoundRegistry[itemId] || "rainbow:voice.skillwheel";
+    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), soundId, "voice", 1, 1)
 
     // 从发包数据获取 source 类型和 slot 索引
     let sourceType = event.data.getString("sourceType");

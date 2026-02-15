@@ -79,7 +79,7 @@ StartupEvents.registry("mob_effect", event => {
                 if (!entity) return false
                 if (!entity.isLiving() || !entity.isAlive()) return false
                 if (entity == mob) return false
-                if (!entity.hasEffect("rainbow:tag")) return false
+                if (!entity.hasEffect("minecraft:glowing")) return false
                 if (mob.team && entity.team && mob.team == entity.team) return false
                 if (mob.persistentData.OwnerName && entity.persistentData.OwnerName
                     && mob.persistentData.OwnerName == entity.persistentData.OwnerName) return false

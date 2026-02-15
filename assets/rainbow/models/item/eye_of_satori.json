@@ -1,0 +1,20 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/eye_of_satori"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "kubejs:is_open": 0.0
+        },
+        "model": "rainbow:item/eye_of_satori_off"
+      },
+		{
+        "predicate": {
+          "kubejs:is_open": 1.0
+        },
+        "model": "rainbow:item/eye_of_satori_on"
+      }
+    ]
+}

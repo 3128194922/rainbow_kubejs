@@ -11,6 +11,7 @@
  * @param {string[]} boom_damage 爆炸伤害
  */
 function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+    if (!attacker || !attacker.isLiving()) return;
     const mainHand = attacker.getItemInHand("main_hand");
     const offHand = attacker.getItemInHand("off_hand");
 

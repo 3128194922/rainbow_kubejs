@@ -72,6 +72,11 @@ ItemEvents.rightClicked(event => {
         item.nbt.foodnumber = item.nbt.foodlist.length;
     }
 /*
+    if(item.id == "minecraft:stick")
+        {
+            global.MobEffectsVFX.spawnEffectParticles(player, 1.0, 0.2, 0.2, true);
+        }*/
+/*
     // --- 饕餮剑：剑吞噬 ---
     if (item.id === "rainbow:eldritch_sword") {
         let targetItem = player.getItemInHand("off_hand");
@@ -105,7 +110,7 @@ ItemEvents.rightClicked(event => {
             // 消耗能量
             item.getNbt().putInt("power",item.getNbt().getInt("power") - 1)
 
-            let projectileName = "rainbow:trea";
+            let projectileName = "minecraft:tnt";
 
             // 计算发射方向和位置
             let viewVector = player.getViewVector(1.0)

@@ -629,15 +629,28 @@ StartupEvents.registry('item', event => {
                 })
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
+                    let Nbt = stack.nbt;
+                    if(!Nbt)
+                        {
+                            stack.nbt = {};
+                            stack.nbt.putBoolean("is_open",true);
+                        }
+
+                    let is_open = Nbt.getBoolean("is_open");
+
+                    if(!is_open) return;
+
                     if (!player || player.server == null) return;
+
+                    let RANGE = 32
 
                     // 射线检测逻辑（每 10 tick 执行一次）
                     if (player.age % 10 === 0) {
-                        let RANGE = 6;
+                        RANGE = RANGE / 2;
                         if (player.isUsingItem()) {
                             let using = player.getUseItem();
                             if (using && using.id === 'minecraft:spyglass') {
-                                RANGE = 16;
+                                RANGE = 32;
                             }
                         }
 
@@ -646,14 +659,13 @@ StartupEvents.registry('item', event => {
                             let target = hit.entity;
                             if (isEnemy(player, target)) {
                                 target.potionEffects.add("minecraft:glowing", SecoundToTick(10), 0);
-                                target.potionEffects.add("rainbow:tag", SecoundToTick(10), 0);
                             }
                         }
                     }
 
                     // AABB 范围检测逻辑（每 10 秒执行一次）
                     if (player.age % SecoundToTick(10) === 0) {
-                        let mobAABB = player.boundingBox.inflate(10); // 半径 10 格
+                        let mobAABB = player.boundingBox.inflate(RANGE);
                         let level = player.level;
 
                         level.getEntitiesWithin(mobAABB).forEach(entity => {
@@ -663,15 +675,13 @@ StartupEvents.registry('item', event => {
                             // 非敌对 = 友军
                             if (!isEnemy(player, entity)) {
                                 entity.potionEffects.add("rainbow:obey_command", SecoundToTick(20), 0, false, true);
-                                entity.potionEffects.add("minecraft:strength", SecoundToTick(20), 0, false, true);
                             }
                         });
                     }
 
                     // 智能分兵逻辑 (每 20 tick 执行一次)
                     if (player.age % 20 === 0) {
-                        let range = 20;
-                        let aabb = player.boundingBox.inflate(range);
+                        let aabb = player.boundingBox.inflate(RANGE);
                         let level = player.level;
 
                         // 1. 获取单位
@@ -683,7 +693,7 @@ StartupEvents.registry('item', event => {
                             if (!e.isLiving() || !e.isAlive()) return;
                             if (e.potionEffects.isActive("rainbow:obey_command")) {
                                 minions.push(e);
-                            } else if (e.potionEffects.isActive("rainbow:tag")) {
+                            } else if (e.potionEffects.isActive("minecraft:glowing")) {
                                 taggedEnemies.push(e);
                             }
                         });

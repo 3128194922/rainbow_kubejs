@@ -21,4 +21,12 @@ ItemEvents.modelProperties(event => {
     event.register("rainbow:short_core", "energy", (itemStack, level, entity, seed) => {
         return (itemStack.nbt ? itemStack.nbt.getFloat("Energy") : 0.0) / 100.0;
     });
+    //觉之瞳
+    event.register("rainbow:eye_of_satori", "is_open", (itemStack, level, entity, seed) => {
+        if(!itemStack.nbt)
+            {
+                return 1.0;
+            }
+        return itemStack.nbt.getBoolean("is_open") ? 1.0 : 0.0;
+    });
 });

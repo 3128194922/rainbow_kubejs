@@ -71,11 +71,25 @@ ItemEvents.rightClicked(event => {
         item.nbt.foodlist.push(Integer.valueOf(tag));
         item.nbt.foodnumber = item.nbt.foodlist.length;
     }
-/*
-    if(item.id == "minecraft:stick")
-        {
-            global.MobEffectsVFX.spawnEffectParticles(player, 1.0, 0.2, 0.2, true);
-        }*/
+    /*
+    if (item.id == "minecraft:stick") {
+        // 计算朝向与起始位置
+        let viewVector = player.getViewVector(1.0)
+        let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
+        let nor_x = viewVector.x() / length
+        let nor_y = viewVector.y() / length
+        let nor_z = viewVector.z() / length
+        let new_x = player.x + nor_x * 1.5
+        let new_y = player.y + player.getEyeHeight()
+        let new_z = player.z + nor_z * 1.5
+
+        // 生成已点燃的TNT并抛出
+        let tnt = level.createEntity("savage_and_ravage:ice_chunk")
+        tnt.setPosition(new_x, new_y + 1, new_z)
+        tnt.setMotion(nor_x * 1.3, nor_y * 1.3 + 0.2, nor_z * 1.3)
+        tnt.setCaster(player)
+        tnt.spawn()
+    }*/
 /*
     // --- 饕餮剑：剑吞噬 ---
     if (item.id === "rainbow:eldritch_sword") {

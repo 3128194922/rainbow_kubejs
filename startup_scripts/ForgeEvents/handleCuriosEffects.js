@@ -40,15 +40,6 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         }
     }
 
-    // 决斗剑：对已记录类型的生物造成额外伤害
-    if (mainHand.id == "rainbow:duel") {
-        if (mainHand.nbt.type == victim.getType()) {
-            event.setAmount(event.getAmount() * 1.5);
-        } else {
-            mainHand.nbt.type = victim.getType();
-        }
-    }
-
     // 链式闪电饰品：攻击时触发链式闪电
     if (hasCurios(attacker, "rainbow:lightning")) {
         let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');

@@ -35,7 +35,7 @@ ClientEvents.tick(event => {
     let player = event.player;
     if (!player) return;
 
-    let window = $Minecraft.getWindow();
+    let window = $Minecraft.getInstance().getWindow();
     let width = window.getGuiScaledWidth();
     let height = window.getGuiScaledHeight();
 

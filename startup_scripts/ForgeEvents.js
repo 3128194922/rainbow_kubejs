@@ -61,6 +61,16 @@ ForgeEvents.onEvent("net.minecraftforge.event.level.BlockEvent$EntityPlaceEvent"
         if (entity.level.name.getString() === "backroom:backroom") {
             event.setCanceled(true);
         }
+/*
+        if (entity && entity.getType && entity.getType() == "minecraft:falling_block" && entity.persistentData.KJS_IceProjectile) {
+            let pos = (typeof event.getPos === "function") ? event.getPos() : entity.block.pos
+            let radius = 4
+            entity.level.getEntitiesWithin(AABB.ofBlock(pos).inflate(radius)).forEach(t => {
+                if (!t || !t.isLiving() || !t.isAlive()) return
+                if (entity.persistentData.OwnerName && t.isPlayer() && t.getName().getString() == entity.persistentData.OwnerName) return
+                t.setTicksFrozen(200)
+            })
+        }*/
     } catch (e) {
         console.log("玩家放置方块事件出现问题：")
         console.log(e)
@@ -95,7 +105,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
     try {
         let entity = event.getEntity();
         let target = event.getTarget();
-        let Integer = Java.loadClass("java.lang.Integer");
+
         if (entity.level.clientSide) return;
 
         if (entity.getType() != null && target.getType() != null) {
@@ -273,6 +283,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingAttackEvent",e
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expired', event => {
     try {
         let entity = event.entity;
+        let level = entity.level;
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
@@ -287,6 +298,21 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
             if (item.id == 'species:crankbow') {
                 if (item.nbt.getBoolean("IsUsing") == true) {
                     item.nbt.putInt("Speed", 0);
+                    // 计算朝向与起始位置
+                    let viewVector = entity.getViewVector(1.0)
+                    let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
+                    let nor_x = viewVector.x() / length
+                    let nor_y = viewVector.y() / length
+                    let nor_z = viewVector.z() / length
+                    let new_x = entity.x + nor_x * 1.5
+                    let new_y = entity.y + entity.getEyeHeight()
+                    let new_z = entity.z + nor_z * 1.5
+
+                    let ice_chunk = level.createEntity("savage_and_ravage:ice_chunk")
+                    ice_chunk.setPosition(new_x, new_y + 1, new_z)
+                    ice_chunk.setMotion(nor_x * 1.3, nor_y * 1.3 + 0.2, nor_z * 1.3)
+                    ice_chunk.setCaster(entity)
+                    ice_chunk.spawn()
                 }
             }
         }

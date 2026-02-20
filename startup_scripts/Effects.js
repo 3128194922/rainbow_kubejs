@@ -138,6 +138,7 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:short_buff")
         .beneficial()
         .color(0xFF55FF)
+        .modifyAttribute("attributeslib:arrow_damage", "short_buff", 1.1, "multiply_total")
         .effectTick((entity, amplifier) => {
             if (!entity || entity.level.isClientSide()) return;
             if (entity.age % 20 != 0) return;

@@ -2,7 +2,7 @@
 // ==========================================
 // 📡 网络包接收处理脚本
 // ==========================================
-
+/*
 // 接收 "projectlie" 数据包：处理射弹逻辑
 NetworkEvents.dataReceived("projectlie", (event) => {
     let x = event.data.x
@@ -22,7 +22,6 @@ NetworkEvents.dataReceived("projectlie", (event) => {
         projectlie.spawn() //生成发射物
         //event.server.runCommandSilent(`/playsound cataclysm:harbinger_laser voice @p ${x} ${y} ${z}`)
     }
-/*
     // 如果玩家手持木棍 (测试/调试用)
     if (event.player.isHolding("minecraft:stick")) {
         // 定义随机偏移范围（单位：方块）
@@ -39,5 +38,5 @@ NetworkEvents.dataReceived("projectlie", (event) => {
         projectlie.setMotion(viewX * 3, viewY * 3, viewZ * 3);
         projectlie.setOwner(event.player);
         projectlie.spawn();
-    }*/
-})
+    }
+})*/

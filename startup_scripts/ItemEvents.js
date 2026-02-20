@@ -66,3 +66,18 @@ ItemEvents.modification(event => {
       });
    });
 });*/
+
+/*
+ItemEvents.modification(event => {
+   event.modify('chromaticarsenal:golden_heart', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .addAttribute(
+                   "minecraft:generic.max_health",
+                   "golden_heart",
+                   20,
+                   'addition'
+               )
+       )
+   })
+})*/

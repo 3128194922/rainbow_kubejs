@@ -42,4 +42,14 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
             attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "create:steam", "voice", 1, 1)
         }
     }
+
+    // 决斗剑：对已记录类型的生物造成额外伤害
+    if (mainHand.id == "rainbow:duel") {
+        let Nbt = mainHand.getOrCreateTag();
+        if (Nbt.type == victim.getType()) {
+            event.setAmount(event.getAmount() * 1.5);
+        } else {
+            Nbt.type = victim.getType();
+        }
+    }
 }

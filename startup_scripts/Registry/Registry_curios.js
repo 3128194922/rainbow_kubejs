@@ -627,6 +627,23 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    let stack = ev.stack;
+
+                    if(!stack.nbt)
+                        {
+                            stack.nbt = {};
+                            stack.nbt.putBoolean("is_open",true);
+                        }
+                    
+                    if(stack.nbt.getBoolean("is_open"))
+                        return;
+
+                    ev.modify("minecraft:generic.follow_range", "eye_of_satori", -10.0, "addition");
+                    ev.modify("forge:nametag_distance", "eye_of_satori", -1.0, "multiply_total");
+                })
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     let Nbt = stack.nbt;

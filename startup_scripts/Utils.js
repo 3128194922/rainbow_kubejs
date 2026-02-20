@@ -130,16 +130,39 @@ function getMaterialJS(materialName) {
 */
 
 function DamageSorce() {
-    //输出伤害类型
+    // 输出伤害类型
     ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
+        let entityType = event.entity.getType();
 
-        let source = event.source.getType();
-        let entity = event.entity.getType()
-        if (entity == "powerful_dummy:test_dummy")
-            console.log("伤害类型：");
-        console.log(source);
-        console.log("实体ID：");
-        console.log(entity);
+        if (entityType == "powerful_dummy:test_dummy") {
+            let source = event.source;
+            let damageType = source.getType();
+            let immediate = source.immediate;
+            let actual = source.actual;
+            let victim = event.entity;
+
+            console.log("========== 伤害测试监控 ==========");
+            console.log(`[受击目标] ID: ${entityType}`);
+            console.log(`[受击目标] UUID: ${victim.uuid}`);
+            console.log(`[受击目标] NBT: ${victim.nbt}`);
+            console.log(`[伤害类型] ${damageType}`);
+            
+            if (immediate) {
+                console.log(`[直接来源] 类型: ${immediate.getType()} | 名称: ${immediate.getName().getString()}`);
+                console.log(`[直接来源] NBT: ${JSON.stringify(immediate.nbt)}`);
+            } else {
+                console.log(`[直接来源] 无`);
+            }
+
+            if (actual) {
+                console.log(`[致因来源] 类型: ${actual.getType()} | 名称: ${actual.getName().getString()}`);
+                console.log(`[致因来源] NBT: ${JSON.stringify(actual.nbt)}`);
+            } else {
+                console.log(`[致因来源] 无`);
+                console.log(`[致因来源] 无`);
+            }
+            console.log("==================================");
+        }
     })
 }
 

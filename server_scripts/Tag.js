@@ -13,7 +13,10 @@ ServerEvents.tags("item", event => {
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','gimmethat:death_eye','gimmethat:sword_swarm_charm'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
-    
+    event.add('offhandattack:is_duel',['#forge:tools/knives'])
+    event.add('offhandattack:is_hands',['rainbow:baseball_bat','savage_and_ravage:cleaver_of_beheading', 'rainbow:baseball_power'])
+    //event.add('offhandattack:can_hands_use',[''])
+
     // 技能饰品
     event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',

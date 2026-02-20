@@ -11,7 +11,8 @@ const range_damage = [
 const thrown_damage = [
     'thrown',
     'trident',
-    "dungeonsdelight.cleaver"
+    "dungeonsdelight.cleaver",
+    'spirit_dinosaur'
 ];
 // 定义魔法伤害类型列表
 const soure_magic = [
@@ -31,22 +32,22 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     if(victim.level.isClientSide()) return;
     try
     {    
-    // 武器特效 (仅玩家)
+    // 武器特效
     handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    // 饰品特效 (仅玩家)
+    // 饰品特效
     handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    //玩家受伤事件
+    //  玩家受伤事件
     onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    //非玩家受伤事件
+    //  非玩家受伤事件
     onNonPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     // 宠物伤害逻辑
     handleNonPlayerDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    //自定义属性流派
+    //  自定义属性流派
     customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     // 核心充能逻辑

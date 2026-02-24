@@ -12,7 +12,6 @@ const SymbiosisConfig = {
     ]
 }
 
-
 // 注册物品
 StartupEvents.registry('item', event => {
     event.create('rainbow:ccb')

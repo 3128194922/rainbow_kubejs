@@ -43,6 +43,7 @@ ServerEvents.compostableRecipes((e) => {
     });
 });
 
+/*
 // 幸运方块（rainbow:luckyblock）战利品表
 ServerEvents.blockLootTables(e => {
     e.modifyBlock('rainbow:luckyblock', loot => {
@@ -61,7 +62,7 @@ ServerEvents.blockLootTables(e => {
         let arr = loot.pools.get(0).asJsonObject.get("entries").asJsonArray
         arr.addAll(pool)
     })
-})
+})*/
 
 // 村民礼物：根据职业添加额外礼物
 /*ServerEvents.genericLootTables(event => {
@@ -302,10 +303,7 @@ LootJS.modifiers((event) => {
         .addLootTypeModifier(LootType.ENTITY)
         .entityPredicate((entity) => entity.persistentData.docker != null && entity.getNbt().get("forge:spawn_type") == "MOB_SUMMONED")
         .addAlternativesLoot(
-            LootEntry.of('netherexp:treacherous_flame').when((c) => c.randomChance(0.8)),
-            LootEntry.of('netherexp:brazier_chest').when((c) => c.randomChance(0.3)),
-            LootEntry.of("minecraft:diamond").when((c) => c.randomChance(0.7)),
-            LootEntry.of("minecraft:coal").when((c) => c.randomChance(0.99)),
-            LootEntry.of("minecraft:torch").when((c) => c.randomChance(0.2))
+            LootEntry.of('gimmethat:mandel_brick').when((c) => c.randomChance(0.5)),
+            LootEntry.of('gimmethat:quantum_key').when((c) => c.randomChance(0.5))
         );
 });

@@ -192,7 +192,7 @@ ServerEvents.recipes(event => {
     event.shapeless(Item.of('patchouli:guide_book', '{"patchouli:book":"patchouli:encyclopedia"}'), 'minecraft:dirt')
 
     //末影苦无
-    event.shaped("gimmethat:ender_kunai", [
+    event.shaped("mysticartifacts:ender_kunai", [
         ['', 'createutilities:void_steel_ingot', ''],
         ['', 'minecraft:amethyst_shard', ''],
         ['', 'minecraft:ender_pearl','']])
@@ -230,13 +230,13 @@ ServerEvents.recipes(event => {
 
     // 量天尺配方
     event.shapeless('atmospheric:dragon_roots', ['atmospheric:dragon_fruit', 'minecraft:vine'])
-
+/*
     //tnt箭
     event.shaped('rainbow:tnt_arrow', [['','minecraft:arrow',''],
     ['','minecraft:tnt',''],
     ['','','']])
-    event.shapeless('gimmethat:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
-
+    event.shapeless('mysticartifacts:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
+*/
     //牢大冰红茶配方
     event.recipes.farmersdelight.cooking(
         ['minecraft:ice','fruitfulfun:lemon','minecraft:sugar'],

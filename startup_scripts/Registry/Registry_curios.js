@@ -544,7 +544,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .addAttribute("attributeslib:armor_pierce","oceantooth_necklace",4,"addition")
+                .addAttribute("attributeslib:armor_pierce", "oceantooth_necklace", 4, "addition")
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -576,25 +576,22 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-                .addAttribute("attributeslib:armor_pierce","oceantooth_necklace",8,"addition")
+                .addAttribute("attributeslib:armor_pierce", "oceantooth_necklace", 8, "addition")
                 .curioTick((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
                     if (entity.age % 20 != 0) return;
                     let item = entity.getItemInHand("main_hand");
-                    if(item.id != 'species:spectralibur') return;
-                    else
-                    {
-                        if(stack.nbt == null)
-                            {
-                                stack.nbt = {}
-                            }
-                        if(stack.nbt.getInt("Souls") > 0)
-                            {
-                                stack.nbt.putInt("Souls",stack.nbt.getInt("Souls") - 1)
-                                item.nbt.putInt("Souls",item.nbt.getInt("Souls") + 1)
-                                entity.level.runCommandSilent(`/playsound species:item.spectralibur.collect_soul voice ${entity.getDisplayName().getString()} ${entity.x} ${entity.y} ${entity.z}`)
-                            }
+                    if (item.id != 'species:spectralibur') return;
+                    else {
+                        if (stack.nbt == null) {
+                            stack.nbt = {}
+                        }
+                        if (stack.nbt.getInt("Souls") > 0) {
+                            stack.nbt.putInt("Souls", stack.nbt.getInt("Souls") - 1)
+                            item.nbt.putInt("Souls", item.nbt.getInt("Souls") + 1)
+                            entity.level.runCommandSilent(`/playsound species:item.spectralibur.collect_soul voice ${entity.getDisplayName().getString()} ${entity.x} ${entity.y} ${entity.z}`)
+                        }
                     }
 
                 })
@@ -632,13 +629,12 @@ StartupEvents.registry('item', event => {
                     if (player == null) return;
                     let stack = ev.stack;
 
-                    if(!stack.nbt)
-                        {
-                            stack.nbt = {};
-                            stack.nbt.putBoolean("is_open",true);
-                        }
-                    
-                    if(stack.nbt.getBoolean("is_open"))
+                    if (!stack.nbt) {
+                        stack.nbt = {};
+                        stack.nbt.putBoolean("is_open", true);
+                    }
+
+                    if (stack.nbt.getBoolean("is_open"))
                         return;
 
                     ev.modify("minecraft:generic.follow_range", "eye_of_satori", -10.0, "addition");
@@ -647,15 +643,14 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     let Nbt = stack.nbt;
-                    if(!Nbt)
-                        {
-                            stack.nbt = {};
-                            stack.nbt.putBoolean("is_open",true);
-                        }
+                    if (!Nbt) {
+                        stack.nbt = {};
+                        stack.nbt.putBoolean("is_open", true);
+                    }
 
                     let is_open = Nbt.getBoolean("is_open");
 
-                    if(!is_open) return;
+                    if (!is_open) return;
 
                     if (!player || player.server == null) return;
 
@@ -705,7 +700,7 @@ StartupEvents.registry('item', event => {
                         let entities = level.getEntitiesWithin(aabb);
                         let minions = [];
                         let taggedEnemies = [];
-                        
+
                         entities.forEach(e => {
                             if (!e.isLiving() || !e.isAlive()) return;
                             if (e.potionEffects.isActive("rainbow:obey_command")) {
@@ -755,7 +750,7 @@ StartupEvents.registry('item', event => {
                                     taggedEnemies.sort((a, b) => {
                                         return engageCounts[a.uuid.toString()] - engageCounts[b.uuid.toString()];
                                     });
-                                    
+
                                     let bestTarget = taggedEnemies[0];
 
                                     if (bestTarget) {
@@ -797,6 +792,37 @@ StartupEvents.registry('item', event => {
                     if (player == null) return;
                     if (player.age % 20 !== 0) return;
                     player.potionEffects.add("species:bloodlust", 60, 0, false, false);
+                })
+        )
+})
+
+// 幽匿亲和
+StartupEvents.registry('item', event => {
+    event.create('rainbow:youni')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:youni')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (!player) return;
+                    let add = player.getBlock().id == 'minecraft:sculk_vein' || player.getBlock().getDown().id == 'minecraft:sculk' ? 0.2 : 0.0;
+                    ev.modify("minecraft:generic.movement_speed", "youni", add, "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    if (!stack.nbt) stack.nbt = {};
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
                 })
         )
 })
@@ -871,279 +897,273 @@ StartupEvents.registry('item', event => {
 // 神经处理器
 StartupEvents.registry('item', event => {
     event.create('rainbow:cyber_nerve_cpu')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:back")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:back")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
                     return false;
-                }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .modifyAttribute(context => {
-                let { slotContext, uuid } = context
-                let identifier = slotContext.identifier() + slotContext.index()
-                context.modify(
-                    $SlotAttribute.getOrCreate('charm'),
-                    uuid,
-                    identifier,
-                    -4,
-                    'addition'
-                )
-            })
-            .addAttribute("minecraft:generic.max_health","cyber_nerve_cpu",-0.5,"multiply_total")
-            .addAttribute("rainbow:generic.cyberware_capacity","cyber_nerve_cpu",10,"addition")
-    )
+                })
+                .modifyAttribute(context => {
+                    let { slotContext, uuid } = context
+                    let identifier = slotContext.identifier() + slotContext.index()
+                    context.modify(
+                        $SlotAttribute.getOrCreate('charm'),
+                        uuid,
+                        identifier,
+                        -4,
+                        'addition'
+                    )
+                })
+                .addAttribute("minecraft:generic.max_health", "cyber_nerve_cpu", -0.5, "multiply_total")
+                .addAttribute("rainbow:generic.cyberware_capacity", "cyber_nerve_cpu", 10, "addition")
+        )
 })
 
 // 操作系统-斯安威斯坦
 StartupEvents.registry('item', event => {
     event.create('rainbow:sandevistan')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:head")
-    .tag("rainbow:cyber_system")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:head")
+        .tag("rainbow:cyber_system")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:sandevistan')) {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:sandevistan')) {
+                        return false;
+                    }
+                    // 需要神经处理器
+                    if (!hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
                     return false;
-                }
-                // 需要神经处理器
-                if (!hasCurios(entity, 'rainbow:cyber_nerve_cpu')) {
-                    return false;
-                }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .modifyAttribute(context => {
-                let { slotContext, uuid } = context
-                let identifier = slotContext.identifier() + slotContext.index()
-                context.modify(
-                    $SlotAttribute.getOrCreate('ring'),
-                    uuid,
-                    identifier,
-                    4,
-                    'addition'
-                )
-            })
-            .addAttribute("minecraft:generic.attack_speed","sandevistan",4,"addition")
-    )
+                })
+                .modifyAttribute(context => {
+                    let { slotContext, uuid } = context
+                    let identifier = slotContext.identifier() + slotContext.index()
+                    context.modify(
+                        $SlotAttribute.getOrCreate('ring'),
+                        uuid,
+                        identifier,
+                        4,
+                        'addition'
+                    )
+                })
+                .addAttribute("minecraft:generic.attack_speed", "sandevistan", 4, "addition")
+        )
 })
 
 // 义体-皮下护甲-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:subcutaneous_armor')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:ring")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:ring")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:subcutaneous_armor')) {
-                    return false;
-                }
-
-                let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
-                if(cyberware_capacity - 1 <0) return false;
-
-                if(!getCuriosItemBySlot(entity,"head").hasTag("rainbow:cyber_system"))
-                    {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:subcutaneous_armor')) {
                         return false;
                     }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .addAttribute("minecraft:generic.armor","subcutaneous_armor",20,"addition")
-            .addAttribute("rainbow:generic.cyberware_capacity","subcutaneous_armor",-1,"addition")
-    )
+
+                    let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    if (cyberware_capacity - 1 < 0) return false;
+
+                    if (!getCuriosItemBySlot(entity, "head").hasTag("rainbow:cyber_system")) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .addAttribute("minecraft:generic.armor", "subcutaneous_armor", 20, "addition")
+                .addAttribute("rainbow:generic.cyberware_capacity", "subcutaneous_armor", -1, "addition")
+        )
 })
 
 // 义体-生物监测-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:biological_monitoring')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:ring")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:ring")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:biological_monitoring')) {
-                    return false;
-                }
-
-                let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
-                if(cyberware_capacity - 1 <0) return false;
-
-                if(!getCuriosItemBySlot(entity,"head").hasTag("rainbow:cyber_system"))
-                    {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:biological_monitoring')) {
                         return false;
                     }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .curioTick((slotContext, stack) => {
-                let player = slotContext.entity();
-                if (player == null) return;
-                if (player.age % SecoundToTick(20)) return;
 
-                let health = player.getHealth();
-                if(health == null) return;
+                    let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    if (cyberware_capacity - 1 < 0) return false;
 
-                let healthMax = player.getMaxHealth();
-                if(healthMax == null) return;
-                if(player.cooldowns.isOnCooldown("rainbow:biological_monitoring")) return;
-                if((health / healthMax )<0.25)
-                    {
+                    if (!getCuriosItemBySlot(entity, "head").hasTag("rainbow:cyber_system")) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null) return;
+                    if (player.age % SecoundToTick(20)) return;
+
+                    let health = player.getHealth();
+                    if (health == null) return;
+
+                    let healthMax = player.getMaxHealth();
+                    if (healthMax == null) return;
+                    if (player.cooldowns.isOnCooldown("rainbow:biological_monitoring")) return;
+                    if ((health / healthMax) < 0.25) {
                         player.setHealth(healthMax);
                         player.cooldowns.addCooldown("rainbow:biological_monitoring", SecoundToTick(60));
                     }
-                
-            })
-            .addAttribute("rainbow:generic.cyberware_capacity","biological_monitoring",-1,"addition")
-    )
+
+                })
+                .addAttribute("rainbow:generic.cyberware_capacity", "biological_monitoring", -1, "addition")
+        )
 })
 
 // 义体-365安全卫士-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:365_exe')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:ring")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:ring")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:365_exe')) {
-                    return false;
-                }
-
-                let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
-                if(cyberware_capacity - 5 <0) return false;
-
-                if(!getCuriosItemBySlot(entity,"head").hasTag("rainbow:cyber_system"))
-                    {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:365_exe')) {
                         return false;
                     }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .addAttribute("rainbow:generic.cyberware_capacity","365_exe",-5,"addition")
-            .modifyAttribute(ev => {
-                let player = ev.slotContext.entity();
-                if (player == null) return;
 
-                let cyberware_capacity = player.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    if (cyberware_capacity - 5 < 0) return false;
 
-                ev.modify("generic.armor", "365_exe", cyberware_capacity * 2, "addition");
-            })
-    )
+                    if (!getCuriosItemBySlot(entity, "head").hasTag("rainbow:cyber_system")) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .addAttribute("rainbow:generic.cyberware_capacity", "365_exe", -5, "addition")
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+
+                    let cyberware_capacity = player.getAttributeValue("rainbow:generic.cyberware_capacity");
+
+                    ev.modify("generic.armor", "365_exe", cyberware_capacity * 2, "addition");
+                })
+        )
 })
 
 // 义体-副心脏-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:second_heart')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:ring")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:ring")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:second_heart')) {
-                    return false;
-                }
-
-                let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
-                if(cyberware_capacity - 5 <0) return false;
-
-                if(!getCuriosItemBySlot(entity,"head").hasTag("rainbow:cyber_system"))
-                    {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:second_heart')) {
                         return false;
                     }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .addAttribute("rainbow:generic.cyberware_capacity","second_heart",-5,"addition")
-            .modifyAttribute(ev => {
-                let player = ev.slotContext.entity();
-                if (player == null) return;
 
-                let healthMax = player.getMaxHealth();
+                    let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    if (cyberware_capacity - 5 < 0) return false;
 
-                ev.modify("generic.max_health", "second_heart", 2 , "multiply_total");
-            })
-    )
+                    if (!getCuriosItemBySlot(entity, "head").hasTag("rainbow:cyber_system")) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .addAttribute("rainbow:generic.cyberware_capacity", "second_heart", -5, "addition")
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+
+                    let healthMax = player.getMaxHealth();
+
+                    ev.modify("generic.max_health", "second_heart", 2, "multiply_total");
+                })
+        )
 })
 
 
 // 义体-德国骨科-通用
 StartupEvents.registry('item', event => {
     event.create('rainbow:german_orthopedics')
-    .rarity("epic")
-    .maxStackSize(1)
-    .tag("curios:ring")
-    .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
-            .canEquip((slotContext, stack) => {
-                let entity = slotContext.entity();
-                if (!entity) return false;
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:ring")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
 
-                // 限制同一玩家不能装备多个
-                if (hasCurios(entity, 'rainbow:german_orthopedics')) {
-                    return false;
-                }
-
-                let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
-                if(cyberware_capacity - 5 <0) return false;
-
-                if(!getCuriosItemBySlot(entity,"head").hasTag("rainbow:cyber_system"))
-                    {
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:german_orthopedics')) {
                         return false;
                     }
-                return true;
-            })
-            .canUnequip((slotContext, stack) => {
-                return false;
-            })
-            .addAttribute("rainbow:generic.cyberware_capacity","german_orthopedics",-5,"addition")
-            .addAttribute("minecraft:generic.armor_toughness","german_orthopedics",+10,"addition")
-    )
+
+                    let cyberware_capacity = entity.getAttributeValue("rainbow:generic.cyberware_capacity");
+                    if (cyberware_capacity - 5 < 0) return false;
+
+                    if (!getCuriosItemBySlot(entity, "head").hasTag("rainbow:cyber_system")) {
+                        return false;
+                    }
+                    return true;
+                })
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .addAttribute("rainbow:generic.cyberware_capacity", "german_orthopedics", -5, "addition")
+                .addAttribute("minecraft:generic.armor_toughness", "german_orthopedics", +10, "addition")
+        )
 })

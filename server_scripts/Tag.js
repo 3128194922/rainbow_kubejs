@@ -10,7 +10,7 @@ ServerEvents.tags("item", event => {
     })
     
     // 饰品相关标签
-    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','gimmethat:death_eye','gimmethat:sword_swarm_charm'])
+    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
@@ -76,7 +76,7 @@ ServerEvents.tags("item", event => {
         "curios:head")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "gimmethat:slime_arrow", "gimmethat:nether_of_voice", "gimmethat:airburst_arrow"])
+    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow"])
     
     // 怪肉类食物标签
     event.add('rainbow:monster_meat', [

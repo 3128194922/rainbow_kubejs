@@ -125,4 +125,3 @@ ServerEvents.tags("block", event => {
 ServerEvents.tags("worldgen/biome", event => {
 
 })
-

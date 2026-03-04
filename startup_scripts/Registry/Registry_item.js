@@ -207,6 +207,12 @@ StartupEvents.registry("item", event => {
     // 泰拉刃：强大的武器
     event.create("rainbow:terasword", "sword")
 
+    //村民脑子
+    event.create("rainbow:brain").maxDamage(300)
+
+    //活体金属
+    event.create("rainbow:living_metal")
+
     // 逻辑数字：用于自动化或逻辑计算的物品
     let Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'plus', 'minus', 'multiply', 'divide', 'missingno']
     Numbers.forEach(id => {

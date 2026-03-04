@@ -176,12 +176,12 @@ ServerEvents.recipes(event => {
     event.recipes.create.mixing(['8x alexscaves:unrefined_waste',"alexscaves:metal_barrel"], ['alexscaves:waste_drum', '8x #minecraft:dirt'])
 
     // 契约戒配方
-    event.remove({ output: 'petconnect:pet_connect' })
+    /*event.remove({ output: 'petconnect:pet_connect' })
     event.shaped('petconnect:pet_connect', [
         ["", "waystones:warp_dust", ""],
         ["waystones:warp_dust", "oreganized:silver_mirror", 'minecraft:obsidian'],
         ["", 'minecraft:obsidian', ""]
-    ])
+    ])*/
 
     // 炽足兽蛋配方：替换镐子输入
     event.replaceInput({ id: 'mynethersdelight:cutting/strider_egg' },

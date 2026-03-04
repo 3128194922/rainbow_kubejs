@@ -123,6 +123,8 @@
 	"item.rainbow.nbt_util": "NBT工具",
 	"item.rainbow.frostium_pickaxe": "始冰镐",
 	"item.rainbow.controller": "远程标靶信号遥控器",
+	"item.rainbow.brain": "脑",
+	"item.rainbow.living_metal": "活体金属",
 
 	"block.mbd2.u235_in_machine": "铀输入端",
 	"block.mbd2.metal_barrel_in_machine": "金属桶输入端",
@@ -155,5 +157,6 @@
 	"effect.rainbow.knowledge_burst": "知识学爆",
 	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高",
 	"effect.rainbow.short_buff": "小滴答",
-	"effect.rainbow.short_buff.description": "连弩将直接满射速"
+	"effect.rainbow.short_buff.description": "连弩将直接满射速",
+	"block.mbd2.number_machine": "突触凝练机"
 }

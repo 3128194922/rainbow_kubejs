@@ -43,5 +43,11 @@
 	"sounds": [
 	  "rainbow:eye_of_satori"
 	]
+  },
+  	"voice.whistle": {
+	"subtitle": "sounds.rainbow.whistle",
+	"sounds": [
+	  "rainbow:whistle"
+	]
   }
 }

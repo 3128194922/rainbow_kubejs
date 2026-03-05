@@ -72,6 +72,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingAttackEvent", 
 
     //非玩家受伤前事件
     onBeforeNonPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
+    //实体受伤前事件
+    onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
     }
     catch(e)
     {

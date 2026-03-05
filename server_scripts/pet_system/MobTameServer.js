@@ -28,7 +28,8 @@ let tameableMobs = {
     'minecraft:drowned':'rainbow:gauntlet',
     'dungeonsdelight:rotten_zombie': 'rainbow:gauntlet',
     'minecraft:husk': 'rainbow:gauntlet',
-    'windswept:chilled': 'rainbow:gauntlet'
+    'windswept:chilled': 'rainbow:gauntlet',
+    'player_mobs:player_mob': 'rainbow:gauntlet'
 }
 
 /**

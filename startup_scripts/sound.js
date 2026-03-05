@@ -18,6 +18,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.eye_of_satori")
 
     event.create("rainbow:voice.skillwheel")
+
+    event.create("rainbow:voice.whistle")
 })
 
 // 注册物品

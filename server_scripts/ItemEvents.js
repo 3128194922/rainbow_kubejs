@@ -3,8 +3,6 @@
 // 🛠️ 物品事件处理脚本
 // ==========================================
 
-const Integer = Java.loadClass("java.lang.Integer");
-
 // 物品右键事件
 ItemEvents.rightClicked(event => {
     let { player, item, level, server, hand } = event;

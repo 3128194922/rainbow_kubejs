@@ -6,14 +6,6 @@
 // 监听实体受伤事件
 EntityEvents.hurt(event => {
     const { entity, source } = event;
-    // 玩家免疫伤害逻辑
-    if (entity.isPlayer()) {
-        // 如果玩家拥有 "民主保护" (democratic_save) 效果，则免疫伤害（通常用于传送保护）
-        if (!entity.level.isClientSide && entity.hasEffect("rainbow:democratic_save")) {
-            event.cancel(); // 取消伤害
-            return; // 提前返回避免后续处理
-        }
-    }
 
     // 黏液棒攻击逻辑
     if (source.player && entity) {

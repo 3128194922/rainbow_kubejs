@@ -135,14 +135,22 @@ registerSkill('rainbow:rage_syringe', (event, player, itemStack) => {
 // --- 怪物护符 ---
 registerSkill('rainbow:monster_charm', (event, player, itemStack) => {
     if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
-        let entity = player.level.createEntity("minecraft:iron_golem");
+        //let entity = player.level.createEntity("minecraft:iron_golem");
+        let entity = player.level.createEntity("player_mobs:player_mob");
         if (entity) {
             entity.persistentData.OwnerName = player.getUuid().toString();
             entity.persistentData.putBoolean("CanTake", false);
+            entity.setUsername(player.getDisplayName().getString())
+            let slot = ["chest","feet","head","legs","mainhand","offhand"]
+            slot.forEach(string=>{
+                entity.setItemSlot(string,player.getItemBySlot(string))
+            })
             let pos = player.getBlock().pos;
             entity.setPos(pos.x + 0.5, pos.y, pos.z + 0.5);
             entity.spawn();
-            player.cooldowns.addCooldown('rainbow:monster_charm', SecoundToTick(60));
+            player.potionEffects.add("minecraft:invisibility", 20, 0, false, false);
+            player.potionEffects.add("species:snatched", 20, 1, false, false);
+            player.cooldowns.addCooldown('rainbow:monster_charm', SecoundToTick(30));
         }
     }
 });
@@ -317,6 +325,44 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack) => {
     }
 });
 
+// --- 战壕哨 ---
+registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
+registerSkill('rainbow:whistle', (event, player, itemStack) => {
+    if (itemStack) {
+        
+        if(player.isClientSide) return;
+    
+        // 否则重新找目标
+        let AABB = player.boundingBox.inflate(16)
+        player.level.getEntitiesWithin(AABB).forEach(entity => {
+            if (!entity) return;
+            if (!entity.isLiving() || !entity.isAlive()) return;
+            if (entity == player) return;
+        
+            let OwnerName = entity.persistentData.OwnerName;
+            let Owner = entity.owner;
+        
+            if ((OwnerName && OwnerName == player.getUuid().toString()) || (entity.owner && entity.owner == player))
+                {
+                    entity.potionEffects.add("rainbow:killing_desire", 20*10, 0, false, true)
+                }
+            else
+            {
+                entity.potionEffects.add("minecraft:glowing", 20*10, 0, false, true)
+            }
+        })
+    }
+});
+
+// --- 虚空之眼 ---
+registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack) => {
+    if (itemStack) 
+    {
+        if(player.isClientSide) return;
+    
+        player.potionEffects.add("rainbow:void",20,0,false,false)
+    }
+});
 
 // ==========================================
 // 主入口逻辑

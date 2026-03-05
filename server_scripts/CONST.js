@@ -3,6 +3,9 @@
 // 🔢 常量定义与初始化脚本
 // ==========================================
 
+const Integer = Java.loadClass("java.lang.Integer");
+
+
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
 

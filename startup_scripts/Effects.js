@@ -149,4 +149,9 @@ StartupEvents.registry("mob_effect", event => {
                 }
             }
         })
+
+    //虚化：免疫伤害
+    event.create("rainbow:void")
+    .beneficial()
+    .color(0x556B2F)
 });

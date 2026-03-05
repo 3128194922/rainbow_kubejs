@@ -10,7 +10,8 @@ ServerEvents.tags("item", event => {
     })
     
     // 饰品相关标签
-    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'])
+    event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
+    ,'rainbow:whistle','alexsmobs:void_worm_eye'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
@@ -20,11 +21,13 @@ ServerEvents.tags("item", event => {
     // 技能饰品
     event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind'])
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
+    ,'alexsmobs:void_worm_eye'])
 
     event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind'])
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
+    ,'alexsmobs:void_worm_eye'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",

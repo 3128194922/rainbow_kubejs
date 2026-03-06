@@ -159,5 +159,7 @@
 	"effect.rainbow.knowledge_burst.description": "经验等级越高，伤害越高",
 	"effect.rainbow.short_buff": "小滴答",
 	"effect.rainbow.short_buff.description": "连弩将直接满射速",
+	"effect.rainbow.off_work_time": "召唤物存在时间",
+	"effect.rainbow.bitter.off_work_time": "召唤物存在时间",
 	"block.mbd2.number_machine": "突触凝练机"
 }

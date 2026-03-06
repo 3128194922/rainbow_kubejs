@@ -214,7 +214,7 @@ StartupEvents.registry("item", event => {
     event.create("rainbow:whistle")
 
     //虚空之眼
-    event.create("rainbow:void_eye")
+    //event.create("rainbow:void_eye")
 
     //活体金属
     event.create("rainbow:living_metal")

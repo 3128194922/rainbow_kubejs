@@ -15,4 +15,36 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
         {
             event.setCanceled(true);
         }
+    // --- 民主甲套装效果 ---
+    // 只有穿戴全套民主装备时生效
+    if (
+        victim.getItemBySlot("chest").id == "gimmethat:democracy_chestplate" &&
+        victim.getItemBySlot("feet").id == "gimmethat:democracy_boots" &&
+        victim.getItemBySlot("head").id == "gimmethat:democracy_helmet" &&
+        victim.getItemBySlot("legs").id == "gimmethat:democracy_leggings"
+    ) {
+        let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
+        let currentAir = tank.nbt.getInt("Air");
+        if (tank && currentAir > 0) {
+            let damage = event.getAmount();
+            let airPerDamage = 5;
+            let requiredAir = damage * airPerDamage;
+
+            if (currentAir >= requiredAir) {
+                tank.nbt.putInt("Air", tank.nbt.getInt("Air") - requiredAir);
+                //event.setAmount(0);
+                //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+                event.setCanceled(true);
+            }
+            else {
+                // 气量不足但仍有剩余 → 抵消部分伤害并耗尽气量
+                /*let reducedDamage = damage * (1 - currentAir / requiredAir);
+                event.setAmount(reducedDamage);*/
+                tank.nbt.putInt("Air", 0);
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+                event.setCanceled(true);
+            }
+        }
+    }
 }

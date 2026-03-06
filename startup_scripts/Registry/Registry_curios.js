@@ -425,16 +425,14 @@ StartupEvents.registry('item', event => {
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
-                    let playerMaxHP = -(player.getMaxHealth() - 1);
-                    // 只有最大生命值小于等于 2 时才生效
-                    //if (player.getMaxHealth() > 2) return;
-
+                    // 只有最大生命值大于 2 时才生效，避免重复修改
 
                     ev.modify("generic.attack_damage", "despair_insignia", 4.0, "addition");
                     ev.modify("generic.movement_speed", "despair_insignia", 0.05, "multiply_total");
                     ev.modify("generic.attack_speed", "despair_insignia", 0.16, "multiply_total");
                     ev.modify("minecraft:generic.knockback_resistance", "despair_insignia", 0.05, "multiply_total");
-                    ev.modify("minecraft:generic.max_health", "despair_insignia", playerMaxHP, "addition");
+                    if (player.getMaxHealth() <= 2) return;
+                    ev.modify("minecraft:generic.max_health", "despair_insignia", -(player.getMaxHealth() - 2), "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
@@ -798,7 +796,7 @@ StartupEvents.registry('item', event => {
 
 // 幽匿亲和
 StartupEvents.registry('item', event => {
-    event.create('rainbow:youni')
+    event.create('rainbow:sculk_affinity')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -809,7 +807,7 @@ StartupEvents.registry('item', event => {
                     if (!entity) return false;
 
                     // 限制同一玩家不能装备多个
-                    if (hasCurios(entity, 'rainbow:youni')) {
+                    if (hasCurios(entity, 'rainbow:sculk_affinity')) {
                         return false;
                     }
                     return true;
@@ -818,7 +816,7 @@ StartupEvents.registry('item', event => {
                     let player = ev.slotContext.entity();
                     if (!player) return;
                     let add = player.getBlock().id == 'minecraft:sculk_vein' || player.getBlock().getDown().id == 'minecraft:sculk' ? 0.2 : 0.0;
-                    ev.modify("minecraft:generic.movement_speed", "youni", add, "multiply_total");
+                    ev.modify("minecraft:generic.movement_speed", "sculk_affinity", add, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};

@@ -109,7 +109,7 @@ StartupEvents.registry("mob_effect", event => {
         .color(0xEAF044)
     */
     // 苦涩：有益，根据饥饿值越低伤害加成越高
-    event.create("rainbow:bitter")
+    /*event.create("rainbow:bitter")
         .beneficial()
         .color(0x556B2F)
 
@@ -117,7 +117,7 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:knowledge_burst")
         .beneficial()
         .color(0x00FF00)
-
+*/
     // 肢解：有害，减少最大生命值
     /*event.create("rainbow:dismember")
         .harmful()
@@ -138,7 +138,7 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:short_buff")
         .beneficial()
         .color(0xFF55FF)
-        .modifyAttribute("attributeslib:arrow_damage", "short_buff", 1.1, "multiply_total")
+        .modifyAttribute("attributeslib:arrow_damage", "short_buff", 0.1, "multiply_total")
         .effectTick((entity, amplifier) => {
             if (!entity || entity.level.isClientSide()) return;
             if (entity.age % 20 != 0) return;
@@ -148,6 +148,20 @@ StartupEvents.registry("mob_effect", event => {
                     item.nbt.putInt("Speed", 40);
                 }
             }
+            else if(item.id == "minecraft:bow")
+                {
+                    //&& item.getUseDuration() - entity.getTicksUsingItem() >= 20
+                    if(entity.getTicksUsingItem()>0)
+                        {
+                            entity.releaseUsingItem();
+                        }
+                    //console.log(item.getUseDuration())
+                }
+            /*else
+            {
+                entity.releaseUsingItem();
+            }
+*/
         })
 
     //虚化：免疫伤害

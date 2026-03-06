@@ -26,9 +26,9 @@ const boom_damage = [
 ];
 //玩家 受伤时 主入口
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
-    const victim = event.entity;
-    const attacker = event.source.actual;
-    const source = event.source;
+    let victim = event.entity;
+    let attacker = event.source.actual;
+    let source = event.source;
     if(victim.level.isClientSide()) return;
     try
     {    
@@ -43,6 +43,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
 
     //  非玩家受伤事件
     onNonPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
+    //  实体受伤事件
+    onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
     // 宠物伤害逻辑
     handleNonPlayerDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
@@ -61,9 +64,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
 })
 //玩家 受伤前 主入口
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingAttackEvent", event => {
-    const victim = event.entity;
-    const attacker = event.source.actual;
-    const source = event.source;
+    let victim = event.entity;
+    let attacker = event.source.actual;
+    let source = event.source;
 
     try
     {

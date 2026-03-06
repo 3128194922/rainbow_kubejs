@@ -4,7 +4,7 @@
 // ==========================================
 
 const Integer = Java.loadClass("java.lang.Integer");
-
+const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
@@ -31,3 +31,15 @@ Ingredient.all.itemIds.forEach(itemId => {
 });
 console.log(`食物列表初始化：${global.foodlist.length}`)
 console.log(`剑列表初始化：${global.swordlist.length}`)
+
+global.attributes = []; //玩家属性大全
+
+let attributes = ForgeRegistries.ATTRIBUTES.getValues();
+
+attributes.forEach(attr=>{
+    let key = ForgeRegistries.ATTRIBUTES.getKey(attr);
+    if (key) {
+        global.attributes.push(key.toString());
+    }
+})
+console.log(`属性列表初始化：${global.attributes.length}`)

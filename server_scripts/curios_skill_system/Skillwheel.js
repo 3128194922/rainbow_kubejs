@@ -147,7 +147,12 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack) => {
             })
             let pos = player.getBlock().pos;
             entity.setPos(pos.x + 0.5, pos.y, pos.z + 0.5);
+            global.attributes.forEach(attribute=>{
+                entity.setAttributeBaseValue(attribute,player.getAttributeTotalValue(attribute))
+                //console.log(attribute)
+            })
             entity.spawn();
+            entity.potionEffects.add("rainbow:off_work_time", 20*30, 0, false, false);
             player.potionEffects.add("minecraft:invisibility", 20, 0, false, false);
             player.potionEffects.add("species:snatched", 20, 1, false, false);
             player.cooldowns.addCooldown('rainbow:monster_charm', SecoundToTick(30));
@@ -235,7 +240,7 @@ registerSkill('rainbow:short_core', (event, player, itemStack) => {
 });
 
 // --- 幻影之躯 ---
-registerSkill('rainbow:phantom_body', (event, player, itemStack) => {
+/*registerSkill('rainbow:phantom_body', (event, player, itemStack) => {
     let headItem = player.getItemBySlot("head");
     if (headItem && headItem.nbt) {
         let maskId = headItem.nbt.getString("id");
@@ -245,7 +250,7 @@ registerSkill('rainbow:phantom_body', (event, player, itemStack) => {
                 break;
         }
     }
-});
+});*/
 
 // --- 共生徽章 ---
 registerSkill('rainbow:ccb', (event, player, itemStack) => {

@@ -41,7 +41,7 @@ global.MobMaskAttributeConfig = {
 
 // 幻影之躯 (rainbow:phantom_body) 技能触发
 // 右键时根据头戴的面具ID触发特殊效果
-ItemEvents.rightClicked('rainbow:phantom_body',event => {
+/*ItemEvents.rightClicked('rainbow:phantom_body',event => {
     let player = event.getPlayer();
     let server = event.getServer();
     let item = event.getPlayer().getItemBySlot("head");
@@ -57,4 +57,4 @@ ItemEvents.rightClicked('rainbow:phantom_body',event => {
 
         break;
     }
-})
+})*/

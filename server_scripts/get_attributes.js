@@ -7,7 +7,6 @@
 
 ServerEvents.commandRegistry(event => {
     const { commands: Commands } = event;
-    const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
 
     event.register(
         Commands.literal("getattributes")

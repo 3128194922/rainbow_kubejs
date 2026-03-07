@@ -20,6 +20,16 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.skillwheel")
 
     event.create("rainbow:voice.whistle")
+
+    event.create("rainbow:voice.sonatina")
+
+    event.create("rainbow:voice.the_end")
+
+    event.create("rainbow:voice.null")
+
+    event.create("rainbow:voice.inspiration")
+
+    event.create("rainbow:voice.improvement")
 })
 
 // 注册物品

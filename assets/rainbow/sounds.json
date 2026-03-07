@@ -49,5 +49,35 @@
 	"sounds": [
 	  "rainbow:whistle"
 	]
+  },
+	"voice.sonatina": {
+	"subtitle": "sounds.rainbow.sonatina",
+	"sounds": [
+	  "rainbow:sonatina"
+	]
+  },
+	"voice.the_end": {
+	"subtitle": "sounds.rainbow.the_end",
+	"sounds": [
+	  "rainbow:the_end"
+	]
+  },
+	"voice.null": {
+	"subtitle": "sounds.rainbow.null",
+	"sounds": [
+	  "rainbow:null"
+	]
+  },
+	"voice.inspiration": {
+	"subtitle": "sounds.rainbow.inspiration",
+	"sounds": [
+	  "rainbow:inspiration"
+	]
+  },
+	"voice.improvement": {
+	"subtitle": "sounds.rainbow.improvement",
+	"sounds": [
+	  "rainbow:improvement"
+	]
   }
 }

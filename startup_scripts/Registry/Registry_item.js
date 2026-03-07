@@ -68,7 +68,7 @@ StartupEvents.registry("item", event => {
         )
 
     // 乐谱
-    event.create("rainbow:musical_score")
+    //event.create("rainbow:musical_score")
     // 升级模板
     event.create("rainbow:cleaver_upgrade")
     // 收容中心

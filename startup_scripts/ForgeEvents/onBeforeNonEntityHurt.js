@@ -11,6 +11,7 @@
  * @param {number} boom_damage 爆炸伤害
  */
 function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage){
+    // --- 虚化效果 ---
     if(victim.hasEffect("rainbow:void"))
         {
             event.setCanceled(true);
@@ -18,10 +19,10 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
     // --- 民主甲套装效果 ---
     // 只有穿戴全套民主装备时生效
     if (
-        victim.getItemBySlot("chest").id == "gimmethat:democracy_chestplate" &&
-        victim.getItemBySlot("feet").id == "gimmethat:democracy_boots" &&
-        victim.getItemBySlot("head").id == "gimmethat:democracy_helmet" &&
-        victim.getItemBySlot("legs").id == "gimmethat:democracy_leggings"
+        victim.getItemBySlot("chest").id == "mysticartifacts:democracy_chestplate" &&
+        victim.getItemBySlot("feet").id == "mysticartifacts:democracy_boots" &&
+        victim.getItemBySlot("head").id == "mysticartifacts:democracy_helmet" &&
+        victim.getItemBySlot("legs").id == "mysticartifacts:democracy_leggings"
     ) {
         let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
         let currentAir = tank.nbt.getInt("Air");
@@ -46,5 +47,31 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
                 event.setCanceled(true);
             }
         }
+    }
+
+        // --- 防化服套装效果 ---
+        if (victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
+        && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
+        && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
+        && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
+        if (source.getType() == "poison_cloud" || source.getType() == "wither") {
+            event.setCanceled(true)
+        }
+    }
+
+    // --- 大胃王饰品 ---
+    // 消耗饱和度抵消伤害
+    if (hasCurios(victim, "rainbow:big_stomach")) {
+        if (victim.getFoodData().getSaturationLevel() > 0) {
+            victim.getFoodData().setSaturation(
+                Math.max(victim.getFoodData().getSaturationLevel() - event.getAmount(), 0)
+            );
+            event.setCanceled(true);
+        }
+    }
+
+    // --- 暴食护符（免饥饿伤害） ---
+    if (source.getType() == "starve" && hasCurios(victim, "rainbow:gluttony_charm")) {
+        event.setCanceled(true);
     }
 }

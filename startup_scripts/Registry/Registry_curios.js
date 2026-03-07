@@ -508,7 +508,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .curioTick((slotContext, stack) => {
+                /*.curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
                     if (player.age % 10) return;
@@ -519,15 +519,23 @@ StartupEvents.registry('item', event => {
                     else {
                         player.cooldowns.removeCooldown('minecraft:goat_horn');
                     }
+                })*/
+                .modifyAttribute(ev => {
+                    let stack = ev.stack;
+
+                    if (!stack.nbt) {
+                        stack.nbt = {the_end:Integer.valueOf("0"),submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"}};
+                    }
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
-
+                    let nbt = stack.nbt;
                     if (entity == null) return;
 
                     if (hasCurios(entity, 'rainbow:lyre')) {
                         return false;
                     }
+
                     return true;
                 })
         )

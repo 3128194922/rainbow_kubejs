@@ -245,7 +245,7 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.gold("特殊能力3:").append(Text.gray("对水生和着火生物伤害+50%")));
             text.add(4, Text.gold("特殊能力4:").append(Text.gray("攻击附加冻结")));
     })
-    event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
         if(item.nbt == null) return;
         if (item.nbt.music != null && item.nbt.music.length > 0) {
             // 数字下标对应的中文名称
@@ -263,13 +263,13 @@ ItemEvents.tooltip((event) => {
             // 添加到显示文本中
             text.add(1, Text.gold("当前乐曲: ").append(Text.gray(musicNames)));
         }
-    })
+    })*/
     event.addAdvanced('rainbow:reload_core', (item, advanced, text) => {
         text.add(1, Text.darkPurple(`取消霰弹炮CD`));
     })
-    event.addAdvanced('rainbow:lyre', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:lyre', (item, advanced, text) => {
         text.add(1, Text.darkPurple(`取消号角CD`));
-    })
+    })*/
 
     event.addAdvanced(['rainbow:reload_core', 'rainbow:short_core'], (item, advanced, text) => {
         let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
@@ -299,9 +299,9 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:eye_of_satori', (item, advanced, text) => {
         text.add(1, Text.gold("读心: ").append(Text.gray("准心标记怪物，增强友军")));
     })
-    event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
         text.add(1, Text.gold("记录: ").append(Text.gray("拿在副手吹响号角进行记录，如果形成完整乐谱可以右键释放对应魔法")));
-    })
+    })*/
     event.addAdvanced('rainbow:mind_ctroller_detention', (item, advanced, text) => {
         text.add(1, Text.darkPurple(`右键回收被脑控的佣兵生物`));
     })

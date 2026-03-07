@@ -271,7 +271,7 @@ ServerEvents.recipes(event => {
         ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
 
     //乐谱
-    event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
+    //event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
 
     //密封琥珀
     event.shapeless('rainbow:amber_bee',['alexscaves:amber_curiosity','minecraft:glass_bottle'])

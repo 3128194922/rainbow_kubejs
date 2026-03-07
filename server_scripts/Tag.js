@@ -22,12 +22,15 @@ ServerEvents.tags("item", event => {
     event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
-    ,'alexsmobs:void_worm_eye'])
+    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre'])
 
     event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
-    ,'alexsmobs:void_worm_eye'])
+    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre'])
+
+    //技能饰品二级菜单
+    event.add('skillwheel:submenu',['rainbow:lyre'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",

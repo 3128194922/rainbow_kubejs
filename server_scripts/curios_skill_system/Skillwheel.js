@@ -19,7 +19,7 @@ function registerSkillSound(itemId, soundId) {
 /**
  * 注册技能处理函数
  * @param {string} itemId 饰品ID
- * @param {function} handler 处理函数 (event, player, itemStack) => void
+ * @param {function} handler 处理函数 (event, player, itemStack, isSubmenu, submenuIndex) => void
  */
 function registerSkill(itemId, handler) {
     SkillRegistry[itemId] = handler;
@@ -50,7 +50,7 @@ let heartEntityMap = {
 };
 
 Object.keys(heartEntityMap).forEach(heartId => {
-    registerSkill(heartId, (event, player, itemStack) => {
+    registerSkill(heartId, (event, player, itemStack, isSubmenu, submenuIndex) => {
         if (player.cooldowns.isOnCooldown(heartId)) return;
 
         let COOLDOWN = SecoundToTick(20);
@@ -80,7 +80,7 @@ Object.keys(heartEntityMap).forEach(heartId => {
 });
 
 // --- 念力墙 ---
-registerSkill('rainbow:mind', (event, player, itemStack) => {
+registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (player.cooldowns.isOnCooldown("rainbow:mind")) return;
 
     let yaw = player.getYaw();
@@ -117,7 +117,7 @@ registerSkill('rainbow:mind', (event, player, itemStack) => {
 });
 /*
 // --- 韧性注射器 ---
-registerSkill('rainbow:resilience_syringe', (event, player, itemStack) => {
+registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (player.persistentData.getInt("resilience") >= 100) {
         player.potionEffects.add("rainbow:resilience", SecoundToTick(7), 0, false, false);
         player.persistentData.putInt("resilience", 99);
@@ -125,7 +125,7 @@ registerSkill('rainbow:resilience_syringe', (event, player, itemStack) => {
 });
 
 // --- 狂暴注射器 ---
-registerSkill('rainbow:rage_syringe', (event, player, itemStack) => {
+registerSkill('rainbow:rage_syringe', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (!player.cooldowns.isOnCooldown("rainbow:damage_num")) {
         player.potionEffects.add("rainbow:damage_num", SecoundToTick(5), 0, false, false);
         player.cooldowns.addCooldown("rainbow:damage_num", SecoundToTick(10));
@@ -133,7 +133,7 @@ registerSkill('rainbow:rage_syringe', (event, player, itemStack) => {
 });
 */
 // --- 怪物护符 ---
-registerSkill('rainbow:monster_charm', (event, player, itemStack) => {
+registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
         //let entity = player.level.createEntity("minecraft:iron_golem");
         let entity = player.level.createEntity("player_mobs:player_mob");
@@ -161,12 +161,12 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack) => {
 });
 
 // --- 时间神石 ---
-registerSkill('rainbow:chronos', (event, player, itemStack) => {
+registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex) => {
     event.server.runCommandSilent(`/execute at ${player.getDisplayName().getString()} run respawningstructures respawnClosestStructure`);
 });
 
 // --- 信标球 ---
-registerSkill('rainbow:beacon_ball', (event, player, itemStack) => {
+registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (player.cooldowns.isOnCooldown("rainbow:beacon_ball")) return;
 
     if (!itemStack.nbt || !itemStack.nbt.contains("X")) {
@@ -216,7 +216,7 @@ registerSkill('rainbow:beacon_ball', (event, player, itemStack) => {
 });
 
 // --- 装填核心 ---
-registerSkill('rainbow:reload_core', (event, player, itemStack) => {
+registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
     let reloadEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
     if (reloadEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:reload_core")) {
         player.potionEffects.add("rainbow:reload_buff", 200, 0, false, false);
@@ -228,7 +228,7 @@ registerSkill('rainbow:reload_core', (event, player, itemStack) => {
 });
 
 // --- 连射核心 ---
-registerSkill('rainbow:short_core', (event, player, itemStack) => {
+registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
     let shortEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
     if (shortEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:short_core")) {
         player.potionEffects.add("rainbow:short_buff", 200, 0, false, false);
@@ -240,7 +240,7 @@ registerSkill('rainbow:short_core', (event, player, itemStack) => {
 });
 
 // --- 幻影之躯 ---
-/*registerSkill('rainbow:phantom_body', (event, player, itemStack) => {
+/*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex) => {
     let headItem = player.getItemBySlot("head");
     if (headItem && headItem.nbt) {
         let maskId = headItem.nbt.getString("id");
@@ -253,7 +253,7 @@ registerSkill('rainbow:short_core', (event, player, itemStack) => {
 });*/
 
 // --- 共生徽章 ---
-registerSkill('rainbow:ccb', (event, player, itemStack) => {
+registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex) => {
     let ccbHit = player.rayTrace(5, false);
     if (ccbHit && ccbHit.entity && ccbHit.entity.isLiving()) {
         let target = ccbHit.entity;
@@ -293,7 +293,7 @@ registerSkill('rainbow:ccb', (event, player, itemStack) => {
 });
 
 // --- 皇家法杖 ---
-registerSkill('royalvariations:royal_staff', (event, player, itemStack) => {
+registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (itemStack) {
         let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
         let hand = InteractionHand.MAIN_HAND;
@@ -320,7 +320,7 @@ registerSkill('royalvariations:royal_staff', (event, player, itemStack) => {
 
 // --- 觉之瞳 ---
 registerSkillSound('rainbow:eye_of_satori', 'rainbow:voice.eye_of_satori');
-registerSkill('rainbow:eye_of_satori', (event, player, itemStack) => {
+registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (itemStack) {
         let Nbt = itemStack.nbt;
         if(Nbt)
@@ -332,7 +332,7 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack) => {
 
 // --- 战壕哨 ---
 registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
-registerSkill('rainbow:whistle', (event, player, itemStack) => {
+registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (itemStack) {
         
         if(player.isClientSide) return;
@@ -360,12 +360,55 @@ registerSkill('rainbow:whistle', (event, player, itemStack) => {
 });
 
 // --- 虚空之眼 ---
-registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack) => {
+registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (itemStack) 
     {
         if(player.isClientSide) return;
     
         player.potionEffects.add("rainbow:void",20,0,false,false)
+    }
+});
+
+// --- 天琴座 ---
+registerSkillSound('rainbow:lyre', 'rainbow:voice.null');
+registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex) => {
+    if (itemStack && isSubmenu) 
+    {
+        if(player.cooldowns.isOnCooldown(itemStack.id))
+            return;
+        let nbt = itemStack.nbt;
+        let cooldowns = [20*1,20*1,20*1,20*1];
+        let lyreSkill= {
+            1:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("minecraft:resistance",20*10,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.inspiration", "voice", 1, 1)
+            },
+            2:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("runiclib:lesser_strength",20*10,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.improvement", "voice", 1, 1)
+            },
+            3:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("minecraft:instant_health",1,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.sonatina", "voice", 1, 1)
+            },
+            4:(player,entity,nbt)=>{
+                if(!entity.isAlive()) return;
+                if(entity == player) return;
+                entity.attack(player.damageSources().playerAttack(player),(nbt.getInt("the_end")+1)*10)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.the_end", "voice", 1, 1)
+            }
+        };
+        let AABB = player.boundingBox.inflate(16)
+        player.level.getEntitiesWithin(AABB).forEach(entity => {
+            lyreSkill[submenuIndex](player,entity,nbt);
+        })
+        player.cooldowns.addCooldown(itemStack.id,cooldowns[submenuIndex-1])
     }
 });
 
@@ -376,6 +419,10 @@ registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack) => {
 NetworkEvents.dataReceived('skillwheel', event => {
     let player = event.player;
     let packetItem = event.data.item;
+    let isSubmenu = event.data.getBoolean("isSubmenu");
+    let submenuIndex = event.data.getInt("submenuIndex");
+
+    //console.log(event.data)
 
     if (!packetItem) return;
 
@@ -405,7 +452,7 @@ NetworkEvents.dataReceived('skillwheel', event => {
     let handler = SkillRegistry[itemId];
     if (!handler) return;
     try {
-        handler(event, player, itemStack);
+        handler(event, player, itemStack, isSubmenu, submenuIndex);
     } catch (error) {
         console.error(`Error executing skill for ${itemId}: ${error}`);
         player.tell(Text.red(`技能执行出错: ${error}`));

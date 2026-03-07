@@ -8,6 +8,11 @@ ItemEvents.rightClicked(event => {
     let { player, item, level, server, hand } = event;
     //let ender_chest = player.getEnderChestInventory().getAllItems();
     if (level.isClientSide()) return;
+/*
+    if(item.id == "minecraft:stick")
+        {
+            
+        }*/
 
     // --- 粘液棒：生成粘液块平台 ---
     if (item.id === "rainbow:slime_rod") {
@@ -176,7 +181,7 @@ ItemEvents.rightClicked(event => {
             server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${player.x} ${player.y} ${player.z}`)
             player.setItemInHand("main_hand",Item.of("rainbow:baseball_power",`${nbt}`))
         }    
-    
+    /*
     // --- 乐谱：播放音乐 ---
     if(item.id == "rainbow:musical_score")
         {
@@ -187,7 +192,7 @@ ItemEvents.rightClicked(event => {
                 music: intArrayTagToNumbers(item.nbt.music)
             })
         }
-    
+    */
     // --- 群系之剑：收集群系 ---
     if (item.id === "rainbow:biome_of_sword") {
 
@@ -326,7 +331,7 @@ ItemEvents.rightClicked(event => {
     }
 
 });
-
+/*
 // 音乐系统：山羊角记录音乐
 ItemEvents.rightClicked(event => {
     let player = event.player;
@@ -389,7 +394,7 @@ ItemEvents.rightClicked(event => {
         }
     }
 });
-
+*/
 //逻辑运算
 ItemEvents.rightClicked(event => {
     let player = event.player;

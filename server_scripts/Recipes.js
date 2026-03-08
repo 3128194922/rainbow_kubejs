@@ -265,8 +265,8 @@ ServerEvents.recipes(event => {
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
 
     //逻辑计算机
-    event.shaped('rainbow:number_computer', [
-        ['create:brass_casing', 'create:pulse_timer', 'create:brass_casing'], 
+    event.shaped('mbd2:number_machine', [
+        ['create:brass_casing', 'create:pulse_timer', 'create:fluid_tank'], 
         ['create:cogwheel', 'create:precision_mechanism', 'create:large_cogwheel'], 
         ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
 

@@ -90,7 +90,7 @@ StartupEvents.registry("block", event => {
             );
         });
 });
-
+/*
 // 逻辑计算机
 StartupEvents.registry("block", event => {
     event.create("rainbow:number_computer")
@@ -122,4 +122,4 @@ StartupEvents.registry("block", event => {
                     .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
             );
         });
-});
+});*/

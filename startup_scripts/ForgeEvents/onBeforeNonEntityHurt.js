@@ -24,6 +24,12 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
         victim.getItemBySlot("head").id == "mysticartifacts:democracy_helmet" &&
         victim.getItemBySlot("legs").id == "mysticartifacts:democracy_leggings"
     ) {
+        //console.log(victim.invulnerableTime)
+        if(victim.invulnerableTime > 0)
+            {
+                event.setCanceled(true);
+                return;
+            }
         let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
         let currentAir = tank.nbt.getInt("Air");
         if (tank && currentAir > 0) {
@@ -36,6 +42,7 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
                 //event.setAmount(0);
                 //victim.level.runCommandSilent(`playsound create:steam voice @p ${victim.x} ${victim.y} ${victim.z}`)
                 victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+                victim.invulnerableTime = 20;
                 event.setCanceled(true);
             }
             else {
@@ -44,6 +51,7 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
                 event.setAmount(reducedDamage);*/
                 tank.nbt.putInt("Air", 0);
                 victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "create:steam", "voice", 1, 1)
+                victim.invulnerableTime = 20;
                 event.setCanceled(true);
             }
         }

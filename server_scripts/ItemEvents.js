@@ -11,7 +11,7 @@ ItemEvents.rightClicked(event => {
 /*
     if(item.id == "minecraft:stick")
         {
-            
+            console.log(`${player.getStringUuid()}`)
         }*/
 
     // --- 粘液棒：生成粘液块平台 ---

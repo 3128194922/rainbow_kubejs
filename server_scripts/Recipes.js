@@ -62,7 +62,8 @@ ServerEvents.recipes(event => {
     //炮塔docker
     event.shapeless('rainbow:docker_shooter_fire','rainbow:docker_shooter')
     event.shapeless('rainbow:docker_shooter_plus','rainbow:docker_shooter_fire')
-    event.shapeless('rainbow:docker_shooter','rainbow:docker_shooter_plus')
+    event.shapeless('rainbow:docker_shooter_parabola','rainbow:docker_shooter_plus')
+    event.shapeless('rainbow:docker_shooter','rainbow:docker_shooter_parabola')
     event.shaped('rainbow:docker_shooter', [
         ['minecraft:dropper', 'minecraft:dispenser', 'minecraft:redstone'],
         ['quark:redstone_randomizer', 'minecraft:repeater', 'minecraft:comparator'],
@@ -89,6 +90,7 @@ ServerEvents.recipes(event => {
     //物品栏代理
     event.shapeless('rainbow:docker_ender_player_hotbar','rainbow:docker_ender_player_vpn')
     event.shapeless('rainbow:docker_ender_player_vpn','rainbow:docker_ender_player_hotbar')
+    event.shapeless('rainbow:docker_ender_proxy','rainbow:docker_ender_player_vpn')
 
     // 农夫乐事：切洋葱获得皮
     event.recipes.farmersdelight.cutting(

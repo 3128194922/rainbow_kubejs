@@ -196,6 +196,40 @@ BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player",
     }
 });
 
+BlockEvents.rightClicked("rainbow:docker_player_pos_proxy", event => {
+    let entity = event.block.entity;
+    let player = event.getPlayer();
+    let hand = event.getHand().toString();
+    if (hand === "OFF_HAND") return;
+
+    let isCrouching = player.isCrouching();
+    if (!entity.data) entity.data = {};
+
+    if (isCrouching) {
+        entity.data.uuid = player.getStringUuid();
+        player.tell("§a✔ §f坐标代理 Docker 已成功绑定到你");
+        return;
+    }
+
+    if (entity.data.uuid === player.getStringUuid()) {
+        let data = entity.persistentData;
+        if (data && data.player_online) {
+            player.tell("§bℹ §f这个末影 Docker §a已绑定给你");
+        } else {
+            player.tell("§bℹ §f坐标代理 Docker §a已绑定给你§f，但你当前不在线或尚未更新坐标");
+        }
+    } else if (entity.data.uuid) {
+        let otherPlayer = Server.getPlayerByUUID(entity.data.uuid);
+        if (otherPlayer) {
+            player.tell("§c✖ §f这个坐标代理 Docker 已绑定给玩家 §e" + otherPlayer.getName());
+        } else {
+            player.tell("§6⚠ §f这个坐标代理 Docker 已绑定，但绑定的玩家不在线");
+        }
+    } else {
+        player.tell("§7❔ §f这个坐标代理 Docker 目前尚未绑定任何玩家，§a潜行+右键进行绑定");
+    }
+});
+
 // Docker 背包代理破坏事件：破坏时清空内部物品防止掉落
 BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
     let block = event.block;

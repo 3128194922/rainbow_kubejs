@@ -1,5 +1,32 @@
 // priority: 1000
 // Docker 射手型（单发）：自动发射物品栏中的箭矢
+function dockerBallisticMotion(dx, dy, dz, v, g, preferHigh) {
+    let dh2 = dx * dx + dz * dz;
+    let A = g * g;
+    let B = 4.0 * (dy * g - v * v);
+    let C = 4.0 * (dh2 + dy * dy);
+    let discriminant = B * B - 4.0 * A * C;
+    if (discriminant < 0) return null;
+    let sqrtDisc = Math.sqrt(discriminant);
+    let u1 = (-B + sqrtDisc) / (2.0 * A);
+    let u2 = (-B - sqrtDisc) / (2.0 * A);
+    let solutions = [];
+    if (u1 > 1e-9) solutions.push(u1);
+    if (u2 > 1e-9 && Math.abs(u2 - u1) > 1e-9) solutions.push(u2);
+    if (solutions.length == 0) return null;
+    solutions.sort((a, b) => a - b);
+    let u = preferHigh ? solutions[solutions.length - 1] : solutions[0];
+    let t = Math.sqrt(u);
+    if (!isFinite(t) || t <= 1e-9) return null;
+    let vx = dx / t;
+    let vz = dz / t;
+    let vy = (dy + 0.5 * g * u) / t;
+    let mag = Math.sqrt(vx * vx + vy * vy + vz * vz);
+    if (!isFinite(mag) || mag <= 1e-9) return null;
+    let scale = v / mag;
+    return { x: vx * scale, y: vy * scale, z: vz * scale };
+}
+
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter")
         .noCollision()
@@ -255,6 +282,119 @@ StartupEvents.registry("block", event => {
         });
 });
 
+StartupEvents.registry("block", event => {
+    event.create("rainbow:docker_shooter_parabola")
+        .noCollision()
+        .woodSoundType()
+        .displayName("Docker(射手型)(抛物线)")
+        .notSolid()
+        .blockEntity(entityInfo => {
+            entityInfo.inventory(9, 1);
+            entityInfo.rightClickOpensInventory();
+
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+
+                let pos = entity.blockPos;
+                let x = pos.getX() + 0.5;
+                let y = pos.getY() + 0.5;
+                let z = pos.getZ() + 0.5;
+                let range = 40;
+
+                let tx = null;
+                let ty = null;
+                let tz = null;
+
+                let belowPos = pos.below();
+                let belowBlock = level.getBlock(belowPos);
+                //console.log(belowBlock.id)
+                if (belowBlock && belowBlock.id == "rainbow:docker_player_pos_proxy") {
+                    let proxyEntity = level.getBlockEntity(belowPos);
+                    if (!proxyEntity) return;
+                    let data = proxyEntity.persistentData;
+                    if (!data || !data.player_online) return;
+                    let levelDim = level.dimension.toString();
+                    if (data.player_dim && data.player_dim != levelDim) return;
+                    tx = data.player_x - x;
+                    ty = (data.player_y + 1.62) - y;
+                    tz = data.player_z - z;
+                } else {
+                    let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
+                    let aabb = AABB.of(x - range, y, z - range, x + range, y + 3, z + range);
+                    let entities = level.getEntitiesOfClass($LivingEntity, aabb);
+                    let target = null;
+                    for (let e of entities) {
+                        if (e.isPlayer()) continue;
+                        if (e.isDeadOrDying()) continue;
+                        target = e;
+                        break;
+                    }
+                    if (!target) return;
+                    tx = target.getX() - x;
+                    ty = target.getEyeY() - y;
+                    tz = target.getZ() - z;
+                }
+
+                if (!isFinite(tx) || !isFinite(ty) || !isFinite(tz)) return;
+                let dist = Math.sqrt(tx * tx + ty * ty + tz * tz);
+                if (dist < 0.5 || dist > range) return;
+
+                let v = 2.5;
+                let g = 0.05;
+                let motion = dockerBallisticMotion(tx, ty, tz, v, g, true);
+                if (!motion) {
+                    motion = { x: (tx / dist) * v, y: (ty / dist) * v, z: (tz / dist) * v };
+                }
+
+                for (let slot = 0; slot < 9; slot++) {
+                    let itemStack = entity.inventory.getItem(slot);
+                    if (itemStack.isEmpty()) continue;
+                    let isPotionAmmo = itemStack.id == "minecraft:splash_potion" || itemStack.id == "minecraft:lingering_potion";
+                    if (!itemStack.hasTag("minecraft:arrows") && !isPotionAmmo) continue;
+
+                    let projectileName = itemStack.id;
+                    try {
+                        let projectileType = isPotionAmmo ? "minecraft:potion" : projectileName;
+                        let projectile = level.createEntity(projectileType);
+                        if (!projectile) break;
+
+                        let randomOffsetX = (Math.random() - 0.5) * 0.05;
+                        let randomOffsetY = (Math.random() - 0.5) * 0.05;
+                        let randomOffsetZ = (Math.random() - 0.5) * 0.05;
+
+                        projectile.setPosition(x + randomOffsetX, y + randomOffsetY, z + randomOffsetZ);
+                        projectile.setMotion(motion.x, motion.y, motion.z);
+                        if (isPotionAmmo) {
+                            let potionStack = itemStack.copy();
+                            try { projectile.item = potionStack; } catch (e) { }
+                            try { projectile.setItem(potionStack); } catch (e) { }
+                        }
+                        projectile.spawn();
+
+                        itemStack.shrink(1);
+                        entity.inventory.setItem(slot, itemStack);
+                    } catch (err) {
+                        console.log(`[Docker Shooter] 创建实体失败: ${projectileName}`);
+                        break;
+                    }
+                    break;
+                }
+            });
+
+            entityInfo.attachCapability(
+                CapabilityBuilder.ITEM.blockEntity()
+                    .availableOn((be, dir) => dir != Direction.UP)
+                    .extractItem((be, slot, amount, simulate) => be.inventory.extractItem(slot, amount, simulate))
+                    .insertItem((be, slot, stack, simulate) => be.inventory.insertItem(slot, stack, simulate))
+                    .getSlotLimit((be, slot) => be.inventory.getSlotLimit(slot))
+                    .getSlots(be => be.inventory.slots)
+                    .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
+                    .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
+            );
+        });
+});
+
 // 下界反应堆：在下界随机激活，激活后检测周围唱片机播放的音乐并给予奖励
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_nether_off")
@@ -473,6 +613,34 @@ StartupEvents.registry("block", event => {
                     .getStackInSlot((be, slot) => be.inventory.getStackInSlot(slot))
                     .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
             );            
+        });
+});
+
+StartupEvents.registry("block", event => {
+    event.create("rainbow:docker_player_pos_proxy")
+        .woodSoundType()
+        .displayName("docker(玩家坐标代理)")
+        .blockEntity(entityInfo => {
+            entityInfo.serverTick(20, 0, entity => {
+                let level = entity.level;
+                if (level.isClientSide()) return;
+                if (!entity.data || !entity.data.uuid) return;
+
+                let uuid = UUID.fromString(entity.data.uuid);
+                let player = level.server.getPlayerList().getPlayer(uuid);
+                let data = entity.persistentData;
+
+                if (!player) {
+                    data.player_online = false;
+                    return;
+                }
+
+                data.player_online = true;
+                data.player_x = player.getX();
+                data.player_y = player.getY();
+                data.player_z = player.getZ();
+                data.player_dim = player.level.dimension.toString();
+            });
         });
 });
 

@@ -126,6 +126,7 @@ ServerEvents.fishingLootTables(event=>{
     event.modify("minecraft:fish",loot=>{
         loot.addPool(pool=>{
             pool.addItem("rainbow:ccb").count(1)
+            pool.addEmpty(10)
         })
     })
 })
@@ -211,6 +212,15 @@ ServerEvents.entityLootTables(event => {
     event.modifyEntity('windswept:chilled', Loot => {
         Loot.addPool(pool => {
             pool.addItem('rainbow:frozen_heart')
+            .weight(1)
+            .count([0,1])
+            pool.addEmpty(10)
+        })
+    })
+    // 粘液僵尸
+    event.modifyEntity('dungeonsdelight:rotten_zombie', Loot => {
+        Loot.addPool(pool => {
+            pool.addItem('rainbow:gunk_heart')
             .weight(1)
             .count([0,1])
             pool.addEmpty(10)

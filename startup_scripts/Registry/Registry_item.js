@@ -184,7 +184,7 @@ StartupEvents.registry("item", event => {
             */
     // 超精密构件：合成材料
     event.create("rainbow:super_mechanism", "basic")
-        .tooltip("§6高级合成材料")
+        .tooltip("§6集黑暗科技时代圣遗物，绿皮的铁炸弹，钛君的OS，机械神教的神秘小系统于一身")
 
     // 屎：食用后反胃，甚至关闭游戏
     /*event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })

@@ -82,7 +82,8 @@ ServerEvents.tags("item", event => {
         "curios:head")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow"])
+    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", 
+    "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow","mysticartifacts:void_arrow"])
     
     // 怪肉类食物标签
     event.add('rainbow:monster_meat', [

@@ -1,0 +1,102 @@
+/*
+  IA：当生物血量低于阈值时“呼叫支援”（只触发一次）
+
+  适用人群：想用最少代码理解“条件触发 + 召唤实体 + 继承仇恨目标”的新手
+
+  行为概览：
+  - canUse：检测血量比例 <= threshold，并且保证每只怪只触发一次
+  - start：播放音效/粒子，然后在周围随机位置生成 reinforcements 只支援怪
+  - 如果原怪当前有攻击目标，则支援怪也会尝试把目标设为同一个
+
+  关键点：
+  - persistentData.ia_call_help_done：标记“是否已经触发过”，防止重复召唤
+*/
+
+let CFG = {
+  entity: 'minecraft:warden',
+  threshold: 0.5,
+  reinforcements: 3,
+  minRadius: 3,
+  maxRadius: 6,
+  priority: 0
+}
+
+function getMobTarget(mob) {
+  // 兼容写法：不同版本/不同实体可能用不同方法拿到当前攻击目标
+  try { if (mob.target) return mob.target } catch (e) {}
+  try { if (mob.getTarget) return mob.getTarget() } catch (e) {}
+  return null
+}
+
+function tryPickSpawnPosNear(level, x, y, z) {
+  // 选择更“合理”的生成位置：优先找两格高的空气，并且脚下不是空气（避免卡墙/生成在空中）
+  let baseY = Math.floor(y)
+  for (let dy = 0; dy <= 4; dy++) {
+    let b0 = level.getBlock(x, baseY + dy, z)
+    let b1 = level.getBlock(x, baseY + dy + 1, z)
+    let bBelow = level.getBlock(x, baseY + dy - 1, z)
+    if (b0.id == 'minecraft:air' && b1.id == 'minecraft:air' && bBelow.id != 'minecraft:air') {
+      return { x: x + 0.5, y: baseY + dy, z: z + 0.5 }
+    }
+  }
+  return { x: x + 0.5, y: y, z: z + 0.5 }
+}
+
+EntityJSEvents.addGoalSelectors(CFG.entity, event => {
+  event.customGoal(
+    'call_help_once_below_half',
+    CFG.priority ?? 0,
+    mob => {
+      let pd = mob.persistentData
+      if (pd.getBoolean('ia_call_help_done')) return false
+      if (!mob.isAlive()) return false
+      let max = mob.getMaxHealth()
+      if (max <= 0) return false
+      let hp = mob.getHealth()
+      // 血量比例 <= 阈值 才触发（例如 0.5 表示低于/等于半血）
+      return hp / max <= CFG.threshold
+    },
+    mob => false,
+    true,
+    mob => {
+      let pd = mob.persistentData
+      pd.putBoolean('ia_call_help_done', true)
+
+      let level = mob.level
+      let target = getMobTarget(mob)
+
+      // 视听反馈：让玩家知道“它在呼叫支援”
+      level.playSound(null, mob.x, mob.y, mob.z, 'minecraft:entity.warden.roar', 'hostile', 1.0, 1.0)
+      level.spawnParticles('minecraft:sonic_boom', true, mob.x, mob.y + 1.2, mob.z, 0.35, 0.2, 0.35, 1, 0.0)
+
+      for (let i = 0; i < CFG.reinforcements; i++) {
+        // 在一个圆环范围内随机挑位置（角度 + 半径）
+        let ang = Math.random() * Math.PI * 2
+        let r = CFG.minRadius + Math.random() * (CFG.maxRadius - CFG.minRadius)
+        let sx = Math.floor(mob.x + Math.cos(ang) * r)
+        let sz = Math.floor(mob.z + Math.sin(ang) * r)
+        let pos = tryPickSpawnPosNear(level, sx, mob.y, sz)
+
+        // 生成支援怪
+        let w = level.createEntity('minecraft:warden')
+        w.setPos(pos.x, pos.y, pos.z)
+        w.spawn()
+
+        if (target && target.isAlive()) {
+          // 给支援怪设置同一个攻击目标
+          // 注意：部分环境下需要延迟 1 tick，确保实体已经完整生成后再 setTarget
+          if (Utils && Utils.server) {
+            Utils.server.scheduleInTicks(1, () => {
+              try { if (w && w.isAlive()) w.setTarget(target) } catch (e) {}
+            })
+          } else {
+            try { w.setTarget(target) } catch (e) {}
+          }
+        }
+      }
+    },
+    mob => {},
+    false,
+    mob => {}
+  )
+})

@@ -1,0 +1,210 @@
+/*
+  IA：近距离“抓取-短暂控制-抛出”目标实体（类似一段小技能）
+
+  适用人群：对 KubeJS / EntityJS 的自定义 Goal 不熟悉的新手
+
+  行为概览：
+  1) 周期性尝试：每 attemptInterval tick 才“尝试一次”，并且带随机概率 chance
+  2) 找到半径内最近的活体目标，写入 persistentData 作为“锁定目标”
+  3) Phase 1 蓄力：播放粒子/音效，倒计时 windupTicks
+     - 如果目标是玩家并举盾格挡，则中断（相当于技能被挡）
+  4) Phase 2 抓取/控制：让目标骑到抓取者身上 holdTicks，然后弹飞
+
+  说明：
+  - 这里用 persistentData 存状态，是为了让同一只怪在多个 tick 之间“记住进度”
+  - persistentData 是“挂在实体身上的小字典”，不会影响其他实体
+*/
+
+let UUID = Java.loadClass('java.util.UUID')
+
+let CFG = {
+  grabber: 'minecraft:warden',
+  radius: 3.5,
+  attemptInterval: 40,
+  chance: 0.15,
+  cooldownTicks: 80,
+  windupTicks: 20,
+  holdTicks: 10,
+  throwSpeed: 1.2,
+  throwUp: 0.45
+}
+
+function distSqr(a, b) {
+  // 同样用平方距离：避免 Math.sqrt，性能更好
+  let dx = a.x - b.x
+  let dy = a.y - b.y
+  let dz = a.z - b.z
+  return dx * dx + dy * dy + dz * dz
+}
+
+function isShieldBlocking(entity) {
+  // 判断“玩家是否正在用盾牌格挡”
+  if (!entity || !entity.isPlayer || !entity.isPlayer()) return false
+  if (!entity.isUsingItem || !entity.isUsingItem()) return false
+  let stack = entity.getUseItem ? entity.getUseItem() : null
+  if (!stack || stack.isEmpty()) return false
+  let id = String(stack.id)
+  return id == 'minecraft:shield' || id.endsWith('_shield') || id.endsWith(':shield')
+}
+
+function dropArmor(target) {
+  // 把目标的四件护甲“掉落出来”（教学用例：演示如何操作装备栏）
+  ;['chest', 'feet', 'head', 'legs'].forEach(slot => {
+    let armorItem = target.getItemBySlot(slot)
+    if (armorItem && !armorItem.isEmpty()) {
+      target.popItem(armorItem.id)
+      armorItem.shrink(1)
+    }
+  })
+}
+
+EntityJSEvents.addGoalSelectors(CFG.grabber, event => {
+  // R2：半径的平方，配合 distSqr 使用
+  let R2 = CFG.radius * CFG.radius
+
+  /*
+    自定义 Goal（行为/AI）
+    - canUse：是否启动（负责随机触发 + 选择目标 + 写入状态）
+    - canContinueToUse：是否继续（目标还在且距离允许）
+    - start/stop/tick：启动/停止/每 tick 的行为
+  */
+  event.customGoal(
+    'touch_grab_throw',
+    1,
+    mob => {
+      let pd = mob.persistentData
+
+      // 冷却：技能刚用过就不再触发
+      let cd = pd.getInt('ia_grab_cd')
+      if (cd > 0) { pd.putInt('ia_grab_cd', cd - 1); return false }
+
+      // 尝试间隔：用计数器实现“每 N tick 才尝试一次”
+      let at = pd.getInt('ia_grab_attempt')
+      if (at > 0) { pd.putInt('ia_grab_attempt', at - 1); return false }
+      pd.putInt('ia_grab_attempt', Math.max(CFG.attemptInterval, 1))
+
+      // 随机概率：没触发则进入冷却，避免每次都刷遍目标搜索
+      if (Math.random() >= CFG.chance) { pd.putInt('ia_grab_cd', CFG.cooldownTicks); return false }
+
+      let level = mob.level
+
+      // 候选目标：取碰撞箱扩大后的范围内所有实体，再筛掉非活体与自己
+      let candidates = level.getEntitiesWithin(mob.boundingBox.inflate(CFG.radius))
+      let best = null
+      let bestD = 0
+      candidates.forEach(e => {
+        if (!e || !e.isLiving || !e.isLiving()) return
+        if (String(e.getUuid()) == String(mob.getUuid())) return
+        let d = distSqr(mob, e)
+        if (d > R2) return
+        if (!best || d < bestD) { best = e; bestD = d }
+      })
+
+      if (!best) { pd.putInt('ia_grab_cd', CFG.cooldownTicks); return false }
+
+      // 锁定目标：只存 UUID 字符串，后续 tick 再通过 UUID 取回实体对象
+      pd.putString('ia_grab_target', String(best.getUuid()))
+
+      // phase：状态机阶段（1=蓄力，2=抓住并倒计时，然后抛出）
+      pd.putInt('ia_grab_phase', 1)
+      pd.putInt('ia_grab_timer', CFG.windupTicks)
+      pd.putInt('ia_grab_cd', CFG.cooldownTicks)
+      return true
+    },
+    mob => {
+      let pd = mob.persistentData
+      let phase = pd.getInt('ia_grab_phase')
+      if (phase <= 0) return false
+      let id = pd.getString('ia_grab_target')
+      if (!id) return false
+      let target = mob.level.getEntity(UUID.fromString(id))
+      if (!target || !target.isAlive()) return false
+      // 离得太远就不继续，避免追到天边还在执行“抓取阶段”
+      return distSqr(mob, target) <= (CFG.radius + 1) * (CFG.radius + 1)
+    },
+    true,
+    mob => {},
+    mob => {
+      let pd = mob.persistentData
+      // stop：清理状态，防止异常情况下卡住 phase
+      pd.putInt('ia_grab_phase', 0)
+      pd.putInt('ia_grab_timer', 0)
+      pd.putString('ia_grab_target', '')
+    },
+    true,
+    mob => {
+      let pd = mob.persistentData
+      let phase = pd.getInt('ia_grab_phase')
+      if (phase <= 0) return
+      let id = pd.getString('ia_grab_target')
+      if (!id) { pd.putInt('ia_grab_phase', 0); return }
+
+      let level = mob.level
+      let target = level.getEntity(UUID.fromString(id))
+      if (!target || !target.isAlive()) { pd.putInt('ia_grab_phase', 0); return }
+
+      if (phase == 1) {
+        // Phase 1：蓄力提示（粒子 + 音效），倒计时结束后进入抓取
+        mob.navigation.stop()
+        let t = pd.getInt('ia_grab_timer')
+        if (t == CFG.windupTicks) {
+          level.playSound(null, target.x, target.y, target.z, 'minecraft:entity.warden.sniff', 'hostile', 0.8, 0.9)
+        }
+        level.spawnParticles('minecraft:crit', true, target.x, target.y + 1.0, target.z, 0.15, 0.25, 0.15, 6, 0.05)
+        t--
+        pd.putInt('ia_grab_timer', t)
+        if (t > 0) return
+
+        if (isShieldBlocking(target)) {
+          // 目标举盾：视为挡住技能，直接中断
+          level.playSound(null, target.x, target.y, target.z, 'minecraft:item.shield.block', 'players', 1.0, 1.0)
+          pd.putInt('ia_grab_phase', 0)
+          pd.putInt('ia_grab_timer', 0)
+          pd.putString('ia_grab_target', '')
+          return
+        }
+
+        try {
+          // 让目标“骑乘”抓取者：这样目标会被带着移动
+          target.startRiding(mob, true)
+        } catch (e) {
+          pd.putInt('ia_grab_phase', 0)
+          pd.putString('ia_grab_target', '')
+          return
+        }
+
+        dropArmor(target)
+        pd.putInt('ia_grab_phase', 2)
+        pd.putInt('ia_grab_timer', CFG.holdTicks)
+        return
+      }
+
+      if (phase == 2) {
+        // Phase 2：短暂控制目标（把速度归零），计时结束就弹飞
+        mob.navigation.stop()
+        target.setMotion(0, 0, 0)
+        let t = pd.getInt('ia_grab_timer') - 1
+        pd.putInt('ia_grab_timer', t)
+        if (t > 0) return
+
+        try {
+          target.stopRiding()
+        } catch (e) {
+          try { mob.ejectPassengers() } catch (e2) {}
+        }
+
+        // 随机一个方向把目标抛出去：水平速度 throwSpeed，竖直速度 throwUp
+        let ang = Math.random() * Math.PI * 2
+        let vx = Math.cos(ang) * CFG.throwSpeed
+        let vz = Math.sin(ang) * CFG.throwSpeed
+        target.setMotion(vx, CFG.throwUp, vz)
+        level.playSound(null, target.x, target.y, target.z, 'minecraft:entity.warden.attack_impact', 'hostile', 0.9, 1.0)
+
+        // 技能结束：清空状态
+        pd.putInt('ia_grab_phase', 0)
+        pd.putInt('ia_grab_timer', 0)
+        pd.putString('ia_grab_target', '')
+      }
+    }
+  )
+})

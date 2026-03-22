@@ -1,0 +1,142 @@
+/*
+  IA：让指定生物“主动寻找并拆毁”某类方块
+
+  适用人群：想看懂 AI/行为脚本的新手
+
+  工作方式（通俗版）：
+  - 生物每次挑一个“目标方块”位置（在一定半径内搜索）
+  - 走近后开始“蓄力计时”，计时结束就破坏方块
+  - 破坏一次后进入冷却，避免一直刷破坏逻辑
+*/
+
+let ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+let ForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries')
+let InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
+
+let TARGETS = [
+  {
+    entity: 'minecraft:warden',
+    block: 'rainbow:docker_shooter',
+    radius: 16,
+    breakTicks: 40,
+    cooldownTicks: 10,
+    priority: 1,
+    goalName: 'destroy_docker_shooter'
+  }
+]
+
+function parseRL(id) {
+  let parts = id.split(':')
+  return new ResourceLocation(parts[0], parts[1])
+}
+
+function distSqrToBlockCenter(entity, pos) {
+  // 用“平方距离”避免开方：只比较大小时更省性能
+  const dx = entity.x - (pos.x + 0.5)
+  const dy = entity.y - (pos.y + 0.5)
+  const dz = entity.z - (pos.z + 0.5)
+  return dx * dx + dy * dy + dz * dz
+}
+
+TARGETS.forEach(cfg => {
+  EntityJSEvents.addGoalSelectors(cfg.entity, event => {
+    // 把字符串 id（比如 "minecraft:stone"）转成真正的方块对象，便于比较
+    let targetBlock = ForgeRegistries.BLOCKS.getValue(parseRL(cfg.block))
+    let searchRadius = cfg.radius
+
+    // 当前锁定的目标方块坐标（找到了才会有值）
+    let targetPos = null
+
+    // 破坏进度：靠近后每 tick +1，到达 breakTicks 就会 destroyBlock
+    let destroyProgress = 0
+
+    // 冷却：在冷却期间不再寻找/破坏，减少“反复执行”的压力
+    let cooldown = 0
+
+    /*
+      自定义 Goal（行为/AI）
+      参数说明（按顺序）：
+      1) goalName：行为名字（便于调试/区分）
+      2) priority：优先级（数字越小通常越优先，取决于实体/模组实现）
+      3) canUse：是否“可以启动”该行为（负责找目标）
+      4) canContinueToUse：是否“继续执行”该行为（目标仍然有效？距离是否合适？）
+      5) isInterruptable：是否可被更高优先级行为打断
+      6) start：开始时做什么（初始化进度等）
+      7) stop：结束时做什么（清理状态、进入冷却）
+      8) requiresUpdateEveryTick：是否每 tick 都调用 tick（通常需要）
+      9) tick：每 tick 做什么（走向目标、累计破坏进度、最终破坏）
+    */
+    event.customGoal(
+      cfg.goalName || 'break_spec_block',
+      cfg.priority ?? 1,
+      mob => {
+        if (cooldown > 0) { cooldown--; return false }
+        let level = mob.level
+        let mobPos = mob.blockPosition()
+        let found = false
+
+        // 在 mob 周围做一次“立方体”扫描：从 (-radius..radius) 的偏移逐格检查
+        // 说明：这是最直观的写法，但半径越大，开销增长越快（约 (2r+1)^3 次检查）
+        for (let x = -searchRadius; x <= searchRadius; x++) {
+          for (let y = -searchRadius; y <= searchRadius; y++) {
+            for (let z = -searchRadius; z <= searchRadius; z++) {
+              let checkPos = mobPos.offset(x, y, z)
+              let blockState = level.getBlockState(checkPos)
+              if (blockState.is(targetBlock)) { targetPos = checkPos; found = true; break }
+            }
+            if (found) break
+          }
+          if (found) break
+        }
+        return found
+      },
+      mob => {
+        if (targetPos == null) return false
+        let level = mob.level
+        let blockState = level.getBlockState(targetPos)
+
+        // 目标方块被别人拆了/变了：清空目标，停止行为
+        if (!blockState.is(targetBlock)) { targetPos = null; destroyProgress = 0; return false }
+
+        // 距离目标太远就不继续（避免生物卡在“破坏阶段”却摸不到目标）
+        let dist = distSqrToBlockCenter(mob, targetPos)
+        return dist <= 9
+      },
+      true,
+      mob => {
+        destroyProgress = 0
+      },
+      mob => {
+        targetPos = null
+        destroyProgress = 0
+        cooldown = Math.max(cfg.cooldownTicks ?? 10, 1)
+      },
+      true,
+      mob => {
+        if (targetPos == null) return
+        let level = mob.level
+        let dist = distSqrToBlockCenter(mob, targetPos)
+        if (dist > 4) {
+          // 距离比较远：导航走过去（1.0 是移动速度/系数）
+          mob.navigation.moveTo(targetPos.x, targetPos.y, targetPos.z, 1.0)
+        } else {
+          // 足够近：停止移动，开始“累积破坏进度”
+          mob.navigation.stop()
+          destroyProgress++
+          if (destroyProgress % 10 == 1) {
+            try { mob.swing(InteractionHand.MAIN_HAND, true) }
+            catch (e) { try { mob.swing(InteractionHand.MAIN_HAND) } catch (e2) { try { mob.swing() } catch (e3) {} } }
+            try { level.broadcastEntityEvent(mob, 4) } catch (e4) {}
+          }
+          if (destroyProgress >= Math.max(cfg.breakTicks ?? 40, 1)) {
+            // true：掉落方块战利品（类似玩家破坏）
+            level.destroyBlock(targetPos, true)
+            targetPos = null
+            destroyProgress = 0
+            cooldown = Math.max(cfg.cooldownTicks ?? 10, 1)
+          }
+        }
+      }
+    )
+  })
+})

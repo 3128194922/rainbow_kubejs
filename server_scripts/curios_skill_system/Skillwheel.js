@@ -152,9 +152,12 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, sub
                 //console.log(attribute)
             })
             entity.spawn();
+            //entity.setNoAi(true);
             entity.potionEffects.add("rainbow:off_work_time", 20*30, 0, false, false);
             player.potionEffects.add("minecraft:invisibility", 20, 0, false, false);
             player.potionEffects.add("species:snatched", 20, 1, false, false);
+            //player.server.runCommandSilent(`/camera ${player.getStringUuid()} ${entity.getStringUuid()}`)
+            //player.server.runCommandSilent(`/control ${player.getStringUuid()} ${entity.getStringUuid()}`)
             player.cooldowns.addCooldown('rainbow:monster_charm', SecoundToTick(30));
         }
     }

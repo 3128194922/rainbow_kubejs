@@ -282,3 +282,17 @@ BlockEvents.rightClicked("minecraft:target", event => {
     
 
 });
+/*
+BlockEvents.detectorPowered('rainbow.landmine', event => {
+    event.block.createExplosion()
+        .strength(6.0)
+        .causesFire(false)
+        .explosionMode("tnt")
+        .explode()
+        let pos = event.getBlock().getPos()
+        event.level.createExplosion(pos.x,pos.y+1,pos.z)
+        .strength(6.0)
+        .causesFire(false)
+        .explosionMode("tnt")
+        .explode()
+})*/

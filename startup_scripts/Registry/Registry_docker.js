@@ -27,6 +27,41 @@ function dockerBallisticMotion(dx, dy, dz, v, g, preferHigh) {
     return { x: vx * scale, y: vy * scale, z: vz * scale };
 }
 
+function dockerBallisticMotionDrag(dx, dy, dz, v, g, drag, preferHigh, maxTicks) {
+    let tol = 0.05;
+    let bestLow = null;
+    let bestHigh = null;
+
+    let oneMinus = 1.0 - drag;
+    if (oneMinus <= 1e-9) return null;
+
+    for (let n = 2; n <= maxTicks; n++) {
+        let dn = Math.pow(drag, n);
+        let S = (1.0 - dn) / oneMinus;
+        if (!isFinite(S) || S <= 1e-9) continue;
+
+        let vx0 = dx / S;
+        let vz0 = dz / S;
+        let vy0 = (dy + (drag * g / oneMinus) * (n - S)) / S;
+        if (!isFinite(vx0) || !isFinite(vy0) || !isFinite(vz0)) continue;
+
+        let speed = Math.sqrt(vx0 * vx0 + vy0 * vy0 + vz0 * vz0);
+        if (!isFinite(speed) || speed <= 1e-9) continue;
+
+        let err = Math.abs(speed - v);
+        if (err > v * tol) continue;
+
+        let candidate = { x: vx0, y: vy0, z: vz0, n: n, err: err, speed: speed };
+        if (!bestLow || candidate.err < bestLow.err || (candidate.err == bestLow.err && candidate.n < bestLow.n)) bestLow = candidate;
+        if (!bestHigh || candidate.err < bestHigh.err || (candidate.err == bestHigh.err && candidate.n > bestHigh.n)) bestHigh = candidate;
+    }
+
+    let picked = preferHigh ? bestHigh : bestLow;
+    if (!picked) return null;
+    let scale = v / picked.speed;
+    return { x: picked.x * scale, y: picked.y * scale, z: picked.z * scale };
+}
+
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter")
         .noCollision()
@@ -42,6 +77,8 @@ StartupEvents.registry("block", event => {
                 if (level.isClientSide()) return;
 
                 let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
                 let x = pos.getX() + 0.5;
                 let y = pos.getY() + 0.5;
                 let z = pos.getZ() + 0.5;
@@ -136,6 +173,8 @@ StartupEvents.registry("block", event => {
                 if (level.isClientSide()) return;
                 // ... (类似射手型的逻辑，但频率更高)
                 let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
                 let x = pos.getX() + 0.5;
                 let y = pos.getY() + 0.5;
                 let z = pos.getZ() + 0.5;
@@ -218,6 +257,8 @@ StartupEvents.registry("block", event => {
                 if (level.isClientSide()) return;
 
                 let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
                 let x = pos.getX() + 0.5;
                 let y = pos.getY() + 0.5;
                 let z = pos.getZ() + 0.5;
@@ -294,13 +335,16 @@ StartupEvents.registry("block", event => {
 
             entityInfo.serverTick(20, 0, entity => {
                 let level = entity.level;
+                
                 if (level.isClientSide()) return;
 
                 let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
                 let x = pos.getX() + 0.5;
                 let y = pos.getY() + 0.5;
                 let z = pos.getZ() + 0.5;
-                let range = 40;
+                let range = 50;
 
                 let tx = null;
                 let ty = null;
@@ -308,7 +352,7 @@ StartupEvents.registry("block", event => {
 
                 let belowPos = pos.below();
                 let belowBlock = level.getBlock(belowPos);
-                //console.log(belowBlock.id)
+
                 if (belowBlock && belowBlock.id == "rainbow:docker_player_pos_proxy") {
                     let proxyEntity = level.getBlockEntity(belowPos);
                     if (!proxyEntity) return;
@@ -321,7 +365,8 @@ StartupEvents.registry("block", event => {
                     tz = data.player_z - z;
                 } else {
                     let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
-                    let aabb = AABB.of(x - range, y, z - range, x + range, y + 3, z + range);
+                    let aabb = AABB.of(x - range, y, z - range, x + range, y + 2, z + range);
+                    //let aabb = AABB.ofBlock(pos).inflate(range);
                     let entities = level.getEntitiesOfClass($LivingEntity, aabb);
                     let target = null;
                     for (let e of entities) {
@@ -342,7 +387,8 @@ StartupEvents.registry("block", event => {
 
                 let v = 2.5;
                 let g = 0.05;
-                let motion = dockerBallisticMotion(tx, ty, tz, v, g, true);
+                let motion = dockerBallisticMotionDrag(tx, ty, tz, v, g, 0.99, true, 160);
+                if (!motion) motion = dockerBallisticMotion(tx, ty, tz, v, g, true);
                 if (!motion) {
                     motion = { x: (tx / dist) * v, y: (ty / dist) * v, z: (tz / dist) * v };
                 }
@@ -496,6 +542,10 @@ StartupEvents.registry("block", event => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
 
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
+
                 // 确保 entity.data 存在
                 if (!entity.data || !entity.data.uuid) return;
 
@@ -563,6 +613,10 @@ StartupEvents.registry("block", event => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
 
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
+
                 // 确保 entity.data 存在
                 if (!entity.data || !entity.data.uuid) return;
 
@@ -624,6 +678,9 @@ StartupEvents.registry("block", event => {
             entityInfo.serverTick(20, 0, entity => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
                 if (!entity.data || !entity.data.uuid) return;
 
                 let uuid = UUID.fromString(entity.data.uuid);
@@ -657,6 +714,10 @@ StartupEvents.registry("block", event => {
             entityInfo.serverTick(20, 0, entity => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
+
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
 
                 // 确保 entity.data 存在
                 if (!entity.data || !entity.data.uuid) return;
@@ -721,6 +782,10 @@ StartupEvents.registry("block", event => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
 
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
+
                 if (!entity.data || !entity.data.uuid) return;
 
                 let uuid = UUID.fromString(entity.data.uuid);
@@ -778,6 +843,10 @@ StartupEvents.registry("block", event => {
                 let level = entity.level;
                 if (level.isClientSide()) return;
 
+                let pos = entity.blockPos;
+                let redstone = level.hasNeighborSignal(pos);
+                if(!redstone) return;
+
                 if (!entity.data || !entity.data.uuid) return;
 
                 let uuid = UUID.fromString(entity.data.uuid);
@@ -818,3 +887,45 @@ StartupEvents.registry("block", event => {
             );
         });
 });
+
+// Docker 地雷型 
+StartupEvents.registry("block", event => { 
+    event.create("rainbow:landmine") 
+        .displayName("Docker(地雷型)") 
+        .grassSoundType() 
+        //.noCollision()
+        .steppedOn(event => { 
+            try { 
+                let level = event.getLevel(); 
+                let pos = event.getPos(); 
+                //console.log(level.hasNeighborSignal(pos)) 
+                if(!level.hasNeighborSignal(pos)) return; 
+                
+                /*event.block.createExplosion() 
+                    //.exploder(event.getEntity()) 
+                    .strength(6.0) 
+                    .causesFire(false) 
+                    .explosionMode("none") 
+                    .explode()*/
+
+                level.getBlock(pos.x,pos.y,pos.z).set("minecraft:air")
+
+                level.createExplosion(pos.x,pos.y+1,pos.z)
+                .strength(6.0)
+                .causesFire(false)
+                .explosionMode("tnt")
+                .explode()
+
+            } catch(e) { 
+                console.log("地雷触发报错：") 
+                console.log(e) 
+            } 
+        }) 
+}) 
+
+// Docker 地雷型 - 使用检测器方块（需要红石信号触发）
+/*StartupEvents.registry("block", event => {
+    event.create("rainbow:landmine", "detector")
+        .displayName("Docker(地雷型)")
+        .grassSoundType()
+})*/

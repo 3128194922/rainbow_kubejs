@@ -31,6 +31,9 @@ ServerEvents.tags("item", event => {
 
     //技能饰品二级菜单
     event.add('skillwheel:submenu',['rainbow:lyre'])
+
+    //技能饰品二级菜单
+    event.add('skillwheel:submenu',['rainbow:lyre'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",

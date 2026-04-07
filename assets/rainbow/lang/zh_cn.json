@@ -162,5 +162,7 @@
 	"effect.rainbow.short_buff.description": "连弩将直接满射速",
 	"effect.rainbow.off_work_time": "召唤物存在时间",
 	"effect.rainbow.bitter.off_work_time": "召唤物存在时间",
-	"block.mbd2.number_machine": "突触凝练机"
+	"block.mbd2.number_machine": "突触凝练机",
+	"effect.rainbow.void": "虚化",
+	"effect.rainbow.bitter.void": "免疫伤害"
 }

@@ -16,7 +16,7 @@ let IA_VOID = {
   worm: 'alexsmobs:void_worm',
   part: 'alexsmobs:void_worm_part',
   effect: 'rainbow:void',
-  duration: typeof SecoundToTick == 'function' ? SecoundToTick(30) : 20 * 30,
+  duration: 10,
   amplifier: 0,
   pdPrevPortalTicks: 'ia_void_prev_portal_ticks',
   pdApplied: 'ia_void_void_applied',

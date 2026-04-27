@@ -4,6 +4,7 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("helldivers:magic")
+        .tag("curios:belt")
         .displayName("火遁·豪火灭却")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()

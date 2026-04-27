@@ -147,10 +147,10 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, sub
             })
             let pos = player.getBlock().pos;
             entity.setPos(pos.x + 0.5, pos.y, pos.z + 0.5);
-            global.attributes.forEach(attribute=>{
+            /*global.attributes.forEach(attribute=>{
                 entity.setAttributeBaseValue(attribute,player.getAttributeTotalValue(attribute))
                 //console.log(attribute)
-            })
+            })*///目前会导致AI消失
             entity.spawn();
             //entity.setNoAi(true);
             entity.potionEffects.add("rainbow:off_work_time", 20*30, 0, false, false);

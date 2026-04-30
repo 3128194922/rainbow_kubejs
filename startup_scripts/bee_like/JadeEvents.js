@@ -3,9 +3,7 @@
 // 🐝 蜜蜂类实体 Jade/Waila 显示逻辑
 // 作用：为蜜蜂类实体添加自定义的数据显示（如喜好的食物）
 // ==========================================
-
-const $Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
-
+/*
 // 注册 Jade (Waila) 的通用数据提供者
 JadeEvents.onCommonRegistration(event=>{
     // 为所有实体注册一个数据提供者，ID 为 'rainbow:bee_like'
@@ -20,3 +18,4 @@ JadeEvents.onCommonRegistration(event=>{
         tag.putString("like_food_card", entity.persistentData.getString("like_food"));
     })
 })
+*/

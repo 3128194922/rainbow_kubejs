@@ -541,14 +541,12 @@ ItemEvents.entityInteracted("rainbow:nbt_util", event => {
 
     player.tell("NBT已以JSON格式输出到日志");
 });
-
+/*
 // --- FruitfulFun 蜜蜂基因相关逻辑 ---
 const Allele = Java.loadClass('snownee.fruits.bee.genetics.Allele');
 const CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag');
 
-/**
- * RC/FC/FT1/FT2 -> 当前世界的伪装代号（A–Z）
- */
+//RC/FC/FT1/FT2 -> 当前世界的伪装代号（A–Z）
 global.ffGetDisguisedGeneName = (realName) => {
   const allele = Allele.REGISTRY.get(realName);
   if (!allele) return null;
@@ -556,7 +554,7 @@ global.ffGetDisguisedGeneName = (realName) => {
   return code === '0' ? null : code;
 };
 
-/** 将数字字符串键（如 '81'）转成对应 ASCII 字母（'Q'）；其他情况原样返回 */
+// 将数字字符串键（如 '81'）转成对应 ASCII 字母（'Q'）；其他情况原样返回
 global.ffNormalizeAsciiCodeKey = (code) => {
     if (code == null) return null;
     if (/^[0-9]+$/.test(code)) {
@@ -568,9 +566,7 @@ global.ffNormalizeAsciiCodeKey = (code) => {
     return code === '0' ? null : code; // 世界未初始化返回 null
   };
 
-/**
- * 伪装代号 -> 真实基因位点名（RC/FC/FT1/FT2）
- */
+//伪装代号 -> 真实基因位点名（RC/FC/FT1/FT2）
 global.ffCodeToRealGene = (code) => {
     if (code == null) return null;
     const key = global.ffNormalizeAsciiCodeKey(String(code)); // '81' -> 'Q'; 'Q' -> 'Q'; 其他原样
@@ -623,8 +619,7 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
   
     player.tell('已将伪装代号对应的数值基因写入注射器');
   });
-  
-
+*/
 // 远古之庇护：绑定UUID
 ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
     let player = event.getPlayer();

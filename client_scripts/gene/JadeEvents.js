@@ -2,7 +2,7 @@
 // ==========================================
 // 🧬 基因矩阵 Jade 提示
 // ==========================================
-
+/*
 const $LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity')
 
 // 配置映射，需与 server_scripts 保持一致
@@ -85,3 +85,4 @@ JadeEvents.onClientRegistration((event) => {
         }
     });
 });
+*/

@@ -17,7 +17,7 @@ BlockEvents.modification(event => {
 // 修改物品属性
 ItemEvents.modification(event => {
     // 幻觉效果食物 (gimmethat:hallucinating)
-    event.modify(['collectorsreap:portobello_quiche_slice', 'collectorsreap:portobello_burger'], item => {
+    /*event.modify(['collectorsreap:portobello_quiche_slice', 'collectorsreap:portobello_burger'], item => {
         item.foodProperties = food => {
             food.effect('gimmethat:hallucinating', 300, 0, 1.0)
         }
@@ -55,7 +55,7 @@ ItemEvents.modification(event => {
         item.foodProperties = food => {
             food.effect('runiclib:lava_walking', 6000, 0, 1.0)
         }
-    })
+    })*/
 
     /*  event.modify(['hmag:iron_spear','minecraft:wooden_sword','savage_and_ravage:cleaver_of_beheading'],item=>{
         item.addAttribute("minecraft:generic.movement_speed", "d685b34c-8e34-4f4c-be7a-3e306e6656ee", "Sus speed", 1, "addition")

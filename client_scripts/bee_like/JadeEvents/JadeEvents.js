@@ -5,9 +5,7 @@
 // ==========================================
 // 在 Jade (Waila) 提示中显示蜜蜂类实体想吃的食物
 // Displays the food the bee-like entity wants to eat in Jade (Waila) tooltips
-
-const $Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
-
+/*
 JadeEvents.onClientRegistration((event) => {
     
     event.entity('rainbow:bee_like', $Entitys).tooltip((tooltip, accessor, pluginConfig) => {
@@ -20,3 +18,4 @@ JadeEvents.onClientRegistration((event) => {
         }
     });
 });
+*/

@@ -85,7 +85,7 @@ ServerEvents.tags("item", event => {
         "curios:head")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", 
+    event.add("minecraft:arrows", ['gimmethat:tracking_arrow','rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", 
     "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow","mysticartifacts:void_arrow"])
     
     // 怪肉类食物标签
@@ -95,12 +95,12 @@ ServerEvents.tags("item", event => {
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])
-
+/*
     // 物品同化标签添加
     global.UNIFIED_ITEMS.forEach(group => {
         event.add(group.tag, group.items)
     })
-
+*/
     // 自动提示标签
     event.add('rainbow:food_tooltip', [
         '@atmospheric',

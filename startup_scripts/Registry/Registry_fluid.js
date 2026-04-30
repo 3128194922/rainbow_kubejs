@@ -4,9 +4,9 @@
 // ==========================================
 StartupEvents.registry("fluid", event => {
     // 黄铜液体：自定义纹理颜色，无桶，无方块
-    event.create("rainbow:brass_fluid").thickTexture(0xF3E03B).noBucket().noBlock()
+    //event.create("rainbow:brass_fluid").thickTexture(0xF3E03B).noBucket().noBlock()
     // 铜液体：自定义纹理颜色，无桶，无方块
-    event.create("rainbow:copper_fluid").thickTexture(0xFA842B).noBucket().noBlock()
+    //event.create("rainbow:copper_fluid").thickTexture(0xFA842B).noBucket().noBlock()
     // 石油 (710液体)：黑色纹理，高密度，高粘度，稀有，无方块
     event.create("rainbow:oil").thickTexture("BLACK")
         .density(2200)

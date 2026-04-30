@@ -281,10 +281,10 @@ PlayerEvents.loggedIn(event => {
     })
 
     // 护符实际数量设置
-    server.runCommandSilent(`/curios set charm ${player.getDisplayName().getString()} ${global.CURIONUMBER}`);
+    //server.runCommandSilent(`/curios set charm ${player.getDisplayName().getString()} ${global.CURIONUMBER}`);
 /*
     server.runCommandSilent(`/execute as ${player.getDisplayName().getString()} run dialog show hello_world`)
-*/
+    */
 /*
     // 初始化玩家持久化数据
     if(!player.persistentData.getInt("resilience"))
@@ -298,7 +298,7 @@ PlayerEvents.loggedIn(event => {
 });
 
 // 玩家统计数据上传 (Logged Out Event)
-PlayerEvents.loggedOut(event => {
+/*PlayerEvents.loggedOut(event => {
     if (true) return; // 当前已禁用
 
     let player = event.getPlayer();
@@ -345,4 +345,4 @@ PlayerEvents.loggedOut(event => {
     // 构造并追加日志
     let logEntry = `[${playerData.lastLogout}] 玩家 ${playerData.name} (UUID: ${playerUUID}) 退出，游玩时间: ${playerData.playTime} tick`;
     FilesJS.appendLine(logFilePath, logEntry);
-});
+});*/

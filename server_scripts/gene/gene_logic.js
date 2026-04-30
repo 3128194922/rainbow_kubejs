@@ -5,6 +5,7 @@
 // ==========================================
 
 //const Allele = Java.loadClass('snownee.fruits.bee.genetics.Allele');
+/*
 const NBT = Java.loadClass('net.minecraft.nbt.CompoundTag');
 const ByteTag = Java.loadClass('net.minecraft.nbt.ByteTag');
 
@@ -245,3 +246,4 @@ ServerEvents.recipes(event => {
 })
 
 // 【前端变前台，后端变后厨，python送到家，Java炒米粉】
+*/

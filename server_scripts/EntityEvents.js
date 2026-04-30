@@ -69,14 +69,14 @@ EntityEvents.spawned(event => {
 
     let id = entity.getEncodeId();
     if (id == null) return;
-
+/*
     // --- 蜜蜂喜好食物设置 ---
     if(id.toString() == "minecraft:bee")
         {
             // 随机为蜜蜂分配一个喜好的食物，存储在 persistentData 中
             entity.persistentData.putString("like_food",Item.of(global.foodlist[Math.floor(randomInRange(0,global.foodlist.length - 1))]).getDisplayName().getString())
         }
-    
+    */
     // --- 核弹侦测 ---
     if(id.toString() === "alexscaves:nuclear_bomb")
         {

@@ -17,11 +17,11 @@ function customAttributeDamage(event, attacker, victim, source, range_damage, th
         let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
         event.setAmount(attributeValue * event.getAmount())
     }
-
+/*
     if (soure_magic.indexOf(source.getType()) != -1) {
         let attributeValue = attacker.getAttributeValue("rainbow:generic.magic_damage");
         event.setAmount(attributeValue * event.getAmount())
-    }
+    }*/
 
     if (boom_damage.indexOf(source.getType()) != -1) {
         let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");

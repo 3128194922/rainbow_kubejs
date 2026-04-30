@@ -29,14 +29,14 @@ StartupEvents.registry('attribute', event => {
         );
     });
     //魔法伤害
-    event.createCustom('rainbow:generic.magic_damage', () => {
+    /*event.createCustom('rainbow:generic.magic_damage', () => {
         return new $RangedAttribute(
             'attribute.name.generic.magic_damage',
             1.0,
             0.0,
             1000.0
         );
-    });
+    });*/
     //投掷伤害
     event.createCustom('rainbow:generic.thrown_damage', () => {
         return new $RangedAttribute(
@@ -64,7 +64,7 @@ ForgeModEvents.onEvent(
         const attributes = [
             'rainbow:generic.cyberware_capacity',
             'rainbow:generic.boom_damage',
-            'rainbow:generic.magic_damage',
+            //'rainbow:generic.magic_damage',
             'rainbow:generic.thrown_damage'
         ];
         

@@ -2,7 +2,7 @@
 // ==========================================
 // 🐝 蜜蜂物品交互事件处理脚本
 // ==========================================
-
+/*
 ItemEvents.entityInteracted(event => {
     let item = event.getItem();
     let bee = event.getTarget();
@@ -39,7 +39,7 @@ ItemEvents.entityInteracted(event => {
         * 2 1 : 33
         * 2 2 : 34
         */
-
+/*
         if (RC == 17 && FC == 17 && FT1 == 17 && FT2 == 17) {
             bee.getBlock().popItem(Item.of("bosses_of_mass_destruction:brimstone_nectar", 1))
         }
@@ -74,4 +74,4 @@ ItemEvents.entityInteracted(event => {
             bee.getBlock().popItem(Item.of(`${items[random ? 0 : 1]}`, 64))
         }
     }
-})
+})*/

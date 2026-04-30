@@ -106,7 +106,7 @@ ServerEvents.recipes(event => {
         ['minecraft:kelp', 'minecraft:kelp', 'minecraft:kelp'],
         ['minecraft:kelp', '', 'minecraft:kelp'],
         ['alexsmobs:shark_tooth', 'alexsmobs:serrated_shark_tooth','alexsmobs:cachalot_whale_tooth']])
-    
+    /*
     //核电配方
     event.shaped("mbd2:u235__machine", [
         ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
@@ -164,7 +164,7 @@ ServerEvents.recipes(event => {
         ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
         ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
         ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-
+*/
     //破坏者刺雷
     event.shaped("opalus:griefer_spear", [
         ['', 'savage_and_ravage:blast_proof_plating', ''],
@@ -265,13 +265,13 @@ ServerEvents.recipes(event => {
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
-
+/*
     //逻辑计算机
     event.shaped('mbd2:number_machine', [
         ['create:brass_casing', 'create:pulse_timer', 'create:fluid_tank'], 
         ['create:cogwheel', 'create:precision_mechanism', 'create:large_cogwheel'], 
         ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
-
+*/
     //乐谱
     //event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
 
@@ -404,10 +404,10 @@ ServerEvents.recipes(event => {
     event.recipes.create.splashing('minecraft:waxed_weathered_copper', 'minecraft:waxed_copper_block')
 
     // 黄铜溶液
-    event.recipes.create.mixing(Fluid.of("rainbow:brass_fluid", 1000), ["create:brass_block"]).heated()
+    //event.recipes.create.mixing(Fluid.of("rainbow:brass_fluid", 1000), ["create:brass_block"]).heated()
 
     // 铜溶液
-    event.recipes.create.mixing(Fluid.of("rainbow:copper_fluid", 1000), ['minecraft:copper_block']).heated()
+    //event.recipes.create.mixing(Fluid.of("rainbow:copper_fluid", 1000), ['minecraft:copper_block']).heated()
 
     // 710元素 (原油) (注释掉，因为缺少 crude_oil 流体)
     // event.recipes.create.mixing(Fluid.of("createdieselgenerators:crude_oil", 250), ["5x rainbow:shit"]).heated()
@@ -532,14 +532,14 @@ ServerEvents.recipes(event => {
             result: Item.of(resultItem).toJson()
         });
     });
-
+/*
     //灵脂蜡块
     event.custom({
         "type":"lychee:item_inside",
         "item_in": { "item": "netherexp:ancient_wax_block" },
         "block_in": { "blocks": ["netherexp:ectoplasm"] },
         "post":  {  "type": "drop_item",  "item": "rainbow:soul_hex_block"}
-    })
+    })*/
 });
 
 // 光源方块合成 - 使用循环优化
@@ -562,7 +562,7 @@ ServerEvents.recipes(event => {
         ).id(`kubejs:light_${level}_manual_only`); // 配方 ID
     }
 });
-
+/*
 // 物品同化逻辑
 ServerEvents.recipes(event => {
     global.UNIFIED_ITEMS.forEach(group => {
@@ -583,4 +583,4 @@ ServerEvents.recipes(event => {
     });
 });
 
-
+*/

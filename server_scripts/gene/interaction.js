@@ -1,6 +1,7 @@
 // priority: 100
 
 // 配置
+/*
 const GeneConfig = {
     // 属性配置 (ID -> 属性定义)
     attributes: {
@@ -163,3 +164,4 @@ ItemEvents.entityInteracted(event => {
 })
 
 // 【前端变前台，后端变后厨，python送到家，Java炒米粉】
+*/

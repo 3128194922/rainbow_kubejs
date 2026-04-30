@@ -1,5 +1,5 @@
 // 提前加载类，避免每tick反射
-const Blocks = Java.loadClass("net.minecraft.world.level.block.Blocks")
+/*const Blocks = Java.loadClass("net.minecraft.world.level.block.Blocks")
 const CreateStressRecipeCapability = Java.loadClass("com.lowdragmc.mbd2.integration.create.CreateStressRecipeCapability")
 const Float = Java.loadClass("java.lang.Float")
 
@@ -85,3 +85,4 @@ MBDMachineEvents.onTick("mbd2:music_machine", event => {
     }
     
 })
+*/

@@ -415,6 +415,17 @@ registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex
     }
 });
 
+// --- 重力符文 ---
+registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
+    if (itemStack) 
+    {
+        if(player.isClientSide) return;
+    
+        player.setDeltaMovement(new Vec3d(0,10,0))
+        player.hurtMarked = true;
+    }
+});
+
 // ==========================================
 // 主入口逻辑
 // ==========================================

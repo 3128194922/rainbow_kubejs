@@ -901,7 +901,7 @@ StartupEvents.registry('item', event => {
 // ==========================================
 
 // 神经处理器
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:cyber_nerve_cpu')
         .rarity("epic")
         .maxStackSize(1)
@@ -1171,5 +1171,148 @@ StartupEvents.registry('item', event => {
                 })
                 .addAttribute("rainbow:generic.cyberware_capacity", "german_orthopedics", -5, "addition")
                 .addAttribute("minecraft:generic.armor_toughness", "german_orthopedics", +10, "addition")
+        )
+})
+*/
+
+// 重力核心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:gravity_core')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:gravity_core')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+
+                    if(player.level.isClientSide()) return;
+                    if(!player || !player.isPlayer() || !player.isAlive()) return;
+
+                    if(player.persistentData.isGravityCore == null)
+                        {
+                            player.persistentData.isGravityCore = false;
+                        }
+
+                    if(player.isShiftKeyDown() && !player.onGround() && player.persistentData.isGravityCore == false)
+                        {
+                            player.removeAttribute("forge:entity_gravity","gravity_core")
+                            player.modifyAttribute("forge:entity_gravity","gravity_core",+1,"addition");
+                            player.persistentData.isGravityCore = true;
+                        }
+
+                    if(player.onGround() && player.persistentData.isGravityCore == true)
+                        {
+                            player.removeAttribute("forge:entity_gravity","gravity_core")
+                            player.persistentData.isGravityCore = false;
+
+                            let r = 4;
+                            let stompBox = AABB.of(player.x - r, player.y - 1.1, player.z - r, player.x + r, player.y+1.1, player.z + r);
+
+                            player.level.getEntitiesWithin(stompBox).forEach(entity => {
+                                if (!entity) return;
+                                if (!entity.isLiving() || !entity.isAlive()) return;
+                                if(entity.isPlayer()) return;
+
+                                let DAMAGE = 10;
+
+                                entity.attack(player.damageSources().playerAttack(player),DAMAGE);
+                                entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.0, 2.0, 0.0)); 
+                            })
+                        }
+                    
+                    
+                })
+        )
+})
+
+// 巨人戒指
+StartupEvents.registry('item', event => {
+    event.create('rainbow:giants_ring')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:giants_ring')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .addAttribute("moreattribute:size_scale", "giants_ring", 1.5, "multiply_base")
+                .addAttribute("forge:step_height_addition", "giants_ring", 1, "addition")
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+
+                    if(player.level.isClientSide()) return;
+                    if(!player || !player.isPlayer() || !player.isAlive()) return;
+                    if (!player.isSprinting() || player.isSwimming()) return;
+
+                    if(player.age % 20) return;
+
+                    let playerBox = player.getBoundingBox();
+
+                    let radius = 1;
+                    let stompBox = AABB.of(
+                        playerBox.minX - radius, player.getY() - 0.1, playerBox.minZ - radius,
+                        playerBox.maxX + radius, player.getY() + 0.4, playerBox.maxZ + radius
+                    );
+                    
+                    player.level.getEntitiesWithin(stompBox).forEach(entity => {
+                        if (!entity) return;
+                        if (!entity.isLiving() || !entity.isAlive()) return;
+                        if(entity.isPlayer()) return;
+
+                        let playerVolume = player.getBoundingBox().getXsize() * player.getBoundingBox().getYsize() * player.getBoundingBox().getZsize();
+                        let victimVolume = entity.getBoundingBox().getXsize() * entity.getBoundingBox().getYsize() * entity.getBoundingBox().getZsize();
+
+                        let ADD = 0;
+                        if(playerVolume>victimVolume)
+                            {
+                                let ADD = 10;
+                            }
+                        let DAMAGE = 10 + ADD;
+
+                        entity.attack(player.damageSources().playerAttack(player),DAMAGE);
+                        entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.0, 2.0, 0.0)); 
+                    })
+                })
+        )
+})
+
+// 石鬼像
+StartupEvents.registry('item', event => {
+    event.create('rainbow:moai_charm')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:moai_charm')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .addAttribute("moreattribute:no_collision", "moai_charm", 1, "addition")
         )
 })

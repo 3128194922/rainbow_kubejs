@@ -172,7 +172,7 @@ ServerEvents.recipes(event => {
         ['', 'minecraft:stick','']])
 
     // 万能钥匙配方
-    event.shapeless('gimmethat:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
+    //event.shapeless('gimmethat:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
 
     // 毒化烂泥
     event.recipes.create.mixing(['8x alexscaves:unrefined_waste',"alexscaves:metal_barrel"], ['alexscaves:waste_drum', '8x #minecraft:dirt'])

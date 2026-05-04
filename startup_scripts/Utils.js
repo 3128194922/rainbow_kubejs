@@ -134,7 +134,7 @@ function DamageSorce() {
     ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", event => {
         let entityType = event.entity.getType();
 
-        if (entityType == "powerful_dummy:test_dummy") {
+        if (1) {
             let source = event.source;
             let damageType = source.getType();
             let immediate = source.immediate;

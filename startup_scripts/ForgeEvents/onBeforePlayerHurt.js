@@ -13,4 +13,9 @@ function onBeforePlayerHurt(event, attacker, victim, source, range_damage, throw
 {
     if (!victim.isPlayer()) return;
 
+    if(source.getType() == "fall" && victim.persistentData.isGravityCore)
+        {
+            event.setCanceled(true);
+        }
+
 }

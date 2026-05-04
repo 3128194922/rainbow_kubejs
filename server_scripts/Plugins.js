@@ -251,52 +251,6 @@ ServerEvents.commandRegistry(event => {
 
 });
 
-// 统一进入世界事件：玩家登录处理
-PlayerEvents.loggedIn(event => {
-    if (event.level.isClientSide()) return;
-    let player = event.player;
-    let server = event.server;
-/*    //登陆系统
-    player.setGameMode("spectator")
-    if (player.persistentData.getString('password') == "") {
-        player.tell("你需要注册才能正常游玩服务器 请输入 /register <你的密码 不加括号>")
-    }
-    else {
-        player.tell("你需要登陆才能正常游玩服务器 请输入 /login <你的密码 不加括号>")
-    }*/
-    //战斗维度踢出
-/*    if (player.level.name.getString() == "backroom:backroom") {
-        player.teleportTo("minecraft:overworld", player.x, player.y, player.z, player.yaw, player.pitch)
-        player.inventory.clear()
-        player.tell("你已被后室排出")
-    }*/
-
-    if(event.getPlayer().stages.has("curios_is_ok_update3")) return;
-
-    // 饰品初始化：移除旧饰品
-    let Curios = ["body", "belt", "bracelet", "curio", "hands", "necklace", "ring", "feet", "hands","super_curio"]
-
-    Curios.forEach(curio=>{
-        server.runCommandSilent(`/curios remove ${curio} ${player.getDisplayName().getString()} 10`);
-    })
-
-    // 护符实际数量设置
-    //server.runCommandSilent(`/curios set charm ${player.getDisplayName().getString()} ${global.CURIONUMBER}`);
-/*
-    server.runCommandSilent(`/execute as ${player.getDisplayName().getString()} run dialog show hello_world`)
-    */
-/*
-    // 初始化玩家持久化数据
-    if(!player.persistentData.getInt("resilience"))
-        {
-            player.persistentData.putInt("resilience",0);
-        }
-    if(!player.persistentData.getFloat("damage_num"))
-        {
-            player.persistentData.putFloat("damage_num",0);
-        }*/
-});
-
 // 玩家统计数据上传 (Logged Out Event)
 /*PlayerEvents.loggedOut(event => {
     if (true) return; // 当前已禁用

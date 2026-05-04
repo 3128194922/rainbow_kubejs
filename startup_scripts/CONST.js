@@ -8,6 +8,14 @@ const Tiers = Java.loadClass("net.minecraft.world.item.Tiers")
 const UUID = Java.loadClass("java.util.UUID");
 const ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
 const Vec3 = Java.loadClass('net.minecraft.world.phys.Vec3');
+const ForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries')
+const InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
+const InteractionResult = Java.loadClass('net.minecraft.world.InteractionResult')
+const EquipmentSlot = Java.loadClass('net.minecraft.world.entity.EquipmentSlot')
+const SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
+const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+//const LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity')
+//const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
 
 global.CURIONUMBER = 4
 global.CURSES = [

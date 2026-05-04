@@ -8,10 +8,14 @@ ItemEvents.rightClicked(event => {
     let { player, item, level, server, hand } = event;
     //let ender_chest = player.getEnderChestInventory().getAllItems();
     if (level.isClientSide()) return;
+    
 /*
     if(item.id == "minecraft:stick")
         {
-            console.log(`${player.getStringUuid()}`)
+            //let look = player.getLookAngle();
+            //if(!look) return;
+            player.setDeltaMovement(new Vec3d(0,10,0))
+            player.hurtMarked = true;
         }*/
 
     // --- 粘液棒：生成粘液块平台 ---

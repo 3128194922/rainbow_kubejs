@@ -18,6 +18,8 @@ const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
 //const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
 const AABB = Java.loadClass('net.minecraft.world.phys.AABB')
 const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+const BlockPos = Java.loadClass('net.minecraft.core.BlockPos')
+const Direction = Java.loadClass('net.minecraft.core.Direction')
 
 global.CURIONUMBER = 4
 global.CURSES = [

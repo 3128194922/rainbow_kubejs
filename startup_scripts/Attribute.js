@@ -8,15 +8,15 @@
 
 const $RangedAttribute = Java.loadClass('net.minecraft.world.entity.ai.attributes.RangedAttribute');
  
-// 注册新的义体容量属性
+// 注册新的属性
 StartupEvents.registry('attribute', event => {
-    //义体容量
-    event.createCustom('rainbow:generic.cyberware_capacity', () => {
+    //额外召唤物
+    event.createCustom('rainbow:generic.extra_summoning', () => {
         return new $RangedAttribute(
-            'attribute.name.generic.cyberware_capacity',
+            'attribute.name.generic.extra_summoning',
             0.0,
             0.0,
-            100.0
+            10.0
         );
     });
     //爆炸伤害
@@ -62,7 +62,7 @@ ForgeModEvents.onEvent(
     'net.minecraftforge.event.entity.EntityAttributeModificationEvent',
     (event) => {
         const attributes = [
-            'rainbow:generic.cyberware_capacity',
+            'rainbow:generic.extra_summoning',
             'rainbow:generic.boom_damage',
             //'rainbow:generic.magic_damage',
             'rainbow:generic.thrown_damage'

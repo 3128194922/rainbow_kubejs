@@ -142,7 +142,7 @@
 	"block.mbd2.nuke_machine": "核弹发射井",
 	"block.mbd2.ch4_machine": "食物发动机",
 	"block.mbd2.ch4_out_machine": "食物发动机输出点",
-	"attribute.name.generic.cyberware_capacity": "义体容量",
+	"attribute.name.generic.extra_summoning": "额外召唤",
 	"attribute.name.generic.boom_damage": "爆炸伤害",
 	"attribute.name.generic.magic_damage": "魔法伤害",
 	"attribute.name.generic.thrown_damage": "投掷伤害",

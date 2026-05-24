@@ -111,13 +111,13 @@ ServerEvents.commandRegistry(event => {
                             requester.tell(`§c玩家 ${targetName} 不存在或不在线`);
                             return 0;
                         }
-/*
+
                         // 禁止传送到 Backroom
                         if (targetPlayer.level.name.getString() === "backroom:backroom") {
                             requester.tell(`神秘力量阻止了你的传送`);
                             return 0;
                         }
-*/
+
                         requester.teleportTo(
                             targetPlayer.level.dimension,
                             targetPlayer.x,

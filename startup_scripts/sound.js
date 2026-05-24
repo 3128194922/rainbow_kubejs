@@ -30,6 +30,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.inspiration")
 
     event.create("rainbow:voice.improvement")
+
+    event.create("rainbow:voice.warning")
 })
 
 // 注册物品

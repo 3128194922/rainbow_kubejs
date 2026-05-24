@@ -41,9 +41,11 @@ ServerEvents.genericLootTables(event => {
      'caverns_and_chasms:spinel', 'minecraft:lapis_lazuli', 'minecraft:emerald']
 
     //饰品和武器
-    const curios = ['zgmobs:heart_crystal', 'rainbow:gravity_core', 'rainbow:moai_charm', 'rainbow:giants_ring', 
-    'rainbow:big_stomach', Item.of('rainbow:lyre', '{submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"},the_end:0}'), 
-    'rainbow:ancientaegis',Item.of('rainbow:tyrfing', '{Damage:0}'),'scepterofdominion:scepter_of_dominion']
+    const curios = [Item.of('mysticartifacts:katana', '{Damage:0}'), 'rainbow:dice', 'rainbow:moai_charm', 'rainbow:giants_ring', 
+    'rainbow:gravity_core', Item.of('rainbow:lyre', '{submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"},the_end:0}'), 'rainbow:ancientaegis', 
+    'rainbow:big_stomach', 'zgmobs:heart_crystal', 'scepterofdominion:scepter_of_dominion', Item.of('mysticartifacts:katana', '{Damage:0}'),
+     Item.of('mysticartifacts:two_dragons_play_ball', '{Damage:0}'), 'mysticartifacts:sword_swarm_charm', 'mysticartifacts:death_eye', 
+     'mysticartifacts:poker_card',Item.of('rainbow:baseball_bat', '{Damage:0}'), Item.of('rainbow:tyrfing', '{Damage:0}'), 'helldivers:magic_book']
     
     //普通房箱子：食物、矿物
     event.addGeneric('backroom:rooms/normal_room', loot => {
@@ -53,7 +55,7 @@ ServerEvents.genericLootTables(event => {
         })
         //矿物池
         loot.addPool(pool => {
-            //随机抽取1-5个
+            //随机抽取1-3个
             pool.setUniformRolls(1, 3)
             mineral.forEach(item=>{
                 pool.addItem(item).count(32)
@@ -100,6 +102,14 @@ ServerEvents.genericLootTables(event => {
             pool.addItem(Item.of('minecraft:book'))
             .enchantRandomly(global.allEnchantments)
         })
+        //模板池
+        loot.addPool(pool => {
+            //随机抽取1-2个
+            pool.setUniformRolls(1, 2)
+            template.forEach(item=>{
+                pool.addItem(item)
+            })
+        })
     })
     //密码房箱子：各路神器、饰品
     event.addGeneric('backroom:rooms/password_room', loot => {
@@ -108,6 +118,28 @@ ServerEvents.genericLootTables(event => {
             //随机抽取1个
             pool.setUniformRolls(1, 1)
             curios.forEach(item=>{
+                pool.addItem(item)
+            })
+        })
+        //陶片池
+        loot.addPool(pool => {
+            //随机抽取1-2个
+            pool.setUniformRolls(1, 2)
+            normal_room_items.forEach(item=>{
+                pool.addItem(item)
+            })
+        })
+        // 附魔池
+        loot.addPool(pool => {
+            pool.setUniformRolls(1, 5)
+            pool.addItem(Item.of('minecraft:book'))
+            .enchantRandomly(global.allEnchantments)
+        })
+        //模板池
+        loot.addPool(pool => {
+            //随机抽取1-2个
+            pool.setUniformRolls(1, 2)
+            template.forEach(item=>{
                 pool.addItem(item)
             })
         })

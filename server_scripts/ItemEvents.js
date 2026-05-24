@@ -8,7 +8,7 @@ ItemEvents.rightClicked(event => {
     let { player, item, level, server, hand } = event;
     //let ender_chest = player.getEnderChestInventory().getAllItems();
     if (level.isClientSide()) return;
-    
+
     /*
     if(item.id == "minecraft:stick")
         {

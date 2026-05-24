@@ -263,6 +263,7 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       mutant.setPositionAndRotation(spawnPos.x, spawnPos.y, spawnPos.z, 0, 0)
+      level.playSound(null, player.x, player.y, player.z,"rainbow:voice.warning","voice", 1, 1)
       mutant.spawn()
 
       try {

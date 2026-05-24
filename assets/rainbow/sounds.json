@@ -79,5 +79,11 @@
 	"sounds": [
 	  "rainbow:improvement"
 	]
+  },
+  	"voice.warning": {
+	"subtitle": "sounds.rainbow.warning",
+	"sounds": [
+	  "rainbow:warning"
+	]
   }
 }

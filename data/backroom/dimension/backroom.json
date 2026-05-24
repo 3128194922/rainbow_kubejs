@@ -16,9 +16,9 @@
             ],
             "biome": "backroom:backroom",
             "lakes": false,
-            "structures": {
-                "structures": {}
-            }
+            "structure_overrides": [
+                "backroom:center_set"
+            ]
         }
     }
 }

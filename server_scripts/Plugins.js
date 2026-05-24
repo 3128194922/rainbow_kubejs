@@ -56,13 +56,13 @@ EntityEvents.death(event => {
     let player = event.getPlayer();
     let playerName = event.getPlayer().getDisplayName().getString();
 
-
+/*
     // 战斗维度死亡惩罚：Backroom维度死亡清空背包
     if (level.name.getString() === "backroom:backroom") {
         player.inventory.clear();
         return;
     }
-
+*/
     let deathPos = {
         x: event.player.x,
         y: event.player.y,
@@ -111,13 +111,13 @@ ServerEvents.commandRegistry(event => {
                             requester.tell(`§c玩家 ${targetName} 不存在或不在线`);
                             return 0;
                         }
-
+/*
                         // 禁止传送到 Backroom
                         if (targetPlayer.level.name.getString() === "backroom:backroom") {
                             requester.tell(`神秘力量阻止了你的传送`);
                             return 0;
                         }
-
+*/
                         requester.teleportTo(
                             targetPlayer.level.dimension,
                             targetPlayer.x,

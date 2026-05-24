@@ -133,27 +133,6 @@ function NumberToItem(num) {
 }
 
 /**
- * 字符数字运算
- * @param {String} Num1
- * @param {String} Operaror
- * @param {String} Num2
- * @returns {Number} 
- */
-function StringNumerOperaror(Num1, Operaror, Num2) {
-    const num1 = ItemToNumberF(Num1);
-    const num2 = ItemToNumberF(Num2);
-    const op = ItemToNumberF(Operaror);
-
-    switch (op) {
-        case "+": return num1 + num2;
-        case "-": return num1 - num2;
-        case "*": return num1 * num2;
-        case "/": return num2 === 0 ? NaN : num1 / num2; // 处理除零错误
-        default: return NaN; // 无效运算符
-    }
-}
-
-/**
  * 数字逻辑验证函数
  * @param {Number} Num
  * @returns {boolean} 
@@ -412,8 +391,8 @@ function retagItem(event, item, newTags) {
     })
 }
 
-let ResourceLocation = Java.loadClass("net.minecraft.resources.ResourceLocation");
-let Registries = Java.loadClass("net.minecraft.core.registries.Registries");
+//let ResourceLocation = Java.loadClass("net.minecraft.resources.ResourceLocation");
+//let Registries = Java.loadClass("net.minecraft.core.registries.Registries");
 
 /**
  * 检测某个坐标是否在指定结构中

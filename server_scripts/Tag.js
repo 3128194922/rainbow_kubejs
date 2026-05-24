@@ -33,7 +33,7 @@ ServerEvents.tags("item", event => {
     event.add('skillwheel:submenu',['rainbow:lyre'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
-    retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",
+    /*retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",
      "chromaticarsenal:golden_heart",'chromaticarsenal:vital_stone', 'chromaticarsenal:ascended_star', 'chromaticarsenal:harpy_feather',
       'chromaticarsenal:viewer_item','chromaticarsenal:momentum_stone', 'chromaticarsenal:bubble_amulet', 'chromaticarsenal:duality_rings',
        'chromaticarsenal:cryo_ring', 'chromaticarsenal:copper_ring', 'chromaticarsenal:amethyst_ring','rainbow:ice_tea','gimmethat:gravity_core',
@@ -45,7 +45,7 @@ ServerEvents.tags("item", event => {
          'artifacts:flippers', 'artifacts:rooted_boots', 'artifacts:pickaxe_heater', 'artifacts:onion_ring', 'artifacts:golden_hook', 
          'artifacts:vampiric_glove', 'artifacts:pocket_piston', 'artifacts:fire_gauntlet', 'artifacts:power_glove', 'artifacts:feral_claws',
           'artifacts:digging_claws'],
-       "curios:charm")
+       "curios:charm")*/
 /*
     // 铁魔法书饰品标签
     retagItem(event,['irons_spellbooks:poisonward_ring', 'irons_spellbooks:frostward_ring', 'irons_spellbooks:emerald_stoneplate_ring',
@@ -73,7 +73,7 @@ ServerEvents.tags("item", event => {
     })*/
 
     // 背部饰品标签
-    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod','alexscaves:nuclear_bomb'],
+    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod'],
         "curios:back"
     )
     
@@ -89,6 +89,9 @@ ServerEvents.tags("item", event => {
     event.add('rainbow:monster_meat', [
         'rainbow:flesh'
     ])
+
+    // 后室可放置方块
+    event.add('rainbow:docker', ['rainbow:docker_shooter', 'rainbow:docker_shooter_fire', 'rainbow:docker_shooter_plus', 'rainbow:docker_shooter_parabola'])
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])

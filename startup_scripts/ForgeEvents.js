@@ -10,10 +10,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.level.BlockEvent$EntityPlaceEvent"
 
         if (entity.level.clientSide) return;
 
-        // 禁止在 backroom 维度放置方块
-        if (entity.level.name.getString() === "backroom:backroom") {
-            event.setCanceled(true);
-        }
 /*
         if (entity && entity.getType && entity.getType() == "minecraft:falling_block" && entity.persistentData.KJS_IceProjectile) {
             let pos = (typeof event.getPos === "function") ? event.getPos() : entity.block.pos
@@ -43,10 +39,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpe
             // 修改破坏速度（原始值×16）
             event.newSpeed = 16 * event.originalSpeed;
         }
-        // 禁止在 backroom 维度挖掘
-        if (entity.level.name.getString() === "backroom:backroom") {
-            event.newSpeed = 0 * event.originalSpeed;
-        }
+        
     } catch (e) {
         console.log("玩家破坏方块事件出现问题：")
         console.log(e)

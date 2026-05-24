@@ -450,6 +450,26 @@ ServerEvents.recipes(event => {
         event.recipes.create.mixing(Item.of(item, 64), [item, "rainbow:rainbow_stone", Fluid.of("minecraft:lava", 1000)])
     })
     // 逻辑数字合成
+/**
+ * 字符数字运算
+ * @param {String} Num1
+ * @param {String} Operaror
+ * @param {String} Num2
+ * @returns {Number} 
+ */
+function StringNumerOperaror(Num1, Operaror, Num2) {
+    const num1 = ItemToNumberF(Num1);
+    const num2 = ItemToNumberF(Num2);
+    const op = ItemToNumberF(Operaror);
+
+    switch (op) {
+        case "+": return num1 + num2;
+        case "-": return num1 - num2;
+        case "*": return num1 * num2;
+        case "/": return num2 === 0 ? NaN : num1 / num2; // 处理除零错误
+        default: return NaN; // 无效运算符
+    }
+}
     const Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
     const Operaror = ['plus', 'minus', 'multiply', 'divide']
     const NumbersM = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']

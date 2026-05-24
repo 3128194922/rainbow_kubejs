@@ -9,13 +9,46 @@ ItemEvents.rightClicked(event => {
     //let ender_chest = player.getEnderChestInventory().getAllItems();
     if (level.isClientSide()) return;
     
-/*
+    /*
     if(item.id == "minecraft:stick")
         {
-            //let look = player.getLookAngle();
-            //if(!look) return;
-            player.setDeltaMovement(new Vec3d(0,10,0))
-            player.hurtMarked = true;
+            let entity = player.level.createEntity("easy_npc:humanoid");
+            if (entity) {
+                let PlayerName = player.getDisplayName().getString();
+                let entityUUID = entity.uuid.toString();
+                
+                entity.setCustomName(Text.of(`${PlayerName}`));
+                entity.setPositionAndRotation(player.x, player.y, player.z, player.yaw, player.pitch);
+                entity.spawn();
+                
+                let level = player.level;
+                
+                // 设置 Type
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.Type set value "PLAYER_SKIN"`
+                );
+                
+                // 复制玩家的 UUID 到 NPC（最关键的一步）
+                // Minecraft 命令可以直接从一个实体的 UUID 复制到另一个实体的 NBT
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.UUID set from entity ${player.stringUuid} UUID`
+                );
+                
+                // 设置 Timestamp
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.Timestamp set value ${Date.now()}`
+                );
+                
+                // 同步客户端
+                level.getServer().runCommandSilent(
+                    `/execute as ${entityUUID} at @s run tp @s ~ ~ ~ ~ ~`
+                );
+                
+                // 设置主人
+                level.getServer().runCommandSilent(
+                    `/easy_npc owner set ${entityUUID} ${PlayerName}`
+                );
+            }
         }*/
 
     // --- 粘液棒：生成粘液块平台 ---
@@ -42,9 +75,9 @@ ItemEvents.rightClicked(event => {
     }
     
     // --- 末影戒指：打开末影箱 ---
-    if (item.id === "rainbow:enderchest" && !player.isShiftKeyDown()) {
+    /*if (item.id === "rainbow:enderchest" && !player.isShiftKeyDown()) {
         player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
-    }
+    }*/
 
     // --- 饕餮之锅：食物收集 ---
     if (item.id === "rainbow:eldritch_pan") {
@@ -197,6 +230,10 @@ ItemEvents.rightClicked(event => {
             })
         }
     */
+    if (item.id === "rainbow:mini_ender_chest") {
+        player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
+    }
+
     // --- 群系之剑：收集群系 ---
     if (item.id === "rainbow:biome_of_sword") {
 
@@ -809,7 +846,7 @@ ItemEvents.rightClicked(event => {
 let Pickarang = Java.loadClass("org.violetmoon.quark.content.tools.entity.rang.Pickarang");
 let ServerPlayer = Java.loadClass("net.minecraft.server.level.ServerPlayer");
 let PickarangModule = Java.loadClass("org.violetmoon.quark.content.tools.module.PickarangModule");
-let ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack");
+//let ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack");
 
 // 抛掷回旋镖
 ItemEvents.rightClicked(event => {

@@ -8,6 +8,13 @@ const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegis
 const Vec3 = Java.loadClass("net.minecraft.world.phys.Vec3");
 const FlameProjectileEntity = Java.loadClass("dev.hexnowloading.dungeonnowloading.entity.projectile.FlameProjectileEntity");
 const DNLEntityTypes = Java.loadClass("dev.hexnowloading.dungeonnowloading.registry.DNLEntityTypes");
+//const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+const BackpackHelper = Java.loadClass('com.mrcrayfish.backpacked.BackpackHelper')
+const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+const ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
+const ItemEntity = Java.loadClass('net.minecraft.world.entity.item.ItemEntity')
+const Registries = Java.loadClass("net.minecraft.core.registries.Registries");
+const Mob = Java.loadClass('net.minecraft.world.entity.Mob')
 
 
 global.foodlist = []; //食物列表初始化

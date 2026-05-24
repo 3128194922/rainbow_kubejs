@@ -132,33 +132,82 @@ registerSkill('rainbow:rage_syringe', (event, player, itemStack, isSubmenu, subm
     }
 });
 */
+
+function uuidToIntArray(uuidString) {
+    // 去掉横杠
+    let hex = uuidString.replace(/-/g, "").toLowerCase()
+    
+    // 分成 4 段，每段 8 个十六进制字符
+    let part1 = parseInt(hex.substring(0, 8), 16)
+    let part2 = parseInt(hex.substring(8, 16), 16)
+    let part3 = parseInt(hex.substring(16, 24), 16)
+    let part4 = parseInt(hex.substring(24, 32), 16)
+    
+    // 转换为有符号 32 位整数（超过 2147483647 的减去 4294967296）
+    part1 = part1 > 2147483647 ? part1 - 4294967296 : part1
+    part2 = part2 > 2147483647 ? part2 - 4294967296 : part2
+    part3 = part3 > 2147483647 ? part3 - 4294967296 : part3
+    part4 = part4 > 2147483647 ? part4 - 4294967296 : part4
+    
+    // 返回 NBT IntArray 格式
+    return `[I;${part1},${part2},${part3},${part4}]`
+}
+
 // --- 怪物护符 ---
 registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, submenuIndex) => {
     if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
-        //let entity = player.level.createEntity("minecraft:iron_golem");
-        let entity = player.level.createEntity("player_mobs:player_mob");
+        let entity = player.level.createEntity("easy_npc:humanoid");
         if (entity) {
-            entity.persistentData.OwnerName = player.getUuid().toString();
-            entity.persistentData.putBoolean("CanTake", false);
-            entity.setUsername(player.getDisplayName().getString())
-            let slot = ["chest","feet","head","legs","mainhand","offhand"]
-            slot.forEach(string=>{
-                entity.setItemSlot(string,player.getItemBySlot(string))
+            let PlayerName = player.getDisplayName().getString();
+            let entityUUID = entity.uuid.toString();
+            
+            entity.setCustomName(Text.of(`${PlayerName}`));
+            entity.setPositionAndRotation(player.x, player.y, player.z, player.yaw, player.pitch);
+            entity.mergeNbt({
+                ObjectiveData: {
+                    HasObjectives: true,
+                    ObjectiveDataSet: [
+                        { Type: "FOLLOW_OWNER", Prio: 2 },
+                        { Type: "MELEE_ATTACK", Prio: 2 },
+                        { Type: "OWNER_HURT_BY_TARGET", Prio: 2 },
+                        { Type: "HURT_BY_TARGET", Prio: 2 }
+                    ]
+                }
             })
-            let pos = player.getBlock().pos;
-            entity.setPos(pos.x + 0.5, pos.y, pos.z + 0.5);
-            /*global.attributes.forEach(attribute=>{
-                entity.setAttributeBaseValue(attribute,player.getAttributeTotalValue(attribute))
-                //console.log(attribute)
-            })*///目前会导致AI消失
             entity.spawn();
-            //entity.setNoAi(true);
-            entity.potionEffects.add("rainbow:off_work_time", 20*30, 0, false, false);
-            player.potionEffects.add("minecraft:invisibility", 20, 0, false, false);
-            player.potionEffects.add("species:snatched", 20, 1, false, false);
-            //player.server.runCommandSilent(`/camera ${player.getStringUuid()} ${entity.getStringUuid()}`)
-            //player.server.runCommandSilent(`/control ${player.getStringUuid()} ${entity.getStringUuid()}`)
-            player.cooldowns.addCooldown('rainbow:monster_charm', SecoundToTick(30));
+            
+            let level = player.level;
+            
+            // 设置 Type
+            level.getServer().runCommandSilent(
+                `/data modify entity ${entityUUID} SkinData.Type set value "PLAYER_SKIN"`
+            );
+            
+            // 复制玩家的 UUID 到 NPC（最关键的一步）
+            // Minecraft 命令可以直接从一个实体的 UUID 复制到另一个实体的 NBT
+            level.getServer().runCommandSilent(
+                `/data modify entity ${entityUUID} SkinData.UUID set from entity ${player.stringUuid} UUID`
+            );
+            
+            // 设置 Timestamp
+            level.getServer().runCommandSilent(
+                `/data modify entity ${entityUUID} SkinData.Timestamp set value ${Date.now()}`
+            );
+            
+            // 同步客户端
+            level.getServer().runCommandSilent(
+                `/execute as ${entityUUID} at @s run tp @s ~ ~ ~ ~ ~`
+            );
+            
+            // 设置主人
+            level.getServer().runCommandSilent(
+                `/easy_npc owner set ${entityUUID} ${PlayerName}`
+            );
+
+            // 设置 TargetOwnerUUID（从玩家复制）
+            level.getServer().runCommandSilent(
+                `/data modify entity ${entityUUID} ObjectiveData.ObjectiveDataSet[0].TargetOwnerUUID set from entity ${player.stringUuid} UUID`
+            )
         }
     }
 });

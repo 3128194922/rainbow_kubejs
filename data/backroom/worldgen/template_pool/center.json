@@ -1,0 +1,42 @@
+{
+    "name": "",
+    "fallback": "empty",
+    "elements": [
+        {
+            "weight": 1,
+            "element": {
+                "element_type": "single_pool_element",
+                "location": "backroom:advanced_room",
+                "processors": [],
+                "projection": "rigid"
+            }
+        },
+        {
+            "weight": 1,
+            "element": {
+                "element_type": "single_pool_element",
+                "location": "backroom:normal_room",
+                "processors": [],
+                "projection": "rigid"
+            }
+        },
+        {
+            "weight": 3,
+            "element": {
+                "element_type": "single_pool_element",
+                "location": "backroom:password_room",
+                "processors": [],
+                "projection": "rigid"
+            }
+        },
+        {
+            "weight": 1,
+            "element": {
+                "element_type": "single_pool_element",
+                "location": "backroom:hidden_room",
+                "processors": [],
+                "projection": "rigid"
+            }
+        }
+    ]
+}

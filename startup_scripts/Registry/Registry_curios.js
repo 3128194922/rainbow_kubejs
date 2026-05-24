@@ -53,7 +53,7 @@ StartupEvents.registry('item', event => {
 
                     let multiplier = 0;
 
-                    let hungry = player.getFoodData().getFoodLevel();
+                    let hungry = player.getFoodData().getFoodlevel;
 
                     if (hasCurios(player, "rainbow:berserk_emblem")) {
                         multiplier = ((1 - hungry / 20) * 0.8 + (1 - player.getHealth() / player.getMaxHealth()) * 0.4) + 1;
@@ -110,8 +110,8 @@ StartupEvents.registry('item', event => {
                     let player = entity;
                     if (player.age % 20) return;
                     let foodData = player.getFoodData();
-                    let foodLevel = foodData.getFoodLevel();
-                    let saturation = foodData.getSaturationLevel();
+                    let foodLevel = foodData.getFoodlevel;
+                    let saturation = foodData.getSaturationlevel;
                     let health = player.getHealth();
                     let maxHealth = player.getMaxHealth();
 
@@ -279,7 +279,7 @@ StartupEvents.registry("item", (event) => {
                     let playerHP = player.getHealth();
                     let playerMaxHP = player.getMaxHealth();
                     let percentage = 0;
-                    let hungry = player.getFoodData().getFoodLevel();
+                    let hungry = player.getFoodData().getFoodlevel;
 
                     if (hasCurios(player, "rainbow:berserk_emblem")) {
                         percentage = ((1 - playerHP / playerMaxHP) * 0.8 + (1 - hungry / 20) * 0.4) + 1;
@@ -318,30 +318,93 @@ StartupEvents.registry("item", (event) => {
         .tag("curios:charm")
 });
 
+
+function hasMiningCharmHighlight(level, x, y, z, blockKey) {
+    let checkBox = new AABB(x, y, z, x + 1, y + 1, z + 1)
+    let entities = level.getEntitiesWithin(checkBox)
+
+  for (let i = 0; i < entities.size(); i++) {
+    let entity = entities.get(i)
+    let entityId = String(ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()))
+
+    if (entityId !== 'domesticationinnovation:highlighted_block') continue
+
+    let data = entity.getPersistentData()
+    if (data.contains('rainbow_mining_charm_target') && data.getString('rainbow_mining_charm_target') === blockKey) {
+      return true
+    }
+  }
+
+  return false
+}
+
 // 猎宝者护符
 StartupEvents.registry('item', event => {
-    event.create('rainbow:mining_charm')
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyFortuneLevel((slotContext, lootContext, stack) => 1)
-                .modifyAttribute(event => {
-                    event.modify("forge:entity_reach", "mining_charm", 2.15, "addition");
-                    event.modify("minecraft:generic.luck", "mining_charm", 1, "addition");
-                })
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
+  event.create('rainbow:mining_charm')
+    .rarity('epic')
+    .maxStackSize(1)
+    .tag('curios:charm')
+    .attachCuriosCapability(
+      CuriosJSCapabilityBuilder.create()
+        .modifyFortuneLevel((slotContext, lootContext, stack) => 1)
+        .modifyAttribute(event => {
+          event.modify('forge:entity_reach', 'mining_charm', 2.15, 'addition')
+          event.modify('minecraft:generic.luck', 'mining_charm', 1, 'addition')
+        })
+        .canEquip((slotContext, stack) => {
+          const entity = slotContext.entity()
+          if (entity == null) return false
 
-                    if (entity == null) return;
+          if (hasCurios(entity, 'rainbow:mining_charm')) {
+            return false
+          }
 
-                    if (hasCurios(entity, 'rainbow:mining_charm')) {
-                        return false;
-                    }
-                    return true;
-                })
-        )
+          return true
+        })
+        .curioTick((slotContext, stack) => {
+            let player = slotContext.entity()
+          if (player == null) return
+          if (player.level.isClientSide()) return
+
+          // 5s 冷却
+          if (player.age % 100 != 0) return
+
+          let level = player.level;
+          if (level.isClientSide()) return
+        
+          let scanBox = new AABB(
+            player.getX() - 10, player.getY() - 5, player.getZ() - 10,
+            player.getX() + 10, player.getY() + 5, player.getZ() + 10
+          )
+        
+          let minX = Math.floor(scanBox.minX)
+          let maxX = Math.floor(scanBox.maxX)
+          let minY = Math.floor(scanBox.minY)
+          let maxY = Math.floor(scanBox.maxY)
+          let minZ = Math.floor(scanBox.minZ)
+          let maxZ = Math.floor(scanBox.maxZ)
+        
+          for (let x = minX; x <= maxX; x++) {
+            for (let y = minY; y <= maxY; y++) {
+              for (let z = minZ; z <= maxZ; z++) {
+                let block = level.getBlock(x, y, z)
+                if (block.id !== 'lootr:lootr_chest') continue
+        
+                let blockKey = `${x},${y},${z}`
+                if (hasMiningCharmHighlight(level, x, y, z, blockKey)) continue
+        
+                let highlight = level.createEntity('domesticationinnovation:highlighted_block')
+                if (highlight == null) continue
+        
+                highlight.setPosition(x + 0.5, y, z + 0.5)
+                highlight.getPersistentData().putString('rainbow_mining_charm_target', blockKey)
+                highlight.setLifespan(100)
+                highlight.spawn()
+              }
+            }
+          }
+        })
+    )
 })
 
 // 怪物猎人勋章

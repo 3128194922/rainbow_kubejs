@@ -16,6 +16,8 @@ const SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
 const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
 //const LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity')
 //const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
+const AABB = Java.loadClass('net.minecraft.world.phys.AABB')
+const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
 
 global.CURIONUMBER = 4
 global.CURSES = [
@@ -50,3 +52,10 @@ global.COLORS = {
     黑: [0.06, 0.06, 0.06]
   }
   
+
+//获取全部附魔
+global.allEnchantments = []
+
+ForgeRegistries.ENCHANTMENTS.getKeys().forEach(id => {
+  global.allEnchantments.push(new ResourceLocation(id.toString()))
+})

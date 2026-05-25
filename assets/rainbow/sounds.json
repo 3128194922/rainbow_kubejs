@@ -85,5 +85,11 @@
 	"sounds": [
 	  "rainbow:warning"
 	]
+  },
+	"voice.tenshi": {
+	"subtitle": "sounds.rainbow.tenshi",
+	"sounds": [
+	  "rainbow:tenshi"
+	]
   }
 }

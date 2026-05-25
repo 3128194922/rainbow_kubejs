@@ -19,7 +19,7 @@ function registerSkillSound(itemId, soundId) {
 /**
  * 注册技能处理函数
  * @param {string} itemId 饰品ID
- * @param {function} handler 处理函数 (event, player, itemStack, isSubmenu, submenuIndex) => void
+ * @param {function} handler 处理函数 (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => void
  */
 function registerSkill(itemId, handler) {
     SkillRegistry[itemId] = handler;
@@ -50,7 +50,7 @@ let heartEntityMap = {
 };
 
 Object.keys(heartEntityMap).forEach(heartId => {
-    registerSkill(heartId, (event, player, itemStack, isSubmenu, submenuIndex) => {
+    registerSkill(heartId, (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
         if (player.cooldowns.isOnCooldown(heartId)) return;
 
         let COOLDOWN = SecoundToTick(20);
@@ -80,7 +80,7 @@ Object.keys(heartEntityMap).forEach(heartId => {
 });
 
 // --- 念力墙 ---
-registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (player.cooldowns.isOnCooldown("rainbow:mind")) return;
 
     let yaw = player.getYaw();
@@ -117,7 +117,7 @@ registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex
 });
 /*
 // --- 韧性注射器 ---
-registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (player.persistentData.getInt("resilience") >= 100) {
         player.potionEffects.add("rainbow:resilience", SecoundToTick(7), 0, false, false);
         player.persistentData.putInt("resilience", 99);
@@ -125,7 +125,7 @@ registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu
 });
 
 // --- 狂暴注射器 ---
-registerSkill('rainbow:rage_syringe', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:rage_syringe', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (!player.cooldowns.isOnCooldown("rainbow:damage_num")) {
         player.potionEffects.add("rainbow:damage_num", SecoundToTick(5), 0, false, false);
         player.cooldowns.addCooldown("rainbow:damage_num", SecoundToTick(10));
@@ -154,7 +154,7 @@ function uuidToIntArray(uuidString) {
 }
 
 // --- 怪物护符 ---
-registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
         let entity = player.level.createEntity("easy_npc:humanoid");
         if (entity) {
@@ -213,12 +213,136 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, sub
 });
 
 // --- 时间神石 ---
-registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (!itemStack || !itemStack.nbt || !itemStack.nbt.history || itemStack.nbt.history.length <= 0) {
+        player.tell(Text.gray("发条怀表尚未记录到足够的时间信息。"));
+        return;
+    }
+    if (player.persistentData.getBoolean("ChronosRewinding")) return;
+
+    let history = [];
+    let rawHistory = itemStack.nbt.history;
+    let maxCount = Math.min(rawHistory.length, 5);
+    // 先把 NBT ListTag 拷贝成纯 JS 对象数组，后续插值时就不用直接操作 NBT 容器。
+    for (let i = 0; i < maxCount; i++) {
+        let snapshot = rawHistory[i];
+        if (!snapshot) continue;
+        history.push({
+            secondsAgo: snapshot.secondsAgo,
+            x: snapshot.x,
+            y: snapshot.y,
+            z: snapshot.z,
+            hp: snapshot.hp,
+            maxHp: snapshot.maxHp,
+            food: snapshot.food,
+            saturation: snapshot.saturation,
+            dimension: String(snapshot.dimension),
+            yaw: snapshot.yaw,
+            pitch: snapshot.pitch
+        });
+    }
+    if (history.length <= 0) {
+        player.tell(Text.gray("发条怀表尚未记录到可回溯的位置。"));
+        return;
+    }
+
+    // 每个历史点之间用 4 tick 线性插值，形成“快速倒带”观感。
+    let ticksPerSegment = 4;
+
+    let lerpAngle = (from, to, progress) => {
+        let delta = ((to - from + 540) % 360) - 180;
+        return from + delta * progress;
+    };
+
+    let applyChronosState = snapshot => {
+        if (!snapshot) return;
+        // 每 tick 都用传送强制覆盖玩家位置和朝向，避免玩家输入打断回溯。
+        player.teleportTo(String(snapshot.dimension), snapshot.x, snapshot.y, snapshot.z, snapshot.yaw, snapshot.pitch);
+        player.setDeltaMovement(new Vec3d(0, 0, 0));
+        player.hurtMarked = true;
+
+        // 到达历史点后同步生命和饱食度，让状态也回到该时刻。
+        if (snapshot.hp != null) {
+            player.setHealth(Math.min(snapshot.hp, player.maxHealth));
+        }
+        if (player.foodData) {
+            if (snapshot.food != null) player.foodData.setFoodLevel(snapshot.food);
+            if (snapshot.saturation != null) player.foodData.setSaturation(snapshot.saturation);
+        }
+    };
+
+    let finishChronos = () => {
+        player.persistentData.remove("ChronosRewinding");
+        player.setDeltaMovement(new Vec3d(0, 0, 0));
+        player.hurtMarked = true;
+    };
+
+    let rewindToIndex = index => {
+        if (!player || !player.isAlive()) {
+            finishChronos();
+            return;
+        }
+        if (index >= history.length) {
+            finishChronos();
+            return;
+        }
+
+        let target = history[index];
+        let previous = index == 0 ? {
+            dimension: player.level.dimension.toString(),
+            x: player.x,
+            y: player.y,
+            z: player.z,
+            yaw: player.getYaw(),
+            pitch: player.getPitch()
+        } : history[index - 1];
+
+        // 跨维度时不做插值，直接跳到目标维度，再继续后续历史点。
+        if (String(previous.dimension) != String(target.dimension)) {
+            applyChronosState(target);
+            event.server.scheduleInTicks(1, () => rewindToIndex(index + 1));
+            return;
+        }
+
+        let tick = 0;
+        let moveStep = () => {
+            if (!player || !player.isAlive()) {
+                finishChronos();
+                return;
+            }
+
+            tick++;
+            let progress = tick / ticksPerSegment;
+            // 当前位置到目标历史点做线性插值，分多 tick 推进，制造连续倒带的轨迹。
+            let x = previous.x + (target.x - previous.x) * progress;
+            let y = previous.y + (target.y - previous.y) * progress;
+            let z = previous.z + (target.z - previous.z) * progress;
+            let yaw = lerpAngle(previous.yaw, target.yaw, progress);
+            let pitch = previous.pitch + (target.pitch - previous.pitch) * progress;
+
+            player.teleportTo(String(target.dimension), x, y, z, yaw, pitch);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+
+            if (tick >= ticksPerSegment) {
+                applyChronosState(target);
+                // 当前历史点完成后，链式调度下一个历史点，直到 5s 前全部回放结束。
+                event.server.scheduleInTicks(1, () => rewindToIndex(index + 1));
+            } else {
+                event.server.scheduleInTicks(1, moveStep);
+            }
+        };
+
+        event.server.scheduleInTicks(1, moveStep);
+    };
+
+    player.persistentData.putBoolean("ChronosRewinding", true);
     event.server.runCommandSilent(`/execute at ${player.getDisplayName().getString()} run respawningstructures respawnClosestStructure`);
+    rewindToIndex(0);
 });
 
 // --- 信标球 ---
-registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (player.cooldowns.isOnCooldown("rainbow:beacon_ball")) return;
 
     if (!itemStack.nbt || !itemStack.nbt.contains("X")) {
@@ -268,7 +392,7 @@ registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, subme
 });
 
 // --- 装填核心 ---
-registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let reloadEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
     if (reloadEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:reload_core")) {
         player.potionEffects.add("rainbow:reload_buff", 200, 0, false, false);
@@ -280,7 +404,7 @@ registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, subme
 });
 
 // --- 连射核心 ---
-registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let shortEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
     if (shortEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:short_core")) {
         player.potionEffects.add("rainbow:short_buff", 200, 0, false, false);
@@ -292,7 +416,7 @@ registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submen
 });
 
 // --- 幻影之躯 ---
-/*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex) => {
+/*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let headItem = player.getItemBySlot("head");
     if (headItem && headItem.nbt) {
         let maskId = headItem.nbt.getString("id");
@@ -305,7 +429,7 @@ registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submen
 });*/
 
 // --- 共生徽章 ---
-registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let ccbHit = player.rayTrace(5, false);
     if (ccbHit && ccbHit.entity && ccbHit.entity.isLiving()) {
         let target = ccbHit.entity;
@@ -345,7 +469,7 @@ registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex)
 });
 
 // --- 皇家法杖 ---
-registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
         let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
         let hand = InteractionHand.MAIN_HAND;
@@ -372,7 +496,7 @@ registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmen
 
 // --- 觉之瞳 ---
 registerSkillSound('rainbow:eye_of_satori', 'rainbow:voice.eye_of_satori');
-registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
         let Nbt = itemStack.nbt;
         if(Nbt)
@@ -384,7 +508,7 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
 
 // --- 战壕哨 ---
 registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
-registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
         
         if(player.isClientSide) return;
@@ -412,7 +536,7 @@ registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIn
 });
 
 // --- 虚空之眼 ---
-registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) 
     {
         if(player.isClientSide) return;
@@ -423,7 +547,7 @@ registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, s
 
 // --- 天琴座 ---
 registerSkillSound('rainbow:lyre', 'rainbow:voice.null');
-registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack && isSubmenu) 
     {
         if(player.cooldowns.isOnCooldown(itemStack.id))
@@ -465,13 +589,61 @@ registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex
 });
 
 // --- 重力符文 ---
-registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, submenuIndex) => {
+registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) 
     {
         if(player.isClientSide) return;
     
         player.setDeltaMovement(new Vec3d(0,10,0))
         player.hurtMarked = true;
+    }
+});
+
+// --- 迷你月球 ---
+registerSkillSound('rainbow:mini_moon', 'rainbow:voice.tenshi');
+registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack) 
+    {
+        if(player.isClientSide) return;
+
+        let radius = 5;
+        let centerX = player.getX();
+        let centerY = player.getY() + 0.5;
+        let centerZ = player.getZ();
+        let area = player.boundingBox.inflate(radius);
+        let playerUuid = player.getUuid().toString();
+        let areaColor = "80FFFFFF";
+
+        if (shiftDown) {
+            event.server.runCommandSilent(`/dyeing area add scale ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 1.0 0.2 1.0 1.0 12 1 remove`);
+        } else {
+            event.server.runCommandSilent(`/dyeing area add scale ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 0.2 1.0 1.0 1.0 12 1 remove`);
+        }
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity) return;
+            if (!entity.isLiving() || !entity.isAlive()) return;
+            if (entity == player) return;
+
+            let dx = entity.getX() - centerX;
+            let dy = entity.getY() - centerY;
+            let dz = entity.getZ() - centerZ;
+            let distanceSq = dx * dx + dy * dy + dz * dz;
+            if (distanceSq <= 0 || distanceSq > radius * radius) return;
+
+            let distance = Math.sqrt(distanceSq);
+            let motionX = dx / distance;
+            let motionY = dy / distance;
+            let motionZ = dz / distance;
+
+            if (shiftDown) {
+                entity.setDeltaMovement(new Vec3d(-motionX * 1.2, 0.2 - motionY * 0.2, -motionZ * 1.2));
+            } else {
+                entity.setDeltaMovement(new Vec3d(motionX * 1.4, 0.35 + Math.max(motionY * 0.15, 0), motionZ * 1.4));
+                entity.attack(player.damageSources().playerAttack(player), 6);
+            }
+            entity.hurtMarked = true;
+        })
     }
 });
 
@@ -484,6 +656,7 @@ NetworkEvents.dataReceived('skillwheel', event => {
     let packetItem = event.data.item;
     let isSubmenu = event.data.getBoolean("isSubmenu");
     let submenuIndex = event.data.getInt("submenuIndex");
+    let shiftDown = event.data.getBoolean("shiftDown");
 
     //console.log(event.data)
 
@@ -515,7 +688,7 @@ NetworkEvents.dataReceived('skillwheel', event => {
     let handler = SkillRegistry[itemId];
     if (!handler) return;
     try {
-        handler(event, player, itemStack, isSubmenu, submenuIndex);
+        handler(event, player, itemStack, isSubmenu, submenuIndex,shiftDown);
     } catch (error) {
         console.error(`Error executing skill for ${itemId}: ${error}`);
         player.tell(Text.red(`技能执行出错: ${error}`));

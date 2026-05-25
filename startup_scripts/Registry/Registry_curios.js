@@ -1379,3 +1379,79 @@ StartupEvents.registry('item', event => {
                 .addAttribute("moreattribute:no_collision", "moai_charm", 1, "addition")
         )
 })
+
+// 发条怀表 (饰品)
+StartupEvents.registry('item', event => {
+    event.create("rainbow:chronos")
+    .rarity("epic")
+    .maxStackSize(1)
+    .tag("curios:charm")
+    .attachCuriosCapability(
+        CuriosJSCapabilityBuilder.create()
+            .canEquip((slotContext, stack) => {
+                let entity = slotContext.entity();
+                if (entity == null) return;
+                if (hasCurios(entity, 'rainbow:chronos')) {
+                    return false;
+                }
+                return true;
+            })
+            .curioTick((slotContext, stack) => {
+                let player = slotContext.entity();
+                if (player == null) return;
+                if (!stack.nbt) {
+                    stack.nbt = {};
+                }
+                if (player.age % SecoundToTick(1)) return;
+
+                let history = [];
+                let oldHistory = stack.nbt.history;
+                if (oldHistory) {
+                    let maxCount = Math.min(oldHistory.length || 0, 4);
+                    for (let i = 0; i < maxCount; i++) {
+                        let snapshot = oldHistory[i];
+                        if (!snapshot) continue;
+                        history.push({
+                            secondsAgo: i + 2,
+                            x: Number(snapshot.x),
+                            y: Number(snapshot.y),
+                            z: Number(snapshot.z),
+                            hp: Number(snapshot.hp),
+                            maxHp: Number(snapshot.maxHp),
+                            food: Number(snapshot.food),
+                            saturation: Number(snapshot.saturation),
+                            dimension: String(snapshot.dimension),
+                            yaw: Number(snapshot.yaw),
+                            pitch: Number(snapshot.pitch)
+                        });
+                    }
+                }
+
+                let currentSnapshot = {
+                    secondsAgo: 1,
+                    x: player.x,
+                    y: player.y,
+                    z: player.z,
+                    hp: player.getHealth(),
+                    maxHp: player.maxHealth,
+                    food: player.foodData.foodLevel,
+                    saturation: player.foodData.saturationLevel,
+                    dimension: player.level.dimension.toString(),
+                    yaw: player.yaw,
+                    pitch: player.pitch
+                };
+
+                history.unshift(currentSnapshot);
+
+                stack.nbt.history = history;
+            })
+    )
+})
+
+// 迷你月球
+StartupEvents.registry('item', event => {
+    event.create('rainbow:mini_moon')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+})

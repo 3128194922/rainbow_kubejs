@@ -32,6 +32,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.improvement")
 
     event.create("rainbow:voice.warning")
+
+    event.create("rainbow:voice.tenshi")
 })
 
 // 注册物品

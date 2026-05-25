@@ -4,403 +4,373 @@
 // ==========================================
 
 // 物品右键事件
-// 按物品拆分监听，避免任意右键都扫描整段 if 链。
+/*ItemEvents.rightClicked(event => {
+    let { player, item, level, server, hand } = event;
+    //let ender_chest = player.getEnderChestInventory().getAllItems();
+    if (level.isClientSide()) return;
+    
+    /*
+    if(item.id == "minecraft:stick")
+        {
+            let entity = player.level.createEntity("easy_npc:humanoid");
+            if (entity) {
+                let PlayerName = player.getDisplayName().getString();
+                let entityUUID = entity.uuid.toString();
+                
+                entity.setCustomName(Text.of(`${PlayerName}`));
+                entity.setPositionAndRotation(player.x, player.y, player.z, player.yaw, player.pitch);
+                entity.spawn();
+                
+                let level = player.level;
+                
+                // 设置 Type
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.Type set value "PLAYER_SKIN"`
+                );
+                
+                // 复制玩家的 UUID 到 NPC（最关键的一步）
+                // Minecraft 命令可以直接从一个实体的 UUID 复制到另一个实体的 NBT
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.UUID set from entity ${player.stringUuid} UUID`
+                );
+                
+                // 设置 Timestamp
+                level.getServer().runCommandSilent(
+                    `/data modify entity ${entityUUID} SkinData.Timestamp set value ${Date.now()}`
+                );
+                
+                // 同步客户端
+                level.getServer().runCommandSilent(
+                    `/execute as ${entityUUID} at @s run tp @s ~ ~ ~ ~ ~`
+                );
+                
+                // 设置主人
+                level.getServer().runCommandSilent(
+                    `/easy_npc owner set ${entityUUID} ${PlayerName}`
+                );
+            }
+        }*/
 
-/*
-if(item.id == "minecraft:stick")
-    {
-        let entity = player.level.createEntity("easy_npc:humanoid");
-        if (entity) {
-            let PlayerName = player.getDisplayName().getString();
-            let entityUUID = entity.uuid.toString();
-            
-            entity.setCustomName(Text.of(`${PlayerName}`));
-            entity.setPositionAndRotation(player.x, player.y, player.z, player.yaw, player.pitch);
-            entity.spawn();
-            
-            let level = player.level;
-            
-            // 设置 Type
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.Type set value "PLAYER_SKIN"`
-            );
-            
-            // 复制玩家的 UUID 到 NPC（最关键的一步）
-            // Minecraft 命令可以直接从一个实体的 UUID 复制到另一个实体的 NBT
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.UUID set from entity ${player.stringUuid} UUID`
-            );
-            
-            // 设置 Timestamp
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.Timestamp set value ${Date.now()}`
-            );
-            
-            // 同步客户端
-            level.getServer().runCommandSilent(
-                `/execute as ${entityUUID} at @s run tp @s ~ ~ ~ ~ ~`
-            );
-            
-            // 设置主人
-            level.getServer().runCommandSilent(
-                `/easy_npc owner set ${entityUUID} ${PlayerName}`
-            );
+    // --- 粘液棒：生成粘液块平台 ---
+    /*if (item.id === "rainbow:slime_rod") {
+        let playerName = player.getName().getString();
+        if (player.shiftKeyDown) {
+            // 潜行右键：生成大型粘液块平台（用于救援接住玩家）
+            server.runCommandSilent(`/execute at ${playerName} run fill ~-2 ~-1 ~-2 ~2 ~3 ~2 minecraft:slime_block replace air`);
+            server.runCommandSilent(`/execute at ${playerName} run fill ~-1 ~0 ~-1 ~1 ~2 ~1 minecraft:air replace slime_block`);
+        } else {
+            // 普通右键：生成小型粘液块平台
+            server.runCommandSilent(`/execute as ${playerName} at @s run fill ~-1 ~-3 ~-1 ~1 ~-3 ~1 minecraft:slime_block replace air`);
         }
+        player.setStatusMessage('救命之恩！');
+        player.setItemInHand("main_hand", 'minecraft:air');
+    }
+
+    // --- 恶搞物品：拉屎 ---
+    // 纸 + 潜行 = 获得 "alexscaves:guano"
+    if (item.id === "minecraft:paper" && player.shiftKeyDown) {
+        item.shrink(1);
+        player.addItem("alexscaves:guano");
+        player.setStatusMessage('你拉屎了');
+    }*/
+    
+    // --- 末影戒指：打开末影箱 ---
+    /*if (item.id === "rainbow:enderchest" && !player.isShiftKeyDown()) {
+        player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
     }*/
 
-// --- 粘液棒：生成粘液块平台 ---
-ItemEvents.rightClicked("rainbow:slime_rod", event => {
-    let { player, level, server } = event;
-    if (level.isClientSide()) return;
+    // --- 饕餮之锅：食物收集 ---
+    /*if (item.id === "rainbow:eldritch_pan") {
+        // 逻辑：将副手食物“吃掉”并记录到锅的NBT中，增加计数
+        let targetItem = player.getItemInHand("off_hand");
+        let tag = global.foodlist.indexOf(targetItem.id); // 查找在 foodlist 中的索引
 
-    let playerName = player.getName().getString();
-    if (player.shiftKeyDown) {
-        // 潜行右键：生成大型粘液块平台（用于救援接住玩家）
-        server.runCommandSilent(`/execute at ${playerName} run fill ~-2 ~-1 ~-2 ~2 ~3 ~2 minecraft:slime_block replace air`);
-        server.runCommandSilent(`/execute at ${playerName} run fill ~-1 ~0 ~-1 ~1 ~2 ~1 minecraft:air replace slime_block`);
-    } else {
-        // 普通右键：生成小型粘液块平台
-        server.runCommandSilent(`/execute as ${playerName} at @s run fill ~-1 ~-3 ~-1 ~1 ~-3 ~1 minecraft:slime_block replace air`);
-    }
-    player.setStatusMessage('救命之恩！');
-    player.setItemInHand("main_hand", 'minecraft:air');
-});
+        // 如果未找到（tag === -1），则不处理
+        if (tag === -1) return;
 
-// --- 恶搞物品：拉屎 ---
-// 纸 + 潜行 = 获得 "alexscaves:guano"
-ItemEvents.rightClicked("minecraft:paper", event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-    if (!player.shiftKeyDown) return;
-
-    item.shrink(1);
-    player.addItem("alexscaves:guano");
-    player.setStatusMessage('你拉屎了');
-});
-
-// --- 末影戒指：打开末影箱 ---
-/*ItemEvents.rightClicked("rainbow:enderchest", event => {
-    let { player, level } = event;
-    if (level.isClientSide()) return;
-    if (player.isShiftKeyDown()) return;
-    player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
-});*/
-
-// --- 饕餮之锅：食物收集 ---
-ItemEvents.rightClicked("rainbow:eldritch_pan", event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-
-    // 逻辑：将副手食物“吃掉”并记录到锅的NBT中，增加计数
-    let targetItem = player.getItemInHand("off_hand");
-    let tag = global.foodlist.indexOf(targetItem.id); // 查找在 foodlist 中的索引
-
-    // 如果未找到（tag === -1），则不处理
-    if (tag === -1) return;
-
-    // 检查主手物品的 NBT 是否有 foodlist，没有则初始化
-    if (!item.nbt.foodlist) {
-        item.nbt.foodlist = [];
-        item.nbt.foodnumber = 0;
-    }
-
-    // 检查是否已经吃过这种食物
-    for (let i = 0; i < item.nbt.foodlist.length; i++) {
-        if (item.nbt.foodlist[i] == tag) {
-            player.setStatusMessage("这个食物已经吃过了！");
-            level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
-            return;
+        // 检查主手物品的 NBT 是否有 foodlist，没有则初始化
+        if (!item.nbt.foodlist) {
+            item.nbt.foodlist = [];
+            item.nbt.foodnumber = 0;
         }
-    }
 
-    // 消耗副手食物
-    targetItem.shrink(1);
-    level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
-
-    // 将 tag 添加到 foodlist 并更新计数
-    item.nbt.foodlist.push(Integer.valueOf(tag));
-    item.nbt.foodnumber = item.nbt.foodlist.length;
-});
-
-/*
-if (item.id == "minecraft:stick") {
-    // 计算朝向与起始位置
-    let viewVector = player.getViewVector(1.0)
-    let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
-    let nor_x = viewVector.x() / length
-    let nor_y = viewVector.y() / length
-    let nor_z = viewVector.z() / length
-    let new_x = player.x + nor_x * 1.5
-    let new_y = player.y + player.getEyeHeight()
-    let new_z = player.z + nor_z * 1.5
-
-    // 生成已点燃的TNT并抛出
-    let tnt = level.createEntity("savage_and_ravage:ice_chunk")
-    tnt.setPosition(new_x, new_y + 1, new_z)
-    tnt.setMotion(nor_x * 1.3, nor_y * 1.3 + 0.2, nor_z * 1.3)
-    tnt.setCaster(player)
-    tnt.spawn()
-}*/
-/*
-// --- 饕餮剑：剑吞噬 ---
-ItemEvents.rightClicked("rainbow:eldritch_sword", event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-
-    let targetItem = player.getItemInHand("off_hand");
-    let tag = global.swordlist.indexOf(targetItem.id);
-
-    if (tag === -1) return;
-
-    if (!item.nbt.swordlist) {
-        item.nbt.swordlist = [];
-        item.nbt.swordnumber = 0;
-    }
-
-    for (let i = 0; i < item.nbt.swordlist.length; i++) {
-        if (item.nbt.swordlist[i] == tag) {
-            player.setStatusMessage("这把剑已经吃过了！");
-            level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
-            return;
-        }
-    }
-
-    targetItem.shrink(1);
-    level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
-
-    item.nbt.swordlist.push(Integer.valueOf(tag));
-    item.nbt.swordnumber = item.nbt.swordlist.length;
-});*/
-
-// --- 泰拉刃：发射射弹 ---
-ItemEvents.rightClicked('rainbow:terasword', event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-
-    let nbt = item.getNbt();
-    if (nbt.getInt("power")) {
-        // 消耗能量
-        nbt.putInt("power", nbt.getInt("power") - 1);
-
-        let projectileName = "minecraft:tnt";
-
-        // 计算发射方向和位置
-        let viewVector = player.getViewVector(1.0);
-        let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z());
-        let nor_x = viewVector.x() / length;
-        let nor_y = viewVector.y() / length;
-        let nor_z = viewVector.z() / length;
-        let new_x = player.x + nor_x * 2;
-        let new_y = player.y + player.getEyeHeight();
-        let new_z = player.z + nor_z * 2;
-
-        // 发送数据到客户端进行渲染或逻辑处理
-        Client.player.sendData("projectlie", {
-            x: new_x,
-            y: new_y,
-            z: new_z,
-            viewX: nor_x,
-            viewY: nor_y,
-            viewZ: nor_z,
-            name: projectileName
-        });
-    } else {
-        player.tell("能量不足");
-    }
-});
-
-// --- 苦力怕护符：随机传送 ---
-/*ItemEvents.rightClicked('rainbow:creeper_charm', event => {
-    let { player, level } = event;
-    if (level.isClientSide()) return;
-
-    // 随机传送到主世界某处，并给予保护效果
-    player.teleportTo("minecraft:overworld", getRandomInt(-14999992, 14999992), 300, getRandomInt(-14999992, 14999992), player.yaw, player.pitch);
-    player.potionEffects.add("rainbow:democratic_save", 10 * 20, 0, false, false);
-    player.cooldowns.addCooldown("rainbow:creeper_charm", SecoundToTick(60 * 60));
-});*/
-
-// --- 月光水晶：看月亮获得物品 ---
-ItemEvents.rightClicked('chromaticarsenal:lunar_crystal', event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-
-    if (PlayerLookAtMoon(player)) {
-        player.give("gimmethat:moon");
-        item.shrink(1);
-    }
-});
-
-// --- 棒球棍：充能 ---
-ItemEvents.rightClicked('rainbow:baseball_bat', event => {
-    let { player, item, level, server } = event;
-    if (level.isClientSide()) return;
-
-    let nbt = item.getNbt();
-    server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${player.x} ${player.y} ${player.z}`);
-    player.setItemInHand("main_hand", Item.of("rainbow:baseball_power", `${nbt}`));
-});
-
-/*
-// --- 乐谱：播放音乐 ---
-ItemEvents.rightClicked("rainbow:musical_score", event => {
-    let { item, level } = event;
-    if (level.isClientSide()) return;
-    if (!item.nbt) return;
-    if (!item.nbt.music) return;
-
-    Client.player.sendData("music", {
-        music: intArrayTagToNumbers(item.nbt.music)
-    });
-});*/
-
-ItemEvents.rightClicked("rainbow:mini_ender_chest", event => {
-    let { player, level } = event;
-    if (level.isClientSide()) return;
-    player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
-});
-
-// --- 群系之剑：收集群系 ---
-ItemEvents.rightClicked("rainbow:biome_of_sword", event => {
-    let { player, item, level, server } = event;
-    if (level.isClientSide()) return;
-
-    // 确保全局群系列表已初始化
-    if (!global.biomelist || global.biomelist.length === 0) {
-        global.biomelist = [];
-        let access = server.registryAccess();
-        let biomeRegistry = access.registryOrThrow(Registries.BIOME);
-        biomeRegistry.keySet().forEach(id => global.biomelist.push(id.toString()));
-    }
-
-    let access = server.registryAccess();
-    let biomeRegistry = access.registryOrThrow(Registries.BIOME);
-    let biome = level.getBiome(player.blockPosition());
-    let biomeKey = biomeRegistry.getResourceKey(biome.get()).get();
-    let biomeId = biomeKey.location().toString();
-    let tag = global.biomelist.indexOf(biomeId);
-
-    // 初始化物品 NBT
-    if (!item.nbt.biomes) item.nbt.biomes = [];
-    if (!item.nbt.biomenum) item.nbt.biomenum = item.nbt.biomes.length;
-
-    // 检查是否为有效群系
-    if (tag === -1) {
-        console.log("⚠ 未找到群系:", biomeId);
-        return;
-    }
-
-    // 检查是否已收集过（循环比对）
-    for (let i = 0; i < item.nbt.biomes.length; i++) {
-        if (Number(item.nbt.biomes[i]) === tag) {
-            player.setStatusMessage("你已经领略过这个群系的力量！");
-            level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
-            return;
-        }
-    }
-
-    // 成功收集新群系
-    level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
-    item.nbt.biomes.push(tag);
-    item.nbt.biomenum = item.nbt.biomes.length;
-    player.setStatusMessage(`已收集新的群系力量：§a${biomeId}`);
-});
-
-// --- 远程标靶信号器：激活逻辑 ---
-ItemEvents.rightClicked("rainbow:controller", event => {
-    let { player, item, level, server } = event;
-    if (level.isClientSide()) return;
-    if (player.isCrouching()) return;
-
-    let nbt = item.getNbt();
-    if (!nbt || !nbt.contains("targetX")) {
-        player.setStatusMessage("§c未绑定目标方块！请潜行右键点击标靶方块进行绑定。");
-        return;
-    }
-
-    let x = nbt.getInt("targetX");
-    let y = nbt.getInt("targetY");
-    let z = nbt.getInt("targetZ");
-    let dim = nbt.getString("targetDim");
-
-    let targetLevel = server.getLevel(dim);
-    if (!targetLevel) {
-        player.setStatusMessage(`§c找不到维度: ${dim}`);
-        return;
-    }
-
-    let targetPos = new BlockPos(x, y, z);
-
-    // 检查区块是否加载
-    if (!targetLevel.isLoaded(targetPos)) {
-         player.setStatusMessage("§c目标区块未加载！无法发送信号。");
-         return;
-    }
-
-    let targetBlock = targetLevel.getBlock(targetPos);
-
-    // 检测方块是否还存在
-    if (targetBlock.id !== "minecraft:target") {
-        player.setStatusMessage(`§c目标方块已不存在或被破坏！(${x}, ${y}, ${z})`);
-        return;
-    }
-
-    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "item.lodestone_compass.lock", "voice", 1, 1);
-
-    // 获取信号强度和持续时间
-    let signalPower = 15; // 默认强度
-    let durationTicks = 60; // 默认持续时间 (3秒)
-
-    if (nbt.contains("display")) {
-        let displayTag = nbt.getCompound("display");
-        if (displayTag.contains("Name")) {
-            try {
-                let nameJson = displayTag.getString("Name");
-                // 尝试解析 JSON 字符串
-                let nameObj = JSON.parse(nameJson);
-                if (nameObj && nameObj.text) {
-                    let text = nameObj.text;
-                    // 检查是否包含冒号 (强度:持续时间)
-                    if (text.includes(":")) {
-                        let parts = text.split(":");
-                        if (parts.length >= 2) {
-                            let powerVal = parseInt(parts[0]);
-                            let timeVal = parseInt(parts[1]);
-
-                            if (!isNaN(powerVal)) {
-                                signalPower = Math.max(0, Math.min(15, powerVal));
-                            }
-                            if (!isNaN(timeVal)) {
-                                // 时间单位是秒，转换为 tick (1秒 = 20 tick)
-                                durationTicks = Math.max(1, timeVal * 20);
-                            }
-                        }
-                    } else {
-                        // 仅包含强度
-                        let parsedVal = parseInt(text);
-                        if (!isNaN(parsedVal)) {
-                             signalPower = Math.max(0, Math.min(15, parsedVal));
-                        }
-                    }
-                }
-            } catch (e) {
-                // 解析失败，保持默认
+        // 检查是否已经吃过这种食物
+        for (let i = 0; i < item.nbt.foodlist.length; i++) {
+            if (item.nbt.foodlist[i] == tag) {
+                player.setStatusMessage("这个食物已经吃过了！");
+                level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
+                return;
             }
         }
+
+        // 消耗副手食物
+        targetItem.shrink(1);
+        level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
+
+        // 将 tag 添加到 foodlist 并更新计数
+        item.nbt.foodlist.push(Integer.valueOf(tag));
+        item.nbt.foodnumber = item.nbt.foodlist.length;
+    }
+    /*
+    if (item.id == "minecraft:stick") {
+        // 计算朝向与起始位置
+        let viewVector = player.getViewVector(1.0)
+        let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
+        let nor_x = viewVector.x() / length
+        let nor_y = viewVector.y() / length
+        let nor_z = viewVector.z() / length
+        let new_x = player.x + nor_x * 1.5
+        let new_y = player.y + player.getEyeHeight()
+        let new_z = player.z + nor_z * 1.5
+
+        // 生成已点燃的TNT并抛出
+        let tnt = level.createEntity("savage_and_ravage:ice_chunk")
+        tnt.setPosition(new_x, new_y + 1, new_z)
+        tnt.setMotion(nor_x * 1.3, nor_y * 1.3 + 0.2, nor_z * 1.3)
+        tnt.setCaster(player)
+        tnt.spawn()
+    }*/
+/*
+    // --- 饕餮剑：剑吞噬 ---
+    if (item.id === "rainbow:eldritch_sword") {
+        let targetItem = player.getItemInHand("off_hand");
+        let tag = global.swordlist.indexOf(targetItem.id);
+
+        if (tag === -1) return;
+
+        if (!item.nbt.swordlist) {
+            item.nbt.swordlist = [];
+            item.nbt.swordnumber = 0;
+        }
+
+        for (let i = 0; i < item.nbt.swordlist.length; i++) {
+            if (item.nbt.swordlist[i] == tag) {
+                player.setStatusMessage("这把剑已经吃过了！");
+                level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
+                return;
+            }
+        }
+
+        targetItem.shrink(1);
+        level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
+
+        item.nbt.swordlist.push(Integer.valueOf(tag));
+        item.nbt.swordnumber = item.nbt.swordlist.length;
+    }
+*/
+    // --- 泰拉刃：发射射弹 ---
+    /*if (item.id === 'rainbow:terasword') {
+        if (item.getNbt().getInt("power")) {
+            // 消耗能量
+            item.getNbt().putInt("power",item.getNbt().getInt("power") - 1)
+
+            let projectileName = "minecraft:tnt";
+
+            // 计算发射方向和位置
+            let viewVector = player.getViewVector(1.0)
+            let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z())
+            let nor_x = viewVector.x() / length
+            let nor_y = viewVector.y() / length
+            let nor_z = viewVector.z() / length
+            let new_x = player.x + nor_x * 2
+            let new_y = player.y + player.getEyeHeight()
+            let new_z = player.z + nor_z * 2
+
+            // 发送数据到客户端进行渲染或逻辑处理
+            Client.player.sendData("projectlie", {
+                x: new_x,
+                y: new_y,
+                z: new_z,
+                viewX: nor_x,
+                viewY: nor_y,
+                viewZ: nor_z,
+                name: projectileName
+            })
+        }
+        else {
+            player.tell("能量不足")
+        }
     }
 
-    // 设置信号强度
-    targetLevel.setBlockAndUpdate(targetPos, targetBlock.blockState.setValue(BlockProperties.POWER, Integer.valueOf(signalPower.toString())));
+    // --- 苦力怕护符：随机传送 ---
+    if(item.id === 'rainbow:creeper_charm')
+        {
+            // 随机传送到主世界某处，并给予保护效果
+            player.teleportTo("minecraft:overworld", getRandomInt(-14999992, 14999992), 300, getRandomInt(-14999992, 14999992), player.yaw, player.pitch)
+            player.potionEffects.add("rainbow:democratic_save", 10 * 20, 0, false, false)
+            player.cooldowns.addCooldown("rainbow:creeper_charm",SecoundToTick(60*60))
+        }
 
-    // 指定时间后复位
-    targetLevel.server.scheduleInTicks(durationTicks, () => {
-         if (targetLevel.getBlock(targetPos).id === "minecraft:target") {
-             targetLevel.setBlockAndUpdate(targetPos, targetLevel.getBlock(targetPos).blockState.setValue(BlockProperties.POWER, Integer.valueOf("0")));
-         }
-    });
+    // --- 月光水晶：看月亮获得物品 ---
+    if(item.id === 'chromaticarsenal:lunar_crystal')
+        {
+            if(PlayerLookAtMoon(player))
+                {
+                    player.give("gimmethat:moon")
+                    item.shrink(1)
+                }
+        }
+    
+    // --- 棒球棍：充能 ---
+    if(item.id === 'rainbow:baseball_bat')
+        {
+            let nbt = item.getNbt()
+            server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${player.x} ${player.y} ${player.z}`)
+            player.setItemInHand("main_hand",Item.of("rainbow:baseball_power",`${nbt}`))
+        }    
+    /*
+    // --- 乐谱：播放音乐 ---
+    if(item.id == "rainbow:musical_score")
+        {
+            if(!item.nbt) return;
+            if(!item.nbt.music) return;
 
-    player.setStatusMessage("§a远程信号已发送！");
-    level.playSound(null, player.blockPosition(), "minecraft:block.lever.click", "blocks", 1.0, 1.0);
+            Client.player.sendData("music",{
+                music: intArrayTagToNumbers(item.nbt.music)
+            })
+        }
+    */
+    /*if (item.id === "rainbow:mini_ender_chest") {
+        player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
+    }
+
+    // --- 群系之剑：收集群系 ---
+    if (item.id === "rainbow:biome_of_sword") {
+
+        // 确保全局群系列表已初始化
+        if (!global.biomelist || global.biomelist.length === 0) {
+            global.biomelist = [];
+            let access = server.registryAccess();
+            let biomeRegistry = access.registryOrThrow(Registries.BIOME);
+            biomeRegistry.keySet().forEach(id => global.biomelist.push(id.toString()));
+        }
+    
+        let access = server.registryAccess();
+        let biomeRegistry = access.registryOrThrow(Registries.BIOME);
+        let biome = level.getBiome(player.blockPosition());
+        let biomeKey = biomeRegistry.getResourceKey(biome.get()).get();
+        let biomeId = biomeKey.location().toString();
+        let tag = global.biomelist.indexOf(biomeId);
+    
+        // 初始化物品 NBT
+        if (!item.nbt.biomes) item.nbt.biomes = [];
+        if (!item.nbt.biomenum) item.nbt.biomenum = item.nbt.biomes.length;
+    
+        // 检查是否为有效群系
+        if (tag === -1) {
+            console.log("⚠ 未找到群系:", biomeId);
+            return;
+        }
+    
+        // 检查是否已收集过（循环比对）
+        for (let i = 0; i < item.nbt.biomes.length; i++) {
+            if (Number(item.nbt.biomes[i]) === tag) {
+                player.setStatusMessage("你已经领略过这个群系的力量！");
+                level.server.runCommandSilent(`/playsound minecraft:entity.player.hurt_sweet_berry_bush player @p ${player.x} ${player.y} ${player.z} 1`);
+                return;
+            }
+        }
+    
+        // 成功收集新群系
+        level.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @p ${player.x} ${player.y} ${player.z} 1`);
+        item.nbt.biomes.push(tag);
+        item.nbt.biomenum = item.nbt.biomes.length;
+        player.setStatusMessage(`已收集新的群系力量：§a${biomeId}`);
+    }
+
+    // --- 远程标靶信号器：激活逻辑 ---
+    if (item.id === "rainbow:controller" && !player.isCrouching()) {
+        let nbt = item.getNbt();
+        if (!nbt || !nbt.contains("targetX")) {
+            player.setStatusMessage("§c未绑定目标方块！请潜行右键点击标靶方块进行绑定。");
+            return;
+        }
+
+        let x = nbt.getInt("targetX");
+        let y = nbt.getInt("targetY");
+        let z = nbt.getInt("targetZ");
+        let dim = nbt.getString("targetDim");
+
+        let targetLevel = server.getLevel(dim);
+        if (!targetLevel) {
+            player.setStatusMessage(`§c找不到维度: ${dim}`);
+            return;
+        }
+
+        let targetPos = new BlockPos(x, y, z);
+        
+        // 检查区块是否加载
+        if (!targetLevel.isLoaded(targetPos)) {
+             player.setStatusMessage("§c目标区块未加载！无法发送信号。");
+             return;
+        }
+
+        let targetBlock = targetLevel.getBlock(targetPos);
+
+        // 检测方块是否还存在
+        if (targetBlock.id !== "minecraft:target") {
+            player.setStatusMessage(`§c目标方块已不存在或被破坏！(${x}, ${y}, ${z})`);
+            return;
+        }
+
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(),"item.lodestone_compass.lock","voice", 1, 1)
+
+        // 获取信号强度和持续时间
+        let signalPower = 15; // 默认强度
+        let durationTicks = 60; // 默认持续时间 (3秒)
+
+        if (nbt.contains("display")) {
+            let displayTag = nbt.getCompound("display");
+            if (displayTag.contains("Name")) {
+                try {
+                    let nameJson = displayTag.getString("Name");
+                    // 尝试解析 JSON 字符串
+                    let nameObj = JSON.parse(nameJson);
+                    if (nameObj && nameObj.text) {
+                        let text = nameObj.text;
+                        // 检查是否包含冒号 (强度:持续时间)
+                        if (text.includes(":")) {
+                            let parts = text.split(":");
+                            if (parts.length >= 2) {
+                                let powerVal = parseInt(parts[0]);
+                                let timeVal = parseInt(parts[1]);
+                                
+                                if (!isNaN(powerVal)) {
+                                    signalPower = Math.max(0, Math.min(15, powerVal));
+                                }
+                                if (!isNaN(timeVal)) {
+                                    // 时间单位是秒，转换为 tick (1秒 = 20 tick)
+                                    durationTicks = Math.max(1, timeVal * 20);
+                                }
+                            }
+                        } else {
+                            // 仅包含强度
+                            let parsedVal = parseInt(text);
+                            if (!isNaN(parsedVal)) {
+                                 signalPower = Math.max(0, Math.min(15, parsedVal));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // 解析失败，保持默认
+                }
+            }
+        }
+
+        // 设置信号强度
+        targetLevel.setBlockAndUpdate(targetPos, targetBlock.blockState.setValue(BlockProperties.POWER, Integer.valueOf(signalPower.toString())));
+        
+        // 指定时间后复位
+        targetLevel.server.scheduleInTicks(durationTicks, () => {
+             if (targetLevel.getBlock(targetPos).id === "minecraft:target") {
+                 targetLevel.setBlockAndUpdate(targetPos, targetLevel.getBlock(targetPos).blockState.setValue(BlockProperties.POWER, Integer.valueOf("0")));
+             }
+        });
+        
+        player.setStatusMessage("§a远程信号已发送！");
+        level.playSound(null, player.blockPosition(), "minecraft:block.lever.click", "blocks", 1.0, 1.0);
+    }
+
 });
 /*
 // 音乐系统：山羊角记录音乐
@@ -467,7 +437,7 @@ ItemEvents.rightClicked(event => {
 });
 */
 //逻辑运算
-ItemEvents.rightClicked(event => {
+/*ItemEvents.rightClicked(event => {
     let player = event.player;
     let item = event.item;
     let item_offhand = player.getItemInHand("off_hand");
@@ -692,7 +662,7 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
   });
 */
 // 远古之庇护：绑定UUID
-ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
+/*ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
     let player = event.getPlayer();
     let hand = event.getHand();
     let item = event.getItem();
@@ -930,3 +900,4 @@ ItemEvents.rightClicked(event => {
 });
 
 // Moved to SymbiosisBadge_Server.js
+*/

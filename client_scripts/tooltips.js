@@ -158,6 +158,7 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:mining_charm', (item, advanced, text) => {
         text.add(1, Text.darkPurple("+1时运"));
+        text.add(2, Text.darkPurple("高亮显示附近的战利品箱子"));
     })
     event.addAdvanced('rainbow:wind', (item, advanced, text) => {
         text.add(1, Text.darkPurple("获取灵魂汲取buff"));
@@ -315,7 +316,7 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.darkPurple("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.darkPurple("定期锁定BUFF持续时间"));
+            text.add(1, Text.darkPurple("返回前5s的位置和血量"));
             text.add(2, Text.darkPurple("在结构内可以直接重置结构"));
         }
     })

@@ -1,5 +1,5 @@
 // priority: 0
-
+/*
 let mutantId = 'mutantmore:mutant_wither_skeleton'
 
 // 每 5 分钟尝试生成一次
@@ -87,13 +87,13 @@ LevelEvents.tick('backroom:backroom', event => {
 
   if (raidActive && !raidActiveLastTick) {
     for (let player of playerList) {
-      //player.tell(Text.of('[后室] 袭击开始，追猎者将进入高频追击'))
+      player.tell(Text.of('[后室] 袭击开始，追猎者将进入高频追击'))
     }
   }
 
   if (!raidActive && raidActiveLastTick) {
     for (let player of playerList) {
-      //player.tell(Text.of('[后室] 袭击结束，追猎者进入低频追踪'))
+      player.tell(Text.of('[后室] 袭击结束，追猎者进入低频追踪'))
     }
 
     for (let player of playerList) {
@@ -142,7 +142,7 @@ LevelEvents.tick('backroom:backroom', event => {
     for (let player of playerList) {
       let playerId = String(player.uuid)
 
-      //player.tell(Text.of('[后室] 开始检查追猎者生成'))
+      player.tell(Text.of('[后室] 开始检查追猎者生成'))
 
       if (!trackedMutantsByPlayer[playerId]) {
         trackedMutantsByPlayer[playerId] = {
@@ -175,14 +175,14 @@ LevelEvents.tick('backroom:backroom', event => {
       track.entityUUIDs = validUUIDs
       track.count = validUUIDs.length
 
-      //player.tell(Text.of(`[后室] 当前有效追猎者数量: ${track.count}/${maxMutantsPerPlayer}`))
+      player.tell(Text.of(`[后室] 当前有效追猎者数量: ${track.count}/${maxMutantsPerPlayer}`))
 
       if (removedCount > 0) {
-        //player.tell(Text.of(`[后室] 已清理失效追猎者: ${removedCount} 个`))
+        player.tell(Text.of(`[后室] 已清理失效追猎者: ${removedCount} 个`))
       }
 
       if (track.count >= maxMutantsPerPlayer) {
-        //player.tell(Text.of('[后室] 已达到追猎者数量上限，本次不会继续生成'))
+        player.tell(Text.of('[后室] 已达到追猎者数量上限，本次不会继续生成'))
         continue
       }
 
@@ -191,11 +191,11 @@ LevelEvents.tick('backroom:backroom', event => {
       let pz = Number(player.z)
 
       if (!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(pz)) {
-        //player.tell(Text.of('[后室] 玩家坐标异常，无法生成追猎者'))
+        player.tell(Text.of('[后室] 玩家坐标异常，无法生成追猎者'))
         continue
       }
 
-      //player.tell(Text.of(`[后室] 开始搜索安全生成点，搜索Y=${py}`))
+      player.tell(Text.of(`[后室] 开始搜索安全生成点，搜索Y=${py}`))
 
       let spawnPos = null
 
@@ -249,15 +249,15 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       if (spawnPos == null) {
-        //player.tell(Text.of(`[后室] 在 ${spawnMinDistance}-${spawnMaxDistance} 格内未找到安全生成点`))
+        player.tell(Text.of(`[后室] 在 ${spawnMinDistance}-${spawnMaxDistance} 格内未找到安全生成点`))
         continue
       }
 
-      //player.tell(Text.of(`[后室] 已找到安全生成点: ${spawnPos.x}, ${spawnPos.y}, ${spawnPos.z}`))
+      player.tell(Text.of(`[后室] 已找到安全生成点: ${spawnPos.x}, ${spawnPos.y}, ${spawnPos.z}`))
 
       let mutant = level.createEntity(mutantId)
       if (mutant == null) {
-        //player.tell(Text.of('[后室] 创建追猎者实体失败'))
+        player.tell(Text.of('[后室] 创建追猎者实体失败'))
         console.log(`[KubeJS] 创建实体失败: ${mutantId}`)
         continue
       }
@@ -271,18 +271,18 @@ LevelEvents.tick('backroom:backroom', event => {
         mutant.getNavigation().moveTo(player, moveSpeed)
 
         if (raidActive) {
-          ////player.tell(Text.of('[后室] 已为新追猎者下发袭击期AI追踪任务'))
+          //player.tell(Text.of('[后室] 已为新追猎者下发袭击期AI追踪任务'))
         } else {
-          ////player.tell(Text.of('[后室] 已为新追猎者下发非袭击期AI追踪任务'))
+          //player.tell(Text.of('[后室] 已为新追猎者下发非袭击期AI追踪任务'))
         }
       } catch (e) {
-        //player.tell(Text.of('[后室] 新生成的追猎者不支持AI寻路接口'))
+        player.tell(Text.of('[后室] 新生成的追猎者不支持AI寻路接口'))
       }
 
       track.entityUUIDs.push(String(mutant.uuid))
       track.count = track.entityUUIDs.length
 
-      //player.tell(Text.of(`[后室] 追猎者已生成，当前数量: ${track.count}/${maxMutantsPerPlayer}`))
+      player.tell(Text.of(`[后室] 追猎者已生成，当前数量: ${track.count}/${maxMutantsPerPlayer}`))
       console.log(`[KubeJS] 为玩家 ${player.name.string} 生成 ${mutantId}，当前数量 ${track.count}`)
     }
   }
@@ -313,9 +313,9 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       if (raidActive) {
-        //player.tell(Text.of('[后室] 开始更新袭击期追猎者AI追踪'))
+        player.tell(Text.of('[后室] 开始更新袭击期追猎者AI追踪'))
       } else {
-        //player.tell(Text.of('[后室] 开始更新非袭击期追猎者AI追踪'))
+        player.tell(Text.of('[后室] 开始更新非袭击期追猎者AI追踪'))
       }
 
       let validUUIDs = []
@@ -341,7 +341,7 @@ LevelEvents.tick('backroom:backroom', event => {
           found.getNavigation().moveTo(player, moveSpeed)
           validUUIDs.push(uuid)
         } catch (e) {
-          //player.tell(Text.of(`[后室] 追猎者AI调用失败: ${uuid}`))
+          player.tell(Text.of(`[后室] 追猎者AI调用失败: ${uuid}`))
         }
       }
 
@@ -354,20 +354,20 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       if (removedCount > 0) {
-        //player.tell(Text.of(`[后室] 已移除失效追猎者: ${removedCount} 个`))
+        player.tell(Text.of(`[后室] 已移除失效追猎者: ${removedCount} 个`))
       }
 
       if (raidActive) {
-        //player.tell(Text.of(`[后室] 袭击期追猎者AI追踪已更新，当前有效数量: ${track.count}`))
+        player.tell(Text.of(`[后室] 袭击期追猎者AI追踪已更新，当前有效数量: ${track.count}`))
       } else {
-        //player.tell(Text.of(`[后室] 非袭击期追猎者AI追踪已更新，当前有效数量: ${track.count}`))
+        player.tell(Text.of(`[后室] 非袭击期追猎者AI追踪已更新，当前有效数量: ${track.count}`))
       }
 
       console.log(`[KubeJS] 更新玩家 ${player.name.string} 的追踪实体AI，当前有效数量 ${track.count}，raid=${raidActive}`)
     }
   }
 })
-
+*/
 /**
  * // priority: 0
 
@@ -467,13 +467,13 @@ LevelEvents.tick('backroom:backroom', event => {
 
   if (raidActive && !raidActiveLastTick) {
     for (let player of playerList) {
-      //player.tell(Text.of('[后室] 袭击开始，多种追杀者将进入高频追击'))
+      player.tell(Text.of('[后室] 袭击开始，多种追杀者将进入高频追击'))
     }
   }
 
   if (!raidActive && raidActiveLastTick) {
     for (let player of playerList) {
-      //player.tell(Text.of('[后室] 袭击结束，追杀者进入低频追踪'))
+      player.tell(Text.of('[后室] 袭击结束，追杀者进入低频追踪'))
     }
 
     for (let player of playerList) {
@@ -522,7 +522,7 @@ LevelEvents.tick('backroom:backroom', event => {
     for (let player of playerList) {
       let playerId = String(player.uuid)
 
-      //player.tell(Text.of('[后室] 开始检查多种追杀者生成'))
+      player.tell(Text.of('[后室] 开始检查多种追杀者生成'))
 
       if (!trackedMutantsByPlayer[playerId]) {
         trackedMutantsByPlayer[playerId] = {
@@ -555,14 +555,14 @@ LevelEvents.tick('backroom:backroom', event => {
       track.entityUUIDs = validUUIDs
       track.count = validUUIDs.length
 
-      //player.tell(Text.of(`[后室] 当前有效追杀者数量: ${track.count}/${maxMutantsPerPlayer}`))
+      player.tell(Text.of(`[后室] 当前有效追杀者数量: ${track.count}/${maxMutantsPerPlayer}`))
 
       if (removedCount > 0) {
-        //player.tell(Text.of(`[后室] 已清理失效追杀者: ${removedCount} 个`))
+        player.tell(Text.of(`[后室] 已清理失效追杀者: ${removedCount} 个`))
       }
 
       if (track.count >= maxMutantsPerPlayer) {
-        //player.tell(Text.of('[后室] 已达到追杀者数量上限，本次不会继续生成'))
+        player.tell(Text.of('[后室] 已达到追杀者数量上限，本次不会继续生成'))
         continue
       }
 
@@ -571,11 +571,11 @@ LevelEvents.tick('backroom:backroom', event => {
       let pz = Number(player.z)
 
       if (!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(pz)) {
-        //player.tell(Text.of('[后室] 玩家坐标异常，无法生成追杀者'))
+        player.tell(Text.of('[后室] 玩家坐标异常，无法生成追杀者'))
         continue
       }
 
-      //player.tell(Text.of(`[后室] 开始搜索安全生成点，搜索Y=${py}`))
+      player.tell(Text.of(`[后室] 开始搜索安全生成点，搜索Y=${py}`))
 
       for (let waveIndex = 0; waveIndex < spawnCountPerWave; waveIndex++) {
         if (track.count >= maxMutantsPerPlayer) {
@@ -634,18 +634,18 @@ LevelEvents.tick('backroom:backroom', event => {
         }
 
         if (spawnPos == null) {
-          //player.tell(Text.of(`[后室] 第 ${waveIndex + 1} 个追杀者未找到安全生成点`))
+          player.tell(Text.of(`[后室] 第 ${waveIndex + 1} 个追杀者未找到安全生成点`))
           continue
         }
 
         let randomIndex = Math.floor(Math.random() * mutantIds.length)
         let mutantId = mutantIds[randomIndex]
 
-        //player.tell(Text.of(`[后室] 已找到安全生成点，准备生成: ${mutantId}`))
+        player.tell(Text.of(`[后室] 已找到安全生成点，准备生成: ${mutantId}`))
 
         let mutant = level.createEntity(mutantId)
         if (mutant == null) {
-          //player.tell(Text.of(`[后室] 创建追杀者实体失败: ${mutantId}`))
+          player.tell(Text.of(`[后室] 创建追杀者实体失败: ${mutantId}`))
           console.log(`[KubeJS] 创建实体失败: ${mutantId}`)
           continue
         }
@@ -657,18 +657,18 @@ LevelEvents.tick('backroom:backroom', event => {
           mutant.getNavigation().moveTo(player, moveSpeed)
 
           if (raidActive) {
-            //player.tell(Text.of(`[后室] 已为新追杀者下发袭击期AI追踪任务: ${mutantId}`))
+            player.tell(Text.of(`[后室] 已为新追杀者下发袭击期AI追踪任务: ${mutantId}`))
           } else {
-            //player.tell(Text.of(`[后室] 已为新追杀者下发非袭击期AI追踪任务: ${mutantId}`))
+            player.tell(Text.of(`[后室] 已为新追杀者下发非袭击期AI追踪任务: ${mutantId}`))
           }
         } catch (e) {
-          //player.tell(Text.of(`[后室] 新生成的追杀者不支持AI寻路接口: ${mutantId}`))
+          player.tell(Text.of(`[后室] 新生成的追杀者不支持AI寻路接口: ${mutantId}`))
         }
 
         track.entityUUIDs.push(String(mutant.uuid))
         track.count = track.entityUUIDs.length
 
-        //player.tell(Text.of(`[后室] 已生成追杀者 ${mutantId}，当前数量: ${track.count}/${maxMutantsPerPlayer}`))
+        player.tell(Text.of(`[后室] 已生成追杀者 ${mutantId}，当前数量: ${track.count}/${maxMutantsPerPlayer}`))
         console.log(`[KubeJS] 为玩家 ${player.name.string} 生成 ${mutantId}，当前数量 ${track.count}`)
       }
     }
@@ -699,9 +699,9 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       if (raidActive) {
-        //player.tell(Text.of('[后室] 开始更新袭击期追杀者AI追踪'))
+        player.tell(Text.of('[后室] 开始更新袭击期追杀者AI追踪'))
       } else {
-        //player.tell(Text.of('[后室] 开始更新非袭击期追杀者AI追踪'))
+        player.tell(Text.of('[后室] 开始更新非袭击期追杀者AI追踪'))
       }
 
       let validUUIDs = []
@@ -731,7 +731,7 @@ LevelEvents.tick('backroom:backroom', event => {
           found.getNavigation().moveTo(player, moveSpeed)
           validUUIDs.push(uuid)
         } catch (e) {
-          //player.tell(Text.of(`[后室] 追杀者AI调用失败: ${uuid}`))
+          player.tell(Text.of(`[后室] 追杀者AI调用失败: ${uuid}`))
         }
       }
 
@@ -743,13 +743,13 @@ LevelEvents.tick('backroom:backroom', event => {
       }
 
       if (removedCount > 0) {
-        //player.tell(Text.of(`[后室] 已移除失效追杀者: ${removedCount} 个`))
+        player.tell(Text.of(`[后室] 已移除失效追杀者: ${removedCount} 个`))
       }
 
       if (raidActive) {
-        //player.tell(Text.of(`[后室] 袭击期追杀者AI追踪已更新，当前有效数量: ${track.count}`))
+        player.tell(Text.of(`[后室] 袭击期追杀者AI追踪已更新，当前有效数量: ${track.count}`))
       } else {
-        //player.tell(Text.of(`[后室] 非袭击期追杀者AI追踪已更新，当前有效数量: ${track.count}`))
+        player.tell(Text.of(`[后室] 非袭击期追杀者AI追踪已更新，当前有效数量: ${track.count}`))
       }
 
       console.log(`[KubeJS] 更新玩家 ${player.name.string} 的追杀者AI，当前有效数量 ${track.count}，raid=${raidActive}`)

@@ -47,30 +47,6 @@ StartupEvents.registry("item", event => {
     // 远程标靶信号器
     event.create("rainbow:controller")
 
-    // 发条怀表 (饰品)
-    event.create("rainbow:chronos")
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    if (entity == null) return;
-                    if (hasCurios(entity, 'rainbow:chronos')) {
-                        return false;
-                    }
-                    return true;
-                })
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    if (player == null) return;
-                    if (player.age % SecoundToTick(20)) return;
-                    // 定时给予时间相关的药水效果
-                    player.potionEffects.add("runiclib:chronos", SecoundToTick(10), 0, false, false)
-                })
-        )
-
     // 乐谱
     //event.create("rainbow:musical_score")
     // 升级模板

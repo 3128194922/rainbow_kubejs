@@ -7,13 +7,51 @@
 // 荷鲁斯之爪
 StartupEvents.registry('item', event => {
     event.create('rainbow:clawofhorus')
-        .tooltip("攻击生物概率恢复冷却")
+        .tooltip(Text.gold("[手套]"))
         .displayName("荷鲁斯之爪")
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-})
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(e => {
+                    let stack = e.stack;
+                    let player = e.slotContext.entity();
 
+                    if (!stack || !player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
+
+                    let nbt = stack.nbt;
+                    if (!nbt) return;
+
+                    let hunted = nbt.getInt("isBeingHunted") || 0;
+
+                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", hunted, "addition");
+                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.1 * hunted, "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    if (!stack.nbt) stack.nbt = {};
+                    let nbt = stack.nbt;
+
+                    let player = slotContext.entity();
+                    if (!player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
+
+                    let attacker = player.lastHurtByMob;
+                    let isBeingHunted = 1;
+
+                    if (attacker && attacker.target == player) {
+                        isBeingHunted = 0;
+                    }
+
+                    // 仅在状态变化时更新 NBT
+                    if (nbt.getInt("isBeingHunted") !== isBeingHunted) {
+                        nbt.putInt("isBeingHunted", isBeingHunted);
+                        if (isBeingHunted === 0) {
+                            player.cooldowns.addCooldown("rainbow:clawofhorus", 100);
+                        }
+                    }
+                })
+        );
+});
 // 闪电瓶
 StartupEvents.registry('item', event => {
     event.create('rainbow:lightning')
@@ -161,14 +199,9 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    if (player == null) return;
-                    if (player.age % SecoundToTick(5)) return;
-
-                    player.potionEffects.add("gimmethat:lozenge", SecoundToTick(10), 0, false, false);
-                    player.potionEffects.add("gimmethat:appetizing", SecoundToTick(10), 0, false, false);
-                })
+                .addAttribute("moreattribute:eat_speed", "big_stomach", -0.5, "addition")
+                .addAttribute("moreattribute:drink_speed", "big_stomach", -0.5, "addition")
+                .addAttribute("moreattribute:can_always_eat", "big_stomach", 1, "addition")
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -1280,7 +1313,7 @@ StartupEvents.registry('item', event => {
                             player.persistentData.isGravityCore = false;
 
                             let r = 4;
-                            let stompBox = AABB.of(player.x - r, player.y - 1.1, player.z - r, player.x + r, player.y+1.1, player.z + r);
+                            let stompBox = new AABB(player.x - r, player.y - 1.1, player.z - r, player.x + r, player.y + 1.1, player.z + r);
 
                             player.level.getEntitiesWithin(stompBox).forEach(entity => {
                                 if (!entity) return;
@@ -1331,7 +1364,7 @@ StartupEvents.registry('item', event => {
                     let playerBox = player.getBoundingBox();
 
                     let radius = 1;
-                    let stompBox = AABB.of(
+                    let stompBox = new AABB(
                         playerBox.minX - radius, player.getY() - 0.1, playerBox.minZ - radius,
                         playerBox.maxX + radius, player.getY() + 0.4, playerBox.maxZ + radius
                     );

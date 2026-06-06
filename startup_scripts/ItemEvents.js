@@ -7,7 +7,7 @@
 // Modifies properties, rarity, and adds functionality (like backtank flight) to existing items
 
 // 修改物品稀有度和属性
-ItemEvents.modification(event => {
+/*ItemEvents.modification(event => {
    let list = ['gimmethat:gravity_core', 'gimmethat:giants_ring', 'gimmethat:moai_charm']
 
    // 批量修改稀有度为 epic
@@ -22,7 +22,7 @@ ItemEvents.modification(event => {
       event.addAttribute("forge:entity_reach", "62808577-5866-484f-a397-7b9340fd7c0b", "the_great_frost", 1.0, "addition")
    })
 })
-
+*/
 /*
 ItemEvents.modification(event => {
    const backtanks = [

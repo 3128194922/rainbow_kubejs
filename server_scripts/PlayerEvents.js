@@ -6,6 +6,7 @@
 // 玩家统一Tick事件（每秒20次）
 PlayerEvents.tick((event) => {
     const { player, server } = event;
+    
     //console.log(`${player.getInventory().armor[3]}`)
     if (player.level.isClientSide()) return;
 

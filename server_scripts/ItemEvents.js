@@ -226,7 +226,7 @@ ItemEvents.rightClicked('chromaticarsenal:lunar_crystal', event => {
     if (level.isClientSide()) return;
 
     if (PlayerLookAtMoon(player)) {
-        player.give("gimmethat:moon");
+        player.give("rainbow:mini_moon");
         item.shrink(1);
     }
 });
@@ -609,7 +609,7 @@ ItemEvents.entityInteracted("rainbow:nbt_util", event => {
 
     console.log(target.getType())
     console.log(JSON.stringify(nbtToJs(targetNbt), null, 2));
-
+    console.log(target.getDeltaMovement().lengthSqr())
     player.tell("NBT已以JSON格式输出到日志");
 });
 /*

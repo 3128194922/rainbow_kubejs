@@ -27,21 +27,21 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
     }
 
     // 万能钥匙斧：气罐触发额外伤害
-    if (mainHand.id == "gimmethat:master_key" && range_damage.indexOf(source.getType()) == -1) {
+    /*if (mainHand.id == "gimmethat:master_key" && range_damage.indexOf(source.getType()) == -1) {
         /*let tank = global.backtankUtils.getFirstTank(attacker);
         if (tank && global.backtankUtils.hasAirRemaining(tank)) {
             global.backtankUtils.consumeAir(attacker, tank, 10); // 消耗10气
             event.setAmount(event.getAmount() + 6); // 增加伤害
             attacker.level.playSound(null, attacker.blockPosition(), "create:whistle_low", "players", 1.0, 1.0);
         }*/
-        let tank = getCuriosItem(attacker, 'create:copper_backtank') ? getCuriosItem(attacker, 'create:copper_backtank') : getCuriosItem(attacker, 'create:netherite_backtank');
+    /*    let tank = getCuriosItem(attacker, 'create:copper_backtank') ? getCuriosItem(attacker, 'create:copper_backtank') : getCuriosItem(attacker, 'create:netherite_backtank');
         let currentAir = tank.nbt.getInt("Air");
         if (tank && currentAir > 0) {
             tank.nbt.putInt("Air", currentAir - 10);
             event.setAmount(event.getAmount() + 6); // 增加伤害
             attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "create:steam", "voice", 1, 1)
         }
-    }
+    }*/
 
     // 决斗剑：对已记录类型的生物造成额外伤害
     if (mainHand.id == "rainbow:duel") {

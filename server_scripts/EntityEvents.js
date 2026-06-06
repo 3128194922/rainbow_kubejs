@@ -31,7 +31,7 @@ EntityEvents.hurt(event => {
         }
 
     //大哥怒了！
-    if (source.player) {
+    /*if (source.player) {
         let nbt = entity.nbt;
         let germoniumState = nbt.getString("Germonium");
         let luck = source.player.getAttribute("minecraft:generic.luck").getValue();
@@ -55,7 +55,8 @@ EntityEvents.hurt(event => {
                 })
             }
         }
-    }
+    }*/
+
 });
 
 // 实体生成事件

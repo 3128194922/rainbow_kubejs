@@ -214,6 +214,7 @@ registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, sub
 
 // --- 时间神石 ---
 registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if(player.cooldowns.isOnCooldown("rainbow:chronos")) return;
     if (!itemStack || !itemStack.nbt || !itemStack.nbt.history || itemStack.nbt.history.length <= 0) {
         player.tell(Text.gray("发条怀表尚未记录到足够的时间信息。"));
         return;
@@ -339,6 +340,7 @@ registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIn
     player.persistentData.putBoolean("ChronosRewinding", true);
     event.server.runCommandSilent(`/execute at ${player.getDisplayName().getString()} run respawningstructures respawnClosestStructure`);
     rewindToIndex(0);
+    player.cooldowns.addCooldown("rainbow:chronos",200)
 });
 
 // --- 信标球 ---
@@ -548,6 +550,7 @@ registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, s
 // --- 天琴座 ---
 registerSkillSound('rainbow:lyre', 'rainbow:voice.null');
 registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    player.tell(submenuIndex)
     if (itemStack && isSubmenu) 
     {
         if(player.cooldowns.isOnCooldown(itemStack.id))

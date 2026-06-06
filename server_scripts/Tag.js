@@ -13,7 +13,6 @@ ServerEvents.tags("item", event => {
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
     ,'rainbow:whistle','alexsmobs:void_worm_eye'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
-    event.add('rainbow:democracy',['gimmethat:democracy_helmet','gimmethat:democracy_boots','gimmethat:democracy_chestplate','gimmethat:democracy_leggings'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
     event.add('offhandattack:is_hands',['rainbow:baseball_bat','savage_and_ravage:cleaver_of_beheading', 'rainbow:baseball_power'])
     //event.add('offhandattack:can_hands_use',[''])
@@ -73,7 +72,7 @@ ServerEvents.tags("item", event => {
     })*/
 
     // 背部饰品标签
-    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod'],
+    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod','mysticartifacts:artifact_spirit'],
         "curios:back"
     )
     
@@ -82,8 +81,10 @@ ServerEvents.tags("item", event => {
         "curios:head")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['gimmethat:tracking_arrow','rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", "mysticartifacts:slime_arrow", 
+    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", 'mysticartifacts:sculk_arrow', 
     "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow","mysticartifacts:void_arrow"])
+    
+    event.add("minecraft:firework", ["mysticartifacts:void_arrow"])
     
     // 怪肉类食物标签
     event.add('rainbow:monster_meat', [

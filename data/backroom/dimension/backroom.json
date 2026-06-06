@@ -7,11 +7,7 @@
             "layers": [
                 {
                     "block": "minecraft:bedrock",
-                    "height": 1
-                },
-                {
-                    "block": "minecraft:grass_block",
-                    "height": 1
+                    "height": 10
                 }
             ],
             "biome": "backroom:backroom",

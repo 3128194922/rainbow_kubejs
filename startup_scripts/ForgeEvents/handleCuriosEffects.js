@@ -23,7 +23,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
     }
 
     // 屠夫之钉：远程攻击暴击引发爆炸
-    if (hasCurios(attacker, "rainbow:clawofhorus") &&
+    /*if (hasCurios(attacker, "rainbow:clawofhorus") &&
         range_damage.indexOf(source.getType()) != -1 &&
         !attacker.cooldowns.isOnCooldown("rainbow:clawofhorus")) {
 
@@ -38,7 +38,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
             attacker.cooldowns.addCooldown("rainbow:clawofhorus", SecoundToTick(6));
             attacker.cooldowns.removeCooldown(offHand.id);
         }
-    }
+    }*/
 
     // 链式闪电饰品：攻击时触发链式闪电
     if (hasCurios(attacker, "rainbow:lightning")) {

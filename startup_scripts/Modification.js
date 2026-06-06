@@ -16,6 +16,10 @@ BlockEvents.modification(event => {
 
 // 修改物品属性
 ItemEvents.modification(event => {
+    // 隐匿腰带
+    event.modify('caverns_and_chasms:toolbelt', item => {
+        item.addAttribute("caverns_and_chasms:stealth", "bd60c52b-a523-4266-b34b-c53cb37a5ac3", "toolbelt", 0.4, "addition")
+    })
     // 幻觉效果食物 (gimmethat:hallucinating)
     /*event.modify(['collectorsreap:portobello_quiche_slice', 'collectorsreap:portobello_burger'], item => {
         item.foodProperties = food => {

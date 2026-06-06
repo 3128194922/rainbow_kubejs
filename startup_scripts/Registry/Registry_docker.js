@@ -133,7 +133,7 @@ StartupEvents.registry("block", event => {
                         entity.inventory.setItem(slot, itemStack);
 
                     } catch (err) {
-                        console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
+                        console.log(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         break;
                     }
                     
@@ -220,7 +220,7 @@ StartupEvents.registry("block", event => {
                         itemStack.shrink(1);
                         entity.inventory.setItem(slot, itemStack);
                     } catch (err) {
-                        console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
+                        console.log(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         break;
                     }
                     break;
@@ -301,7 +301,7 @@ StartupEvents.registry("block", event => {
                             itemStack.shrink(1);
                             entity.inventory.setItem(slot, itemStack);
                         } catch (err) {
-                            console.warn(`[Docker Shooter] 创建实体失败: ${projectileName}`);
+                            console.log(`[Docker Shooter] 创建实体失败: ${projectileName}`);
                         }
                         // 发射一发后不再从其他槽消耗
                         break;
@@ -365,8 +365,7 @@ StartupEvents.registry("block", event => {
                     tz = data.player_z - z;
                 } else {
                     let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
-                    let aabb = AABB.of(x - range, y, z - range, x + range, y + 2, z + range);
-                    //let aabb = AABB.ofBlock(pos).inflate(range);
+                    let aabb = AABB.ofBlock(pos).inflate(range);
                     let entities = level.getEntitiesOfClass($LivingEntity, aabb);
                     let target = null;
                     for (let e of entities) {
@@ -510,7 +509,7 @@ StartupEvents.registry("block", event => {
                 if (data.tick_counter >= 1000) {
                     data.tick_counter = 0;
 
-                    let reward = Item.of("gimmethat:nether_of_voice");
+                    let reward = Item.of("mysticartifacts:nether_of_voice");
                     entity.inventory.insertItem(reward, false);
                 }
             });
@@ -889,7 +888,7 @@ StartupEvents.registry("block", event => {
 });
 
 // Docker 地雷型 
-StartupEvents.registry("block", event => { 
+/*StartupEvents.registry("block", event => { 
     event.create("rainbow:landmine") 
         .displayName("Docker(地雷型)") 
         .grassSoundType() 
@@ -908,7 +907,7 @@ StartupEvents.registry("block", event => {
                     .explosionMode("none") 
                     .explode()*/
 
-                level.getBlock(pos.x,pos.y,pos.z).set("minecraft:air")
+                /*level.getBlock(pos.x,pos.y,pos.z).set("minecraft:air")
 
                 level.createExplosion(pos.x,pos.y+1,pos.z)
                 .strength(6.0)
@@ -922,7 +921,7 @@ StartupEvents.registry("block", event => {
             } 
         }) 
 }) 
-
+*/
 // Docker 地雷型 - 使用检测器方块（需要红石信号触发）
 /*StartupEvents.registry("block", event => {
     event.create("rainbow:landmine", "detector")

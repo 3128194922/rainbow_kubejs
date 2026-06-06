@@ -447,3 +447,16 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
 });
 
 //DamageSorce()
+//怪物看到玩家事件
+ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVisibilityEvent', event => {
+    try {
+        let target = event.entity;         // 被看的实体
+        let observer = event.getLookingEntity(); // 观察者
+
+        if (!target || !observer) return;
+
+    } catch (e) {
+        console.log("监听看见出现问题：");
+        console.log(e);
+    }
+});

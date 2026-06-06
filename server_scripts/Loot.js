@@ -174,13 +174,13 @@ ServerEvents.entityLootTables(event => {
         });
     });*/
     // 女巫帽子
-    event.modifyEntity('minecraft:witch', Loot => {
+    /*event.modifyEntity('minecraft:witch', Loot => {
         Loot.addPool(pool => {
             pool.addItem('gimmethat:which_armor_helmet')
             .weight(1)
             .count([0,1])
         })
-    })
+    })*/
     // 腐烂之心
     event.modifyEntity('minecraft:zombie', Loot => {
         Loot.addPool(pool => {
@@ -313,7 +313,7 @@ LootJS.modifiers((event) => {
         .addLootTypeModifier(LootType.ENTITY)
         .entityPredicate((entity) => entity.persistentData.docker != null && entity.getNbt().get("forge:spawn_type") == "MOB_SUMMONED")
         .addAlternativesLoot(
-            LootEntry.of('gimmethat:mandel_brick').when((c) => c.randomChance(0.5)),
-            LootEntry.of('gimmethat:quantum_key').when((c) => c.randomChance(0.5))
+            //LootEntry.of('gimmethat:mandel_brick').when((c) => c.randomChance(0.5)),
+            //LootEntry.of('gimmethat:quantum_key').when((c) => c.randomChance(0.5))
         );
 });

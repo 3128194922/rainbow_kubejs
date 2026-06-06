@@ -166,11 +166,11 @@ ServerEvents.recipes(event => {
         ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
 */
     //破坏者刺雷
-    event.shaped("opalus:griefer_spear", [
+    /*event.shaped("opalus:griefer_spear", [
         ['', 'savage_and_ravage:blast_proof_plating', ''],
         ['', 'minecraft:stick', ''],
         ['', 'minecraft:stick','']])
-
+*/
     // 万能钥匙配方
     //event.shapeless('gimmethat:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
 
@@ -325,10 +325,10 @@ ServerEvents.recipes(event => {
     // event.recipes.create.filling('alexsmobs:ambergris', [Fluid.of("youkaishomecoming:suigei", 1000), 'rainbow:shit'])
 
     //民主甲配方
-    event.recipes.create.filling('gimmethat:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet'])
-    event.recipes.create.filling('gimmethat:democracy_chestplate', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_chestplate'])
-    event.recipes.create.filling('gimmethat:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings'])
-    event.recipes.create.filling('gimmethat:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
+    //event.recipes.create.filling('gimmethat:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet'])
+    //event.recipes.create.filling('gimmethat:democracy_chestplate', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_chestplate'])
+    //event.recipes.create.filling('gimmethat:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings'])
+    //event.recipes.create.filling('gimmethat:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
 
     // 臭屁瓶
     event.recipes.create.mixing('alexsmobs:stink_bottle', ['alexscaves:guano', 'quark:bottled_cloud'])

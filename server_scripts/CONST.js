@@ -15,7 +15,10 @@ const ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
 const ItemEntity = Java.loadClass('net.minecraft.world.entity.item.ItemEntity')
 const Registries = Java.loadClass("net.minecraft.core.registries.Registries");
 const Mob = Java.loadClass('net.minecraft.world.entity.Mob')
-
+const $ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
+const $Mob = Java.loadClass('net.minecraft.world.entity.Mob')
+const $Effects = Java.loadClass('net.minecraft.world.effect.MobEffects')
+const $InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化

@@ -15,6 +15,7 @@ const POWER = {
     Reinforce: "援军",
     Leader: "领袖",
     Stealth: "隐匿",
+    evolution: "演化",
 };
 
 /**
@@ -67,8 +68,9 @@ EntityEvents.hurt(event => {
             entity.persistentData.putString("POWER", JSON.stringify(powers));
             powers.forEach(p => entity.persistentData.putBoolean('_mb_p_' + p, true));
             entity.setCustomName(Text.red(JSON.stringify(powers.map(k => POWER[k]))));
-            entity.modifyAttribute("generic.max_health","mini_boss",Health*3,"addition")
-            entity.setHealth(entity.getAttribute("generic.max_health").getValue());
+            //entity.modifyAttribute("generic.max_health","mini_boss",Health*3,"addition")
+            entity.setAttributeBaseValue("generic.max_health", Health * 3);
+            entity.setHealth(entity.getMaxHealth());
         }
     }
 });

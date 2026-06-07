@@ -106,7 +106,10 @@ $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
               if (!other || !other.isAlive()) return
               if (other == e) return
               if (other.getType() != e.getType()) return
-              try { other.potionEffects.add('quark:resilience', 100, 0, false, true) } catch(er) { console.log(er) }
+              try { other.potionEffects.add('quark:resilience', 100, 0, false, true);
+              other.potionEffects.add('minecraft:speed', 100, 0, false, true)
+
+               } catch(er) { console.log(er) }
             })
             t = 0
           }

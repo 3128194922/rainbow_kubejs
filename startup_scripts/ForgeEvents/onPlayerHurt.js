@@ -24,6 +24,10 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
                     let uuid = UUID.fromString(uuidStr);
                     let targetPlayer = victim.level.getPlayerByUUID(uuid);
                     if (targetPlayer) {
+                        if(hasCurios(targetPlayer, "rainbow:ancientaegis"))
+                        {
+                            return; // 目标玩家也有古代庇护，不转移伤害
+                        }
                         // 将伤害转移给绑定目标，自身免伤
                         targetPlayer.attack(targetPlayer.damageSources().magic(), event.getAmount());
                         event.setAmount(0);

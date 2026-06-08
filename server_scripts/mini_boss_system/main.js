@@ -15,7 +15,7 @@ const POWER = {
     Reinforce: "援军",
     Leader: "领袖",
     Stealth: "隐匿",
-    evolution: "演化",
+    Evolve: "演化",
 };
 
 /**

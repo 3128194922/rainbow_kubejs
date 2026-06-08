@@ -11,6 +11,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.level.BlockEvent$EntityPlaceEvent"
 
 // 玩家破坏方块速度事件
 ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpeed", event => {
+    let entity = event.getEntity();
     // 禁止在 backroom 维度挖掘
     if(!entity) return;
     if (entity.level.name.getString() === "backroom:backroom") {

@@ -31,7 +31,7 @@ const $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
 const $Animal = Java.loadClass("net.minecraft.world.entity.animal.Animal")
 const $Player = Java.loadClass("net.minecraft.world.entity.player.Player")
 const $Villager = Java.loadClass("net.minecraft.world.entity.npc.Villager")
-
+const $Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
 
 global.CURIONUMBER = 4
 global.CURSES = [

@@ -1488,3 +1488,45 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
 })
+
+// 雪碧
+StartupEvents.registry('item', event => {
+    event.create('rainbow:sprite')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:sprite')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (!player) return;
+
+                    let tag = stack.getOrCreateTag();
+                    let lastX = tag.getDouble("lastX");
+                    let lastZ = tag.getDouble("lastZ");
+
+                    let dx = player.x - lastX;
+                    let dz = player.z - lastZ;
+                    let moving = (dx * dx + dz * dz) > 1.0e-6;
+
+                    tag.putDouble("lastX", player.x);
+                    tag.putDouble("lastZ", player.z);
+                    tag.putBoolean("Moving", moving);
+                })
+                .modifyAttribute(ev => {
+                    let stack = ev.stack;
+                    let moving = stack.getOrCreateTag().getBoolean("Moving");
+                    if (moving) {
+                        ev.modify("minecraft:generic.knockback_resistance", "sprite", 0.5, "addition");
+                        ev.modify("minecraft:generic.armor", "sprite", 10, "addition");
+                        ev.modify("minecraft:generic.attack_damage", "sprite", 3, "addition");
+                    }
+                })
+        )
+})

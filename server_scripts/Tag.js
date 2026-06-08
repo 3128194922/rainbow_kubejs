@@ -11,7 +11,7 @@ ServerEvents.tags("item", event => {
     
     // 饰品相关标签
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
-    ,'rainbow:whistle','alexsmobs:void_worm_eye'])
+    ,'rainbow:whistle','alexsmobs:void_worm_eye','rainbow:ice_tea'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
     event.add('offhandattack:is_hands',['rainbow:baseball_bat','savage_and_ravage:cleaver_of_beheading', 'rainbow:baseball_power'])

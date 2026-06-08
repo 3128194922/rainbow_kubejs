@@ -60,7 +60,7 @@ ServerEvents.recipes(event => {
             ['','create:sturdy_sheet',''],])*/
 
     //炮塔docker
-    event.shapeless('rainbow:docker_shooter_fire','rainbow:docker_shooter')
+    /*event.shapeless('rainbow:docker_shooter_fire','rainbow:docker_shooter')
     event.shapeless('rainbow:docker_shooter_plus','rainbow:docker_shooter_fire')
     event.shapeless('rainbow:docker_shooter_parabola','rainbow:docker_shooter_plus')
     event.shapeless('rainbow:docker_shooter','rainbow:docker_shooter_parabola')
@@ -68,7 +68,7 @@ ServerEvents.recipes(event => {
         ['minecraft:dropper', 'minecraft:dispenser', 'minecraft:redstone'],
         ['quark:redstone_randomizer', 'minecraft:repeater', 'minecraft:comparator'],
         ['minecraft:redstone_torch', 'minecraft:redstone_block', 'minecraft:target']])
-
+*/
     //末影docker
     event.shaped('rainbow:docker_ender', [
         ['#minecraft:planks','#minecraft:planks','#minecraft:planks'],

@@ -928,7 +928,7 @@ StartupEvents.registry('item', event => {
                 })
         )
 })
-
+/*
 // 信标球
 StartupEvents.registry('item', event => {
     event.create('rainbow:beacon_ball')
@@ -948,7 +948,7 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
         )
-})
+})*/
 
 // 幻象形体
 StartupEvents.registry('item', event => {

@@ -45,7 +45,7 @@ StartupEvents.registry("item", event => {
     event.create("rainbow:amber_bee")
 
     // 远程标靶信号器
-    event.create("rainbow:controller")
+    event.create("rainbow:controller").texture('rainbow:item/beacon_ball')
 
     // 乐谱
     //event.create("rainbow:musical_score")

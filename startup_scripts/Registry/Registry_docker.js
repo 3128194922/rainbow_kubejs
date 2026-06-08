@@ -61,7 +61,7 @@ function dockerBallisticMotionDrag(dx, dy, dz, v, g, drag, preferHigh, maxTicks)
     let scale = v / picked.speed;
     return { x: picked.x * scale, y: picked.y * scale, z: picked.z * scale };
 }
-
+/*
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_shooter")
         .noCollision()
@@ -439,7 +439,7 @@ StartupEvents.registry("block", event => {
             );
         });
 });
-
+*/
 // 下界反应堆：在下界随机激活，激活后检测周围唱片机播放的音乐并给予奖励
 StartupEvents.registry("block", event => {
     event.create("rainbow:docker_nether_off")

@@ -342,7 +342,7 @@ registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIn
     rewindToIndex(0);
     player.cooldowns.addCooldown("rainbow:chronos",200)
 });
-
+/*
 // --- 信标球 ---
 registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (player.cooldowns.isOnCooldown("rainbow:beacon_ball")) return;
@@ -392,7 +392,7 @@ registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, subme
         }
     }
 });
-
+*/
 // --- 装填核心 ---
 registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let reloadEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;

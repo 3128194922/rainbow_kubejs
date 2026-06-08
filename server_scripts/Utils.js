@@ -34,7 +34,7 @@ function WeaponList() {
 */
 
 function getEndChestFoods(enderChest) {
-    const number = 0;
+    let number = 0;
     for (let i = 0; i < 27; i++) {
         if (!enderChest.getItem(i).isEmpty()) {
             if (global.WhileFoodList.includes(enderChest.getItem(i).id)) {
@@ -51,7 +51,7 @@ function getEndChestFoods(enderChest) {
 */
 function removeSpawnEggSuffix(entityList) {
     return entityList.map(entity => {
-        const parts = entity.split('_spawn_egg');
+        let parts = entity.split('_spawn_egg');
         return parts[0];
     });
 }
@@ -72,7 +72,7 @@ function randomBool(probability) {
  * @returns {number} 随机数
  */
 function randomInRange(min, max) {
-    const value = Math.random() * (max - min) + min;
+    let value = Math.random() * (max - min) + min;
     return value;
 }
 
@@ -84,7 +84,7 @@ function randomInRange(min, max) {
  * @returns {String | Number} 
  */
 function ItemToNumberF(Item) {
-    const ItemToNumber = {
+    let ItemToNumber = {
         'zero': 0,
         'one': 1,
         'two': 2,
@@ -111,7 +111,7 @@ function ItemToNumberF(Item) {
  * @returns {String}
  */
 function NumberToItem(num) {
-    const NumberToItemMap = {
+    let NumberToItemMap = {
         0: 'zero',
         1: 'one',
         2: 'two',
@@ -148,10 +148,10 @@ function NumberisOk(Num) {
  */
 function getGlfwKeyValue(keyName) {
     // 移除可能的前缀并转为大写
-    const normalizedKeyName = keyName.replace(/^GLFW_KEY_/i, '').toUpperCase();
+    let normalizedKeyName = keyName.replace(/^GLFW_KEY_/i, '').toUpperCase();
 
     // GLFW键值映射表
-    const keyMap = {
+    let keyMap = {
         // 基本键 (32-162)
         'SPACE': 32,
         'APOSTROPHE': 39,
@@ -230,13 +230,13 @@ function getGlfwKeyValue(keyName) {
  */
 function BoatToChestBoat(boatId) {
     // 定义boat和chest_boat的对应关系
-    const boat = [
+    let boat = [
         'minecraft:boat',
         'blueprint:boat',
         'quark:quark_boat'
     ];
 
-    const chest_boat = [
+    let chest_boat = [
         'minecraft:chest_boat',
         'blueprint:chest_boat',
         'quark:quark_chest_boat'
@@ -252,9 +252,9 @@ function BoatToChestBoat(boatId) {
  * @returns {string} 
  */
 function McTo(ItemStack) {
-    const items = ['minecraft:hopper', 'minecraft:tnt', 'minecraft:furnace', 'oreganized:shrapnel_bomb']
-    const entitys = ['minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart']
-    const furnaces = ['quark:deepslate_furnace', 'quark:blackstone_furnace']
+    let items = ['minecraft:hopper', 'minecraft:tnt', 'minecraft:furnace', 'oreganized:shrapnel_bomb']
+    let entitys = ['minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart']
+    let furnaces = ['quark:deepslate_furnace', 'quark:blackstone_furnace']
     if (items.indexOf(ItemStack) == -1 && furnaces.indexOf(ItemStack) == -1) return null;
     if (furnaces.indexOf(ItemStack) != -1) {
         return 'minecraft:furnace_minecart';
@@ -269,7 +269,7 @@ function McTo(ItemStack) {
  * @returns {boolean} 
  */
 function BoatidOK(ItemStack) {
-    const entitys = ['minecraft:chest_minecart', 'minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart', 'minecraft:chest_boat', 'blueprint:chest_boat', 'quark:quark_chest_boat']
+    let entitys = ['minecraft:chest_minecart', 'minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart', 'minecraft:chest_boat', 'blueprint:chest_boat', 'quark:quark_chest_boat']
     return entitys.indexOf(ItemStack) == -1 ? true : false;
 }
 
@@ -309,10 +309,10 @@ let Player = Java.loadClass('net.minecraft.world.entity.player.Player')
  * @returns {boolean}
  */
 function PlayerLookAtMoon(player) {
-    const { yaw, pitch, level } = player
-    //const renderDistance = Client.options.renderDistance().get()
+    let { yaw, pitch, level } = player
+    //let renderDistance = Client.options.renderDistance().get()
     //服务器代码
-    const renderDistance = 10
+    let renderDistance = 10
 
     //check
     if (!level.overworld || level.isDay() || player.rayTrace(16 * renderDistance + 8).block != null) {
@@ -320,9 +320,9 @@ function PlayerLookAtMoon(player) {
     }
 
     //Moon Pitch
-    const tempPitch = (((level.getSunAngle(0) - 1.62) * -90) / 1.57) - 2.825
-    const add = level.dayTime() > 18000 ? Math.abs(tempPitch * 2 + 180) : 0
-    const moonPitch = tempPitch + add
+    let tempPitch = (((level.getSunAngle(0) - 1.62) * -90) / 1.57) - 2.825
+    let add = level.dayTime() > 18000 ? Math.abs(tempPitch * 2 + 180) : 0
+    let moonPitch = tempPitch + add
 
     if (Math.abs(moonPitch - pitch) > 2.825) {
         return false
@@ -330,9 +330,9 @@ function PlayerLookAtMoon(player) {
     //MoonYaw is the formula provided by @Rad
     //There is still some degree of error.
     //If anyone can provide a more accurate formula, I would be very grateful.
-    const temp = (Math.abs(18000 - level.getDayTime())) / 5000;
-    const step = temp ** 2 - 27.49 * temp + 117.54;
-    const absYaw = Math.abs(yaw)
+    let temp = (Math.abs(18000 - level.getDayTime())) / 5000;
+    let step = temp ** 2 - 27.49 * temp + 117.54;
+    let absYaw = Math.abs(yaw)
 
     if ((level.getDayTime() < 18000 && yaw > 0) || (level.getDayTime() > 18000 && yaw < 0)) {
         return false
@@ -417,15 +417,15 @@ function isInsideStructure(pos, level, structures) {
     return null;
 }
 
-const ResourceKey = Java.loadClass("net.minecraft.resources.ResourceKey");
+let ResourceKey = Java.loadClass("net.minecraft.resources.ResourceKey");
 /**
  * 获取所有生物群系 ID
  * @param {Server} server
  * @returns {string[]} 所有群系的 ID 列表
  */
 function getAllBiomeIDs(server) {
-    const access = server.registryAccess();
-    const biomeRegistry = access.registryOrThrow(Registries.BIOME);
+    let access = server.registryAccess();
+    let biomeRegistry = access.registryOrThrow(Registries.BIOME);
 
     let result = [];
     biomeRegistry.keySet().forEach(id => {
@@ -440,8 +440,8 @@ function getAllBiomeIDs(server) {
  * @returns {string[]} 所有结构的 ID 列表
  */
 function getAllStructureIDs(server) {
-    const access = server.registryAccess();
-    const structureRegistry = access.registryOrThrow(
+    let access = server.registryAccess();
+    let structureRegistry = access.registryOrThrow(
         ResourceKey.createRegistryKey("worldgen/structure")
     );
 
@@ -542,7 +542,7 @@ function nbtToJs(nbt) {
 }
 
 ServerEvents.commandRegistry(event => {
-    const { commands: Commands } = event;
+    let { commands: Commands } = event;
 
     event.register(
         Commands.literal("getblock")
@@ -599,9 +599,9 @@ ServerEvents.commandRegistry(event => {
     event.register(
         Commands.literal("getplayer")
             .executes(ctx => {
-                const player = ctx.source.playerOrException;
-                const nbt = player.getNbt();
-                const jsNbt = nbtToJs(nbt);
+                let player = ctx.source.playerOrException;
+                let nbt = player.getNbt();
+                let jsNbt = nbtToJs(nbt);
                 console.log(JSON.stringify(jsNbt, null, 2));
                 player.tell("§a你的 NBT 数据已以 JSON 格式输出到控制台。");
                 return 1;

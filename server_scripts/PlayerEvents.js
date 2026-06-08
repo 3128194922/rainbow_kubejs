@@ -5,7 +5,7 @@
 
 // 玩家统一Tick事件（每秒20次）
 PlayerEvents.tick((event) => {
-    const { player, server } = event;
+    let { player, server } = event;
     
     //console.log(`${player.getInventory().armor[3]}`)
     if (player.level.isClientSide()) return;
@@ -44,7 +44,7 @@ PlayerEvents.tick((event) => {
 
 // 玩家物品栏变更事件
 PlayerEvents.inventoryChanged((event) => {
-    const { item, player, slot } = event;
+    let { item, player, slot } = event;
     // 检查赏金任务物品
     BountyItemEvent(player)
 })
@@ -52,14 +52,14 @@ PlayerEvents.inventoryChanged((event) => {
 
 // 传送门挑战 (已注释)
 /*ItemEvents.rightClicked(event => {
-  const player = event.player;
-  const heldItem = player.getMainHandItem();
-  const server = event.server;
+  let player = event.player;
+  let heldItem = player.getMainHandItem();
+  let server = event.server;
 
   // 检查玩家是否持有传送门珍珠
   if (heldItem.id === 'gateways:gate_pearl') {
       // 获取玩家所在维度
-      const dimension = player.level.dimension;
+      let dimension = player.level.dimension;
       if(dimension.toString() == "minecraft:the_end")
         {
 
@@ -87,8 +87,8 @@ PlayerEvents.tick((event) => {
 
   if(!entity.isPlayer()) return;
 // 获取玩家的 Curios 物品栏
-const curiosApi = Java.loadClass('top.theillusivec4.curios.api.CuriosApi');
-const curiosInventory = curiosApi.getCuriosInventory(entity).resolve().get();
+let curiosApi = Java.loadClass('top.theillusivec4.curios.api.CuriosApi');
+let curiosInventory = curiosApi.getCuriosInventory(entity).resolve().get();
   //获取栏位4的物品ID(栏位从0开始，从左到右)
   if(curiosInventory.getEquippedCurios().getStackInSlot(4).getId() === "fromtheshadows:corrupted_heart" && entity.getArmorValue() < 10)
   {
@@ -103,20 +103,20 @@ const curiosInventory = curiosApi.getCuriosInventory(entity).resolve().get();
 //木棍
 ItemEvents.rightClicked('stick', event => {
   //从事件中解构出对象待用
-  const { player, level } = event;
+  let { player, level } = event;
   // 获取玩家的视角向量并标准化
-  const viewVector = player.getViewVector(1.0);
-  const length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z());
-  const normalizedVector = {
+  let viewVector = player.getViewVector(1.0);
+  let length = Math.sqrt(viewVector.x() * viewVector.x() + viewVector.y() * viewVector.y() + viewVector.z() * viewVector.z());
+  let normalizedVector = {
     x: viewVector.x() / length,
     y: viewVector.y() / length,
     z: viewVector.z() / length
   };
-  const projectile = level.createEntity("fromtheshadows:player_breath");
+  let projectile = level.createEntity("fromtheshadows:player_breath");
   //设定发射坐标
   projectile.setPosition(player.x, player.y + 1.6, player.z);
   // 设定速度基数
-  const velocity = 2;
+  let velocity = 2;
   // 设定弹射物方向
   projectile.setMotion(normalizedVector.x * velocity, normalizedVector.y * velocity, normalizedVector.z * velocity);
   // 设定弹射物发射者
@@ -127,23 +127,23 @@ ItemEvents.rightClicked('stick', event => {
   projectile.spawn();
   });*/
 /*
-const PlayerBreathEntity = Java.loadClass('net.sonmok14.fromtheshadows.server.entity.projectiles.PlayerBreathEntity')
-const EntityRegistry = Java.loadClass('net.sonmok14.fromtheshadows.server.utils.registry.EntityRegistry')
+let PlayerBreathEntity = Java.loadClass('net.sonmok14.fromtheshadows.server.entity.projectiles.PlayerBreathEntity')
+let EntityRegistry = Java.loadClass('net.sonmok14.fromtheshadows.server.utils.registry.EntityRegistry')
 
 ItemEvents.rightClicked('stick', event => {
-    const player = event.player
-    const item = event.item
+    let player = event.player
+    let item = event.item
 
     if(player.level.isClientSide()) return;
         // 1. 计算角度（必须转换为弧度！）
-        const yaw = (player.yHeadRot + 90) * Math.PI / 180
-        const pitch = -player.xRot * Math.PI / 180
+        let yaw = (player.yHeadRot + 90) * Math.PI / 180
+        let pitch = -player.xRot * Math.PI / 180
 
         // 2. 通过 EntityRegistry 获取正确的 EntityType
-        const playerBreathType = EntityRegistry.PLAYER_BREATH.get()
+        let playerBreathType = EntityRegistry.PLAYER_BREATH.get()
 
         // 3. 创建抛射体（使用完整构造函数）
-        const projectile = new PlayerBreathEntity(
+        let projectile = new PlayerBreathEntity(
             playerBreathType,    // 从注册表获取的EntityType
             player.level,
             player,             // 发射者（caster）
@@ -167,23 +167,23 @@ ItemEvents.rightClicked('stick', event => {
 })*/
 
 /*
-const { minecraft } = require('kubejs')
-const { EntityType, SoundEvents, DamageTypes } = minecraft
+let { minecraft } = require('kubejs')
+let { EntityType, SoundEvents, DamageTypes } = minecraft
 
 ItemEvents.rightClicked('minecraft:echo_shard', event => {
-  const player = event.player
-  const item = event.item
+  let player = event.player
+  let item = event.item
 
     if(player.level.isClientSide()) return;
 
-        const projectile = EntityType.SNOWBALL.create(player.level)
+        let projectile = EntityType.SNOWBALL.create(player.level)
         projectile.setPos(
             player.x,
             player.y + 1.5, // 从玩家眼睛高度发射
             player.z
         )
 
-        const look = player.getLookAngle()
+        let look = player.getLookAngle()
         projectile.setDeltaMovement(
             look.x * 3.0, // X方向速度
             look.y * 3.0, // Y方向速度
@@ -200,7 +200,7 @@ ItemEvents.rightClicked('minecraft:echo_shard', event => {
 // 监听玩家每刻(tick)事件(每秒约20次触发)
 /*PlayerEvents.tick((event) => {
   // 从事件对象中解构出玩家对象
-  const { player } = event;
+  let { player } = event;
 
   // 检查玩家是否正在潜行(按住Shift键)并且脚下的方块是高草丛
   if (player.shiftKeyDown && player.block.id === "minecraft:tall_grass") {

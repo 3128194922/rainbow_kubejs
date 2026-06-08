@@ -3,20 +3,6 @@
 // 🐾 自定义实体驯服与AI行为系统
 // ==========================================
 
-let NearestAttackableTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal")
-let SpiderTargetGoal = Java.loadClass("net.minecraft.world.entity.monster.Spider$SpiderTargetGoal")
-let HurtByTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal")
-let MeleeAttackGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.MeleeAttackGoal")
-let PathfinderMob = Java.loadClass("net.minecraft.world.entity.PathfinderMob")
-let IronGolem = Java.loadClass("net.minecraft.world.entity.animal.IronGolem")
-let LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
-let CustomGoal = Java.loadClass("net.liopyu.entityjs.util.ai.CustomGoal")
-let Player = Java.loadClass("net.minecraft.world.entity.player.Player")
-let FlyingMob = Java.loadClass("net.minecraft.world.entity.FlyingMob")
-let TamableAnimal = Java.loadClass("net.minecraft.world.entity.TamableAnimal")
-let ClipContext = Java.loadClass("net.minecraft.world.level.ClipContext")
-let HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
-
 /**
  * 驯服物品映射表
  * 定义了哪些实体可以被驯服，以及需要使用什么物品。

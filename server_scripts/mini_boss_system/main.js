@@ -53,7 +53,7 @@ function rollPowers() {
 
 EntityEvents.hurt(event => {
     const { entity, source } = event;
-
+    if (TamableAnimal.isInstance(entity.minecraftEntity)) return;
     if (source.player) {
         let uuid = entity.getUuid().toString();
         let luck = source.player.getAttribute("minecraft:generic.luck").getValue();

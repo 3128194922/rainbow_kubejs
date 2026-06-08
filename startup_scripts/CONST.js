@@ -21,6 +21,19 @@ const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocatio
 const BlockPos = Java.loadClass('net.minecraft.core.BlockPos')
 const Direction = Java.loadClass('net.minecraft.core.Direction')
 const Mob = Java.loadClass('net.minecraft.world.entity.monster.Monster');
+const LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
+const Difficulty = Java.loadClass("net.minecraft.world.Difficulty")
+//const Player = Java.loadClass("net.minecraft.world.entity.player.Player")
+const Vec2 = Java.loadClass("net.minecraft.world.phys.Vec2")
+const FlyingMob = Java.loadClass("net.minecraft.world.entity.FlyingMob")
+const WaterAnimal = Java.loadClass("net.minecraft.world.entity.animal.WaterAnimal")
+const WallClimberNavigation = Java.loadClass("net.minecraft.world.entity.ai.navigation.WallClimberNavigation")
+const isClient = Platform.isClientEnvironment()
+const Minecraft = isClient ? Java.loadClass("net.minecraft.client.Minecraft") : null
+const $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
+const $Animal = Java.loadClass("net.minecraft.world.entity.animal.Animal")
+const $Player = Java.loadClass("net.minecraft.world.entity.player.Player")
+const $Villager = Java.loadClass("net.minecraft.world.entity.npc.Villager")
 
 
 global.CURIONUMBER = 4

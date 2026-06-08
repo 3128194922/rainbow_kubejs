@@ -544,14 +544,14 @@ ItemEvents.foodEaten('#rainbow:monster_meat', event => {
 
 // 金手指：让两个生物互相骑乘 + 授予成就 rainbow:ccb
 ItemEvents.entityInteracted("rainbow:golden_finger", event => {
-    const player = event.player;
-    const target = event.target;
-    const item = event.item;
-    const server = event.server;
+    let player = event.player;
+    let target = event.target;
+    let item = event.item;
+    let server = event.server;
 
     if (!target) return;
 
-    const tag = item.getOrCreateTag();
+    let tag = item.getOrCreateTag();
 
     // === 第一次点击：选择第一个生物 ===
     if (!tag.contains("FirstUUID")) {
@@ -563,12 +563,12 @@ ItemEvents.entityInteracted("rainbow:golden_finger", event => {
     }
 
     // === 第二次点击：让第一个生物骑乘第二个 ===
-    const firstUUID = tag.getString("FirstUUID");
-    const firstType = tag.getString("FirstType");
-    const firstName = tag.getString("FirstName");
-    const secondUUID = target.getUuid().toString();
-    const secondType = target.type;
-    const secondName = target.getName().getString();
+    let firstUUID = tag.getString("FirstUUID");
+    let firstType = tag.getString("FirstType");
+    let firstName = tag.getString("FirstName");
+    let secondUUID = target.getUuid().toString();
+    let secondType = target.type;
+    let secondName = target.getName().getString();
 
     // 防止同一个生物
     if (firstUUID === secondUUID) {
@@ -577,8 +577,8 @@ ItemEvents.entityInteracted("rainbow:golden_finger", event => {
     }
 
     // 执行骑乘
-    const cmd = `/ride ${firstUUID} mount ${secondUUID}`;
-    const success = server.runCommandSilent(cmd);
+    let cmd = `/ride ${firstUUID} mount ${secondUUID}`;
+    let success = server.runCommandSilent(cmd);
 
     if (success) {
         player.tell(`§a成功让 §6${firstName} §a骑乘 §6${secondName}！`);
@@ -614,14 +614,14 @@ ItemEvents.entityInteracted("rainbow:nbt_util", event => {
 });
 /*
 // --- FruitfulFun 蜜蜂基因相关逻辑 ---
-const Allele = Java.loadClass('snownee.fruits.bee.genetics.Allele');
-const CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag');
+let Allele = Java.loadClass('snownee.fruits.bee.genetics.Allele');
+let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag');
 
 //RC/FC/FT1/FT2 -> 当前世界的伪装代号（A–Z）
 global.ffGetDisguisedGeneName = (realName) => {
-  const allele = Allele.REGISTRY.get(realName);
+  let allele = Allele.REGISTRY.get(realName);
   if (!allele) return null;
-  const code = '' + allele.codename;
+  let code = '' + allele.codename;
   return code === '0' ? null : code;
 };
 
@@ -629,7 +629,7 @@ global.ffGetDisguisedGeneName = (realName) => {
 global.ffNormalizeAsciiCodeKey = (code) => {
     if (code == null) return null;
     if (/^[0-9]+$/.test(code)) {
-      const n = parseInt(code, 10);
+      let n = parseInt(code, 10);
       if (Number.isFinite(n) && n >= 0 && n <= 255) {
         return String.fromCharCode(n);
       }
@@ -640,33 +640,33 @@ global.ffNormalizeAsciiCodeKey = (code) => {
 //伪装代号 -> 真实基因位点名（RC/FC/FT1/FT2）
 global.ffCodeToRealGene = (code) => {
     if (code == null) return null;
-    const key = global.ffNormalizeAsciiCodeKey(String(code)); // '81' -> 'Q'; 'Q' -> 'Q'; 其他原样
+    let key = global.ffNormalizeAsciiCodeKey(String(code)); // '81' -> 'Q'; 'Q' -> 'Q'; 其他原样
     // 如果传的是真实位点名，直接返回
     if (key === 'RC' || key === 'FC' || key === 'FT1' || key === 'FT2') {
       return key;
     }
     if (!key || key.length === 0) return null;
     // 单字符代号归一化为大写
-    const ch = key.length === 1 ? key.toUpperCase().charAt(0) : key.charAt(0);
-    const allele = Allele.byCode(ch);
+    let ch = key.length === 1 ? key.toUpperCase().charAt(0) : key.charAt(0);
+    let allele = Allele.byCode(ch);
     return allele ? allele.name : null;
   };
 
 // 用琥珀注射器与实体交互时，读取真实基因并按伪装代号写入数值到物品 NBT
 ItemEvents.entityInteracted('rainbow:amber_bee', event => {
-    const player = event.getPlayer();
-    const target = event.getTarget();
-    const item = event.getItem ? event.getItem() : event.item;
+    let player = event.getPlayer();
+    let target = event.getTarget();
+    let item = event.getItem ? event.getItem() : event.item;
   
     // 目标实体的完整基因结构检查
-    const full = target.getNbt();
+    let full = target.getNbt();
     if (!full || !full.contains('FruitfulFun')) return;
-    const ff = full.get('FruitfulFun');
+    let ff = full.get('FruitfulFun');
     if (!ff || !ff.contains('Genes')) return;
-    const genes = ff.get('Genes');
+    let genes = ff.get('Genes');
   
     // 获取或创建物品 NBT
-    const root = item.getOrCreateTag ? item.getOrCreateTag() : (item.nbt ?? new CompoundTag());
+    let root = item.getOrCreateTag ? item.getOrCreateTag() : (item.nbt ?? new CompoundTag());
   
     // ✅ 若已经写入过基因，则不允许重复写入
     if (root.contains('FFDisguisedGeneBytes')) {
@@ -675,12 +675,12 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
     }
   
     // 构造伪装代号对应的字节表
-    const disguisedBytes = new CompoundTag();
+    let disguisedBytes = new CompoundTag();
     ['RC', 'FC', 'FT1', 'FT2'].forEach(name => {
       if (!genes.contains(name)) return;
-      const b = genes.getByte(name);
-      const rawCode = global.ffGetDisguisedGeneName(name) ?? name;
-      const codeKey = global.ffNormalizeAsciiCodeKey(rawCode) ?? name;
+      let b = genes.getByte(name);
+      let rawCode = global.ffGetDisguisedGeneName(name) ?? name;
+      let codeKey = global.ffNormalizeAsciiCodeKey(rawCode) ?? name;
       disguisedBytes.putByte(codeKey, b);
     });
   

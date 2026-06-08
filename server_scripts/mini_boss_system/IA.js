@@ -26,7 +26,7 @@ function findSafeSpawnPos(level, x, y, z) {
   }
   return null
 }
-
+//通用词条
 $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
   let id = key.toString()
   try {
@@ -277,3 +277,8 @@ $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
     console.log(err)
   }
 })
+//特殊词条
+/*EntityJSEvents.addGoalSelectors(id, event => {
+  
+})
+  */

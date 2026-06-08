@@ -19,6 +19,20 @@ const $ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegi
 const $Mob = Java.loadClass('net.minecraft.world.entity.Mob')
 const $Effects = Java.loadClass('net.minecraft.world.effect.MobEffects')
 const $InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
+const TamableAnimal = Java.loadClass('net.minecraft.world.entity.TamableAnimal');
+const NearestAttackableTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal")
+const SpiderTargetGoal = Java.loadClass("net.minecraft.world.entity.monster.Spider$SpiderTargetGoal")
+const HurtByTargetGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal")
+const MeleeAttackGoal = Java.loadClass("net.minecraft.world.entity.ai.goal.MeleeAttackGoal")
+const PathfinderMob = Java.loadClass("net.minecraft.world.entity.PathfinderMob")
+const IronGolem = Java.loadClass("net.minecraft.world.entity.animal.IronGolem")
+const LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
+const CustomGoal = Java.loadClass("net.liopyu.entityjs.util.ai.CustomGoal")
+//const Player = Java.loadClass("net.minecraft.world.entity.player.Player")
+const FlyingMob = Java.loadClass("net.minecraft.world.entity.FlyingMob")
+const ClipContext = Java.loadClass("net.minecraft.world.level.ClipContext")
+const HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
+
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化

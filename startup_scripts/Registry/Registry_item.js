@@ -52,7 +52,7 @@ StartupEvents.registry("item", event => {
     // 升级模板
     event.create("rainbow:cleaver_upgrade")
     // 收容中心
-    event.create("rainbow:mind_ctroller_detention")
+    //event.create("rainbow:mind_ctroller_detention")
 
     // 净化绢布：使用后移除副手物品的诅咒附魔和修复代价
     event.create("rainbow:purified_cloth")

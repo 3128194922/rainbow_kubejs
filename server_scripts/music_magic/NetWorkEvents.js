@@ -4,7 +4,7 @@
 // ==========================================
 
 // 配置多个音乐序列 (乐器编号序列)
-const Config_music_list = [
+/*const Config_music_list = [
     { numbers: [0, 1, 7], alias: "democratic_save" }
 ];
 
@@ -32,3 +32,4 @@ NetworkEvents.dataReceived("music", (event) => {
             player.potionEffects.add("rainbow:democratic_save",SecoundToTick(2),0,false,false)
         }
 });
+*/

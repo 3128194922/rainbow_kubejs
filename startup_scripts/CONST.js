@@ -32,6 +32,7 @@ const $Animal = Java.loadClass("net.minecraft.world.entity.animal.Animal")
 const $Player = Java.loadClass("net.minecraft.world.entity.player.Player")
 const $Villager = Java.loadClass("net.minecraft.world.entity.npc.Villager")
 const $Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
+const AttributeModifier = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier');
 
 global.CURIONUMBER = 4
 global.CURSES = [

@@ -30,7 +30,9 @@ const CustomGoal = Java.loadClass("net.liopyu.entityjs.util.ai.CustomGoal")
 const FlyingMob = Java.loadClass("net.minecraft.world.entity.FlyingMob")
 const ClipContext = Java.loadClass("net.minecraft.world.level.ClipContext")
 const HitResultType = Java.loadClass("net.minecraft.world.phys.HitResult$Type")
-
+const Pickarang = Java.loadClass("org.violetmoon.quark.content.tools.entity.rang.Pickarang");
+const ServerPlayer = Java.loadClass("net.minecraft.server.level.ServerPlayer");
+const PickarangModule = Java.loadClass("org.violetmoon.quark.content.tools.module.PickarangModule");
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化

@@ -788,7 +788,7 @@ ItemEvents.entityInteracted(event => {
 // --- 宠物收容系统 ---
 
 // 收容宠物（普通右键）
-ItemEvents.entityInteracted(event => {
+/*ItemEvents.entityInteracted(event => {
     let player = event.getPlayer();
     let item = event.getItem();
     let target = event.getTarget();
@@ -834,10 +834,10 @@ ItemEvents.entityInteracted(event => {
 
     player.tell(`已收容：${target.getName().getString()}，当前总数：${item.nbt.StoredEntities.length}`);
 });
-
+*/
 // 释放宠物（潜行右键）
 // 释放：潜行右键空气时，一次性释放所有
-ItemEvents.rightClicked(event => {
+/*ItemEvents.rightClicked(event => {
     let player = event.player
     let item = event.item
     if (event.level.isClientSide()) return
@@ -869,14 +869,7 @@ ItemEvents.rightClicked(event => {
 
     player.tell("所有收容的生物已释放")
 })
-
-
-// --- 夸克回旋镖逻辑 ---
-// Java 类加载
-let Pickarang = Java.loadClass("org.violetmoon.quark.content.tools.entity.rang.Pickarang");
-let ServerPlayer = Java.loadClass("net.minecraft.server.level.ServerPlayer");
-let PickarangModule = Java.loadClass("org.violetmoon.quark.content.tools.module.PickarangModule");
-//let ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack");
+*/
 
 // 抛掷回旋镖
 ItemEvents.rightClicked(event => {

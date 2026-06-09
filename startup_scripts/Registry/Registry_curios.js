@@ -708,6 +708,15 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
+// 大师球
+StartupEvents.registry('item', event => {
+    event.create('rainbow:master_ball')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture('rainbow:item/mind_ctroller_detention')
+})
+
 // 觉之瞳
 StartupEvents.registry('item', event => {
     event.create('rainbow:eye_of_satori')
@@ -951,7 +960,7 @@ StartupEvents.registry('item', event => {
 })*/
 
 // 幻象形体
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:phantom_body')
         .rarity("epic")
         .maxStackSize(1)
@@ -977,7 +986,7 @@ StartupEvents.registry('item', event => {
                     }
                 })
         )
-})
+})*/
 
 
 const hearts = ['drowned_heart', 'frozen_heart', 'gritty_heart', 'gunk_heart', 'rotten_heart'];

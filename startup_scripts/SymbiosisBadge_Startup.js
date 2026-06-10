@@ -1,18 +1,41 @@
 // priority: 100
 // ==========================================
 // 🛡️ 共生徽章 (Symbiosis Badge) - Startup Script
-// 包含物品注册、Curios逻辑、实体控制逻辑
 // ==========================================
 
-const SymbiosisConfig = {
-    // 骑乘黑名单 (禁止骑乘这些生物)
-    BLACKLIST: [
-        'minecraft:wither',
-        'minecraft:ender_dragon'
-    ]
+const SymbiosisConfig = Object.freeze({
+    BLACKLIST: Object.freeze(['minecraft:wither', 'minecraft:ender_dragon'])
+})
+
+const SYM_ATTRS = Object.freeze([
+    { id: 'minecraft:generic.max_health',    uuid: UUID.fromString('c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c801'), name: 'ccb_health', value: 20 },
+    { id: 'minecraft:generic.armor',         uuid: UUID.fromString('c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c802'), name: 'ccb_armor',  value: 10 },
+    { id: 'minecraft:generic.attack_damage', uuid: UUID.fromString('c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c803'), name: 'ccb_damage', value: 5  }
+])
+const SYM_OP = AttributeModifier.Operation.ADDITION
+
+function removeSymbiosisModifiers(entity) {
+    if (!entity?.isLiving()) return
+    for (const attr of SYM_ATTRS) {
+        const inst = entity.getAttribute(attr.id)
+        if (inst) inst.removeModifier(attr.uuid)
+    }
+    entity.setTarget(null)
 }
 
-// 注册物品
+function applySymbiosisModifiers(entity) {
+    if (!entity?.isLiving()) return
+    let isNewHealth = false
+    for (const attr of SYM_ATTRS) {
+        const inst = entity.getAttribute(attr.id)
+        if (inst && !inst.getModifier(attr.uuid)) {
+            inst.addPermanentModifier(new AttributeModifier(attr.uuid, attr.name, attr.value, SYM_OP))
+            if (attr === SYM_ATTRS[0]) isNewHealth = true
+        }
+    }
+    if (isNewHealth) entity.heal(20)
+}
+
 StartupEvents.registry('item', event => {
     event.create('rainbow:ccb')
         .displayName('共生徽章')
@@ -22,103 +45,37 @@ StartupEvents.registry('item', event => {
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity()
+                    const player = slotContext.entity()
                     if (!player || player.level.isClientSide()) return
 
-                    let lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID")
-                    let vehicle = player.vehicle
+                    const lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID")
+                    const vehicle = player.vehicle
 
-                    // 定义属性 UUID
-                    let HEALTH_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c801")
-                    let ARMOR_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c802")
-                    let DAMAGE_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c803")
-                    let OP = AttributeModifier.Operation.ADDITION
-
-                    // 清理函数
-                    let cleanUp = (uuidStr) => {
-                        try {
-                            let target = player.level.getEntity(UUID.fromString(uuidStr))
-                            if (target && target.isLiving()) {
-                                let hAttr = target.getAttribute("minecraft:generic.max_health")
-                                if (hAttr) hAttr.removeModifier(HEALTH_UUID)
-                                let aAttr = target.getAttribute("minecraft:generic.armor")
-                                if (aAttr) aAttr.removeModifier(ARMOR_UUID)
-                                let dAttr = target.getAttribute("minecraft:generic.attack_damage")
-                                if (dAttr) dAttr.removeModifier(DAMAGE_UUID)
-                                
-                                // 清除仇恨
-                                target.setTarget(null)
-                            }
-                        } catch (e) {}
-                    }
-
-                    if (vehicle && vehicle.isLiving()) {
-                        let currentUUID = vehicle.uuid.toString()
-
-                        if (lastUUID !== currentUUID) {
-                            if (lastUUID) cleanUp(lastUUID)
-                            player.persistentData.putString("SymbiosisLastVehicleUUID", currentUUID)
+                    if (vehicle?.isLiving()) {
+                        const vehicleUUID = vehicle.uuid.toString()
+                        if (lastUUID && lastUUID !== vehicleUUID) {
+                            removeSymbiosisModifiers(player.level.getEntity(UUID.fromString(lastUUID)))
                         }
-
-                        // 添加/检查属性
-                        let hAttr = vehicle.getAttribute("minecraft:generic.max_health")
-                        if (hAttr && !hAttr.getModifier(HEALTH_UUID)) {
-                            hAttr.addPermanentModifier(new AttributeModifier(HEALTH_UUID, "ccb_health", 20, OP))
-                            vehicle.heal(20)
+                        if (lastUUID !== vehicleUUID) {
+                            player.persistentData.putString("SymbiosisLastVehicleUUID", vehicleUUID)
                         }
-                        
-                        let aAttr = vehicle.getAttribute("minecraft:generic.armor")
-                        if (aAttr && !aAttr.getModifier(ARMOR_UUID)) {
-                            aAttr.addPermanentModifier(new AttributeModifier(ARMOR_UUID, "ccb_armor", 10, OP))
-                        }
-
-                        let dAttr = vehicle.getAttribute("minecraft:generic.attack_damage")
-                        if (dAttr && !dAttr.getModifier(DAMAGE_UUID)) {
-                            dAttr.addPermanentModifier(new AttributeModifier(DAMAGE_UUID, "ccb_damage", 5, OP))
-                        }
-
-                    } else {
-                        if (lastUUID) {
-                            cleanUp(lastUUID)
-                            player.persistentData.remove("SymbiosisLastVehicleUUID")
-                        }
+                        applySymbiosisModifiers(vehicle)
+                    } else if (lastUUID) {
+                        removeSymbiosisModifiers(player.level.getEntity(UUID.fromString(lastUUID)))
+                        player.persistentData.remove("SymbiosisLastVehicleUUID")
                     }
                 })
                 .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    if (!entity) return false;
-
-                    // 限制同一玩家不能装备多个
-                    if (hasCurios(entity, 'rainbow:ccb')) {
-                        return false;
-                    }
-                    return true;
+                    const entity = slotContext.entity()
+                    return entity ? !hasCurios(entity, 'rainbow:ccb') : false
                 })
-                .canEquipFromUse((slotContext, stack) => {
-                    return false;
-                })
+                .canEquipFromUse((slotContext, stack) => false)
                 .onUnequip((slotContext, newStack, stack) => {
-                    let player = slotContext.entity()
+                    const player = slotContext.entity()
                     if (!player || player.level.isClientSide()) return
-                    
-                    let lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID")
-                    
-                    let HEALTH_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c801")
-                    let ARMOR_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c802")
-                    let DAMAGE_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c803")
-
+                    const lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID")
                     if (lastUUID) {
-                        try {
-                            let target = player.level.getEntity(UUID.fromString(lastUUID))
-                            if (target && target.isLiving()) {
-                                let hAttr = target.getAttribute("minecraft:generic.max_health")
-                                if (hAttr) hAttr.removeModifier(HEALTH_UUID)
-                                let aAttr = target.getAttribute("minecraft:generic.armor")
-                                if (aAttr) aAttr.removeModifier(ARMOR_UUID)
-                                let dAttr = target.getAttribute("minecraft:generic.attack_damage")
-                                if (dAttr) dAttr.removeModifier(DAMAGE_UUID)
-                            }
-                        } catch (e) {}
+                        removeSymbiosisModifiers(player.level.getEntity(UUID.fromString(lastUUID)))
                         player.persistentData.remove("SymbiosisLastVehicleUUID")
                     }
                 })
@@ -126,29 +83,25 @@ StartupEvents.registry('item', event => {
 })
 
 // ==========================================
-// 🕹️ 实体控制逻辑 (Entity Control Logic)
+// 🕹️ 实体控制逻辑
 // ==========================================
 
-// 获取玩家输入并转换为移动向量 (复制自 MobTameStartup.js)
 function getRiddenInput(player) {
-    let strafe = player.xxa * 0.5
-    let forward = player.zza
-    let vehicle = player.vehicle
-    let isJumping = isClient && Minecraft.getInstance().player.input.jumping
-    
-    if (forward <= 0.0) {
-        forward *= 0.25
-    }
-    
-    let yawRad = (player.yRotO * Math.PI) / 180
-    let sin = Math.sin(yawRad)
-    let cos = Math.cos(yawRad)
-    let x = strafe * cos - forward * sin
-    let z = strafe * sin + forward * cos
-    
-    let isWaterAnimalInWater = vehicle instanceof WaterAnimal && vehicle.inWater
+    const strafe = player.xxa * 0.5
+    const forward = player.zza
+    const vehicle = player.vehicle
+    const isJumping = isClient && Minecraft.getInstance().player.input.jumping
+    const speed = forward <= 0.0 ? forward * 0.25 : forward
+
+    const angle = (player.yRotO * Math.PI) / 180
+    const sin = Math.sin(angle)
+    const cos = Math.cos(angle)
+    const x = strafe * cos - speed * sin
+    const z = strafe * sin + speed * cos
+
+    const isWaterAnimalInWater = vehicle instanceof WaterAnimal && vehicle.inWater
     let jump = 0.0
-    
+
     if (vehicle instanceof FlyingMob || isWaterAnimalInWater) {
         if (isJumping && player.xRotO > 40) {
             jump = 0
@@ -164,75 +117,52 @@ function getRiddenInput(player) {
     } else if (vehicle.navigation instanceof WallClimberNavigation && vehicle.horizontalCollision) {
         jump = 0.09
     }
-    
-    let airborne = vehicle && !vehicle.onGround() &&
+
+    const airborne = vehicle && !vehicle.onGround() &&
         !(vehicle instanceof FlyingMob) &&
         !(vehicle instanceof WaterAnimal && vehicle.inWater)
-        
-    let xSpeed = airborne ? x * 0.03 : vehicle instanceof FlyingMob ? x * 0.08 : x * 0.2
-    let zSpeed = airborne ? z * 0.03 : vehicle instanceof FlyingMob ? z * 0.08 : z * 0.2
-    
+
+    const xSpeed = airborne ? x * 0.03 : vehicle instanceof FlyingMob ? x * 0.08 : x * 0.2
+    const zSpeed = airborne ? z * 0.03 : vehicle instanceof FlyingMob ? z * 0.08 : z * 0.2
+
     return new Vec3d(xSpeed, jump, zSpeed)
 }
 
-// 控制实体移动
 function controlEntity(entity, player) {
-    if (!player) return
-    if (!entity.isAlive()) return
-    
-    // 如果是飞行生物，清除降落目标
-    let landTarget = entity.persistentData.LandTarget
-    if (entity instanceof FlyingMob && landTarget) {
+    if (!player || !entity.isAlive()) return
+
+    if (entity instanceof FlyingMob && entity.persistentData.LandTarget) {
         entity.persistentData.remove("LandTarget")
     }
-    
-    let vec3 = getRiddenInput(player)
-    let vec2 = new Vec2(player.pitch * 0.5, player.yaw)
-    
+
+    const vec3 = getRiddenInput(player)
+    const vec2 = new Vec2(player.pitch * 0.5, player.yaw)
+
     entity.setRotation(vec2.y, vec2.x)
     entity.yRotO = entity.yBodyRot = entity.yHeadRot = entity.yaw
-    
+
     if (entity instanceof WaterAnimal || entity instanceof FlyingMob) {
         entity.yRotO = entity.yBodyRot = entity.yHeadRot = entity.yaw
-        let pitch = -player.xRotO * 0.5
-        entity.xRotO = entity.pitch = pitch
+        entity.xRotO = entity.pitch = -player.xRotO * 0.5
     }
-    
+
     entity.addMotion(vec3.x(), vec3.y(), vec3.z())
-    
-    // 强制更新位置，防止服务器回弹 (可选，视情况而定)
-    // entity.hasImpulse = true
 }
 
-// 监听实体 Tick 事件，实现全局控制
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent', event => {
-    let entity = event.entity
+    const entity = event.entity
     if (entity.level.isClientSide()) return
-    
-    // 检查是否有乘客
     if (!entity.isVehicle()) return
-    
-    let passengers = entity.getPassengers()
+
+    const passengers = entity.getPassengers()
     if (passengers.isEmpty()) return
-    
-    // 获取控制者 (通常是第一个乘客)
-    let passenger = passengers.get(0)
+
+    const passenger = passengers.get(0)
     if (!passenger.isPlayer()) return
-    
-    // 检查玩家是否佩戴共生徽章 (使用 Curios API 检查)
-    // 注意：这里需要确保 hasCurios 函数可用，或者手动检查 NBT/Tag
-    // 由于 Curios API 可能会变动，这里使用 Tag 检查更稳妥，或者依赖 Utils.js 中的 hasCurios
-    // 假设 Utils.js 中的 hasCurios 是全局的
+    if (entity instanceof Player) return
+
     if (typeof hasCurios !== 'undefined' && hasCurios(passenger, 'rainbow:ccb')) {
-        
-        // 黑名单检查
-        let entityType = entity.type.toString()
-        if (SymbiosisConfig.BLACKLIST.includes(entityType)) return
-        
-        // 玩家特殊处理：只加成，不控制
-        if (entity instanceof Player) return
-        
-        // 执行控制逻辑
+        if (SymbiosisConfig.BLACKLIST.includes(entity.type.toString())) return
         controlEntity(entity, passenger)
     }
 })

@@ -2,7 +2,7 @@
 // ==========================================
 // 🧬 基因矩阵 Jade 数据提供者
 // ==========================================
-
+/*
 JadeEvents.onCommonRegistration(event => {
     // 注册数据提供者，必须与 client_scripts 中的 ID 一致 ('gene:hormone_bonuses')
     event.entityDataProvider('gene:hormone_bonuses', $LivingEntity).setCallback((tag, accessor) => {
@@ -28,3 +28,4 @@ JadeEvents.onCommonRegistration(event => {
         }
     })
 })
+*/

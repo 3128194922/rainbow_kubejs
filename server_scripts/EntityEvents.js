@@ -106,6 +106,33 @@ EntityEvents.spawned(event => {
         }
 });
 
+// 狱牙吊坠 + 莉莉丝拥抱：灵魂替死
+EntityEvents.hurt(event => {
+    let entity = event.entity;
+    if (!entity || !entity.isPlayer()) return;
+    if (entity.level.isClientSide()) return;
+
+    let healthAfter = entity.health - event.damage;
+    if (healthAfter > 0) return;
+
+    if (!hasCurios(entity, 'rainbow:infernotooth_necklace')) return;
+    if (!hasCurios(entity, 'rainbow:lilith_hug')) return;
+
+    let necklace = getCuriosItem(entity, 'rainbow:infernotooth_necklace');
+    if (!necklace) return;
+
+    let nbt = necklace.getNbt();
+    if (!nbt) return;
+
+    let souls = nbt.getInt("Souls");
+    if (souls <= 0) return;
+
+    nbt.putInt("Souls", souls - 1);
+    event.cancel();
+    entity.setHealth(entity.getMaxHealth());
+    entity.level.runCommandSilent(`/playsound entity.player.levelup voice ${entity.displayName.string} ${entity.x} ${entity.y} ${entity.z} 0.5 1.2`);
+});
+
 // 实体死亡事件
 EntityEvents.death(event => {
     const server = event.getServer();

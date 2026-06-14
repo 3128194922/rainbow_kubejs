@@ -637,6 +637,228 @@ StartupEvents.registry('item', event => {
         )
 })
 
+// ==========================================
+// 纹饰属性配置
+// ==========================================
+const BIBLE_TRIM_ATTRIBUTES = {
+    "caverns_and_chasms:rim": [
+        { id: "rim_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.1 },
+        { id: "rim_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.3, scale: 0.05 },
+        { id: "rim_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.02, scale: 0.005 }
+    ],
+    "minecraft:vex": [
+        { id: "vex_attack", attribute: "minecraft:generic.attack_damage", base: 0.25, scale: 0.05 },
+        { id: "vex_crit_rate", attribute: "attributeslib:crit_chance", base: 0.005, scale: 0.001 },
+        { id: "vex_crit_dmg", attribute: "attributeslib:crit_damage", base: 0.02, scale: 0.005 }
+    ],
+    "minecraft:raiser": [
+        { id: "raiser_health", attribute: "minecraft:generic.max_health", base: 1.0, scale: 0.2 },
+        { id: "raiser_heal", attribute: "attributeslib:healing_received", base: 0.01, scale: 0.005 },
+        { id: "raiser_ghost", attribute: "attributeslib:ghost_health", base: 0.5, scale: 0.1 }
+    ],
+    "minecraft:sentry": [
+        { id: "sentry_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.15 },
+        { id: "sentry_prot_shred", attribute: "attributeslib:prot_shred", base: 0.01, scale: 0.003 },
+        { id: "sentry_step", attribute: "forge:step_height_addition", base: 0.05, scale: 0.01 }
+    ],
+    "minecraft:shaper": [
+        { id: "shaper_reach", attribute: "forge:block_reach", base: 0.3, scale: 0.05 },
+        { id: "shaper_mining", attribute: "attributeslib:mining_speed", base: 0.02, scale: 0.005 },
+        { id: "shaper_exp", attribute: "attributeslib:experience_gained", base: 0.02, scale: 0.005 }
+    ],
+    "minecraft:host": [
+        { id: "host_lifesteal", attribute: "attributeslib:life_steal", base: 0.005, scale: 0.001 },
+        { id: "host_overheal", attribute: "attributeslib:overheal", base: 0.01, scale: 0.003 },
+        { id: "host_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.005, scale: 0.001 }
+    ],
+    "minecraft:silence": [
+        { id: "silence_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.001 },
+        { id: "silence_stealth", attribute: "environmental:stealth", base: 0.2, scale: 0.05 },
+        { id: "silence_speed", attribute: "minecraft:generic.movement_speed", base: 0.002, scale: 0.0005 }
+    ],
+    "atmospheric:petrified": [
+        { id: "petri_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.5, scale: 0.1 },
+        { id: "petri_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.08 },
+        { id: "petri_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.03, scale: 0.005 }
+    ],
+    "caverns_and_chasms:forger": [
+        { id: "forger_mining", attribute: "attributeslib:mining_speed", base: 0.05, scale: 0.01 },
+        { id: "forger_exp", attribute: "attributeslib:experience_gained", base: 0.02, scale: 0.005 },
+        { id: "forger_luck", attribute: "minecraft:generic.luck", base: 0.1, scale: 0.02 }
+    ],
+    "caverns_and_chasms:plate": [
+        { id: "plate_armor", attribute: "minecraft:generic.armor", base: 1.0, scale: 0.15 },
+        { id: "plate_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.05, scale: 0.01 },
+        { id: "plate_prot_pierce", attribute: "attributeslib:prot_pierce", base: 0.01, scale: 0.002 }
+    ],
+    "netherexp:spirit": [
+        { id: "spirit_magic_dmg", attribute: "caverns_and_chasms:magic_damage", base: 0.2, scale: 0.05 },
+        { id: "spirit_magic_prot", attribute: "caverns_and_chasms:magic_protection", base: 0.1, scale: 0.03 },
+        { id: "spirit_fire_dmg", attribute: "attributeslib:fire_damage", base: 0.1, scale: 0.03 }
+    ],
+    "minecraft:tide": [
+        { id: "tide_swim", attribute: "forge:swim_speed", base: 0.02, scale: 0.005 },
+        { id: "tide_gravity", attribute: "forge:entity_gravity", base: -0.01, scale: -0.002 },
+        { id: "tide_speed", attribute: "minecraft:generic.movement_speed", base: 0.002, scale: 0.0005 }
+    ],
+    "minecraft:rib": [
+        { id: "rib_attack", attribute: "minecraft:generic.attack_damage", base: 0.3, scale: 0.06 },
+        { id: "rib_lifesteal", attribute: "attributeslib:life_steal", base: 0.008, scale: 0.002 },
+        { id: "rib_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.008, scale: 0.002 }
+    ],
+    "minecraft:spire": [
+        { id: "spire_fly_speed", attribute: "minecraft:generic.flying_speed", base: 0.01, scale: 0.003 },
+        { id: "spire_reach", attribute: "forge:entity_reach", base: 0.3, scale: 0.05 },
+        { id: "spire_follow", attribute: "minecraft:generic.follow_range", base: 0.5, scale: 0.1 }
+    ],
+    "atmospheric:druid": [
+        { id: "druid_heal", attribute: "attributeslib:healing_received", base: 0.02, scale: 0.005 },
+        { id: "druid_magic", attribute: "caverns_and_chasms:magic_damage", base: 0.15, scale: 0.04 },
+        { id: "druid_fragrance", attribute: "windswept:fragrance", base: 0.5, scale: 0.1 }
+    ],
+    "atmospheric:apostle": [
+        { id: "apostle_ghost", attribute: "attributeslib:ghost_health", base: 0.8, scale: 0.15 },
+        { id: "apostle_overheal", attribute: "attributeslib:overheal", base: 0.02, scale: 0.005 },
+        { id: "apostle_exp", attribute: "attributeslib:experience_gained", base: 0.03, scale: 0.008 }
+    ],
+    "caverns_and_chasms:core": [
+        { id: "core_attack", attribute: "minecraft:generic.attack_damage", base: 0.3, scale: 0.05 },
+        { id: "core_armor", attribute: "minecraft:generic.armor", base: 0.3, scale: 0.05 },
+        { id: "core_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0008 }
+    ],
+    "caverns_and_chasms:exile": [
+        { id: "exile_arrow_dmg", attribute: "attributeslib:arrow_damage", base: 0.1, scale: 0.03 },
+        { id: "exile_arrow_vel", attribute: "attributeslib:arrow_velocity", base: 0.02, scale: 0.005 },
+        { id: "exile_draw_speed", attribute: "attributeslib:draw_speed", base: 0.01, scale: 0.003 }
+    ],
+    "netherexp:valor": [
+        { id: "valor_attack", attribute: "minecraft:generic.attack_damage", base: 0.35, scale: 0.06 },
+        { id: "valor_crit_rate", attribute: "attributeslib:crit_chance", base: 0.008, scale: 0.002 },
+        { id: "valor_crit_dmg", attribute: "attributeslib:crit_damage", base: 0.03, scale: 0.008 }
+    ],
+    "minecraft:ward": [
+        { id: "ward_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.5, scale: 0.12 },
+        { id: "ward_armor", attribute: "minecraft:generic.armor", base: 0.3, scale: 0.08 },
+        { id: "ward_prot_shred", attribute: "attributeslib:prot_shred", base: 0.015, scale: 0.004 }
+    ],
+    "minecraft:eye": [
+        { id: "eye_reach", attribute: "forge:entity_reach", base: 0.5, scale: 0.08 },
+        { id: "eye_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.0015 },
+        { id: "eye_luck", attribute: "minecraft:generic.luck", base: 0.15, scale: 0.03 }
+    ],
+    "caverns_and_chasms:trim_modifier": [
+        { id: "trim_luck", attribute: "minecraft:generic.luck", base: 0.2, scale: 0.04 },
+        { id: "trim_mining", attribute: "attributeslib:mining_speed", base: 0.03, scale: 0.008 },
+        { id: "trim_step", attribute: "forge:step_height_addition", base: 0.08, scale: 0.015 }
+    ],
+    "caverns_and_chasms:immolate": [
+        { id: "immolate_fire", attribute: "attributeslib:fire_damage", base: 0.2, scale: 0.05 },
+        { id: "immolate_lifesteal", attribute: "attributeslib:life_steal", base: 0.01, scale: 0.003 },
+        { id: "immolate_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.01, scale: 0.003 }
+    ],
+    "minecraft:dune": [
+        { id: "dune_armor", attribute: "minecraft:generic.armor", base: 0.4, scale: 0.1 },
+        { id: "dune_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0005 },
+        { id: "dune_step", attribute: "forge:step_height_addition", base: 0.05, scale: 0.01 }
+    ],
+    "minecraft:coast": [
+        { id: "coast_swim", attribute: "forge:swim_speed", base: 0.03, scale: 0.008 },
+        { id: "coast_gravity", attribute: "forge:entity_gravity", base: -0.015, scale: -0.003 },
+        { id: "coast_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0005 }
+    ],
+    "minecraft:wild": [
+        { id: "wild_speed", attribute: "minecraft:generic.movement_speed", base: 0.004, scale: 0.001 },
+        { id: "wild_attack", attribute: "minecraft:generic.attack_damage", base: 0.2, scale: 0.04 },
+        { id: "wild_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.001 }
+    ],
+    "netherexp:rift": [
+        { id: "rift_reach", attribute: "forge:entity_reach", base: 0.4, scale: 0.08 },
+        { id: "rift_block_reach", attribute: "forge:block_reach", base: 0.4, scale: 0.08 },
+        { id: "rift_knockback", attribute: "minecraft:generic.attack_knockback", base: 0.05, scale: 0.01 }
+    ],
+    "minecraft:snout": [
+        { id: "snout_fire", attribute: "attributeslib:fire_damage", base: 0.15, scale: 0.04 },
+        { id: "snout_armor", attribute: "minecraft:generic.armor", base: 0.4, scale: 0.08 },
+        { id: "snout_attack", attribute: "minecraft:generic.attack_damage", base: 0.2, scale: 0.04 }
+    ],
+    "minecraft:wayfinder": [
+        { id: "wayfinder_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0008 },
+        { id: "wayfinder_luck", attribute: "minecraft:generic.luck", base: 0.2, scale: 0.04 },
+        { id: "wayfinder_exp", attribute: "attributeslib:experience_gained", base: 0.03, scale: 0.008 }
+    ]
+};
+
+// ==========================================
+// 圣经 - 盔甲纹饰祝福
+// ==========================================
+// 根据玩家穿戴的盔甲纹饰和魔法伤害属性动态加成
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_bible')
+        .maxDamage(300)
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+
+                    let magicDamage = 0;
+                    try {
+                        magicDamage = player.getAttributeValue("caverns_and_chasms:magic_damage");
+                    } catch (e) {}
+                    if (magicDamage == null) magicDamage = 0;
+
+                    let armorSlots = [
+                        { key: "head", slot: $BIBLE_EQUIP_SLOT.HEAD },
+                        { key: "chest", slot: $BIBLE_EQUIP_SLOT.CHEST },
+                        { key: "legs", slot: $BIBLE_EQUIP_SLOT.LEGS },
+                        { key: "feet", slot: $BIBLE_EQUIP_SLOT.FEET }
+                    ];
+
+                    armorSlots.forEach(slotInfo => {
+                        if (!slotInfo || !slotInfo.slot) return;
+                        let armorItem = player.getItemBySlot(slotInfo.slot);
+                        if (!armorItem || armorItem.isEmpty()) return;
+                        let nbt = armorItem.getNbt();
+                        if (!nbt || !nbt.contains("Trim", 10)) return;
+
+                        let trim = nbt.getCompound("Trim");
+                        if (!trim) return;
+                        let pattern = trim.getString("pattern");
+                        if (!pattern || pattern == "") return;
+
+                        let config = BIBLE_TRIM_ATTRIBUTES[pattern];
+                        if (!config) return;
+
+                        config.forEach(attr => {
+                            if (!attr || !attr.attribute || attr.base == null || attr.scale == null) return;
+                            let amount = attr.base + magicDamage * attr.scale;
+                            if (amount <= 0) return;
+
+                            let uuid = $BIBLE_UUID.nameUUIDFromBytes(new $STRING("bible_trim:" + pattern + ":" + attr.id + ":" + slotInfo.key).getBytes());
+
+                            ev.modify(attr.attribute, uuid, "bible_" + attr.id, amount, "addition");
+                        });
+                    });
+                })
+                .curioTick((slotContext, stack) => {
+                    if (!stack.nbt) stack.nbt = {};
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return false;
+                    if (hasCurios(entity, 'rainbow:the_bible')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
+})
+
+
 // 宝箱吊坠
 StartupEvents.registry('item', event => {
     event.create('rainbow:treasure_necklace')
@@ -680,15 +902,6 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
         )
-})
-
-// 圣经
-StartupEvents.registry('item', event => {
-    event.create('rainbow:the_bible')
-        .maxDamage(300)
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
 })
 
 // 狱牙吊坠
@@ -926,9 +1139,9 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-                .canUnequip((slotContext, stack) => {
+                /*.canUnequip((slotContext, stack) => {
                     return false;
-                })
+                })*/
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;

@@ -333,28 +333,19 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("右键可直接提取出考古物品"));
     })*/
     event.addAdvanced('rainbow:oceantooth_necklace', (item, advanced, text) => {
-            // 先判断 NBT 是否存在
-            text.add(1, Text.aqua(`献祭100生物后消耗自己，产出战利品`));
-            let nbt = item.getNbt();
-            if (!nbt) {
-                return;
-            }
-            else
-            {
-                text.add(2, Text.aqua("献祭：").append(Text.yellow(`${nbt.getInt("kill")}`)));
-            }
+        text.add(1, Text.gray("与狱牙吊坠互斥"));
+        let nbt = item.getNbt();
+        if (!nbt) return;
+        let dmg = item.getDamage();
+        let maxDmg = item.getMaxDamage();
+        text.add(Text.aqua("耐久：").append(Text.yellow(`${maxDmg - dmg} / ${maxDmg}`)));
     })
     event.addAdvanced('rainbow:infernotooth_necklace', (item, advanced, text) => {
-        // 先判断 NBT 是否存在
-        text.add(1, Text.aqua(`杀死生物后储存生物灵魂`));
+        text.add(1, Text.aqua("击杀生物储存灵魂"));
+        text.add(2, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
         let nbt = item.getNbt();
-        if (!nbt) {
-            return;
-        }
-        else
-        {
-            text.add(2, Text.aqua("储存：").append(Text.yellow(`${nbt.getInt("Souls")}`)));
-        }
+        if (!nbt) return;
+        text.add(Text.aqua("灵魂：").append(Text.yellow(`${nbt.getInt("Souls")}`)));
     })
     event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
         // 先判断 NBT 是否存在
@@ -423,5 +414,44 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced(['alexscaves:hazmat_mask','alexscaves:hazmat_chestplate','alexscaves:hazmat_leggings' ,'alexscaves:hazmat_boots'], (item, advanced, text) => {
         text.add(1, Text.gold(`穿戴全套防化服时`));
         text.add(2, Text.aqua(`免疫中毒、凋零、辐照效果和伤害`));
+    })
+    event.addAdvanced('rainbow:treasure_necklace', (item, advanced, text) => {
+        text.add(1, Text.aqua("击杀生物积累能量，满100后消耗耐久产出战利品"));
+        let nbt = item.getNbt();
+        if (!nbt) return;
+        text.add(2, Text.aqua("能量：").append(Text.yellow(`${nbt.getInt("kill")} / 100`)));
+    })
+    event.addAdvanced('rainbow:sculk_affinity', (item, advanced, text) => {
+        text.add(1, Text.aqua("站在幽匿方块上时获得"));
+        text.add(2, Text.aqua("+20% 移动速度"));
+    })
+    event.addAdvanced('rainbow:ccb', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("右键生物骑乘，控制其移动与攻击"));
+            text.add(2, Text.aqua("为坐骑提供 +20血量 / +10护甲 / +5攻击"));
+            text.add(3, Text.red("无法骑乘凋灵和末影龙"));
+        }
+    })
+    event.addAdvanced('rainbow:the_bible', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("根据穿戴的盔甲纹饰提供属性加成"));
+            text.add(2, Text.aqua("加成效果受魔法伤害属性影响"));
+        }
+    })
+    event.addAdvanced('rainbow:mini_moon', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("释放引力场牵引周围生物并造成伤害"));
+            text.add(2, Text.aqua("潜行释放则推开周围生物"));
+        }
+    })
+    event.addAdvanced('rainbow:sprite', (item, advanced, text) => {
+        text.add(1, Text.aqua("移动时获得"));
+        text.add(2, Text.aqua("+10 护甲 / +3 攻击 / +50% 击退抗性"));
     })
 })

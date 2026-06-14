@@ -33,6 +33,9 @@ const $Player = Java.loadClass("net.minecraft.world.entity.player.Player")
 const $Villager = Java.loadClass("net.minecraft.world.entity.npc.Villager")
 const $Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
 const AttributeModifier = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier');
+const $BIBLE_UUID = Java.loadClass("java.util.UUID");
+const $BIBLE_EQUIP_SLOT = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
+const $STRING = Java.loadClass("java.lang.String");
 
 global.CURIONUMBER = 4
 global.CURSES = [

@@ -637,6 +637,28 @@ StartupEvents.registry('item', event => {
         )
 })
 
+// 宝箱吊坠
+StartupEvents.registry('item', event => {
+    event.create('rainbow:treasure_necklace')
+        .maxDamage(300)
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:treasure_necklace')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
+})
+
 // 海牙吊坠
 StartupEvents.registry('item', event => {
     event.create('rainbow:oceantooth_necklace')
@@ -658,6 +680,15 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
         )
+})
+
+// 圣经
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_bible')
+        .maxDamage(300)
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
 })
 
 // 狱牙吊坠

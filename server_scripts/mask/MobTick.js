@@ -7,7 +7,7 @@
 PlayerEvents.tick(event => {
     let player = event.player
     if (player.level.isClientSide()) return
-    if (player.age % 20) return;
+    if (player.age % 20 != 0) return;
     
     let helmet = player.getItemBySlot("head")
     if (helmet.isEmpty()) return
@@ -21,7 +21,7 @@ PlayerEvents.tick(event => {
 
     switch (maskId) {
         case "minecraft:bat":
-            player.potionEffects.add("minecraft:night_vision", 100, 0, false, false)
+            player.potionEffects.add("minecraft:night_vision", 400, 0, false, false)
             break
     }
 })

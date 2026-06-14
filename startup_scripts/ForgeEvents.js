@@ -393,7 +393,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         if (!player || !player.isPlayer()) return;
 
         // 牺牲护符：击杀计数逻辑
-        let item = getCuriosItem(player, "rainbow:oceantooth_necklace");
+        let item = getCuriosItem(player, "rainbow:treasure_necklace");
         if (!item) return;
 
         let nbt = item.getOrCreateTag();
@@ -414,7 +414,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         console.log(e);
     }
 });
-//生物死亡事件
+
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
     try {
         let player = event.getSource().getPlayer();

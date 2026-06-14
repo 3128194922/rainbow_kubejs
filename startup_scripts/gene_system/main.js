@@ -20,11 +20,13 @@ function getOperation(opName) {
 }
 
 function getGenePool(entityId) {
-    return global.EntityGenePool?.[entityId];
+    if (!global.EntityGenePool) return null;
+    return global.EntityGenePool[entityId];
 }
 
 function getGeneEffect(geneId) {
-    return global.GeneEffectMap?.[geneId];
+    if (!global.GeneEffectMap) return null;
+    return global.GeneEffectMap[geneId];
 }
 
 function applyGeneEffect(entity, geneId) {

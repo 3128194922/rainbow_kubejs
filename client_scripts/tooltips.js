@@ -375,40 +375,34 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:amber_bee', (item, advanced, text) => {
         text.add(1, Text.darkPurple("按 [ALT] 查看详细"));
-    
+
         if (event.alt) {
             text.remove(1);
-    
-            // 先判断 NBT 是否存在
+
             const nbt = item.getNbt();
-            if (!nbt) {
-                text.add(1, Text.gray("❌ 无存储信息"));
+            if (!nbt || !nbt.contains('extracted_gene')) {
+                text.add(1, Text.gray("❌ 无基因信息"));
                 return;
             }
-    
-            let raw = nbt.get("FFDisguisedGeneBytes");
-            if (!raw) {
-                text.add(1, Text.gray("❌ 无存储信息"));
-                return;
+
+            let geneId = nbt.getString('extracted_gene');
+
+            // 解析双字符基因: char[0](显性) + char[1](隐性)
+            if (geneId && geneId.length === 2) {
+                text.add(1, Text.gold(`基因: ${geneId}`));
+                text.add(1, Text.gray(`- 显性: ${geneId.charAt(0)}, 隐性: ${geneId.charAt(1)}`));
+            } else if (geneId) {
+                text.add(1, Text.gold(`基因: ${geneId}`));
             }
-    
-            let str = raw.toString(); // 例如 "{RC:0b,FT1:32b,FT2:0b,FC:0b}"
-            let regex = /([A-Z0-9_]+):([0-9]+)b/g;
-            let match;
-            let hasGene = false;
-    
-            while ((match = regex.exec(str)) !== null) {
-                hasGene = true;
-                let key = match[1];
-                let value = parseInt(match[2]);
-    
-                let dominant = value & 0xF;         // 低4位 -> 显性
-                let recessive = (value >> 4) & 0xF; // 高4位 -> 隐性
-    
-                text.add(1, Text.gray(`- ${key}: 高位 ${recessive}, 低位 ${dominant}`));
+
+            // 显示基因属性效果
+            if (global.GeneEffectMap && global.GeneEffectMap[geneId]) {
+                let effect = global.GeneEffectMap[geneId];
+                let opLabel = effect.OPERATION === "addition" ? "+" : "×";
+                text.add(1, Text.gray(`效果: ${effect.attribute} ${opLabel}${effect.NUMBER}`));
+            } else if (geneId) {
+                text.add(1, Text.gray("该基因无特殊效果"));
             }
-    
-            if (!hasGene) text.add(1, Text.gray("❌ 无存储信息"));
         }
     });
     event.addAdvanced('rainbow:365_exe', (item, advanced, text) => {

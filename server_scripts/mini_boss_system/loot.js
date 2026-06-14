@@ -18,10 +18,11 @@ ServerEvents.genericLootTables(event => {
         })
     })
 })
-
+/*
 LootJS.modifiers(event => {
     event
         .addLootTypeModifier(LootType.ENTITY)
-        .entityPredicate(entity => entity.persistentData.isMiniBoss)
+        .entityPredicate(entity => {entity.persistentData.isMiniBoss != null && entity.persistentData.isMiniBoss == true})
         .addLoot(LootEntry.ofJson({ type: 'minecraft:loot_table', name: 'rainbow:mini_boss_extra' }))
 })
+*/

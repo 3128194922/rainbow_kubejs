@@ -65,7 +65,8 @@ ForgeModEvents.onEvent(
             'rainbow:generic.extra_summoning',
             'rainbow:generic.boom_damage',
             //'rainbow:generic.magic_damage',
-            'rainbow:generic.thrown_damage'
+            'rainbow:generic.thrown_damage',
+            'rainbow:generic.pet_damage'
         ];
         
         const DefaultAttributes = Java.loadClass('net.minecraft.world.entity.ai.attributes.DefaultAttributes');
@@ -81,28 +82,20 @@ ForgeModEvents.onEvent(
             }
         });
 
-        event.add('player', 'rainbow:generic.pet_damage');
+        //event.add('player', 'caverns_and_chasms:magic_damage');
+        //event.add('player', 'caverns_and_chasms:magic_protection');
     }
 );
 
 // ==========================================
-// 实体属性修改
-// Entity Attribute Modifications
-// ==========================================
 // 修改特定实体（如铁傀儡）的初始属性
 // Modifies initial attributes of specific entities (e.g., Iron Golem)
 
-/*
-// 监听实体属性修改事件
-EntityJSEvents.attributes(e=>{
-    // 修改铁傀儡的属性
-    e.modify("minecraft:iron_golem",attributes=>{
-        // 增加护甲值
-        attributes.add("minecraft:generic.armor",34)
-        // 增加护甲韧性
-        attributes.add("minecraft:generic.armor_toughness",20)
-        // 增加护甲穿透保护（可能是自定义属性）
-        attributes.add("attributeslib:prot_pierce",0.5)
-    })
-})
-*/
+// 通过 entityjs 挂载 C&C 原生属性到玩家（使用 ForgeRegistries 直接解析）
+EntityJSEvents.attributes(event => {
+    event.modify('minecraft:player', helper => {
+        helper.add('caverns_and_chasms:magic_damage', 0.0);
+        helper.add('caverns_and_chasms:magic_protection', 1.0);
+    });
+
+});

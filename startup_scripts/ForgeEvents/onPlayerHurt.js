@@ -38,4 +38,17 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
             }
         }
     }
+
+    // --- 圣饼 ---
+    // 10%伤害减免 + 60tick无敌帧
+    if (hasCurios(victim, "rainbow:the_wafer")) {
+            try{
+                event.setAmount(event.getAmount() * 0.9);
+                victim.invulnerableTime = 60;
+
+            }catch(e)
+            {
+                console.log("圣饼出错："+e)
+            }
+    }
 }

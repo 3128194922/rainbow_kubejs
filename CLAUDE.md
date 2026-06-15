@@ -30,6 +30,10 @@
 
  11.关于本项目的概略读取 README.md
 
+ 12.必须使用的skills:kubejs-modding、mc-datapack、minecraft-forge
+
+ 13.每次修改代码添加注释，有注释则修改注释到最新
+
  输出要求 ： 
 
  不管有没有文本输出都应该输出文本 【前端变前台，后端变后厨，python送到家，Java炒米粉】

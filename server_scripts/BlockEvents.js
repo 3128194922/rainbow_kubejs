@@ -157,7 +157,7 @@ BlockEvents.rightClicked(event => {
 });
 */
 // 末影 docker 绑定逻辑
-BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
+/*BlockEvents.rightClicked(["rainbow:docker_ender", "rainbow:docker_ender_player","rainbow:docker_ender_player_vpn", "rainbow:docker_ender_player_hotbar", "rainbow:docker_ender_proxy"], event => {
     let entity = event.block.entity;
     let player = event.getPlayer();
     let hand = event.getHand().toString();
@@ -248,7 +248,7 @@ BlockEvents.broken(["rainbow:docker_ender_player_vpn", "rainbow:docker_ender_pla
             entity.persistentData.snapshot = null;
         }
     }
-});
+});*/
 
 // 远程标靶信号器
 BlockEvents.rightClicked("minecraft:target", event => {

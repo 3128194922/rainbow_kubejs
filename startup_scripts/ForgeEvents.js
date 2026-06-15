@@ -392,7 +392,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         if (event.getEntity().getLevel().isClientSide()) return;
         if (!player || !player.isPlayer()) return;
 
-        // 牺牲护符：击杀计数逻辑
+        // 宝箱吊坠：击杀计数逻辑
         let item = getCuriosItem(player, "rainbow:treasure_necklace");
         if (!item) return;
 
@@ -421,38 +421,11 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         if (event.getEntity().getLevel().isClientSide()) return;
         if (!player || !player.isPlayer()) return;
 
-        // 牺牲护符：击杀计数逻辑
-        let item = getCuriosItem(player, "rainbow:infernotooth_necklace");
-        if (!item) return;
-
-        if (player.getItemInHand("main_hand").id == 'species:spectralibur') return;
-
-        let nbt = item.getOrCreateTag();
-
-        let Souls = nbt.getInt("Souls");
-
-        if (Souls == null) {
-            nbt.putInt("Souls", 0)
-        }
-        else {
-            nbt.putInt("Souls", Souls + 1)
-        }
-
-    } catch (e) {
-        console.log("监听死亡出现问题：");
-        console.log(e);
-    }
-});
-
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
-    try {
-        let player = event.getSource().getPlayer();
-        if (event.getEntity().getLevel().isClientSide()) return;
-        if (!player || !player.isPlayer()) return;
-
         // 大师球储存灵魂
         let item = getCuriosItem(player, "rainbow:master_ball");
         if (!item) return;
+
+        if (player.getItemInHand("main_hand").id == 'species:spectralibur') return;
 
         let nbt = item.getOrCreateTag();
 

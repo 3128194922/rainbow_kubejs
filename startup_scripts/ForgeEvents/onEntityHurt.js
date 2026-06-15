@@ -11,5 +11,5 @@
  * @param {string[]} boom_damage 爆炸伤害
  */
 function onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
-    
+
 }

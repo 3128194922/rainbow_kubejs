@@ -127,7 +127,7 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:berserk_emblem', (item, advanced, text) => {
             text.add(1, Text.aqua("根据已经损失的血量增加属性"));
-            text.add(2, Text.red("联动暴食之符"));
+            text.add(2, Text.red("联动饕餮护符"));
     })
     /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -183,8 +183,7 @@ ItemEvents.tooltip((event) => {
       if (event.shift) {
 		text.remove(1)
         text.add(1, Text.aqua("消耗饱和度抵消部分伤害"));
-		text.add(2, Text.aqua(`加速玩家饮食速度的同时，允许玩家在饱食度已满时进食`));
-		}
+    }
     })
     event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("生物碰撞箱对你无影响"));
@@ -199,6 +198,14 @@ ItemEvents.tooltip((event) => {
           text.add(1, Text.aqua("佩戴后放置方块将受限制"));
           text.add(2, Text.aqua("佩戴极限之证时本饰品不生效"));
           }
+    })
+    event.addAdvanced('rainbow:the_wafer', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("减免10%所受伤害"));
+            text.add(2, Text.aqua("延长无敌帧至3s"));
+        }
     })
     event.addAdvanced(['rainbow:despair_insignia'], (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -341,8 +348,16 @@ ItemEvents.tooltip((event) => {
         text.add(Text.aqua("耐久：").append(Text.yellow(`${maxDmg - dmg} / ${maxDmg}`)));
     })
     event.addAdvanced('rainbow:infernotooth_necklace', (item, advanced, text) => {
-        text.add(1, Text.aqua("击杀生物储存灵魂"));
-        text.add(2, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
+        text.add(1, Text.gray("与海牙吊坠互斥"));
+    })
+    event.addAdvanced('rainbow:master_ball', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("击杀生物储存灵魂"));
+            text.add(2, Text.aqua("配合莉莉丝之拥可消耗灵魂免死一次"));
+            text.add(3, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
+        }
         let nbt = item.getNbt();
         if (!nbt) return;
         text.add(Text.aqua("灵魂：").append(Text.yellow(`${nbt.getInt("Souls")}`)));
@@ -406,7 +421,13 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gold(`[义体前置]`));
     })
     event.addAdvanced('rainbow:soul_hex_block', (item, advanced, text) => {
-        text.add(1, Text.aqua(`标记附近的怪物，杀死标记怪物将获得特殊掉落物`));
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("标记5格内非玩家实体"));
+            text.add(2, Text.aqua("标记实体获得油漆层视觉提示"));
+            text.add(3, Text.aqua("击杀标记实体可获得特殊掉落物"));
+        }
     })
     event.addAdvanced('rainbow:docker_nether_on', (item, advanced, text) => {
         text.add(1, Text.aqua(`收集附近的唱片机音乐，产生下界之音`));
@@ -453,5 +474,13 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:sprite', (item, advanced, text) => {
         text.add(1, Text.aqua("移动时获得"));
         text.add(2, Text.aqua("+10 护甲 / +3 攻击 / +50% 击退抗性"));
+    })
+    event.addAdvanced('rainbow:clawofhorus', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("没有被生物盯上时获得暴击率与暴击伤害加成"));
+            text.add(2, Text.aqua("被生物盯上时加成暂时失效并进入冷却"));
+        }
     })
 })

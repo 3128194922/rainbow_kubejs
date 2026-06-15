@@ -81,3 +81,19 @@ ItemEvents.modification(event => {
        )
    })
 })*/
+
+//铜 套装 宠物流派
+ItemEvents.modification(event => {
+   let items = ['caverns_and_chasms:copper_helmet', 'caverns_and_chasms:copper_chestplate', 'caverns_and_chasms:copper_leggings','caverns_and_chasms:copper_boots']
+   let uuids = [
+      "62808577-5866-484f-a397-7b9340fd7c0b",
+      "72808577-5866-484f-a397-7b9340fd7c0b",
+      "82808577-5866-484f-a397-7b9340fd7c0b",
+      "92808577-5866-484f-a397-7b9340fd7c0b"
+   ]
+   items.forEach(item => {
+      event.modify(item, event => {
+         event.addAttribute("rainbow:generic.pet_damage", uuids[items.indexOf(item)], item, 10.0, "addition")
+      })
+   })
+})

@@ -108,13 +108,14 @@
 | `rainbow:sprite` | 雪碧，移动时 +10 护甲 / +3 攻击 / +50% 击退抗性 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L453-L456](client_scripts/tooltips.js#L453-L456) |
 | `rainbow:ancientaegis` | 远古之庇护，右键绑定在线玩家，受到的伤害转移给绑定对象 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L323-L331](client_scripts/tooltips.js#L323-L331) |
 | `rainbow:oceantooth_necklace` | 海牙吊坠，穿甲 +4，与狱牙吊坠互斥 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L105-L108](server_scripts/Recipes.js#L105-L108)，tooltip：[client_scripts/tooltips.js#L335-L342](client_scripts/tooltips.js#L335-L342) |
-| `rainbow:infernotooth_necklace` | 狱牙吊坠，穿甲 +8，击杀储存灵魂，手持 spectralibur 时每秒转移灵魂 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L343-L349](client_scripts/tooltips.js#L343-L349)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
-| `rainbow:treasure_necklace` | 宝箱吊坠，击杀积累能量，满 100 消耗耐久产出战利品 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L418-L423](client_scripts/tooltips.js#L418-L423) |
+| `rainbow:infernotooth_necklace` | 狱牙吊坠，穿甲 +8，击杀储存灵魂，手持 spectralibur 时每秒转移灵魂 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L350-L352](client_scripts/tooltips.js#L350-L352) |
+| `rainbow:treasure_necklace` | 宝箱吊坠，击杀积累能量，满 100 消耗耐久产出战利品 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L439-L444](client_scripts/tooltips.js#L439-L444) |
+| `rainbow:the_wafer` | 圣饼，减免 10% 所受伤害，延长无敌帧至 3s | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L202-L209](client_scripts/tooltips.js#L202-L209) |
 | `rainbow:the_bible` | 圣经，根据穿戴的盔甲纹饰和魔法伤害属性动态提供属性加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L437-L444](client_scripts/tooltips.js#L437-L444) |
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
 | `rainbow:lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
 | `rainbow:mind` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
-| `rainbow:master_ball` | 脑控回收器，右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L306-L308](client_scripts/tooltips.js#L306-L308) |
+| `rainbow:master_ball` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
 | `rainbow:fire_magic` | 火遁·豪火灭却（技能腰带槽），持续 40 tick 发射 Scorcher 火焰投射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Helldivers.js#L108-L121](server_scripts/curios_skill_system/Helldivers.js#L108-L121) |
 | `rainbow:ccb` | 共生徽章（踩踩背），右键生物骑乘并控制移动 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L434-L471](server_scripts/curios_skill_system/Skillwheel.js#L434-L471)，服务器：[server_scripts/SymbiosisBadge_Server.js](server_scripts/SymbiosisBadge_Server.js)，启动：[startup_scripts/SymbiosisBadge_Startup.js](startup_scripts/SymbiosisBadge_Startup.js)，tooltip：[client_scripts/tooltips.js#L428-L436](client_scripts/tooltips.js#L428-L436) |
 | `rainbow:whistle` | 战壕哨，给主人召唤物施加杀戮欲望，其他生物发光 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L511-L538](server_scripts/curios_skill_system/Skillwheel.js#L511-L538) |
@@ -175,7 +176,7 @@
 | `rainbow:void_ore` | 虚空矿，铁级镐挖掘，掉落 `rainbow:raw_voidore`，80% 概率挖掘时传送到附近末地石 | 注册：[startup_scripts/Registry/Registry_block.js](startup_scripts/Registry/Registry_block.js)，战利品：[server_scripts/Loot.js#L282-L287](server_scripts/Loot.js#L282-L287)，传送：[server_scripts/discord.js#L200-L241](server_scripts/discord.js#L200-L241) |
 | `rainbow:soul_hex_block` | 灵脂蜡块，每 20 tick 标记周围 5 格内非玩家实体 | 注册：[startup_scripts/Registry/Registry_block.js](startup_scripts/Registry/Registry_block.js)，tooltip：[client_scripts/tooltips.js#L408-L410](client_scripts/tooltips.js#L408-L410) |
 
-> 末影 Docker 系列方块注册：[startup_scripts/Registry/Registry_docker.js](startup_scripts/Registry/Registry_docker.js)
+> Docker 通用型方块注册：[startup_scripts/docker/main.js](startup_scripts/docker/main.js)
 
 ---
 
@@ -281,9 +282,11 @@
 
 ### 迷你Boss系统
 
-**触发条件：** 玩家幸运值 ≤ 0 时攻击生物
+**触发条件：** 玩家幸运值 ≤ 0 时攻击生物（驯服生物除外），概率触发
 
 > 实现：[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)，战利品：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)，AI：[server_scripts/mini_boss_system/IA.js](server_scripts/mini_boss_system/IA.js)
+
+**触发逻辑：** 每次攻击检测幸运值，无条件触发（`1 &&`），随机抽取 1-4 次词条（去重），生命值 x3。实体添加红色油漆层标识。
 
 **词条系统（6 种）：**
 
@@ -407,14 +410,15 @@
 
 ### 伤害系统
 
-一套完整的伤害处理管线：
+一套完整的伤害处理管线（大部分集中在 [startup_scripts/ForgeEvents.js](startup_scripts/ForgeEvents.js)），包含以下子模块：
 
 > 入口：[startup_scripts/ForgeEvents/main.js](startup_scripts/ForgeEvents/main.js)
+> 主事件：[startup_scripts/ForgeEvents.js](startup_scripts/ForgeEvents.js)
 
 | 文件 | 功能 | 实现位置 |
 |------|------|----------|
 | `customAttributeDamage.js` | 自定义属性伤害计算 | [startup_scripts/ForgeEvents/customAttributeDamage.js](startup_scripts/ForgeEvents/customAttributeDamage.js) |
-| `handleCuriosEffects.js` | 饰品效果处理 | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
+| `handleCuriosEffects.js` | 饰品效果处理 + Bible 纹饰祝福 | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
 | `handleCoreCharging.js` | 核心充能处理 | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
@@ -425,6 +429,25 @@
 | `onBeforeNonPlayerHurt.js` | 非玩家受伤前事件 | [startup_scripts/ForgeEvents/onBeforeNonPlayerHurt.js](startup_scripts/ForgeEvents/onBeforeNonPlayerHurt.js) |
 | `onBeforeNonEntityHurt.js` | 非实体受伤前事件 | [startup_scripts/ForgeEvents/onBeforeNonEntityHurt.js](startup_scripts/ForgeEvents/onBeforeNonEntityHurt.js) |
 | `ForgeEvent.js` | 通用 Forge 事件 | [startup_scripts/ForgeEvents/ForgeEvent.js](startup_scripts/ForgeEvents/ForgeEvent.js) |
+
+**核心 ForgeEvent 新增机制：** [startup_scripts/ForgeEvents.js](startup_scripts/ForgeEvents.js)
+
+| 机制 | 说明 |
+|------|------|
+| 霜冻镐加速 | 挖掘硬度 > 5 的方块时挖掘速度 x16 |
+| 棒球棍能量 | 每次攻击消耗能量，归零变回普通棒球棍 |
+| 决斗剑类型 | 初始化已攻击类型计数 NBT |
+| 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
+| 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
+| 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害 |
+| 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半妖怪化，累计 5 分钟转妖怪化 |
+| 虚空嬗变 | `rainbow:raw_voidore` 可转化为 `createutilities:void_steel_ingot` |
+| 防化服免疫 | 穿戴全套 `alexscaves:hazmat_*` 免疫中毒/凋零/辐照 |
+| 睡眠噩梦 | 玩家醒来时概率在周围生成幻翼 |
+| 下班时间 | `rainbow:off_work_time` 效果结束时丢弃手上物品 |
+| 宝箱吊坠计数 | 击杀生物记录到 `kill` NBT |
+| 大师球灵魂 | 击杀生物储存灵魂到 `Souls` NBT |
+| 短射buff到期 | `rainbow:short_buff` 结束时射出 `alexscaves:ice_chunk` 投射物 |
 
 ### 妖怪化系统
 
@@ -534,22 +557,26 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 ---
 
-## 末影 Docker 系列
+## Docker 通用型系统
 
-> 注册：[startup_scripts/Registry/Registry_docker.js](startup_scripts/Registry/Registry_docker.js)
-> 方块交互：[server_scripts/BlockEvents.js#L159-L251](server_scripts/BlockEvents.js#L159-L251)
-> 配方：[server_scripts/Recipes.js#L72-L93](server_scripts/Recipes.js#L72-L93)
+> 注册：[startup_scripts/docker/main.js](startup_scripts/docker/main.js)
+> 交互：[server_scripts/docker/docker_interaction.js](server_scripts/docker/docker_interaction.js)
+> 旧版配方已注释：[server_scripts/Recipes.js#L72-L93](server_scripts/Recipes.js#L72-L93)
 
-6 种末影箱相关的功能性方块，可绑定玩家：
+**统一后的 Docker 方块** `rainbow:docker`，潜行右键可在 6 种模式间循环切换，面向上方不传输：
 
-| 方块ID | 说明 | 交互方式 |
-|--------|------|----------|
-| `rainbow:docker_ender` | 基础末影 Docker | 潜行右键绑定末影箱 |
-| `rainbow:docker_ender_player` | 加强型末影 Docker | 潜行右键绑定末影箱 |
-| `rainbow:docker_ender_player_vpn` | 背包代理 Docker | 潜行右键绑定，破坏时清空内容物 |
-| `rainbow:docker_ender_player_hotbar` | 物品栏代理 Docker | 与 vpn 互相转化，破坏时清空内容物 |
-| `rainbow:docker_ender_proxy` | 坐标代理 Docker | 潜行右键绑定，破坏时清空内容物 |
-| `rainbow:docker_player_pos_proxy` | 玩家位置代理 Docker | 潜行右键绑定在线玩家坐标 |
+| 模式 | 名称 | 功能 |
+|------|------|------|
+| 0 | 末影型 | 红石脉冲 → 将物品转移到绑定者的末影箱 |
+| 1 | 末影加强型 | 红石脉冲 → 将物品转移到绑定者的物品栏 |
+| 2 | 玩家坐标代理 | 红石脉冲 → 实时记录绑定者的坐标和维度 |
+| 3 | 背包代理 | 红石脉冲 → 同步绑定者物品栏 9-35 槽到方块库存 |
+| 4 | 物品栏代理 | 红石脉冲 → 同步绑定者快捷栏 0-8 槽到方块库存 |
+| 5 | 末影箱代理 | 红石脉冲 → 同步绑定者末影箱到方块库存 |
+
+- **绑定：** 潜行右键绑定 UUID
+- **代理模式 (mode ≥ 2)：** 玩家下线自动清空方块库存
+- **旧版 6 独立方块已废弃**，由统一 Docker 替代
 
 ---
 
@@ -660,6 +687,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
 - **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
 - **NBT 信息显示：** 装填/连射核心能量值、强力棒球棍能量、饕餮之锅已食用数、信标球绑定坐标、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
+- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死）、荷鲁斯之爪（生物盯上时暴击加成）
 
 ### JEI 修改
 > 实现：[client_scripts/jei.js](client_scripts/jei.js)
@@ -719,6 +747,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 ### 灵脂蜡块 docker 掉落
 - 被 `forge:spawn_type=MOB_SUMMONED` 且有 docker 数据的实体可配置额外掉落
+- 新增 `rainbow:rainbow_chest` 战利品表，`rainbow:soul_hex_block` 标记的怪物击杀后触发该战利品
 
 ---
 
@@ -755,6 +784,10 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 | `mysticartifacts:ender_kunai` | 虚空钢锭 + 紫水晶碎片 + 末影珍珠 | L197-L200 |
 | 命名牌复制 | 线 + 木板 + 命名牌 → 保留模板不退材 | L225 |
 | 传送石降价 | 绿宝石 + 末影珍珠 | L219 |
+| 音乐播放器 | 唱片机 + 铁锭 + 红石 | L269 |
+| 光盘刻录机 | 音符盒 + 铁锭 + 红石 | L272 |
+| 计算机 | 红石灯 + 铁锭 + 红石中继器 | L275 |
+| 下界反应堆 | 4x 下界合金锭 + 4x 黑曜石 + 钻石 | L424 |
 
 ### Create 产线配方（精选）
 
@@ -863,6 +896,13 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 - `global.isEnabled` - UI 引导提示开关
 - `global.SUPER_MECHAISM` - 超精密构件合成成功率
 - `global.GeneEffectMap` - 基因效果映射表
+- `global.CURIONUMBER` - 饰品栏数量
+- `global.CURSES` - 诅咒附魔列表（消失诅咒 + 绑定诅咒）
+- `global.NEWFILENUMBER` - 新文件计数器
+- `global.MAX_STORAGE` - 最大存储量
+- `global.biomelist` - 群系列表（60+ 群系，UTF+ 引用）
+- `global.COLORS` - 颜色映射（包括 16 种标准色 + link/aqua 等扩展色）
+- `global.allEnchantments` - 全部附魔注册表导出
 
 ---
 
@@ -923,9 +963,9 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 > [server_scripts/BlockEvents.js#L254-L284](server_scripts/BlockEvents.js#L254-L284)
 
 ### 末影 Docker 绑定
-潜行右键绑定玩家 UUID，普通右键显示绑定信息。
+潜行右键绑定玩家 UUID，Shift+右键循环切换 6 种模式，普通右键显示绑定信息。
 
-> [server_scripts/BlockEvents.js#L159-L251](server_scripts/BlockEvents.js#L159-L251)
+> [server_scripts/docker/docker_interaction.js](server_scripts/docker/docker_interaction.js)
 
 ---
 
@@ -953,7 +993,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 - TNT → `minecraft:tnt`
 - 破片炸弹 → `oreganized:shrapnel_bomb`
 - 孢子炸弹 → `savage_and_ravage:spore_bomb`
-- 核弹 → `alexscaves:nuclear_bomb`（播放核弹警报）
+- 核弹 → `alexscaves:nuclear_bomb`（播放核弹警报，延迟 2 秒爆炸）
 
 ### 黏液棒脱衣
 > [server_scripts/EntityEvents.js#L11-L25](server_scripts/EntityEvents.js#L11-L25)
@@ -975,10 +1015,10 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 佩戴怪物猎人勋章击杀生物获得狂暴效果 5 秒。
 
-### 狱牙吊坠 + 莉莉丝拥抱：灵魂替死
+### 大师球 + 莉莉丝拥抱：灵魂替死
 > [server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134)
 
-同时佩戴狱牙吊坠和莉莉丝之拥时，致死伤害消耗 1 灵魂抵消，回满血量。
+同时佩戴大师球（`rainbow:master_ball`）和莉莉丝之拥时，致死伤害消耗 1 灵魂抵消，回满血量。
 
 ### 矿车/船安装
 > [server_scripts/ItemEvents.js](server_scripts/ItemEvents.js)

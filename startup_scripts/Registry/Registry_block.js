@@ -61,19 +61,21 @@ StartupEvents.registry("block", event => {
             // 每 20 tick 执行一次
             entityInfo.serverTick(20, 0, entity => {
                 let level = entity.level;
-                if (level.isClientSide()) return; // 只在服务端执行
+                if (level.isClientSide()) return;
 
-                let pos = entity.blockPos; // 方块坐标
-                let range = 5; // 半径范围
-                let aabb = AABB.ofBlock(pos).inflate(range);
+                let pos = entity.blockPos;
+                let range = 5;
+                let aabb = new AABB(pos).inflate(range);
 
-                // 获取范围内的所有活体实体
-                let entities = level.getEntitiesOfClass(Java.loadClass("net.minecraft.world.entity.LivingEntity"), aabb);
+                let entities = level.getEntitiesOfClass($LivingEntity, aabb);
 
                 for (let e of entities) {
                     if (e.isPlayer()) continue;
-                    // 标记实体
                     e.persistentData.docker = true;
+                    if (e.persistentData.docker_painted == null) {
+                        e.persistentData.docker_painted = true;
+                        level.server.runCommandSilent("/dyeing paint add static " + e.uuid.toString() + " 8800AAFF 1.1");
+                    }
                 }
             });
 

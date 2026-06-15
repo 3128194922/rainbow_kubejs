@@ -311,9 +311,9 @@ LootJS.modifiers((event) => {
 LootJS.modifiers((event) => {
     event
         .addLootTypeModifier(LootType.ENTITY)
-        .entityPredicate((entity) => entity.persistentData.docker != null && entity.getNbt().get("forge:spawn_type") == "MOB_SUMMONED")
+        .entityPredicate((entity) => entity.persistentData.docker != null)
         .addAlternativesLoot(
             //LootEntry.of('gimmethat:mandel_brick').when((c) => c.randomChance(0.5)),
-            //LootEntry.of('gimmethat:quantum_key').when((c) => c.randomChance(0.5))
+            LootEntry.of('minecraft:enchanted_golden_apple').when((c) => c.randomChance(1.0))
         );
 });

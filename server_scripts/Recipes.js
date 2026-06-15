@@ -70,28 +70,28 @@ ServerEvents.recipes(event => {
         ['minecraft:redstone_torch', 'minecraft:redstone_block', 'minecraft:target']])
 */
     //末影docker
-    event.shaped('rainbow:docker_ender', [
+   /* event.shaped('rainbow:docker_ender', [
         ['#minecraft:planks','#minecraft:planks','#minecraft:planks'],
         ['#minecraft:planks','minecraft:ender_chest', '#minecraft:planks'],
         ['#minecraft:planks','#minecraft:planks','#minecraft:planks']])
-    
+    */
     //末影docker加强型
-    event.shaped('rainbow:docker_ender_player', [
+    /*event.shaped('rainbow:docker_ender_player', [
         ['','createutilities:void_casing',''],
         ['','rainbow:docker_ender',''],
         ['','createutilities:void_casing','']])
-
+*/
     //背包代理
-    event.shaped('rainbow:docker_ender_player_vpn', [
+    /*event.shaped('rainbow:docker_ender_player_vpn', [
         ['#minecraft:planks','createutilities:graviton_tube','#minecraft:planks'],
         ['#minecraft:planks','rainbow:docker_ender_player', '#minecraft:planks'],
         ['#minecraft:planks','createutilities:void_casing','#minecraft:planks']])
-    
+    */
     //物品栏代理
-    event.shapeless('rainbow:docker_ender_player_hotbar','rainbow:docker_ender_player_vpn')
+    /*event.shapeless('rainbow:docker_ender_player_hotbar','rainbow:docker_ender_player_vpn')
     event.shapeless('rainbow:docker_ender_player_vpn','rainbow:docker_ender_player_hotbar')
     event.shapeless('rainbow:docker_ender_proxy','rainbow:docker_ender_player_vpn')
-
+*/
     // 农夫乐事：切洋葱获得皮
     event.recipes.farmersdelight.cutting(
         'farmersdelight:onion',

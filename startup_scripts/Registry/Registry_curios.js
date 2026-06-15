@@ -923,24 +923,6 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .addAttribute("attributeslib:armor_pierce", "oceantooth_necklace", 8, "addition")
-                .curioTick((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    if (!entity) return false;
-                    if (entity.age % 20 != 0) return;
-                    let item = entity.getItemInHand("main_hand");
-                    if (item.id != 'species:spectralibur') return;
-                    else {
-                        if (stack.nbt == null) {
-                            stack.nbt = {}
-                        }
-                        if (stack.nbt.getInt("Souls") > 0) {
-                            stack.nbt.putInt("Souls", stack.nbt.getInt("Souls") - 1)
-                            item.nbt.putInt("Souls", item.nbt.getInt("Souls") + 1)
-                            entity.level.runCommandSilent(`/playsound species:item.spectralibur.collect_soul voice ${entity.getDisplayName().getString()} ${entity.x} ${entity.y} ${entity.z}`)
-                        }
-                    }
-
-                })
         )
 })
 
@@ -959,6 +941,32 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .texture('rainbow:item/mind_ctroller_detention')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .curioTick((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return;
+                    if (entity.age % 20 != 0) return;
+                    let item = entity.getItemInHand("main_hand");
+                    if (item.id != 'species:spectralibur') return;
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    if (stack.nbt.getInt("Souls") > 0) {
+                        stack.nbt.putInt("Souls", stack.nbt.getInt("Souls") - 1);
+                        item.nbt.putInt("Souls", item.nbt.getInt("Souls") + 1);
+                        entity.level.runCommandSilent("/playsound species:item.spectralibur.collect_soul voice " + entity.getDisplayName().getString() + " " + entity.x + " " + entity.y + " " + entity.z);
+                    }
+                })
+        )
+})
+
+// 圣饼
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_wafer')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
 })
 
 // 觉之瞳

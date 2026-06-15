@@ -106,7 +106,7 @@ EntityEvents.spawned(event => {
         }
 });
 
-// 狱牙吊坠 + 莉莉丝拥抱：灵魂替死
+// 大师球 + 莉莉丝拥抱：灵魂替死
 EntityEvents.hurt(event => {
     let entity = event.entity;
     if (!entity || !entity.isPlayer()) return;
@@ -115,10 +115,10 @@ EntityEvents.hurt(event => {
     let healthAfter = entity.health - event.damage;
     if (healthAfter > 0) return;
 
-    if (!hasCurios(entity, 'rainbow:infernotooth_necklace')) return;
+    if (!hasCurios(entity, 'rainbow:master_ball')) return;
     if (!hasCurios(entity, 'rainbow:lilith_hug')) return;
 
-    let necklace = getCuriosItem(entity, 'rainbow:infernotooth_necklace');
+    let necklace = getCuriosItem(entity, 'rainbow:master_ball');
     if (!necklace) return;
 
     let nbt = necklace.getNbt();

@@ -1550,6 +1550,7 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
+                .addAttribute("oreganized:kinetic_damage", "gravity_core", 5, "addition")
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
 
@@ -1573,15 +1574,23 @@ StartupEvents.registry('item', event => {
                             player.removeAttribute("forge:entity_gravity","gravity_core")
                             player.persistentData.isGravityCore = false;
 
+                            // 践踏音效与粒子
+                            player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.generic.explode", "players", 2.0, 1.0);
+                            player.level.spawnParticles('minecraft:explosion', true, player.getX(), player.getY() + 0.5, player.getZ(), 0.5, 0.5, 0.5, 20, 0.1);
+
                             let r = 4;
                             let stompBox = new AABB(player.x - r, player.y - 1.1, player.z - r, player.x + r, player.y + 1.1, player.z + r);
+
+                            // 获取玩家动能伤害属性值（来自oreganized）
+                            let kineticAttr = player.getAttribute('oreganized:kinetic_damage');
+                            let kineticDamage = kineticAttr ? kineticAttr.getValue() : 0;
 
                             player.level.getEntitiesWithin(stompBox).forEach(entity => {
                                 if (!entity) return;
                                 if (!entity.isLiving() || !entity.isAlive()) return;
                                 if(entity.isPlayer()) return;
 
-                                let DAMAGE = 10;
+                                let DAMAGE = 10 + kineticDamage;
 
                                 entity.attack(player.damageSources().playerAttack(player),DAMAGE);
                                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.0, 2.0, 0.0)); 
@@ -1630,6 +1639,10 @@ StartupEvents.registry('item', event => {
                         playerBox.maxX + radius, player.getY() + 0.4, playerBox.maxZ + radius
                     );
                     
+                    // 获取玩家动能伤害属性值（来自oreganized）
+                    let kineticAttr = player.getAttribute('oreganized:kinetic_damage');
+                    let kineticDamage = kineticAttr ? kineticAttr.getValue() : 0;
+
                     player.level.getEntitiesWithin(stompBox).forEach(entity => {
                         if (!entity) return;
                         if (!entity.isLiving() || !entity.isAlive()) return;
@@ -1643,7 +1656,7 @@ StartupEvents.registry('item', event => {
                             {
                                 let ADD = 10;
                             }
-                        let DAMAGE = 10 + ADD;
+                        let DAMAGE = 10 + ADD + kineticDamage;
 
                         entity.attack(player.damageSources().playerAttack(player),DAMAGE);
                         entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.0, 2.0, 0.0)); 

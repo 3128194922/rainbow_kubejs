@@ -93,7 +93,74 @@ ItemEvents.modification(event => {
    ]
    items.forEach(item => {
       event.modify(item, event => {
-         event.addAttribute("rainbow:generic.pet_damage", uuids[items.indexOf(item)], item, 10.0, "addition")
+         event.addAttribute("rainbow:generic.pet_damage", uuids[items.indexOf(item)], item, 0.1, "multiply_base")
+      })
+   })
+})
+
+// 铂金 套装 动能流派
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
+
+    try {
+        let items = ['oreganized:electrum_helmet', 'oreganized:electrum_chestplate', 'oreganized:electrum_leggings', 'oreganized:electrum_boots']
+        let uuids = [
+            "61808577-5866-484f-a397-7b9340fd7c0b",
+            "71808577-5866-484f-a397-7b9340fd7c0b",
+            "81808577-5866-484f-a397-7b9340fd7c0b",
+            "91808577-5866-484f-a397-7b9340fd7c0b"
+        ]
+        let armorSlots = ["head", "chest", "legs", "feet"]
+
+        for (let i = 0; i < items.length; i++) {
+            if (item.id === items[i] && slotType === armorSlots[i]) {
+                event.addModifier(
+                    "oreganized:kinetic_damage",
+                    new AttributeModifier(
+                        uuids[i],
+                        'electrum_kinetic',
+                        2,
+                        "addition"
+                    )
+                )
+                break
+            }
+        }
+    } catch (e) {
+        console.log("铂金套装属性修改出错：")
+        console.log(e)
+    }
+});
+
+// 银 套装 魔法流派
+ItemEvents.modification(event => {
+   let items = ['caverns_and_chasms:silver_helmet','caverns_and_chasms:silver_chestplate','caverns_and_chasms:silver_leggings', 'caverns_and_chasms:silver_boots']
+   let uuids = [
+      "61908577-5866-484f-a397-7b9340fd7c0b",
+      "71908577-5866-484f-a397-7b9340fd7c0b",
+      "81908577-5866-484f-a397-7b9340fd7c0b",
+      "91908577-5866-484f-a397-7b9340fd7c0b"
+   ]
+   items.forEach(item => {
+      event.modify(item, event => {
+         event.addAttribute("caverns_and_chasms:magic_damage", uuids[items.indexOf(item)], item, 2, "addition")
+      })
+   })
+})
+
+// 防爆 套装 爆炸流派
+ItemEvents.modification(event => {
+   let items = ['savage_and_ravage:griefer_helmet','savage_and_ravage:griefer_chestplate','savage_and_ravage:griefer_leggings', 'savage_and_ravage:griefer_boots']
+   let uuids = [
+      "61908571-5866-484f-a397-7b9340fd7c0b",
+      "71908571-5866-484f-a397-7b9340fd7c0b",
+      "81908571-5866-484f-a397-7b9340fd7c0b",
+      "91908571-5866-484f-a397-7b9340fd7c0b"
+   ]
+   items.forEach(item => {
+      event.modify(item, event => {
+         event.addAttribute("rainbow:generic.boom_damage", uuids[items.indexOf(item)], item, 0.1, "multiply_base")
       })
    })
 })

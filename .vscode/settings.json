@@ -1,0 +1,32 @@
+{
+    // KubeJS LSP 配置 - 启用 JavaScript 类型检查与 ProbeJS 集成
+    "javascript.suggest.enabled": true,
+    "javascript.suggest.autoImports": true,
+    "javascript.suggest.completeFunctionCalls": true,
+    "javascript.suggest.paths": true,
+    "javascript.format.enable": true,
+    "javascript.validate.enable": true,
+    "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "javascript.inlayHints.parameterNames.enabled": "all",
+    "javascript.inlayHints.variableTypes.enabled": true,
+    "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+    "javascript.inlayHints.parameterTypes.enabled": true,
+
+    // JS/TS 检查
+    "js/ts.implicitProjectConfig.checkJs": true,
+    "js/ts.implicitProjectConfig.strictNullChecks": true,
+    "js/ts.implicitProjectConfig.strictFunctionTypes": true,
+
+    // ProbeJS WebSocket 配置
+    "probejs.enable": true,
+    "probejs.port": 7796,
+
+    // 文件排除，避免 LSP 卡顿
+    "files.exclude": {
+        "**/.git": true,
+        "**/probe/generated/**": false
+    },
+    "search.exclude": {
+        "**/probe/generated/**": true
+    }
+}

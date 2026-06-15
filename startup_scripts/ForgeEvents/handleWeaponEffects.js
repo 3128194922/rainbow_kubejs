@@ -12,17 +12,20 @@
  */
 function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     if (!attacker || !attacker.isLiving()) return;
-    const mainHand = attacker.getItemInHand("main_hand");
-    const offHand = attacker.getItemInHand("off_hand");
-
+    let mainHand = attacker.getItemInHand("main_hand");
+    let offHand = attacker.getItemInHand("off_hand");
+    
     // 提尔锋：按目标护甲值增加伤害
     if (mainHand.id == "rainbow:tyrfing" && range_damage.indexOf(source.getType()) == -1) {
         event.setAmount(event.getAmount() + event.getAmount() * victim.getArmorValue());
     }
 
-    // 重锤：下落动能增伤（根据垂直速度）
+    // 重锤：下落动能增伤（根据下落距离和动能伤害属性）
     if (mainHand.id == "rainbow:heavy_axe" && range_damage.indexOf(source.getType()) == -1) {
-        event.setAmount(event.getAmount() + ((Math.abs(attacker.getDeltaMovement().y()).toFixed(1) - 0.1) * 40));
+        let kineticAttr = attacker.getAttribute('oreganized:kinetic_damage');
+        let kineticValue = kineticAttr ? kineticAttr.getValue() : 0;
+        let bonus = (attacker.fallDistance * 0.5) + (kineticValue * 2);
+        event.setAmount(event.getAmount() + bonus);
         attacker.fallDistance = 0;
     }
 

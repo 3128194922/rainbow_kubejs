@@ -91,5 +91,11 @@
 	"sounds": [
 	  "rainbow:tenshi"
 	]
+  },
+  	"voice.prayer": {
+	"subtitle": "sounds.rainbow.prayer",
+	"sounds": [
+	  "rainbow:prayer"
+	]
   }
 }

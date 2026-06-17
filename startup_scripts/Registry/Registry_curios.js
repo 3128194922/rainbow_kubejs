@@ -1186,6 +1186,19 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
                     stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                    let player = slotContext.entity();
+                    if (player !== null && !player.level.clientSide) {
+                        let onSculk = player.getBlock().id == 'minecraft:sculk_vein' || player.getBlock().getDown().id == 'minecraft:sculk';
+                        if (onSculk) {
+                            let tickCounter = stack.nbt.getInt("healTick") || 0;
+                            if (tickCounter >= 20) {
+                                player.heal(10);
+                                stack.nbt.putInt("healTick", 0);
+                            } else {
+                                stack.nbt.putInt("healTick", tickCounter + 1);
+                            }
+                        }
+                    }
                 })
         )
 })
@@ -1684,6 +1697,7 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .addAttribute("moreattribute:no_collision", "moai_charm", 1, "addition")
+                .addAttribute("minecraft:generic.knockback_resistance", "moai_charm", 1, "multiply_total")
         )
 })
 

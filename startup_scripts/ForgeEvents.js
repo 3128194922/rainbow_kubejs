@@ -208,6 +208,13 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingChangeTargetEv
                 event.setNewTarget(null) // 取消仇恨
             }
         }
+
+        // 监守者不会攻击带有幽匿亲和的玩家
+        if (entity_A.getType().equals("minecraft:warden") && entity_B.isPlayer()) {
+            if (getCuriosItem(entity_B, 'rainbow:sculk_affinity') !== null) {
+                event.setNewTarget(null)
+            }
+        }
     } catch (e) {
         console.log(e);
     }
@@ -235,6 +242,11 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
         // 下班时间到了，实体消失
         if (effectId === "effect.rainbow.off_work_time") {
             entity.discard()
+        }
+
+        // 虚化效果到期，移除油漆层
+        if (effectId === "effect.rainbow.void") {
+            entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
         }
 
         if (effectId === "effect.rainbow.short_buff") {
@@ -271,10 +283,17 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added', event => {
     try {
         let entity = event.entity;
-        if (!entity.isPlayer()) return;
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
+
+        // 虚化效果添加时，显示半透明油漆层（使用效果色的半透明版本）
+        if (effectId === "effect.rainbow.void") {
+            entity.server.runCommandSilent("/dyeing paint add static void_effect " + entity.uuid + " 80FFFFFF")
+        }
+
+        // 玩家专用逻辑：防化服免疫中毒/辐照/凋零
+        if (!entity.isPlayer()) return;
         if (effectId.toString() == "effect.minecraft.poison" || effectId.toString() == "effect.alexscaves.irradiated" || effectId.toString() == "effect.minecraft.wither") {
             if (entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
                 && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
@@ -290,11 +309,6 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added
         console.log(e)
     }
 });
-
-/*
-// 堕落之心逻辑（已注释）
-// ...
-*/
 
 // 虚空炼成系统：物品掉入虚空后转化为指定产物
 ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (event) => {
@@ -346,9 +360,16 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerInteractEvent$
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remove', event => {
     try {
         let entity = event.getEntity();
-        if (!entity.isPlayer()) return;
         if (!event.getEffectInstance()) return;
         let buffId = event.getEffectInstance().getDescriptionId();
+
+        // 虚化效果被移除时，移除油漆层
+        if (buffId == "effect.rainbow.void") {
+            entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
+        }
+
+        if (!entity.isPlayer()) return;
+
         let item_main = entity.getItemInHand("main_hand").getId();
         let item_off = entity.getItemInHand("off_hand").getId();
 

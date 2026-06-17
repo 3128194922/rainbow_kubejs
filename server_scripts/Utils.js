@@ -308,44 +308,6 @@ let Player = Java.loadClass('net.minecraft.world.entity.player.Player')
  * @param {Player} player 
  * @returns {boolean}
  */
-function PlayerLookAtMoon(player) {
-    let { yaw, pitch, level } = player
-    //let renderDistance = Client.options.renderDistance().get()
-    //服务器代码
-    let renderDistance = 10
-
-    //check
-    if (!level.overworld || level.isDay() || player.rayTrace(16 * renderDistance + 8).block != null) {
-        return false
-    }
-
-    //Moon Pitch
-    let tempPitch = (((level.getSunAngle(0) - 1.62) * -90) / 1.57) - 2.825
-    let add = level.dayTime() > 18000 ? Math.abs(tempPitch * 2 + 180) : 0
-    let moonPitch = tempPitch + add
-
-    if (Math.abs(moonPitch - pitch) > 2.825) {
-        return false
-    }
-    //MoonYaw is the formula provided by @Rad
-    //There is still some degree of error.
-    //If anyone can provide a more accurate formula, I would be very grateful.
-    let temp = (Math.abs(18000 - level.getDayTime())) / 5000;
-    let step = temp ** 2 - 27.49 * temp + 117.54;
-    let absYaw = Math.abs(yaw)
-
-    if ((level.getDayTime() < 18000 && yaw > 0) || (level.getDayTime() > 18000 && yaw < 0)) {
-        return false
-    }
-
-    if (!(absYaw > 85 - step && absYaw < 95 + step)) {
-        return false
-    }
-
-    player.tell('你捕获到了月亮')
-    return true
-}
-
 /**
  * Makes one entity face another entity by setting its yaw and pitch.
  *

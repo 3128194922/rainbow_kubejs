@@ -168,4 +168,5 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:void")
     .beneficial()
     .color(0x556B2F)
+    .modifyAttribute("moreattribute:no_collision", "void", 1, "addition")
 });

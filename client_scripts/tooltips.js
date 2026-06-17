@@ -352,15 +352,16 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:master_ball', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
+        let nbt = item.getNbt();
+        let souls = nbt !== null ? nbt.getInt("Souls") : 0;
+        text.add(2, Text.aqua("灵魂：").append(Text.yellow(`${souls}`)));
         if (event.shift) {
             text.remove(1)
+            text.remove(2)
             text.add(1, Text.aqua("击杀生物储存灵魂"));
             text.add(2, Text.aqua("配合莉莉丝之拥可消耗灵魂免死一次"));
             text.add(3, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
         }
-        let nbt = item.getNbt();
-        if (!nbt) return;
-        text.add(Text.aqua("灵魂：").append(Text.yellow(`${nbt.getInt("Souls")}`)));
     })
     event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
         // 先判断 NBT 是否存在
@@ -445,6 +446,8 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:sculk_affinity', (item, advanced, text) => {
         text.add(1, Text.aqua("站在幽匿方块上时获得"));
         text.add(2, Text.aqua("+20% 移动速度"));
+        text.add(3, Text.aqua("每秒恢复 10 点生命值"));
+        text.add(4, Text.aqua("监守者不会攻击你"));
     })
     event.addAdvanced('rainbow:ccb', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -461,6 +464,10 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("根据穿戴的盔甲纹饰提供属性加成"));
             text.add(2, Text.aqua("加成效果受魔法伤害属性影响"));
+            text.add(3, Text.gold("技能：释放圣经之力"));
+            text.add(4, Text.aqua("向外扩散金色冲击波"));
+            text.add(5, Text.aqua("推开周围实体"));
+            text.add(6, Text.aqua("每次脉冲恢复 100 血量"));
         }
     })
     event.addAdvanced('rainbow:mini_moon', (item, advanced, text) => {

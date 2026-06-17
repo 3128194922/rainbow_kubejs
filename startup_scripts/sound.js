@@ -10,10 +10,6 @@
 StartupEvents.registry("sound_event", (event) => {
     // 创建一个名为 "rainbow:voice.man" 的声音事件
     event.create("rainbow:voice.man")
-    // 创建一个名为 "rainbow:music.gauntlet" 的声音事件
-    event.create("rainbow:music.gauntlet")
-
-    event.create("rainbow:music.tem")
 
     event.create("rainbow:voice.eye_of_satori")
 
@@ -34,10 +30,12 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.warning")
 
     event.create("rainbow:voice.tenshi")
+
+    event.create("rainbow:voice.prayer")
 })
 
 // 注册物品
-StartupEvents.registry("item", (event) => {
+/*StartupEvents.registry("item", (event) => {
     // 创建一个名为 "rainbow:gauntlet" 的唱片物品
     event.create("rainbow:gauntlet", "music_disc")
         // 设置唱片对应的音乐为 "rainbow:music.gauntlet"，时长为 181 秒
@@ -51,4 +49,4 @@ StartupEvents.registry("item", (event) => {
         // 添加 "music_discs" 标签
         .tag("music_discs")
         .texture('minecraft:item/music_disc_13')
-})
+})*/

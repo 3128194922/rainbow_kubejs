@@ -618,9 +618,9 @@ registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenu
         let areaColor = "80FFFFFF";
 
         if (shiftDown) {
-            event.server.runCommandSilent(`/dyeing area add scale ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 1.0 0.2 1.0 1.0 12 1 remove`);
+            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 1.0 0.2 1.0 1.0 12 1 remove`);
         } else {
-            event.server.runCommandSilent(`/dyeing area add scale ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 0.2 1.0 1.0 1.0 12 1 remove`);
+            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 0.2 1.0 1.0 1.0 12 1 remove`);
         }
 
         player.level.getEntitiesWithin(area).forEach(entity => {
@@ -648,6 +648,77 @@ registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenu
             entity.hurtMarked = true;
         })
     }
+});
+
+// --- 圣经 ---
+registerSkillSound('rainbow:the_bible', 'rainbow:voice.prayer');
+registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('rainbow:the_bible')) return;
+    if (player.level.clientSide) return;
+
+    let playerUuid = player.getUuid().toString();
+    let durationTicks = 200; // 10 秒持续时间
+    let pulseInterval = 15; // 每次脉冲间隔 tick
+
+    // 1. 金色油漆层（组合动画：金色呼吸光效）
+    event.server.runCommandSilent(`/dyeing paint add combo bible_glow ${playerUuid} 80FFD700 80FFFF00 1.0 1.3 0.8 1.0 20 20 -1 end -1 end`);
+
+    // 2. 向外快速扩散的矩形区域（无限循环，每次回到起点重新扩散）
+    event.server.runCommandSilent(`/dyeing area add scale bible_wave ${playerUuid} -4 0 -4 4 3 4 80FFD700 0.3 2.5 0.6 0.0 15 -1 start`);
+
+    // 3. 周期性脉冲：推开实体 + 恢复血量
+    let elapsed = 0;
+    let pulse = () => {
+        if (!player || !player.isAlive()) {
+            event.server.runCommandSilent(`/dyeing paint remove ${playerUuid} bible_glow`);
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bible_wave`);
+            return;
+        }
+
+        if (elapsed >= durationTicks) {
+            event.server.runCommandSilent(`/dyeing paint remove ${playerUuid} bible_glow`);
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bible_wave`);
+            return;
+        }
+
+        // 推开周围实体（类似 mini_moon 机制）
+        let radius = 7;
+        let centerX = player.getX();
+        let centerY = player.getY() + 0.5;
+        let centerZ = player.getZ();
+        let area = player.boundingBox.inflate(radius);
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity || !entity.isLiving() || !entity.isAlive() || entity == player) return;
+
+            let dx = entity.getX() - centerX;
+            let dy = entity.getY() - centerY;
+            let dz = entity.getZ() - centerZ;
+            let distanceSq = dx * dx + dy * dy + dz * dz;
+            if (distanceSq <= 0 || distanceSq > radius * radius) return;
+
+            let distance = Math.sqrt(distanceSq);
+            entity.setDeltaMovement(new Vec3d(
+                (dx / distance) * 2.0,
+                0.5 + Math.max(dy / distance * 0.15, 0),
+                (dz / distance) * 2.0
+            ));
+            entity.hurtMarked = true;
+        });
+
+        // 播放音效（复用 mini_moon 的音效）
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.prayer", "voice", 1, 1);
+
+        // 每次触发推开恢复 100 血量
+        player.heal(100);
+
+        elapsed += pulseInterval;
+        event.server.scheduleInTicks(pulseInterval, pulse);
+    };
+
+    event.server.scheduleInTicks(pulseInterval, pulse);
+
+    player.cooldowns.addCooldown('rainbow:the_bible', SecoundToTick(30));
 });
 
 // ==========================================

@@ -220,17 +220,6 @@ ItemEvents.rightClicked('rainbow:terasword', event => {
     player.cooldowns.addCooldown("rainbow:creeper_charm", SecoundToTick(60 * 60));
 });*/
 
-// --- 月光水晶：看月亮获得物品 ---
-ItemEvents.rightClicked('chromaticarsenal:lunar_crystal', event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-
-    if (PlayerLookAtMoon(player)) {
-        player.give("rainbow:mini_moon");
-        item.shrink(1);
-    }
-});
-
 // --- 棒球棍：充能 ---
 ItemEvents.rightClicked('rainbow:baseball_bat', event => {
     let { player, item, level, server } = event;

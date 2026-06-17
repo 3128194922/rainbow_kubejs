@@ -74,7 +74,7 @@ StartupEvents.registry("block", event => {
                     e.persistentData.docker = true;
                     if (e.persistentData.docker_painted == null) {
                         e.persistentData.docker_painted = true;
-                        level.server.runCommandSilent("/dyeing paint add static " + e.uuid.toString() + " 8800AAFF 1.1");
+                        level.server.runCommandSilent("/dyeing paint add static soul_hex_layer " + e.uuid.toString() + " 8800AAFF 1.1");
                     }
                 }
             });

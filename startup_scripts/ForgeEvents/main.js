@@ -85,3 +85,27 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingAttackEvent", 
         console.log(e)
     }
 })
+//玩家 受伤后 主入口
+ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", event => {
+    let victim = event.entity;
+    let attacker = event.source.actual;
+    let source = event.source;
+    if(victim.level.isClientSide()) return;
+
+    try
+    {
+    // 玩家受伤后
+    onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
+    // 非玩家受伤后
+    onNonPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
+    // 实体受伤后
+    onEntityDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+    }
+    catch(e)
+    {
+        console.log('LivingDamageEvent报错:')
+        console.log(e)
+    }
+})

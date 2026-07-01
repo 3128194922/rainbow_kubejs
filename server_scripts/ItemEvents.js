@@ -248,7 +248,7 @@ ItemEvents.rightClicked("rainbow:mini_ender_chest", event => {
     if (level.isClientSide()) return;
     player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
 });
-
+/*
 // --- 群系之剑：收集群系 ---
 ItemEvents.rightClicked("rainbow:biome_of_sword", event => {
     let { player, item, level, server } = event;
@@ -293,7 +293,7 @@ ItemEvents.rightClicked("rainbow:biome_of_sword", event => {
     item.nbt.biomes.push(tag);
     item.nbt.biomenum = item.nbt.biomes.length;
     player.setStatusMessage(`已收集新的群系力量：§a${biomeId}`);
-});
+});*/
 
 // --- 远程标靶信号器：激活逻辑 ---
 ItemEvents.rightClicked("rainbow:controller", event => {

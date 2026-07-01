@@ -721,6 +721,150 @@ registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenu
     player.cooldowns.addCooldown('rainbow:the_bible', SecoundToTick(30));
 });
 
+// --- 烟花拳套 ---
+// 常量定义（需与 handleFireworkDash.js 一致）
+const FW_DASH_SPEED = 1.6;
+const FW_DASH_TICKS_TAG = "FireworkDashTicks";
+const FW_DASH_FLIGHT_TAG = "FireworkDashFlight";
+const FW_DASH_X_TAG = "FireworkDashX";
+const FW_DASH_Y_TAG = "FireworkDashY";
+const FW_DASH_Z_TAG = "FireworkDashZ";
+
+function clearFireworkDashData(data) {
+    data.remove(FW_DASH_TICKS_TAG);
+    data.remove(FW_DASH_FLIGHT_TAG);
+    data.remove(FW_DASH_X_TAG);
+    data.remove(FW_DASH_Y_TAG);
+    data.remove(FW_DASH_Z_TAG);
+}
+
+registerSkill('minecraft:firework_rocket', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:firework_dash")) return;
+    //if (player.level.isClientSide()) return;
+    //console.log("firework dash skill triggered");
+    let existingTicks = player.persistentData.getInt(FW_DASH_TICKS_TAG);
+    //console.log("firework dash existing ticks: " + existingTicks);
+    if (existingTicks > 0) {
+        console.log("firework dash blocked by existing ticks, clearing stale data");
+        clearFireworkDashData(player.persistentData);
+    }
+    //console.log("firework dash skill triggered2");
+    if (!itemStack || itemStack.isEmpty()) return;
+    //console.log("firework dash skill triggered3");
+    // 读取自身 Flight 值（1-3），默认 3
+    let flight = 3;
+    try {
+        let tag = itemStack.getNbt();
+        if (tag && tag.contains("Fireworks", 10)) {
+            let fireworks = tag.getCompound("Fireworks");
+            if (fireworks.contains("Flight", 1)) {
+                let rawFlight = fireworks.getByte("Flight");
+                if (rawFlight > 0) {
+                    flight = Math.max(1, rawFlight);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("firework dash read nbt error: " + e);
+    }
+
+    let dashTicks = flight * 20;
+
+    // 获取冲刺方向（视线方向）
+    let look = player.getLookAngle();
+    if (!look) return;
+    let lx = look.x();
+    let ly = look.y();
+    let lz = look.z();
+
+    // 存储冲刺状态
+    let data = player.persistentData;
+    data.putInt(FW_DASH_TICKS_TAG, dashTicks);
+    data.putInt(FW_DASH_FLIGHT_TAG, flight);
+    data.putDouble(FW_DASH_X_TAG, lx);
+    data.putDouble(FW_DASH_Y_TAG, ly);
+    data.putDouble(FW_DASH_Z_TAG, lz);
+
+    // 消耗 1 个烟花火箭（放最后，避免干扰状态设置）
+    itemStack.shrink(1);
+
+    // 立即应用第一帧速度
+    let speed = FW_DASH_SPEED;
+    player.setDeltaMovement(new Vec3d(lx * speed, ly * speed + 0.1, lz * speed));
+    player.fallDistance = 0.0;
+    player.hurtMarked = true;
+
+    // 播放音效
+    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.firework_rocket.launch", "players", 1.0, 1.0);
+    player.cooldowns.addCooldown("rainbow:firework_dash", SecoundToTick(6));
+
+    // 后续每 tick 继续冲刺
+    let tickDash = () => {
+        if (!player || !player.isAlive()) {
+            clearFireworkDashData(player.persistentData);
+            return;
+        }
+
+        let currentTicks = player.persistentData.getInt(FW_DASH_TICKS_TAG);
+        if (currentTicks <= 0) {
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        if (player.horizontalCollision) {
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        // 应用冲刺速度
+        let dx = player.persistentData.getDouble(FW_DASH_X_TAG);
+        let dy = player.persistentData.getDouble(FW_DASH_Y_TAG);
+        let dz = player.persistentData.getDouble(FW_DASH_Z_TAG);
+        player.setDeltaMovement(new Vec3d(dx * speed, dy * speed + 0.1, dz * speed));
+        player.fallDistance = 0.0;
+        player.hurtMarked = true;
+
+        // 检测碰撞实体
+        let collideBox = player.boundingBox.inflate(0.6, 0.3, 0.6);
+        let targets = player.level.getEntitiesWithin(collideBox);
+
+        for (let i = 0; i < targets.size(); i++) {
+            let target = targets.get(i);
+            if (!target) continue;
+            if (!target.isLiving() || !target.isAlive()) continue;
+            if (target.equals(player)) continue;
+
+            let damage = 4.0 * player.persistentData.getInt(FW_DASH_FLIGHT_TAG);
+            target.attack(player.damageSources().playerAttack(player), damage);
+
+            // 初始击飞速度
+            target.setDeltaMovement(new Vec3d(dx * 2.5, 0.5, dz * 2.5));
+            target.hurtMarked = true;
+
+            let targetData = target.persistentData;
+            targetData.putInt("FireworkDashImpactTicks", 10);
+            targetData.putDouble("FireworkDashImpactDx", dx);
+            targetData.putDouble("FireworkDashImpactDz", dz);
+            targetData.putFloat("FireworkDashImpactDamage", damage);
+            targetData.putInt("FireworkDashImpactSrcId", player.getId());
+
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        player.persistentData.putInt(FW_DASH_TICKS_TAG, currentTicks - 1);
+        event.server.scheduleInTicks(1, tickDash);
+    };
+
+    event.server.scheduleInTicks(1, tickDash);
+});
+
 // ==========================================
 // 主入口逻辑
 // ==========================================

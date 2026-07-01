@@ -176,7 +176,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                 }
         */
         // 🗡️ 群系之刃：群系系数影响攻击力
-        let biomenum = item.getNbt().getInt("biomenum") || 0;
+        /*let biomenum = item.getNbt().getInt("biomenum") || 0;
         if (item.id === "rainbow:biome_of_sword" && slotType === "mainhand") {
             event.addModifier(
                 "generic.attack_damage",
@@ -187,7 +187,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                     "addition"
                 )
             );
-        }
+        }*/
 
     } catch (e) {
         console.log(e);

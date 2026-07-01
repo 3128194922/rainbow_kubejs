@@ -11,7 +11,7 @@ ServerEvents.tags("item", event => {
     
     // 饰品相关标签
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
-    ,'rainbow:whistle','alexsmobs:void_worm_eye','rainbow:ice_tea'])
+    ,'rainbow:whistle','alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
     event.add('offhandattack:is_hands',['rainbow:baseball_bat','savage_and_ravage:cleaver_of_beheading', 'rainbow:baseball_power'])
@@ -21,12 +21,12 @@ ServerEvents.tags("item", event => {
     event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
-    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible'])
+    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket'])
 
     event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle'
-    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible'])
+    ,'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket'])
 
     //技能饰品二级菜单
     event.add('skillwheel:submenu',['rainbow:lyre'])

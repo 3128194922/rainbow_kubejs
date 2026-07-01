@@ -114,7 +114,7 @@ StartupEvents.registry("item", event => {
         })
 
     // 群系之刃：高攻击力剑
-    event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
+    //event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
 
     // 决斗剑：对同类型生物伤害增加
     event.create("rainbow:duel", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)

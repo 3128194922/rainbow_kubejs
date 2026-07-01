@@ -1818,3 +1818,13 @@ StartupEvents.registry('item', event => {
                 })
         )
 })
+
+// 玩家小人
+StartupEvents.registry('item', event => {
+    event.create('rainbow:player_doll')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        
+})
+

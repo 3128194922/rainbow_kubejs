@@ -90,17 +90,11 @@ StartupEvents.registry('item', event => {
                     if (player == null) return;
 
                     let multiplier = 0;
+                    let foodData = player.getFoodData();
+                    let hungry = foodData ? foodData.foodLevel : 0;
 
-                    let hungry = player.getFoodData().getFoodlevel;
 
-                    if (hasCurios(player, "rainbow:berserk_emblem")) {
-                        multiplier = ((1 - hungry / 20) * 0.8 + (1 - player.getHealth() / player.getMaxHealth()) * 0.4) + 1;
-
-                    }
-                    else {
-                        multiplier = 1 - hungry / 20 + 1;
-                    }
-
+                    multiplier = 1 - hungry / 20 + 1;
 
                     event.modify("generic.attack_damage", "hungry_charm_damage", 0.04 * multiplier, "multiply_total");
                     event.modify("generic.movement_speed", "hungry_charm_damage", 0.0025 * multiplier, "multiply_total");
@@ -111,6 +105,11 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     if (stack.nbt == null) {
                         stack.nbt = {};
+                    }
+                    // 在curioTick中安全调用hasCurios，结果缓存到NBT供modifyAttribute读取
+                    let player = slotContext.entity();
+                    if (player != null) {
+                        stack.nbt.putBoolean("hasBerserk", hasCurios(player, "rainbow:berserk_emblem"));
                     }
                     if (stack.nbt.getBoolean("update") == null) {
                         stack.nbt.putBoolean("update", false)
@@ -148,7 +147,7 @@ StartupEvents.registry('item', event => {
                     let player = entity;
                     if (player.age % 20) return;
                     let foodData = player.getFoodData();
-                    let foodLevel = foodData.getFoodlevel;
+                    let foodLevel = foodData.foodLevel;
                     let saturation = foodData.getSaturationlevel;
                     let health = player.getHealth();
                     let maxHealth = player.getMaxHealth();
@@ -302,9 +301,11 @@ StartupEvents.registry('item', event => {
 StartupEvents.registry("item", (event) => {
     event.create('rainbow:berserk_emblem')
         .rarity("epic")
+        .maxStackSize(1)
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .modifyAttribute(event => {
+                    try{
                     let player = event.slotContext.entity();
 
                     if (player == null) return;
@@ -312,21 +313,20 @@ StartupEvents.registry("item", (event) => {
                     let playerHP = player.getHealth();
                     let playerMaxHP = player.getMaxHealth();
                     let percentage = 0;
-                    let hungry = player.getFoodData().getFoodlevel;
+                    let foodData = player.getFoodData();
+                    let hungry = foodData ? foodData.foodLevel : 0;
 
-                    if (hasCurios(player, "rainbow:berserk_emblem")) {
-                        percentage = ((1 - playerHP / playerMaxHP) * 0.8 + (1 - hungry / 20) * 0.4) + 1;
+                    percentage = ((1 - playerHP / playerMaxHP) * 0.8 + (1 - hungry / 20) * 0.4) + 1;
 
-                    }
-                    else {
-                        percentage = 1 - playerHP / playerMaxHP + 1;
-                    }
-
-
+                    //console.log("血战沙场之证属性倍率：" + percentage);
                     event.modify("generic.attack_damage", "berserk_emblem", 0.01 * percentage, "multiply_total");
-                    event.modify("generic.attack_speed", "berserk_emblem", 0.1 * percentage, "multiply_total");
+                    //event.modify("generic.attack_speed", "berserk_emblem", 0.1 * percentage, "multiply_total");
                     event.modify("generic.movement_speed", "berserk_emblem", 0.05 * percentage, "multiply_total");
                     event.modify("generic.armor_toughness", "berserk_emblem", 0.05 * percentage, "multiply_total");
+                    }catch(e)
+                    {
+                        console.log("血战沙场之证出错："+e)
+                    }
                 })
                 .curioTick((slotContext, stack) => {
                     if (stack.nbt == null) {
@@ -1828,3 +1828,64 @@ StartupEvents.registry('item', event => {
         
 })
 
+// 混沌核心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:chaos_core')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+})
+
+// 七阳之戒
+StartupEvents.registry('item', event => {
+    event.create('rainbow:dark_sun_ring')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+})
+
+// 日曜石
+StartupEvents.registry('item', event => {
+    event.create('rainbow:shiny_stone')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+                .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:shiny_stone')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (!player || player.level.isClientSide()) return;
+
+                    let tag = stack.getOrCreateTag();
+                    let lastX = tag.getDouble("lastX");
+                    let lastZ = tag.getDouble("lastZ");
+
+                    let dx = player.x - lastX;
+                    let dz = player.z - lastZ;
+                    let moving = (dx * dx + dz * dz) > 1.0e-6;
+
+                    tag.putDouble("lastX", player.x);
+                    tag.putDouble("lastZ", player.z);
+                    tag.putBoolean("Moving", moving);
+
+                    // 不移动时每秒恢复 1 血量
+                    if (!moving) {
+                        player.heal(1);
+                    }
+                })
+        )
+})
+
+//恐惧王冠
+StartupEvents.registry('item', event => {
+    event.create("rainbow:whistle")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tag("curios:charm")
+})

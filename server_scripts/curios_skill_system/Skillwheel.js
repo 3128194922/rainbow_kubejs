@@ -508,7 +508,7 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
     }
 });
 
-// --- 战壕哨 ---
+// --- 恐惧王冠 ---
 registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
 registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {

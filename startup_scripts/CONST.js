@@ -37,6 +37,17 @@ const $BIBLE_UUID = Java.loadClass("java.util.UUID");
 const $BIBLE_EQUIP_SLOT = Java.loadClass("net.minecraft.world.entity.EquipmentSlot");
 const $STRING = Java.loadClass("java.lang.String");
 
+const CleaverEntity = Java.tryLoadClass('net.yirmiri.dungeonsdelight.common.entity.misc.CleaverEntity')
+const DDEntities = Java.tryLoadClass('net.yirmiri.dungeonsdelight.core.registry.DDEntities')
+const DDSounds = Java.tryLoadClass('net.yirmiri.dungeonsdelight.core.registry.DDSounds')
+
+const AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.AbstractArrow')
+const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
+const Stats = Java.loadClass('net.minecraft.stats.Stats')
+const EnchantmentHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper')
+const Enchantments = Java.loadClass('net.minecraft.world.item.enchantment.Enchantments')
+
+
 global.CURIONUMBER = 4
 global.CURSES = [
     "minecraft:binding_curse",

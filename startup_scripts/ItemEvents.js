@@ -98,6 +98,28 @@ ItemEvents.modification(event => {
    })
 })
 
+// 鱼骨剑
+/*ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
+
+    try {
+      //event.addAttribute("minecraft:generic.attack_speed", "", "skelewag_sword", -1.0, "addition")
+         event.addModifier(
+            "alexsmobs:skelewag_sword",
+            new AttributeModifier(
+               "df799a56-f54d-4e1a-bf64-699943718318",
+               'skelewag_sword',
+               -1.0,
+               "addition"
+            )
+         )
+    } catch (e) {
+        console.log("鱼骨剑属性修改出错：")
+        console.log(e)
+    }
+});*/
+
 // 铂金 套装 动能流派
 ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
     let item = event.getItemStack();

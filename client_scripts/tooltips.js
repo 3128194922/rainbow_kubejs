@@ -127,7 +127,7 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:berserk_emblem', (item, advanced, text) => {
             text.add(1, Text.aqua("根据已经损失的血量增加属性"));
-            text.add(2, Text.red("联动饕餮护符"));
+            //text.add(2, Text.red("联动饕餮护符"));
     })
     /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -221,7 +221,7 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("根据你当前所损失的饥饿值百分比获得加成"));
             text.add(2, Text.aqua("佩戴该护符时免疫饥饿所造成的伤害"));
-            text.add(3, Text.red("联动血战沙场之证"));
+            //text.add(3, Text.red("联动血战沙场之证"));
         }
     })
     event.addAdvanced('rainbow:golden_piggy_charm', (item, advanced, text) => {
@@ -488,6 +488,62 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("没有被生物盯上时获得暴击率与暴击伤害加成"));
             text.add(2, Text.aqua("被生物盯上时加成暂时失效并进入冷却"));
+        }
+    })
+    event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
+        text.add(1, Text.aqua("不移动时每秒恢复 20 点生命值"));
+    })
+    event.addAdvanced('rainbow:dark_sun_ring', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("尚未觉醒，等待后续版本"));
+        }
+    })
+    event.addAdvanced('rainbow:lucky_charm', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("获得幸运效果"));
+            text.add(2, Text.aqua("时运 +3"));
+        }
+    })
+    event.addAdvanced('rainbow:hero_charm', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("根据手持武器的攻击速度提供加成"));
+            text.add(2, Text.aqua("慢速武器：护甲穿透 +150%"));
+            text.add(3, Text.aqua("快速武器：额外 +3 攻击伤害"));
+        }
+    })
+    event.addAdvanced('rainbow:gravity_core', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("空中潜行快速下坠，落地造成范围伤害"));
+            text.add(2, Text.aqua("动能伤害越高，践踏伤害越高"));
+        }
+    })
+    event.addAdvanced('rainbow:giants_ring', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("碰撞体积变大 1.5 倍"));
+            text.add(2, Text.aqua("冲刺时对比自己小的生物造成踩踏伤害"));
+        }
+    })
+    event.addAdvanced('rainbow:moai_charm', (item, advanced, text) => {
+        text.add(1, Text.aqua("生物碰撞箱对你无影响"));
+        text.add(2, Text.aqua("100% 击退抗性"));
+    })
+    event.addAdvanced('rainbow:chaos_core', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("受到伤害乘以 [0.0 ~ 2.0] 倍率"));
+            text.add(2, Text.aqua("概率反弹伤害给攻击者"));
+            text.add(3, Text.gold("以上效果均受幸运值影响"));
         }
     })
 })

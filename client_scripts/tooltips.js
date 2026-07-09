@@ -547,4 +547,13 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.gold("以上效果均受幸运值影响"));
         }
     })
+    event.addAdvanced('rainbow:luban_lock', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("空手右键捕获上方3×3×3结构"));
+            text.add(2, Text.aqua("破坏后保留结构到物品"));
+            text.add(3, Text.aqua("放置时自动还原结构，含方块实体"));
+        }
+    })
 })

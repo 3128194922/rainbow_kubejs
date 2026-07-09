@@ -4,54 +4,6 @@
 // 💍 注册饰品与特殊装备 (Curios)
 // ==========================================
 
-// 荷鲁斯之爪
-StartupEvents.registry('item', event => {
-    event.create('rainbow:clawofhorus')
-        .tooltip(Text.gold("[手套]"))
-        .displayName("荷鲁斯之爪")
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyAttribute(e => {
-                    let stack = e.stack;
-                    let player = e.slotContext.entity();
-
-                    if (!stack || !player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
-
-                    let nbt = stack.nbt;
-                    if (!nbt) return;
-
-                    let hunted = nbt.getInt("isBeingHunted") || 0;
-
-                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", hunted, "addition");
-                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.1 * hunted, "multiply_total");
-                })
-                .curioTick((slotContext, stack) => {
-                    if (!stack.nbt) stack.nbt = {};
-                    let nbt = stack.nbt;
-
-                    let player = slotContext.entity();
-                    if (!player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
-
-                    let attacker = player.lastHurtByMob;
-                    let isBeingHunted = 1;
-
-                    if (attacker && attacker.target == player) {
-                        isBeingHunted = 0;
-                    }
-
-                    // 仅在状态变化时更新 NBT
-                    if (nbt.getInt("isBeingHunted") !== isBeingHunted) {
-                        nbt.putInt("isBeingHunted", isBeingHunted);
-                        if (isBeingHunted === 0) {
-                            player.cooldowns.addCooldown("rainbow:clawofhorus", 100);
-                        }
-                    }
-                })
-        );
-});
 // 闪电瓶
 StartupEvents.registry('item', event => {
     event.create('rainbow:lightning')
@@ -1850,7 +1802,7 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-                .attachCuriosCapability(
+        .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -1882,10 +1834,169 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//恐惧王冠
+//鸦羽骨哨
 StartupEvents.registry('item', event => {
     event.create("rainbow:whistle")
             .rarity("epic")
             .maxStackSize(1)
             .tag("curios:charm")
 })
+
+//诅咒王冠 — 根据主副手+盔甲栏诅咒附魔数量增加暴击率与暴击伤害
+StartupEvents.registry('item', event => {
+    event.create("rainbow:curse_crown")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:clawofhorus')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .modifyAttribute(e => {
+                    try {
+                        let stack = e.stack;
+                        let player = e.slotContext.entity();
+
+                        if (!stack || !player) return;
+
+                        let curseCount = 0;
+
+                        // 统计主手+副手+盔甲栏诅咒附魔数量
+                        let equipmentSlots = [
+                            player.getItemInHand("main_hand"),
+                            player.getItemInHand("off_hand")
+                        ];
+                        let armorItems = player.getArmorSlots();
+                        if (armorItems) {
+                            let armorIter = armorItems.iterator();
+                            while (armorIter.hasNext()) {
+                                equipmentSlots.push(armorIter.next());
+                            }
+                        }
+                        for (let i = 0; i < equipmentSlots.length; i++) {
+                            let itemStack = equipmentSlots[i];
+                            if (!itemStack.isEmpty()) {
+                                let enchMap = EnchantmentHelper.getEnchantments(itemStack);
+                                let iter = enchMap.entrySet().iterator();
+                                while (iter.hasNext()) {
+                                    let enchId = String(ForgeRegistries.ENCHANTMENTS.getKey(iter.next().getKey()));
+                                    if (global.CURSES.indexOf(enchId) !== -1) curseCount++;
+                                }
+                            }
+                        }
+
+                        e.modify("attributeslib:crit_chance", "curse_crown_crit_chance", curseCount * 0.04, "multiply_total");
+                        e.modify("attributeslib:crit_damage", "curse_crown_crit_damage", curseCount * 0.08, "multiply_total");
+                    } catch (err) {
+                        console.log(`[curse_crown] Error: ${err}`);
+                    }
+                })
+        );
+})
+
+//动力手套
+StartupEvents.registry('item', event => {
+    event.create("rainbow:power_glove")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tooltip(Text.gold("[手套]"))
+            .tag("rainbow:glove")
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:power_glove')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("minecraft:generic.attack_damage", "power_glove", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "power_glove", 0.1, "multiply_total")
+        )
+})
+
+//火焰动力手套
+StartupEvents.registry('item', event => {
+    event.create("rainbow:fire_gauntlet")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tooltip(Text.gold("[手套]"))
+            .tag("rainbow:glove")
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:fire_gauntlet')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("attributeslib:fire_damage", "fire_gauntlet", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "fire_gauntlet", 0.1, "multiply_total")
+        )
+})
+
+
+// 荷鲁斯之爪
+StartupEvents.registry('item', event => {
+    event.create('rainbow:clawofhorus')
+        .tooltip(Text.gold("[手套]"))
+        .tag("rainbow:glove")
+        .displayName("荷鲁斯之爪")
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:clawofhorus')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .modifyAttribute(e => {
+                    let stack = e.stack;
+                    let player = e.slotContext.entity();
+
+                    if (!stack || !player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
+
+                    let nbt = stack.nbt;
+                    if (!nbt) return;
+
+                    let hunted = nbt.getInt("isBeingHunted") || 0;
+
+                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", hunted, "addition");
+                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.1 * hunted, "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    if (!stack.nbt) stack.nbt = {};
+                    let nbt = stack.nbt;
+
+                    let player = slotContext.entity();
+                    if (!player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
+
+                    let attacker = player.lastHurtByMob;
+                    let isBeingHunted = 1;
+
+                    if (attacker && attacker.target == player) {
+                        isBeingHunted = 0;
+                    }
+
+                    // 仅在状态变化时更新 NBT
+                    if (nbt.getInt("isBeingHunted") !== isBeingHunted) {
+                        nbt.putInt("isBeingHunted", isBeingHunted);
+                        if (isBeingHunted === 0) {
+                            player.cooldowns.addCooldown("rainbow:clawofhorus", 100);
+                        }
+                    }
+                })
+        );
+});

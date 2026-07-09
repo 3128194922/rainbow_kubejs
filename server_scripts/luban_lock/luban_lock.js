@@ -48,12 +48,46 @@ BlockEvents.rightClicked("rainbow:luban_lock", event => {
                 if (targetBE) {
                     try {
                         entry.entity_nbt = targetBE.saveWithFullMetadata();
+                        // 提取CBC机炮连接方向，用于后续重建邻居双向连接
+                        if (typeof targetBE.cannonBehavior === 'function') {
+                            let connectionsTag = entry.entity_nbt.getList("Connections", 8);
+                            if (connectionsTag.size() > 0) {
+                                entry.connectedTowards = [];
+                                for (let ci = 0; ci < connectionsTag.size(); ci++) {
+                                    entry.connectedTowards.push(connectionsTag.getString(ci));
+                                }
+                            }
+                        }
+                        // 保存火控-机械臂连接相对偏移（FireControlPos为绝对坐标，需转为区域相对位置）
+                        if (entry.entity_nbt.contains("FireControlPos", 10)) {
+                            let fcPos = entry.entity_nbt.getCompound("FireControlPos");
+                            let fcX = fcPos.getInt("X");
+                            let fcY = fcPos.getInt("Y");
+                            let fcZ = fcPos.getInt("Z");
+                            if (fcX >= pos.getX() - 1 && fcX <= pos.getX() + 1 &&
+                                fcY >= pos.getY() + 1 && fcY <= pos.getY() + 3 &&
+                                fcZ >= pos.getZ() - 1 && fcZ <= pos.getZ() + 1) {
+                                let fcOrigin = pos.offset(-1, 1, -1);
+                                entry.fireControlRel = [
+                                    fcX - fcOrigin.getX(),
+                                    fcY - fcOrigin.getY(),
+                                    fcZ - fcOrigin.getZ()
+                                ];
+                            }
+                        }
                     } catch (e) {}
                 }
 
-                // 清空容器物品并设为空气
-                if (targetBE && typeof targetBE.clearContent === 'function') {
-                    try { targetBE.clearContent(); } catch (e2) {}
+                // 清空方块实体数据，防止 onRemove 掉落自身物品/库存
+                if (targetBE) {
+                    try {
+                        if (typeof targetBE.clearContent === 'function') {
+                            targetBE.clearContent();
+                        }
+                        // 对非容器BE（如机械臂）加载空NBT清空自定义字段（heldItem等）
+                        let emptyTag = Java.loadClass('net.minecraft.nbt.CompoundTag')();
+                        targetBE.load(emptyTag);
+                    } catch (e2) {}
                 }
                 level.getBlock(targetPos).set("minecraft:air");
 
@@ -156,6 +190,14 @@ BlockEvents.placed("rainbow:luban_lock", event => {
             // 还原方块实体数据（含容器物品）
             if (entry.entity_nbt) {
                 try {
+                    // 将火控-机械臂连接从相对偏移转回新绝对坐标
+                    if (entry.fireControlRel) {
+                        let fcOrigin = pos.offset(-1, 1, -1);
+                        let fcPos = entry.entity_nbt.getCompound("FireControlPos");
+                        fcPos.putInt("X", fcOrigin.getX() + entry.fireControlRel[0]);
+                        fcPos.putInt("Y", fcOrigin.getY() + entry.fireControlRel[1]);
+                        fcPos.putInt("Z", fcOrigin.getZ() + entry.fireControlRel[2]);
+                    }
                     entry.entity_nbt.putInt("x", targetPos.getX());
                     entry.entity_nbt.putInt("y", targetPos.getY());
                     entry.entity_nbt.putInt("z", targetPos.getZ());
@@ -172,6 +214,31 @@ BlockEvents.placed("rainbow:luban_lock", event => {
             console.log("[鲁班锁] 还原失败: " + entry.id + " 错误: " + e);
             failCount++;
         }
+    }
+
+    // 第二遍：重建CBC方块的邻居双向连接（setBlockAndUpdate可能已清除邻居的引用）
+    let Direction = Java.loadClass('net.minecraft.core.Direction');
+    let cannonBlockCount = 0;
+    for (let i = 0; i < captured.length; i++) {
+        let entry = captured[i];
+        if (!entry.connectedTowards || entry.connectedTowards.length === 0) continue;
+        cannonBlockCount++;
+        let targetPos = pos.offset(entry.dx, entry.dy, entry.dz);
+        let targetBE = level.getBlockEntity(targetPos);
+        if (targetBE && typeof targetBE.cannonBehavior === 'function') {
+            for (let j = 0; j < entry.connectedTowards.length; j++) {
+                let dir = Direction.byName(entry.connectedTowards[j]);
+                if (dir == null) continue;
+                let neighborPos = targetPos.relative(dir);
+                let neighborBE = level.getBlockEntity(neighborPos);
+                if (neighborBE && typeof neighborBE.cannonBehavior === 'function') {
+                    neighborBE.cannonBehavior().setConnectedFace(dir.getOpposite(), true);
+                }
+            }
+        }
+    }
+    if (cannonBlockCount > 0) {
+        console.log("[鲁班锁] CBC连接重建完成，涉及 " + cannonBlockCount + " 个方块");
     }
 
     console.log("[鲁班锁] 还原完成, 成功 " + restoreCount + "/" + captured.length + " 失败 " + failCount);

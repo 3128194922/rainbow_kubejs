@@ -261,11 +261,11 @@ ServerEvents.recipes(event => {
         ['','minecraft:stick','']])
 
     //下界反应堆
-    event.shaped('rainbow:docker_nether_off', [
+    /*event.shaped('rainbow:docker_nether_off', [
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
-/*
+*//*
     //逻辑计算机
     event.shaped('mbd2:number_machine', [
         ['create:brass_casing', 'create:pulse_timer', 'create:fluid_tank'], 

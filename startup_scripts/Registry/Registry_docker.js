@@ -441,7 +441,7 @@ StartupEvents.registry("block", event => {
 });
 */
 // 下界反应堆：在下界随机激活，激活后检测周围唱片机播放的音乐并给予奖励
-StartupEvents.registry("block", event => {
+/*StartupEvents.registry("block", event => {
     event.create("rainbow:docker_nether_off")
         .randomTick(event => {
             let level = event.getLevel();
@@ -526,7 +526,7 @@ StartupEvents.registry("block", event => {
                     .isItemValid((be, slot, stack) => be.inventory.isItemValid(slot, stack))
             );
         });
-});
+});*/
 
 // Docker 地雷型 
 /*StartupEvents.registry("block", event => { 
@@ -569,3 +569,12 @@ StartupEvents.registry("block", event => {
         .displayName("Docker(地雷型)")
         .grassSoundType()
 })*/
+// 鲁班锁 - 存储上方3x3区域方块结构，挖掘后保留在物品NBT，放置后自动还原
+StartupEvents.registry("block", event => {
+    event.create("rainbow:luban_lock")
+        .woodSoundType()
+        .displayName("鲁班锁")
+        .blockEntity(entityInfo => {
+            // 无需tick，捕获/还原由事件驱动
+        });
+});

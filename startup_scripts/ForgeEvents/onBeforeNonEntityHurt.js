@@ -67,17 +67,6 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
         }
     }
 
-    // --- 大胃王饰品 ---
-    // 消耗饱和度抵消伤害
-    if (hasCurios(victim, "rainbow:big_stomach")) {
-        if (victim.getFoodData().getSaturationLevel() > 0) {
-            victim.getFoodData().setSaturation(
-                Math.max(victim.getFoodData().getSaturationLevel() - event.getAmount(), 0)
-            );
-            event.setCanceled(true);
-        }
-    }
-
     // --- 暴食护符（免饥饿伤害） ---
     if (source.getType() == "starve" && hasCurios(victim, "rainbow:gluttony_charm")) {
         event.setCanceled(true);

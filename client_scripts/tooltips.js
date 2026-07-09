@@ -183,6 +183,7 @@ ItemEvents.tooltip((event) => {
       if (event.shift) {
 		text.remove(1)
         text.add(1, Text.aqua("消耗饱和度抵消部分伤害"));
+        text.add(2, Text.aqua("伤害计算包含护甲和抗性"));
     }
     })
     event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {

@@ -20,13 +20,13 @@ ServerEvents.tags("item", event => {
     // 技能饰品
     event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
     'rainbow:sculk_affinity'])
 
     event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:mind','rainbow:whistle',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
     'rainbow:sculk_affinity'])
 
@@ -90,7 +90,8 @@ ServerEvents.tags("item", event => {
     
     // 怪肉类食物标签
     event.add('rainbow:monster_meat', [
-        'rainbow:flesh'
+        'rainbow:monster_meat',
+        '@dungeonsdelight'
     ])
 
     // 后室可放置方块

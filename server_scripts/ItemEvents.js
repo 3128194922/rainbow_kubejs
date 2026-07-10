@@ -173,7 +173,7 @@ ItemEvents.rightClicked("rainbow:eldritch_sword", event => {
 });*/
 
 // --- 泰拉刃：发射射弹 ---
-ItemEvents.rightClicked('rainbow:terasword', event => {
+/*ItemEvents.rightClicked('rainbow:terasword', event => {
     let { player, item, level } = event;
     if (level.isClientSide()) return;
 
@@ -208,7 +208,7 @@ ItemEvents.rightClicked('rainbow:terasword', event => {
         player.tell("能量不足");
     }
 });
-
+*/
 // --- 苦力怕护符：随机传送 ---
 /*ItemEvents.rightClicked('rainbow:creeper_charm', event => {
     let { player, level } = event;
@@ -482,51 +482,51 @@ ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{
     player.addCuriosSlotModifier("super_curio","ecb82943-df2f-41a6-a06b-072d54e44afe","magic_garlic_bread",1,"addition")
 })
 
-// --- 妖怪化相关逻辑 ---
-ItemEvents.foodEaten('#rainbow:monster_meat', event => {
+// --- 怪物化相关逻辑 ---
+ItemEvents.foodEaten(event => {
     let { player, item } = event;
     if(!item.hasTag("rainbow:monster_meat")) return;
     let food = item.item.getFoodProperties();
     if (!food) return;
     let hunger = food.getNutrition();
     let saturation = food.getSaturationModifier(); // 饱和度系数
-    // 1. 处于“妖怪化”状态
-    if (player.hasEffect('rainbow:youkaified')) {
-        let current = player.getEffect('rainbow:youkaified');
+    // 1. 处于“怪物化”状态
+    if (player.hasEffect('rainbow:monster')) {
+        let current = player.getEffect('rainbow:monster');
         // 每次食用增加 4 分钟 (4800 ticks)
         let newDuration = current.duration + 4800;
-        player.potionEffects.add('rainbow:youkaified', newDuration, 0, false, true)
+        player.potionEffects.add('rainbow:monster', newDuration, 0, false, true)
 
         // 数值提升至 3 倍 (补偿 2 倍)
         player.foodLevel = Math.min(20, player.foodLevel + hunger * 2);
         // 饱和度增加 = 饥饿值 * 饱和度系数 * 2.0 (MC默认公式)
         player.saturationLevel = Math.min(player.foodLevel, player.saturationLevel + (hunger * saturation * 2) * 2);
         
-        player.paint({youkai_msg: {type: 'text', text: '妖怪化持续时间延长！', x: 10, y: 10, color: 'red', draw: 'ingame', time: 3000}});
+        player.paint({youkai_msg: {type: 'text', text: '怪物化持续时间延长！', x: 10, y: 10, color: 'red', draw: 'ingame', time: 3000}});
     } 
-    // 2. 处于“半妖怪化”状态
-    else if (player.hasEffect('rainbow:youkaifying')) {
-        let current = player.getEffect('rainbow:youkaifying');
+    // 2. 处于“半怪物化”状态
+    else if (player.hasEffect('rainbow:monstering')) {
+        let current = player.getEffect('rainbow:monstering');
         // 每次食用增加 1 分钟 (1200 ticks)
         let newDuration = current.duration + 1200;
         
         // 检查转化机制：如果增加后超过 5 分钟 (6000 ticks)
         if (newDuration > 6000) {
-            player.removeEffect('rainbow:youkaifying');
-            player.potionEffects.add('rainbow:youkaified', 24000, 0, false, true); // 20 分钟
-            player.tell("§6你体内的妖力彻底爆发了，进入了妖怪化状态！");
+            player.removeEffect('rainbow:monstering');
+            player.potionEffects.add('rainbow:monster', 24000, 0, false, true); // 20 分钟
+            player.tell("§6你进入了怪物化状态！");
         } else {
-            player.potionEffects.add('rainbow:youkaifying', newDuration, 0, false, true);
+            player.potionEffects.add('rainbow:monstering', newDuration, 0, false, true);
             // 数值提升至 2 倍 (补偿 1 倍)
             player.foodLevel = Math.min(20, player.foodLevel + hunger);
             player.saturationLevel = Math.min(player.foodLevel, player.saturationLevel + (hunger * saturation * 2));
         }
     } 
-    // 3. 初始获得“半妖怪化” (30% 概率)
+    // 3. 初始获得“半怪物化” (30% 概率)
     else {
         if (Math.random() < 0.3) {
-            player.potionEffects.add('rainbow:youkaifying', 1200,0, false, true); // 1 分钟
-            player.tell("§d你感到一股奇怪的力量在体内流淌...（半妖怪化）");
+            player.potionEffects.add('rainbow:monstering', 1200,0, false, true); // 1 分钟
+            player.tell("§d你感到一股奇怪的力量在体内流淌...（半怪物化）");
         }
     }
 });
@@ -784,7 +784,7 @@ ItemEvents.entityInteracted(event => {
     let level = event.getLevel();
 
     if (level.isClientSide()) return;
-    if (item.id != 'rainbow:mind_ctroller_detention') return;
+    if (item.id != 'rainbow:soul_diamond_ctroller_detention') return;
     if (!target) return;
 
     // 必须是自己的宠物（可按需调整判定）
@@ -830,7 +830,7 @@ ItemEvents.entityInteracted(event => {
     let player = event.player
     let item = event.item
     if (event.level.isClientSide()) return
-    if (item.id != 'rainbow:mind_ctroller_detention') return;
+    if (item.id != 'rainbow:soul_diamond_ctroller_detention') return;
     if (!player.isShiftKeyDown()) return // 只有潜行才释放
 
     let nbt = item.nbt || {}

@@ -7,7 +7,7 @@
 // Provides owner information for mind-controlled entities to Jade (Waila)
 
 JadeEvents.onCommonRegistration(event=>{
-    event.entityDataProvider('rainbow:MindControl', $Entitys).setCallback((tag,accessor)=>{
+    event.entityDataProvider('rainbow:soul_diamondControl', $Entitys).setCallback((tag,accessor)=>{
         let entity = accessor.getEntity();
         if (!entity) return;
         if (!entity.persistentData.OwnerName) return;

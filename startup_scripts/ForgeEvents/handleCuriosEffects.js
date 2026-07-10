@@ -40,13 +40,17 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         }
     }*/
 
-    // 链式闪电饰品：攻击时触发链式闪电
-    if (hasCurios(attacker, "rainbow:lightning")) {
+    // 链式闪电饰品：攻击时触发链式闪电，下雨天增强
+    if (hasCurios(attacker, "rainbow:bottled_lightning")) {
         let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');
         lightning.setCreatorEntityID(attacker.getId());
         lightning.setFromEntityID(attacker.getId());
         lightning.setToEntityID(victim.getId());
-        lightning.setChainsLeft(5);
+        if (attacker.level.isRaining()) {
+            lightning.setChainsLeft(10);
+        } else {
+            lightning.setChainsLeft(5);
+        }
         victim.level.addFreshEntity(lightning);
         //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
         attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "domesticationinnovation:chain_lightning", "voice", 1, 1)

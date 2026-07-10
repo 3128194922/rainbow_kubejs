@@ -272,6 +272,12 @@ ServerEvents.recipes(event => {
         ['create:cogwheel', 'create:precision_mechanism', 'create:large_cogwheel'], 
         ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
 */
+    //鲁班锁
+    event.shaped('rainbow:luban_lock', [
+        ['rainbow:rainbow_stone', 'rainbow:rainbow_stone', 'rainbow:rainbow_stone'], 
+        ['rainbow:rainbow_stone', 'waystones:warp_dust', 'rainbow:rainbow_stone'], 
+        ['rainbow:rainbow_stone', 'rainbow:rainbow_stone', 'rainbow:rainbow_stone']])
+
     //乐谱
     //event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
 

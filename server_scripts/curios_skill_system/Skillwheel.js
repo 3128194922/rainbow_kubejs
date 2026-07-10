@@ -80,8 +80,8 @@ Object.keys(heartEntityMap).forEach(heartId => {
 });
 
 // --- 念力墙 ---
-registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (player.cooldowns.isOnCooldown("rainbow:mind")) return;
+registerSkill('rainbow:soul_diamond', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:soul_diamond")) return;
 
     let yaw = player.getYaw();
     let pitch = player.getPitch();
@@ -113,7 +113,7 @@ registerSkill('rainbow:mind', (event, player, itemStack, isSubmenu, submenuIndex
         `{Lifespan:1200, BlockWidth:5, WallDirection:${wallDirVal}}`
     );
 
-    player.cooldowns.addCooldown("rainbow:mind", SecoundToTick(30));
+    player.cooldowns.addCooldown("rainbow:soul_diamond", SecoundToTick(30));
 });
 /*
 // --- 韧性注射器 ---

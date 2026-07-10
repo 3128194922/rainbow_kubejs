@@ -8,7 +8,7 @@
 
 JadeEvents.onClientRegistration((event) => {
     
-    event.entity('rainbow:MindControl', $Entitys).tooltip((tooltip, accessor, pluginConfig) => {
+    event.entity('rainbow:soul_diamondControl', $Entitys).tooltip((tooltip, accessor, pluginConfig) => {
         let {serverData} = accessor;
         if (!serverData) return;
         

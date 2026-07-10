@@ -52,7 +52,7 @@ StartupEvents.registry("item", event => {
     // 升级模板
     event.create("rainbow:cleaver_upgrade")
     // 收容中心
-    //event.create("rainbow:mind_ctroller_detention")
+    //event.create("rainbow:soul_diamond_ctroller_detention")
 
     // 净化绢布：使用后移除副手物品的诅咒附魔和修复代价
     event.create("rainbow:purified_cloth")
@@ -104,7 +104,7 @@ StartupEvents.registry("item", event => {
         .tooltip("§6出了滕州你才发现，这面有多么好吃")
 
     // 血肉：回复少量饱食度和饱和度
-    event.create("rainbow:flesh", "basic").maxStackSize(64).rarity("epic")
+    event.create("rainbow:monster_meat", "basic").maxStackSize(64).rarity("epic")
         .food(foodBuilder => {
             foodBuilder
                 .alwaysEdible()
@@ -185,16 +185,16 @@ StartupEvents.registry("item", event => {
         .attackDamageBaseline(0.0)
 
     // 泰拉刃：强大的武器
-    event.create("rainbow:terasword", "sword")
+    //event.create("rainbow:terasword", "sword")
 
     //村民脑子
-    event.create("rainbow:brain").maxDamage(300)
+    //event.create("rainbow:brain").maxDamage(300)
 
     //虚空之眼
     //event.create("rainbow:void_eye")
 
     //活体金属
-    event.create("rainbow:living_metal")
+    //event.create("rainbow:living_metal")
 
     // 逻辑数字：用于自动化或逻辑计算的物品
     let Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'plus', 'minus', 'multiply', 'divide', 'missingno']

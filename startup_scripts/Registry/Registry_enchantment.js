@@ -2,7 +2,7 @@
 // ==========================================
 // ✨ 注册附魔
 // ==========================================
-StartupEvents.registry("enchantment", (event) => {
+/*StartupEvents.registry("enchantment", (event) => {
     // 屹立不倒：稀有度为 rare，适用于护甲，最高等级 2
     event.create("rainbow:last_stand")
         .rarity("rare")
@@ -21,3 +21,4 @@ StartupEvents.registry("enchantment", (event) => {
         .maxLevel(2)
         .weapon()
 });
+*/

@@ -1,24 +1,24 @@
 
 StartupEvents.registry("mob_effect", event => {
-    // 半妖怪化 (Youkaifying)
+    // 半怪物化
     // 效果：增加进食收益，累加持续时间，满5分钟转化
-    event.create("rainbow:youkaifying")
+    event.create("rainbow:monstering")
         .beneficial()
         .color(0x7F00FF)
-        .displayName("半妖怪化")
+        .displayName("半怪物化")
 
-    // 妖怪化 (Youkaified)
+    // 怪物化
     // 效果：属性大幅提升，进食收益更高，消耗饥饿值
-    event.create("rainbow:youkaified")
+    event.create("rainbow:monster")
         .beneficial()
         .color(0xFF0000)
-        .displayName("妖怪化")
+        .displayName("怪物化")
         // +30% 速度
-        .modifyAttribute("minecraft:generic.movement_speed", "youkaified_speed", 0.3, "multiply_base")
+        .modifyAttribute("minecraft:generic.movement_speed", "monster_speed", 0.3, "multiply_base")
         // +50% 攻击伤害
-        .modifyAttribute("minecraft:generic.attack_damage", "youkaified_damage", 0.5, "multiply_base")
+        .modifyAttribute("minecraft:generic.attack_damage", "monster_damage", 0.5, "multiply_base")
         // +20 最大生命值
-        .modifyAttribute("minecraft:generic.max_health", "youkaified_health", 20, "addition")
+        .modifyAttribute("minecraft:generic.max_health", "monster_health", 20, "addition")
         .effectTick((entity, amplifier) => {
             if (entity.isPlayer() && !entity.level.isClientSide()) {
                 let player = entity;
@@ -35,8 +35,8 @@ StartupEvents.registry("mob_effect", event => {
                 
                 // 如果饥饿值归零，效果自动解除
                 if (player.foodLevel <= 0) {
-                    player.removeEffect("rainbow:youkaified");
-                    player.tell("§c你太饿了，妖怪化状态解除了。");
+                    player.removeEffect("rainbow:monster");
+                    player.tell("§c你太饿了，怪物化状态解除了。");
                 }
             }
         })

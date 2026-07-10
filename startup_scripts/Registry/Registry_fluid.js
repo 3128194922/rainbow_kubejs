@@ -16,8 +16,7 @@ StartupEvents.registry("fluid", event => {
 
     // 液态逻辑：自定义纹理，高温度，高粘度，高密度，绿色桶，稀有，无方块
     event.create("rainbow:number_water")
-        .stillTexture("rainbow:fluid/number_water")
-        .flowingTexture("rainbow:fluid/number_water")
+        .thickTexture("GREEN")
         .temperature(1000)
         .viscosity(1500)
         .density(6000)

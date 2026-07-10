@@ -6,7 +6,7 @@
 
 // 闪电瓶
 StartupEvents.registry('item', event => {
-    event.create('rainbow:lightning')
+    event.create('rainbow:bottled_lightning')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -14,7 +14,7 @@ StartupEvents.registry('item', event => {
 
 // 心灵宝石
 StartupEvents.registry('item', event => {
-    event.create('rainbow:mind')
+    event.create('rainbow:soul_diamond')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -1099,9 +1099,9 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-                /*.canUnequip((slotContext, stack) => {
+                .canUnequip((slotContext, stack) => {
                     return false;
-                })*/
+                })
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
@@ -1842,6 +1842,24 @@ StartupEvents.registry('item', event => {
             .tag("curios:charm")
 })
 
+//箭袋
+StartupEvents.registry('item', event => {
+    event.create("rainbow:quiver")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:quiver')) return false;
+                    return true;
+                })
+                .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
+        )
+})
+
 //诅咒王冠 — 根据主副手+盔甲栏诅咒附魔数量增加暴击率与暴击伤害
 StartupEvents.registry('item', event => {
     event.create("rainbow:curse_crown")
@@ -1854,7 +1872,6 @@ StartupEvents.registry('item', event => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
                     if (hasCurios(entity, 'rainbow:clawofhorus')) return false;
-                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
                 .modifyAttribute(e => {
@@ -1892,6 +1909,7 @@ StartupEvents.registry('item', event => {
 
                         e.modify("attributeslib:crit_chance", "curse_crown_crit_chance", curseCount * 0.04, "multiply_total");
                         e.modify("attributeslib:crit_damage", "curse_crown_crit_damage", curseCount * 0.08, "multiply_total");
+                        e.modify("minecraft:generic.luck", "curse_crown_luck", -curseCount, "addition");
                     } catch (err) {
                         console.log(`[curse_crown] Error: ${err}`);
                     }
@@ -1940,6 +1958,73 @@ StartupEvents.registry('item', event => {
                 })
                 .addAttribute("attributeslib:fire_damage", "fire_gauntlet", 1, "addition")
                 .addAttribute("minecraft:generic.attack_speed", "fire_gauntlet", 0.1, "multiply_total")
+        )
+})
+
+
+//末影手套
+StartupEvents.registry('item', event => {
+    event.create("rainbow:ender_glove")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tooltip(Text.gold("[手套]"))
+            .tag("rainbow:glove")
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:ender_glove')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("minecraft:generic.attack_damage", "ender_glove", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "ender_glove", 0.1, "multiply_total")
+        )
+})
+
+//生灵手套
+StartupEvents.registry('item', event => {
+    event.create("rainbow:living_gauntlet")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tooltip(Text.gold("[手套]"))
+            .tag("rainbow:glove")
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:living_gauntlet')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("minecraft:generic.attack_damage", "living_gauntlet", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
+        )
+})
+
+//被诅咒的骨头
+StartupEvents.registry('item', event => {
+    event.create("rainbow:cursed_bones")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canUnequip((slotContext, stack) => {
+                    return false;
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:living_gauntlet')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("minecraft:generic.luck", "cursed_bones", -3, "addition")
         )
 })
 

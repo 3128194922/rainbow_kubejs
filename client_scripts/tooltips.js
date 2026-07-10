@@ -169,11 +169,12 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:hungry_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("佩戴后会依据当下的饥饿值提供增益"));
     })
-    event.addAdvanced('rainbow:mind', (item, advanced, text) => {
+    event.addAdvanced('rainbow:soul_diamond', (item, advanced, text) => {
         text.add(1, Text.aqua(`开启后释放心灵墙`));
     })
-    event.addAdvanced('rainbow:lightning', (item, advanced, text) => {
+    event.addAdvanced('rainbow:bottled_lightning', (item, advanced, text) => {
         text.add(1, Text.aqua("攻击生物触发连锁闪电,最大连锁5"));
+        text.add(2, Text.aqua("下雨天最大连锁提升至10"));
     })
     event.addAdvanced('rainbow:cactus', (item, advanced, text) => {
         text.add(1, Text.aqua("每30s恢复1饥饿值"));
@@ -242,9 +243,9 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua(`按[${global.regKeyCharm.getKey().getDisplayName().getString()}]启动召唤宠物`));
         }
     })
-    event.addAdvanced('rainbow:flesh', (item, advanced, text) => {
+    event.addAdvanced('rainbow:monster_meat', (item, advanced, text) => {
         text.remove(0)
-        if (Client.player && Client.player.hasEffect('rainbow:youkaified')) {
+        if (Client.player && Client.player.hasEffect('rainbow:monster')) {
             text.add(0, "人肉");
         } else {
             text.add(0, "怪肉");
@@ -311,7 +312,7 @@ ItemEvents.tooltip((event) => {
     /*event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
         text.add(1, Text.gold("记录: ").append(Text.gray("拿在副手吹响号角进行记录，如果形成完整乐谱可以右键释放对应魔法")));
     })*/
-    event.addAdvanced('rainbow:mind_ctroller_detention', (item, advanced, text) => {
+    event.addAdvanced('rainbow:soul_diamond_ctroller_detention', (item, advanced, text) => {
         text.add(1, Text.aqua(`右键回收被脑控的佣兵生物`));
     })
     event.addAdvanced('rainbow:purified_cloth', (item, advanced, text) => {
@@ -483,6 +484,14 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("移动时获得"));
         text.add(2, Text.aqua("+10 护甲 / +3 攻击 / +50% 击退抗性"));
     })
+    event.addAdvanced('rainbow:curse_crown', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("根据主副手与盔甲栏每个诅咒附魔提供加成"));
+            text.add(2, Text.aqua("每诅咒：+4% 暴击率 / +8% 暴击伤害 / -1 幸运"));
+        }
+    })
     event.addAdvanced('rainbow:clawofhorus', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -498,7 +507,9 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("尚未觉醒，等待后续版本"));
+            text.add(1, Text.aqua("火焰/岩浆伤害有概率转化为治疗"));
+            text.add(2, Text.aqua("小于10的伤害有概率完全抵消"));
+            text.add(3, Text.gold("以上效果均受幸运值影响"));
         }
     })
     event.addAdvanced('rainbow:lucky_charm', (item, advanced, text) => {
@@ -554,6 +565,14 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("空手右键捕获上方3×3×3结构"));
             text.add(2, Text.aqua("破坏后保留结构到物品"));
             text.add(3, Text.aqua("放置时自动还原结构，含方块实体"));
+        }
+    })
+    event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("对16格范围内的主人召唤物施加杀戮欲望"));
+            text.add(2, Text.aqua("其他生物获得发光效果，持续10秒"));
         }
     })
 })

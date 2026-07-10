@@ -97,6 +97,31 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
     }
 });
 
+ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", event => {
+    try {
+        let entity = event.getEntity();
+        let target = event.getTarget();
+
+        if (entity.level.clientSide) return;
+
+        // 末影手套：攻击时为目标附着末影火 3秒
+        if (hasCurios(entity, 'rainbow:ender_glove')) {
+            if (global.SFire) {
+                global.SFire.setOnFire(target, 3, "endergetic:ender");
+            }
+        }
+        // 生灵手套：攻击时为目标附着生灵火 3秒
+        if (hasCurios(entity, 'rainbow:living_gauntlet')) {
+            if (global.SFire) {
+                global.SFire.setOnFire(target, 3, "dungeonsdelight:living");
+            }
+        }
+    } catch (e) {
+        console.log("玩家攻击事件出现问题：")
+        console.log(e)
+    }
+});
+
 // 玩家右键实体事件
 ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerInteractEvent$EntityInteract", event => {
     try {

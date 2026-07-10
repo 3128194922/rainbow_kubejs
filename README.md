@@ -33,7 +33,7 @@
   - [温度系统](#温度系统)
   - [弓箭系统](#弓箭系统)
   - [伤害系统](#伤害系统)
-  - [妖怪化系统](#妖怪化系统)
+  - [怪物化系统](#怪物化系统)
   - [MBD 机器事件系统](#mbd-机器事件系统)
   - [信标光束能量注入系统](#信标光束能量注入系统)
 - [饰品图鉴](#饰品图鉴)
@@ -113,8 +113,8 @@
 | `rainbow:the_wafer` | 圣饼，减免 10% 所受伤害，延长无敌帧至 3s | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L202-L209](client_scripts/tooltips.js#L202-L209) |
 | `rainbow:the_bible` | 圣经，根据穿戴的盔甲纹饰和魔法伤害属性动态提供属性加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L437-L444](client_scripts/tooltips.js#L437-L444) |
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
-| `rainbow:lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
-| `rainbow:mind` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
+| `rainbow:bottled_lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
+| `rainbow:soul_diamond` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
 | `rainbow:master_ball` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
 | `rainbow:fire_magic` | 火遁·豪火灭却（技能腰带槽），持续 40 tick 发射 Scorcher 火焰投射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Helldivers.js#L108-L121](server_scripts/curios_skill_system/Helldivers.js#L108-L121) |
 | `rainbow:ccb` | 共生徽章（踩踩背），右键生物骑乘并控制移动 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L434-L471](server_scripts/curios_skill_system/Skillwheel.js#L434-L471)，服务器：[server_scripts/SymbiosisBadge_Server.js](server_scripts/SymbiosisBadge_Server.js)，启动：[startup_scripts/SymbiosisBadge_Startup.js](startup_scripts/SymbiosisBadge_Startup.js)，tooltip：[client_scripts/tooltips.js#L428-L436](client_scripts/tooltips.js#L428-L436) |
@@ -132,7 +132,7 @@
 |--------|------|----------|
 | `rainbow:ice_tea` | 牢大冰红茶，获得曼巴之力 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L243-L249](server_scripts/Recipes.js#L243-L249) |
 | `rainbow:tengzou_noodles` | 滕州大肉面，回复 20 饥饿值，给予滋养和舒适效果 3 分钟 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
-| `rainbow:flesh` | 血肉，回复 5 饥饿值，妖怪化状态下显示为"人肉" | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L237-L244](client_scripts/tooltips.js#L237-L244) |
+| `rainbow:monster_meat` | 血肉，回复 5 饥饿值，怪物化状态下显示为"人肉" | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L237-L244](client_scripts/tooltips.js#L237-L244) |
 
 ### 材料与工具
 
@@ -214,8 +214,8 @@
 | `rainbow:reload_buff` | 有益 | 装填核心 Buff，移除霰弹枪冷却 |
 | `rainbow:short_buff` | 有益 | 连射核心 Buff，大幅提升手摇弩射速 |
 | `rainbow:void` | 有益 | 虚化，免疫伤害 |
-| `rainbow:youkaified` | - | 妖怪化 |
-| `rainbow:youkaifying` | - | 半妖怪化 |
+| `rainbow:monster` | - | 怪物化 |
+| `rainbow:monstering` | - | 半怪物化 |
 
 ---
 
@@ -440,7 +440,7 @@
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
 | 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
 | 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害 |
-| 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半妖怪化，累计 5 分钟转妖怪化 |
+| 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半怪物化，累计 5 分钟转怪物化 |
 | 虚空嬗变 | `rainbow:raw_voidore` 可转化为 `createutilities:void_steel_ingot` |
 | 防化服免疫 | 穿戴全套 `alexscaves:hazmat_*` 免疫中毒/凋零/辐照 |
 | 睡眠噩梦 | 玩家醒来时概率在周围生成幻翼 |
@@ -449,13 +449,13 @@
 | 大师球灵魂 | 击杀生物储存灵魂到 `Souls` NBT |
 | 短射buff到期 | `rainbow:short_buff` 结束时射出 `alexscaves:ice_chunk` 投射物 |
 
-### 妖怪化系统
+### 怪物化系统
 
 > 实现：[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)
 
-- **触发：** 食用 `#rainbow:monster_meat` 标签食物有 30% 概率获得半妖怪化
-- **半妖怪化：** 食物数值 x2，持续累计超过 5 分钟转化为妖怪化
-- **妖怪化：** 食物数值 x3，吃怪肉延长持续时间，怪肉在 tooltip 中显示为"人肉"
+- **触发：** 食用 `#rainbow:monster_meat` 标签食物有 30% 概率获得半怪物化
+- **半怪物化：** 食物数值 x2，持续累计超过 5 分钟转化为怪物化
+- **怪物化：** 食物数值 x3，吃怪肉延长持续时间，怪肉在 tooltip 中显示为"人肉"
 
 ### MBD 机器事件系统
 

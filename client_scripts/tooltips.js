@@ -152,6 +152,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("击杀生物概率刷新主手和副手物品冷却"));
             text.add(2, Text.aqua(`触发概率根据幸运值判断`));
         }
+        text.add(3, Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {
         text.add(1, Text.aqua("每10s标记周围实体,被标记实体受到远程伤害翻倍"));
@@ -337,6 +338,7 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("你受到的伤害将转移到对应在线玩家身上"));
             text.add(3, Text.gold("绑定对象ID: ").append(Text.yellow(`${item?.nbt?.getString("UUID")}`)));
         }
+        text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     /*event.addAdvanced('rainbow:luoyang_shovel', (item, advanced, text) => {
         text.add(1, Text.aqua("右键可直接提取出考古物品"));
@@ -432,6 +434,16 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua("击杀标记实体可获得特殊掉落物"));
         }
     })
+    event.addAdvanced('rainbow:docker', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("通用型物品传输方块，支持6种模式"));
+            text.add(2, Text.aqua("模式0-2: 将容器物品转移到玩家身上"));
+            text.add(3, Text.aqua("模式3-5: 将玩家背包映射到容器(实时同步)"));
+            text.add(4, Text.aqua("潜行右键切换模式，需绑定玩家"));
+        }
+    })
     event.addAdvanced('rainbow:docker_nether_on', (item, advanced, text) => {
         text.add(1, Text.aqua(`收集附近的唱片机音乐，产生下界之音`));
     })
@@ -491,6 +503,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("根据主副手与盔甲栏每个诅咒附魔提供加成"));
             text.add(2, Text.aqua("每诅咒：+4% 暴击率 / +8% 暴击伤害 / -1 幸运"));
         }
+        text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:clawofhorus', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -502,6 +515,7 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
         text.add(1, Text.aqua("不移动时每秒恢复 20 点生命值"));
+        text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:dark_sun_ring', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -511,6 +525,7 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("小于10的伤害有概率完全抵消"));
             text.add(3, Text.gold("以上效果均受幸运值影响"));
         }
+        text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:lucky_charm', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -544,10 +559,12 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("碰撞体积变大 1.5 倍"));
             text.add(2, Text.aqua("冲刺时对比自己小的生物造成踩踏伤害"));
         }
+        text.add(3, Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('rainbow:moai_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("生物碰撞箱对你无影响"));
         text.add(2, Text.aqua("100% 击退抗性"));
+        text.add(3, Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('rainbow:chaos_core', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -557,6 +574,7 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("概率反弹伤害给攻击者"));
             text.add(3, Text.gold("以上效果均受幸运值影响"));
         }
+        text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:luban_lock', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -574,5 +592,8 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("对16格范围内的主人召唤物施加杀戮欲望"));
             text.add(2, Text.aqua("其他生物获得发光效果，持续10秒"));
         }
+    })
+    event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
+        text.add(Text.darkGray("美术资源：Embers Rekindled"))
     })
 })

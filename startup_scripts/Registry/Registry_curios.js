@@ -1848,12 +1848,15 @@ StartupEvents.registry('item', event => {
             .rarity("epic")
             .maxStackSize(1)
             .tag("curios:charm")
+            .tooltip(Text.gold("[箭袋]"))
+            .tag("rainbow:quivers")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
-                    if (hasCurios(entity, 'rainbow:quiver')) return false;
+                    if (hasCurios(entity, 'rainbow:quivers')) return false;
+                    if(hasCuriosTag(entity, "rainbow:quivers")) return false;
                     return true;
                 })
                 .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")

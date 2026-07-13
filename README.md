@@ -115,7 +115,7 @@
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
 | `rainbow:bottled_lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
 | `rainbow:soul_diamond` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
-| `rainbow:master_ball` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
+| `rainbow:dead_river` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
 | `rainbow:fire_magic` | 火遁·豪火灭却（技能腰带槽），持续 40 tick 发射 Scorcher 火焰投射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Helldivers.js#L108-L121](server_scripts/curios_skill_system/Helldivers.js#L108-L121) |
 | `rainbow:ccb` | 共生徽章（踩踩背），右键生物骑乘并控制移动 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L434-L471](server_scripts/curios_skill_system/Skillwheel.js#L434-L471)，服务器：[server_scripts/SymbiosisBadge_Server.js](server_scripts/SymbiosisBadge_Server.js)，启动：[startup_scripts/SymbiosisBadge_Startup.js](startup_scripts/SymbiosisBadge_Startup.js)，tooltip：[client_scripts/tooltips.js#L428-L436](client_scripts/tooltips.js#L428-L436) |
 | `rainbow:whistle` | 战壕哨，给主人召唤物施加杀戮欲望，其他生物发光 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L511-L538](server_scripts/curios_skill_system/Skillwheel.js#L511-L538) |
@@ -1018,7 +1018,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 ### 大师球 + 莉莉丝拥抱：灵魂替死
 > [server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134)
 
-同时佩戴大师球（`rainbow:master_ball`）和莉莉丝之拥时，致死伤害消耗 1 灵魂抵消，回满血量。
+同时佩戴大师球（`rainbow:dead_river`）和莉莉丝之拥时，致死伤害消耗 1 灵魂抵消，回满血量。
 
 ### 矿车/船安装
 > [server_scripts/ItemEvents.js](server_scripts/ItemEvents.js)

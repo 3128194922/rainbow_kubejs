@@ -34,6 +34,20 @@ const Pickarang = Java.loadClass("org.violetmoon.quark.content.tools.entity.rang
 const ServerPlayer = Java.loadClass("net.minecraft.server.level.ServerPlayer");
 const PickarangModule = Java.loadClass("org.violetmoon.quark.content.tools.module.PickarangModule");
 
+const ServerLevel = Java.loadClass('net.minecraft.server.level.ServerLevel')
+const Attributes = Java.loadClass('net.minecraft.world.entity.ai.attributes.Attributes')
+const TagKey = Java.loadClass('net.minecraft.tags.TagKey')
+const Registry = Java.loadClass('net.minecraft.core.Registry')
+const SpeciesDamageTypes = Java.loadClass('com.ninni.species.registry.SpeciesDamageTypes')
+const SpeciesParticles = Java.loadClass('com.ninni.species.registry.SpeciesParticles')
+const SpeciesSoundEvents = Java.loadClass('com.ninni.species.registry.SpeciesSoundEvents')
+const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+const DEFAULT_IGNORE_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("species", "cant_be_damaged_by_dummy"))
+
+const $Spectre = Java.loadClass('com.ninni.species.server.entity.mob.update_3.Spectre');
+const $BlockPosSp = Java.loadClass('net.minecraft.core.BlockPos');
+
+
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
 

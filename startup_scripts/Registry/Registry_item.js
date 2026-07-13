@@ -30,7 +30,7 @@ StartupEvents.registry("item", event => {
         })
 
     // nbt工具
-    event.create("rainbow:nbt_util").texture('fruitfulfun:item/inspector').unstackable().glow(true)
+    event.create("rainbow:nbt_util").unstackable().glow(true)
     // 金手指
     event.create("rainbow:golden_finger").texture('create:item/brass_hand').unstackable().glow(true)
 

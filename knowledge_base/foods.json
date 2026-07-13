@@ -1,13 +1,28 @@
 [
     {
+        "id": "cosmopolitan:jello_salad",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:berry_duo_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
         "id": "collectorsreap:chocolate_cannoli",
         "hunger": 8,
         "saturation": 20.0
     },
     {
-        "id": "alexscaves:small_peppermint",
-        "hunger": 3,
-        "saturation": 0.9
+        "id": "alexsmobsdelight:tiger_cake_roll",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:tranquil_split_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "functionality:bear_jerky",
@@ -15,9 +30,14 @@
         "saturation": 2.4
     },
     {
-        "id": "alexscaves:deep_sea_sushi_roll",
-        "hunger": 7,
-        "saturation": 5.6
+        "id": "alexsmobsdelight:cooked_lost_tentacle",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "alexsmobsdelight:mimic_octopus_tentacle",
+        "hunger": 2,
+        "saturation": 1.2
     },
     {
         "id": "functionality:cooked_sniffon",
@@ -33,6 +53,21 @@
         "id": "farmersdelight:pumpkin_slice",
         "hunger": 3,
         "saturation": 1.8
+    },
+    {
+        "id": "alexsmobsdelight:cooked_devils_hole_pupfish_slice",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
+        "id": "alexsmobsdelight:raw_kangaroo_meat_slice",
+        "hunger": 2,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:primordial_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
     },
     {
         "id": "create_central_kitchen:passion_fruit_cake_slice",
@@ -55,19 +90,9 @@
         "saturation": 0.2
     },
     {
-        "id": "alexscaves:gingerbread_slab",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "windswept:sweet_snow_cone",
         "hunger": 15,
         "saturation": 18.0
-    },
-    {
-        "id": "overweight_farming:melon_juice",
-        "hunger": 3,
-        "saturation": 3.6
     },
     {
         "id": "dungeonsdelight:slime_noodles",
@@ -75,9 +100,19 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:yellow_tea_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "mynethersdelight:deviled_egg",
         "hunger": 5,
         "saturation": 7.0
+    },
+    {
+        "id": "cosmopolitan:morning_fog",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "collectorsreap:deific_blood",
@@ -85,12 +120,12 @@
         "saturation": 0.0
     },
     {
-        "id": "windswept:wild_berries",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "alexsmobsdelight:big_mac",
+        "hunger": 16,
+        "saturation": 27.2
     },
     {
-        "id": "alexscaves:rock_candy_yellow",
+        "id": "windswept:wild_berries",
         "hunger": 2,
         "saturation": 0.4
     },
@@ -100,24 +135,39 @@
         "saturation": 12.6
     },
     {
+        "id": "cosmopolitan:dandelion_coffee",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "collectorsreap:portobello_rice_soup",
         "hunger": 14,
         "saturation": 22.4
     },
     {
-        "id": "alexscaves:gummy_ring_yellow",
-        "hunger": 3,
-        "saturation": 0.9
+        "id": "cosmopolitan:iron_fiddlehead",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
-        "id": "alexscaves:tripodfish",
-        "hunger": 2,
-        "saturation": 0.8
+        "id": "cosmopolitan:warzipan_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:woodland_sub",
+        "hunger": 10,
+        "saturation": 24.0
     },
     {
         "id": "collectorsreap:pomegranate_smoothie",
         "hunger": 3,
         "saturation": 1.2
+    },
+    {
+        "id": "alexsmobsdelight:centipede_leg_with_carrot_stick",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "farmersdelight:chicken_cuts",
@@ -130,9 +180,9 @@
         "saturation": 21.6
     },
     {
-        "id": "bosses_delight:bowl_of_ham_above_palm",
-        "hunger": 14,
-        "saturation": 33.6
+        "id": "cosmopolitan:emerald_candy",
+        "hunger": 2,
+        "saturation": 1.6
     },
     {
         "id": "dungeonsdelight:chicken_jockey_sandwich",
@@ -150,9 +200,19 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:gamblers_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
         "id": "brewinandchewin:rice_wine",
         "hunger": 0,
         "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_anaconda",
+        "hunger": 16,
+        "saturation": 19.2
     },
     {
         "id": "dungeonsdelight:cleaved_ancient_egg",
@@ -170,11 +230,6 @@
         "saturation": 19.2
     },
     {
-        "id": "alexscaves:wafer_cookie_stairs",
-        "hunger": 1,
-        "saturation": 0.1
-    },
-    {
         "id": "brewinandchewin:pickled_pickles",
         "hunger": 4,
         "saturation": 2.4
@@ -183,6 +238,16 @@
         "id": "environmental:cooked_duck",
         "hunger": 8,
         "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:sugarcane_juice",
+        "hunger": 3,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:enchanted_eternal_cooked_seagull",
+        "hunger": 3,
+        "saturation": 3.6
     },
     {
         "id": "collectorsreap:pomegranate_chicken",
@@ -195,39 +260,19 @@
         "saturation": 7.2
     },
     {
-        "id": "bosses_delight:obsidian_rune_cocktail",
-        "hunger": 6,
-        "saturation": 12.0
-    },
-    {
-        "id": "bosses_delight:anima_popsicle",
-        "hunger": 8,
-        "saturation": 17.6
-    },
-    {
         "id": "quark:ancient_fruit",
         "hunger": 4,
         "saturation": 2.4
     },
     {
-        "id": "alexscaves:gummy_ring_blue",
-        "hunger": 3,
-        "saturation": 0.9
+        "id": "alexsmobsdelight:mudskipper_stew",
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "tide:dripstone_darter",
         "hunger": 2,
         "saturation": 0.4
-    },
-    {
-        "id": "alexscaves:dinosaur_nugget",
-        "hunger": 3,
-        "saturation": 1.8
-    },
-    {
-        "id": "alexscaves:cooked_mussel",
-        "hunger": 4,
-        "saturation": 2.4
     },
     {
         "id": "dungeonsdelight:shiokara",
@@ -245,14 +290,19 @@
         "saturation": 20.0
     },
     {
+        "id": "clanginghowl:hematoma_lump",
+        "hunger": 1,
+        "saturation": 2.0
+    },
+    {
         "id": "collectorsreap:peanut_gummy",
         "hunger": 2,
         "saturation": 0.0
     },
     {
-        "id": "tide:golden_apple_fishing_bobber",
-        "hunger": 4,
-        "saturation": 9.6
+        "id": "cosmopolitan:exquisite_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
     },
     {
         "id": "brewinandchewin:vegetable_omelet",
@@ -260,9 +310,49 @@
         "saturation": 19.2
     },
     {
+        "id": "cosmopolitan:enchanted_fruit_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:yule_log",
+        "hunger": 15,
+        "saturation": 24.0
+    },
+    {
+        "id": "cosmopolitan:adzuki_mint_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
+        "id": "cosmopolitan:meringue",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:twilight_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:detoxify_soup",
+        "hunger": 8,
+        "saturation": 12.8
+    },
+    {
         "id": "minecraft:rotten_flesh",
         "hunger": 4,
         "saturation": 0.8
+    },
+    {
+        "id": "alexsmobsdelight:mantis_shrimp_tail_red",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "cosmopolitan:glow_berry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "tide:crimson_fangjaw",
@@ -275,14 +365,19 @@
         "saturation": 12.8
     },
     {
-        "id": "alexscaves:rock_candy_pink",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "windswept:ginger_tea",
         "hunger": 4,
         "saturation": 0.8
+    },
+    {
+        "id": "cosmopolitan:matcha_cream_cheese_ink_bagel",
+        "hunger": 7,
+        "saturation": 11.2
+    },
+    {
+        "id": "alexsmobsdelight:katsudon",
+        "hunger": 18,
+        "saturation": 30.6
     },
     {
         "id": "tide:shadow_shark",
@@ -290,14 +385,14 @@
         "saturation": 3.6
     },
     {
-        "id": "cavedelight:raw_dino_cut",
+        "id": "cosmopolitan:potato_wedges",
         "hunger": 3,
-        "saturation": 1.2
+        "saturation": 1.8
     },
     {
-        "id": "cavedelight:plate_of_tail_cut",
-        "hunger": 16,
-        "saturation": 22.4
+        "id": "alexsmobsdelight:tarantula_hawk_sashimi",
+        "hunger": 12,
+        "saturation": 14.4
     },
     {
         "id": "minecraft:dried_kelp",
@@ -310,9 +405,9 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:gingerbread_door",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:tuber_puree_with_confiture",
+        "hunger": 12,
+        "saturation": 12.0
     },
     {
         "id": "farmersdelight:baked_cod_stew",
@@ -320,19 +415,29 @@
         "saturation": 21.0
     },
     {
-        "id": "fruitfulfun:chorus_fruit_pie_slice",
-        "hunger": 2,
-        "saturation": 2.4
-    },
-    {
-        "id": "alexscaves:sweetish_fish_red",
-        "hunger": 2,
-        "saturation": 0.8
-    },
-    {
         "id": "dungeonsdelight:cooked_snifferwurst",
         "hunger": 10,
         "saturation": 14.0
+    },
+    {
+        "id": "alexsmobsdelight:seal_meat",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:chorus_fruit_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:wattleseeds",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:slime_cone",
+        "hunger": 4,
+        "saturation": 4.0
     },
     {
         "id": "farmersdelight:bacon_and_eggs",
@@ -340,19 +445,9 @@
         "saturation": 12.0
     },
     {
-        "id": "cavedelight:fiddlehead_tea",
-        "hunger": 0,
-        "saturation": 0.0
-    },
-    {
         "id": "minecraft:glow_berries",
         "hunger": 2,
         "saturation": 0.4
-    },
-    {
-        "id": "cavedelight:plate_of_grotto_leg",
-        "hunger": 20,
-        "saturation": 20.0
     },
     {
         "id": "dungeonsdelight:sniffer_shank",
@@ -365,19 +460,49 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:jello_salad_cup",
+        "hunger": 3,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:black_tea_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "tide:lapis_lanternfish",
         "hunger": 1,
         "saturation": 0.1
     },
     {
-        "id": "artifacts:eternal_steak",
-        "hunger": 8,
-        "saturation": 12.8
-    },
-    {
         "id": "brewinandchewin:withering_dross",
         "hunger": 0,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:ink_roll_slice",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
+        "id": "alexsmobsdelight:mantis_shrimp_tail_lime",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "alexsmobsdelight:cheese",
+        "hunger": 4,
+        "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:boilberry",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:paw_cookie",
+        "hunger": 3,
+        "saturation": 3.0
     },
     {
         "id": "delights_now_loading:stew_spawner",
@@ -390,14 +515,9 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:radgill",
-        "hunger": 2,
-        "saturation": 0.8
-    },
-    {
-        "id": "alexscaves:sweetish_fish_blue",
-        "hunger": 2,
-        "saturation": 0.8
+        "id": "cosmopolitan:tisane",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "mynethersdelight:strider_egg",
@@ -405,14 +525,14 @@
         "saturation": 1.8
     },
     {
-        "id": "cavedelight:dino_cut_rice",
-        "hunger": 18,
-        "saturation": 25.2
-    },
-    {
         "id": "farmersdelight:beef_stew",
         "hunger": 12,
         "saturation": 19.2
+    },
+    {
+        "id": "cosmopolitan:seasonal_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
     },
     {
         "id": "tide:sleepy_carp",
@@ -430,14 +550,29 @@
         "saturation": 0.8
     },
     {
+        "id": "cosmopolitan:wafer",
+        "hunger": 2,
+        "saturation": 0.8
+    },
+    {
         "id": "functionality:terrapin_soup",
         "hunger": 12,
         "saturation": 18.0
     },
     {
+        "id": "cosmopolitan:mate",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "minecraft:spider_eye",
         "hunger": 2,
         "saturation": 3.2
+    },
+    {
+        "id": "alexsmobsdelight:enchanted_cooked_seagull",
+        "hunger": 3,
+        "saturation": 3.6
     },
     {
         "id": "collectorsreap:berry_limeade",
@@ -455,9 +590,19 @@
         "saturation": 1.6
     },
     {
-        "id": "alexscaves:dough_block",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:abyssal_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
+    },
+    {
+        "id": "alexsmobsdelight:mimicandy",
+        "hunger": 1,
+        "saturation": 1.0
+    },
+    {
+        "id": "cataclysm:lionfish",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "tide:shadow_snapper",
@@ -470,14 +615,24 @@
         "saturation": 38.4
     },
     {
+        "id": "cosmopolitan:toffee_golden_apple",
+        "hunger": 6,
+        "saturation": 14.4
+    },
+    {
         "id": "farmersdelight:minced_beef",
         "hunger": 2,
         "saturation": 1.2
     },
     {
-        "id": "alexscaves:primordial_soup",
+        "id": "cosmopolitan:smc_ice_cream_sandwich",
         "hunger": 6,
-        "saturation": 7.2
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:raw_flying_fish_slice",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "farmersdelight:ham",
@@ -485,9 +640,14 @@
         "saturation": 3.0
     },
     {
-        "id": "fruitfulfun:donauwelle",
-        "hunger": 14,
-        "saturation": 28.0
+        "id": "cosmopolitan:birch_cookie",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:root_beer",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "dungeonsdelight:gritty_flesh",
@@ -495,9 +655,19 @@
         "saturation": 0.8
     },
     {
+        "id": "alexsmobsdelight:cooked_bear_meat_slice",
+        "hunger": 4,
+        "saturation": 4.8
+    },
+    {
         "id": "collectorsreap:apple_gummy",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:glow_berry_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "minecraft:carrot",
@@ -530,9 +700,19 @@
         "saturation": 0.8
     },
     {
+        "id": "cosmopolitan:neapolitan_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "tide:inferno_guppy",
         "hunger": 1,
         "saturation": 0.1
+    },
+    {
+        "id": "cosmopolitan:salted_qingtuan",
+        "hunger": 5,
+        "saturation": 3.0
     },
     {
         "id": "mynethersdelight:spicy_cotton",
@@ -550,14 +730,29 @@
         "saturation": 6.0
     },
     {
+        "id": "cosmopolitan:green_beer",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "windswept:candy_cane",
         "hunger": 3,
         "saturation": 3.6
     },
     {
+        "id": "alexsmobsdelight:rattle_tail_congee",
+        "hunger": 8,
+        "saturation": 12.0
+    },
+    {
         "id": "dungeonsdelight:maze_roll",
         "hunger": 6,
         "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:arid_gulime",
+        "hunger": 4,
+        "saturation": 0.8
     },
     {
         "id": "dungeonsdelight:liveroot_beer",
@@ -575,19 +770,44 @@
         "saturation": 6.0
     },
     {
+        "id": "alexsmobsdelight:tentacle_sandwich",
+        "hunger": 10,
+        "saturation": 12.0
+    },
+    {
+        "id": "cosmopolitan:peculiar_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:toxic_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
+    },
+    {
+        "id": "alexsmobsdelight:turtle_soup",
+        "hunger": 8,
+        "saturation": 12.0
+    },
+    {
+        "id": "alexsmobsdelight:cheese_mashed_potatoes_with_anaconda",
+        "hunger": 14,
+        "saturation": 23.8
+    },
+    {
         "id": "tide:dragon_fish",
         "hunger": 6,
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:caramel",
-        "hunger": 2,
-        "saturation": 1.2
-    },
-    {
         "id": "collectorsreap:prawn_stew_cup",
         "hunger": 5,
         "saturation": 4.0
+    },
+    {
+        "id": "cosmopolitan:soulblight_ghostcream",
+        "hunger": 5,
+        "saturation": 6.0
     },
     {
         "id": "collectorsreap:pomegranate_pork",
@@ -600,14 +820,24 @@
         "saturation": 0.0
     },
     {
+        "id": "cosmopolitan:apple_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "collectorsreap:crab_lasagna",
         "hunger": 10,
         "saturation": 17.0
     },
     {
-        "id": "alexscaves:chiseled_candy_cane_block",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "farmersdelight:pumpkin_pie_slice",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "alexsmobsdelight:fried_centipede_meat",
+        "hunger": 12,
+        "saturation": 20.4
     },
     {
         "id": "functionality:terrapin_stick",
@@ -640,9 +870,19 @@
         "saturation": 2.0
     },
     {
+        "id": "cosmopolitan:adzuki_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "collectorsreap:candied_lime",
         "hunger": 3,
         "saturation": 6.6
+    },
+    {
+        "id": "alexsmobsdelight:slice_of_moose_pie",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "tide:slimy_salmon",
@@ -655,6 +895,11 @@
         "saturation": 0.6
     },
     {
+        "id": "alexsmobsdelight:cooked_tarantula_hawk_abdomen",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
         "id": "farmersdelight:mushroom_rice",
         "hunger": 12,
         "saturation": 19.2
@@ -663,6 +908,16 @@
         "id": "atmospheric:passion_fruit",
         "hunger": 1,
         "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:wafer_cone",
+        "hunger": 2,
+        "saturation": 0.8
+    },
+    {
+        "id": "alexsmobsdelight:shrimp_poke_bowl",
+        "hunger": 20,
+        "saturation": 34.0
     },
     {
         "id": "alexsmobs:sopa_de_macaco",
@@ -680,6 +935,11 @@
         "saturation": 4.0
     },
     {
+        "id": "cosmopolitan:winter_glogg",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "collectorsreap:vernal_purge",
         "hunger": 0,
         "saturation": 0.0
@@ -690,19 +950,29 @@
         "saturation": 0.1
     },
     {
-        "id": "alexscaves:gingerbarrel",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:jelly_roll",
+        "hunger": 15,
+        "saturation": 24.0
     },
     {
-        "id": "alexscaves:sundrop",
-        "hunger": 5,
-        "saturation": 2.0
+        "id": "cosmopolitan:ink_roll",
+        "hunger": 15,
+        "saturation": 24.0
+    },
+    {
+        "id": "alexsmobsdelight:detoxify_jelly",
+        "hunger": 6,
+        "saturation": 7.2
     },
     {
         "id": "tide:cooked_fish_slice",
         "hunger": 3,
         "saturation": 3.0
+    },
+    {
+        "id": "cosmopolitan:matcha_salmonberry_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
     },
     {
         "id": "dungeonsdelight:ossobuco",
@@ -720,9 +990,9 @@
         "saturation": 1.2
     },
     {
-        "id": "bosses_delight:obsidian_sauce",
+        "id": "cosmopolitan:roasted_tuber",
         "hunger": 6,
-        "saturation": 9.6
+        "saturation": 7.2
     },
     {
         "id": "tide:mirage_catfish",
@@ -750,9 +1020,9 @@
         "saturation": 4.0
     },
     {
-        "id": "tide:apple_fishing_bobber",
+        "id": "cosmopolitan:abc_soup_cup",
         "hunger": 4,
-        "saturation": 2.4
+        "saturation": 4.8
     },
     {
         "id": "collectorsreap:uni",
@@ -760,14 +1030,29 @@
         "saturation": 6.0
     },
     {
-        "id": "fruitfulfun:grapefruit",
-        "hunger": 6,
-        "saturation": 4.8
-    },
-    {
         "id": "farmersdelight:cooked_cod_slice",
         "hunger": 3,
         "saturation": 3.0
+    },
+    {
+        "id": "cosmopolitan:llama_marshmallow_brown",
+        "hunger": 2,
+        "saturation": 2.0
+    },
+    {
+        "id": "cosmopolitan:wildberry",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:tuber_chips",
+        "hunger": 2,
+        "saturation": 0.8
+    },
+    {
+        "id": "cosmopolitan:chocolate_banana_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
     },
     {
         "id": "delighto_flight:new_orleans_phantom_wing",
@@ -780,6 +1065,11 @@
         "saturation": 8.0
     },
     {
+        "id": "cosmopolitan:chorus_fruit_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "create:honeyed_apple",
         "hunger": 8,
         "saturation": 12.8
@@ -787,6 +1077,21 @@
     {
         "id": "farmersdelight:bacon",
         "hunger": 2,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:enchanted_golden_arbutus_berries",
+        "hunger": 4,
+        "saturation": 8.0
+    },
+    {
+        "id": "cosmopolitan:pomegranate_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:tuber_chip_bag",
+        "hunger": 3,
         "saturation": 1.2
     },
     {
@@ -800,14 +1105,39 @@
         "saturation": 4.0
     },
     {
+        "id": "alexsmobsdelight:cooked_maggot_stick",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "alexsmobsdelight:detoxify_soup_cup",
+        "hunger": 4,
+        "saturation": 6.4
+    },
+    {
         "id": "tide:crystalline_carp",
         "hunger": 2,
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:rainbow_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "collectorsreap:cod_ceviche",
         "hunger": 9,
         "saturation": 12.6
+    },
+    {
+        "id": "alexsmobsdelight:mantis_shrimp_tail_white",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "alexsmobsdelight:mudskipper_roll",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "brewinandchewin:glow_berry_marmalade",
@@ -820,19 +1150,39 @@
         "saturation": 21.0
     },
     {
+        "id": "alexsmobsdelight:crocodile_barbecue_stick",
+        "hunger": 12,
+        "saturation": 21.6
+    },
+    {
+        "id": "alexsmobsdelight:cockroach_protein_soup",
+        "hunger": 8,
+        "saturation": 12.8
+    },
+    {
+        "id": "alexsmobsdelight:mantis_shrimp_tempura",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:kabloom_milkshake",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_moose_sausage_with_salmon",
+        "hunger": 14,
+        "saturation": 23.8
+    },
+    {
         "id": "tide:sturgeon",
         "hunger": 6,
         "saturation": 3.6
     },
     {
-        "id": "bosses_delight:bosses_hodgepodge",
-        "hunger": 20,
-        "saturation": 40.0
-    },
-    {
-        "id": "alexscaves:licoroot_sprout",
-        "hunger": 1,
-        "saturation": 0.2
+        "id": "cosmopolitan:peculiar_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
     },
     {
         "id": "farmersdelight:mutton_wrap",
@@ -875,19 +1225,14 @@
         "saturation": 24.0
     },
     {
-        "id": "cavedelight:tectonic_pasta",
-        "hunger": 20,
-        "saturation": 20.0
-    },
-    {
-        "id": "artifacts:onion_ring",
-        "hunger": 2,
-        "saturation": 0.0
-    },
-    {
         "id": "collectorsreap:strawberry_gummy",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:slabfish_jelly_popsicle",
+        "hunger": 3,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:pomegranate_milkshake",
@@ -895,24 +1240,39 @@
         "saturation": 6.0
     },
     {
+        "id": "alexsmobsdelight:cooked_tusklin_meat_piece",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
         "id": "alexsmobs:cosmic_cod",
         "hunger": 6,
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:frosted_gingerbread_door",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:carrot_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
-        "id": "alexscaves:gelatin_blue",
-        "hunger": 3,
-        "saturation": 1.5
+        "id": "alexsmobsdelight:cthulhus_breakfast",
+        "hunger": 13,
+        "saturation": 22.1
+    },
+    {
+        "id": "cosmopolitan:acacia_snow_cone",
+        "hunger": 15,
+        "saturation": 18.0
     },
     {
         "id": "windswept:chestnuts",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:mojang_mess",
+        "hunger": 8,
+        "saturation": 8.0
     },
     {
         "id": "create_central_kitchen:pumpkin_pie_slice",
@@ -925,19 +1285,9 @@
         "saturation": 19.2
     },
     {
-        "id": "fruitfulfun:redlove",
-        "hunger": 4,
-        "saturation": 4.8
-    },
-    {
         "id": "collectorsreap:clam_pasta",
         "hunger": 11,
         "saturation": 18.7
-    },
-    {
-        "id": "alexscaves:sharpened_candy_cane",
-        "hunger": 2,
-        "saturation": 0.4
     },
     {
         "id": "collectorsreap:reanimators_garden",
@@ -945,8 +1295,8 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:vesper_stew",
-        "hunger": 5,
+        "id": "alexsmobsdelight:cooked_flying_fish_slice",
+        "hunger": 3,
         "saturation": 3.0
     },
     {
@@ -955,9 +1305,9 @@
         "saturation": 7.0
     },
     {
-        "id": "alexscaves:serene_salad",
-        "hunger": 5,
-        "saturation": 3.5
+        "id": "cosmopolitan:warped_gulime",
+        "hunger": 4,
+        "saturation": 0.8
     },
     {
         "id": "minecraft:golden_carrot",
@@ -975,9 +1325,44 @@
         "saturation": 10.0
     },
     {
+        "id": "cosmopolitan:toffee_apple",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:cut_potatoes",
+        "hunger": 1,
+        "saturation": 0.6
+    },
+    {
+        "id": "alexsmobsdelight:cooked_crocodile_meat",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:cosmic_snow_cone",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:couscous_with_mutton",
+        "hunger": 12,
+        "saturation": 24.0
+    },
+    {
         "id": "collectorsreap:stuffed_pasta_shells",
         "hunger": 12,
         "saturation": 21.6
+    },
+    {
+        "id": "cosmopolitan:glitterkelp_burrito",
+        "hunger": 6,
+        "saturation": 12.0
+    },
+    {
+        "id": "alexsmobsdelight:takoyaki",
+        "hunger": 10,
+        "saturation": 17.0
     },
     {
         "id": "dungeonsdelight:arcane_chili",
@@ -990,9 +1375,14 @@
         "saturation": 16.0
     },
     {
-        "id": "alexscaves:giant_sweetberry",
-        "hunger": 5,
-        "saturation": 2.0
+        "id": "alexsmobsdelight:snake_skin_salad",
+        "hunger": 6,
+        "saturation": 7.8
+    },
+    {
+        "id": "alexsmobsdelight:grilled_turtle_and_anaconda",
+        "hunger": 16,
+        "saturation": 27.2
     },
     {
         "id": "brewinandchewin:jerky",
@@ -1005,19 +1395,9 @@
         "saturation": 0.1
     },
     {
-        "id": "bosses_delight:obsidian_rune_puree",
-        "hunger": 10,
-        "saturation": 24.0
-    },
-    {
-        "id": "alexscaves:sea_pig",
-        "hunger": 1,
-        "saturation": 0.4
-    },
-    {
-        "id": "fruitfulfun:pomelo",
-        "hunger": 4,
-        "saturation": 2.4
+        "id": "cosmopolitan:tuber_puree",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "collectorsreap:shimmering_apple",
@@ -1045,9 +1425,54 @@
         "saturation": 3.2
     },
     {
+        "id": "cosmopolitan:salmonberry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "collectorsreap:fish_mix",
         "hunger": 8,
         "saturation": 13.6
+    },
+    {
+        "id": "alexsmobsdelight:acacia_blossom_tentacle_salad",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:golden_arbutus_berries",
+        "hunger": 4,
+        "saturation": 8.0
+    },
+    {
+        "id": "cosmopolitan:wandering_gelato",
+        "hunger": 3,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:cherry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:mantis_shrimp_tail_green",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "cosmopolitan:bagel_sandwich",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:spinalberry",
+        "hunger": 5,
+        "saturation": 2.0
+    },
+    {
+        "id": "cosmopolitan:glowy_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:platinum_bass_stew",
@@ -1055,19 +1480,39 @@
         "saturation": 20.0
     },
     {
+        "id": "alexsmobsdelight:fried_seagull_with_fries",
+        "hunger": 14,
+        "saturation": 23.8
+    },
+    {
         "id": "domesticationinnovation:rotten_apple",
         "hunger": 3,
         "saturation": 1.8
     },
     {
-        "id": "fruitfulfun:grapefruit_panna_cotta",
-        "hunger": 14,
-        "saturation": 28.0
+        "id": "cosmopolitan:cosmopolitan_cocktail",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:lucuma_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:candy_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
     },
     {
         "id": "brewinandchewin:fiery_fondue",
         "hunger": 14,
         "saturation": 21.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_mantis_shrimp_tail",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "atmospheric:orange_sorbet",
@@ -1080,9 +1525,14 @@
         "saturation": 19.2
     },
     {
-        "id": "alexscaves:seething_stew",
-        "hunger": 6,
-        "saturation": 7.2
+        "id": "cosmopolitan:chorus_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:autumn_tea",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "collectorsreap:lucuma_gazpacho",
@@ -1095,9 +1545,24 @@
         "saturation": 1.8
     },
     {
+        "id": "cosmopolitan:glimmering_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
         "id": "windswept:cooked_goat",
         "hunger": 6,
         "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:green_pasta",
+        "hunger": 16,
+        "saturation": 22.4
+    },
+    {
+        "id": "alexsmobsdelight:raw_devils_hole_pupfish",
+        "hunger": 2,
+        "saturation": 0.4
     },
     {
         "id": "dungeonsdelight:snuffledog",
@@ -1105,9 +1570,29 @@
         "saturation": 30.8
     },
     {
+        "id": "alexsmobsdelight:cooked_seagull",
+        "hunger": 3,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:coffee_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:phytochemical_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "atmospheric:ender_dragon_fruit",
         "hunger": 20,
         "saturation": 48.0
+    },
+    {
+        "id": "alexsmobsdelight:crispy_cockroach_wing",
+        "hunger": 10,
+        "saturation": 12.0
     },
     {
         "id": "dungeonsdelight:monster_muffin",
@@ -1121,13 +1606,28 @@
     },
     {
         "id": "farmersdelight:chicken_soup",
-        "hunger": 14,
-        "saturation": 21.0
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "minecraft:mushroom_stew",
         "hunger": 6,
         "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:collective_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:cockroach",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
+        "id": "alexsmobsdelight:orcas_leap_soup",
+        "hunger": 16,
+        "saturation": 19.2
     },
     {
         "id": "collectorsreap:coffee_cannoli",
@@ -1140,19 +1640,24 @@
         "saturation": 8.4
     },
     {
-        "id": "alexscaves:gummy_ring_pink",
-        "hunger": 3,
-        "saturation": 0.9
+        "id": "cosmopolitan:potato_pancakes",
+        "hunger": 4,
+        "saturation": 6.4
     },
     {
-        "id": "alexscaves:candy_cane_pole",
-        "hunger": 1,
-        "saturation": 0.2
+        "id": "cosmopolitan:kykeon",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
-        "id": "cavedelight:raw_trilocaris_slice",
-        "hunger": 2,
-        "saturation": 0.8
+        "id": "cosmopolitan:source_berry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:seal_stew",
+        "hunger": 8,
+        "saturation": 12.8
     },
     {
         "id": "brewinandchewin:bloody_mary",
@@ -1160,24 +1665,9 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:wafer_cookie_block",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "atmospheric:passion_fruit_tart",
         "hunger": 4,
         "saturation": 4.8
-    },
-    {
-        "id": "alexscaves:large_peppermint",
-        "hunger": 5,
-        "saturation": 1.5
-    },
-    {
-        "id": "alexscaves:cooked_lanternfish",
-        "hunger": 2,
-        "saturation": 1.2
     },
     {
         "id": "atmospheric:golden_dragon_fruit",
@@ -1185,29 +1675,14 @@
         "saturation": 1.6
     },
     {
-        "id": "alexscaves:gummy_ring_green",
-        "hunger": 3,
-        "saturation": 0.9
-    },
-    {
-        "id": "fruitfulfun:honey_pomelo_tea",
-        "hunger": 1,
-        "saturation": 8.0
-    },
-    {
-        "id": "fruitfulfun:tangerine",
-        "hunger": 3,
-        "saturation": 1.8
+        "id": "alexsmobsdelight:sea_bear_stew",
+        "hunger": 9,
+        "saturation": 14.4
     },
     {
         "id": "dungeonsdelight:rotten_tripe",
         "hunger": 2,
         "saturation": 0.2
-    },
-    {
-        "id": "alexscaves:frosted_gingerbread_brick_wall",
-        "hunger": 2,
-        "saturation": 0.4
     },
     {
         "id": "brewinandchewin:kippers",
@@ -1220,11 +1695,6 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:stripped_candy_cane_pole",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "collectorsreap:pink_dragon_fruit_gummy",
         "hunger": 2,
         "saturation": 0.0
@@ -1235,9 +1705,24 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:rock_candy_red",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:refreshing_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:smoked_tusklin_sausage",
+        "hunger": 12,
+        "saturation": 20.4
+    },
+    {
+        "id": "cosmopolitan:cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
+    },
+    {
+        "id": "alexsmobsdelight:raw_bison_meat",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "farmersdelight:bacon_sandwich",
@@ -1250,9 +1735,14 @@
         "saturation": 2.4
     },
     {
-        "id": "cavedelight:pine_and_sap_sandwich",
-        "hunger": 10,
-        "saturation": 16.0
+        "id": "cosmopolitan:jelly_ring_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:fiddlehead_tempura",
+        "hunger": 2,
+        "saturation": 2.4
     },
     {
         "id": "tide:midas_fish",
@@ -1275,6 +1765,21 @@
         "saturation": 21.0
     },
     {
+        "id": "cosmopolitan:aurora_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:cave_centipede_soup",
+        "hunger": 10,
+        "saturation": 16.0
+    },
+    {
+        "id": "alexsmobsdelight:triops_eggs_roll",
+        "hunger": 7,
+        "saturation": 8.4
+    },
+    {
         "id": "collectorsreap:strong_sweet_recovery",
         "hunger": 0,
         "saturation": 0.0
@@ -1291,8 +1796,18 @@
     },
     {
         "id": "farmersdelight:fried_rice",
-        "hunger": 14,
-        "saturation": 21.0
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
+        "id": "alexsmobsdelight:cooked_catfish_slice",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
+        "id": "cosmopolitan:boilberry_gummy",
+        "hunger": 2,
+        "saturation": 0.0
     },
     {
         "id": "brewinandchewin:kombucha",
@@ -1300,24 +1815,29 @@
         "saturation": 0.0
     },
     {
-        "id": "cavedelight:cooked_trilocaris_slice",
-        "hunger": 4,
-        "saturation": 4.8
-    },
-    {
-        "id": "alexscaves:rock_candy_orange",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "mynethersdelight:bullet_pepper",
         "hunger": 2,
         "saturation": 2.0
     },
     {
+        "id": "cosmopolitan:green_tea_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "tide:deep_blue",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:respiteful_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:dripleaf_roll",
+        "hunger": 4,
+        "saturation": 8.0
     },
     {
         "id": "minecraft:beef",
@@ -1330,9 +1850,19 @@
         "saturation": 2.4
     },
     {
+        "id": "alexsmobsdelight:frontier_soup",
+        "hunger": 10,
+        "saturation": 12.0
+    },
+    {
         "id": "species:wicked_dope",
         "hunger": 3,
         "saturation": 12.0
+    },
+    {
+        "id": "alexsmobsdelight:braised_tarantula_hawk_larva",
+        "hunger": 14,
+        "saturation": 23.8
     },
     {
         "id": "tide:rainbow_trout",
@@ -1345,24 +1875,14 @@
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:candy_cane_block",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:mendosteen_tart",
+        "hunger": 5,
+        "saturation": 5.0
     },
     {
-        "id": "alexscaves:vesper_wing",
-        "hunger": 3,
-        "saturation": 1.2
-    },
-    {
-        "id": "chromaticarsenal:magic_garlic_bread",
-        "hunger": 10,
-        "saturation": 14.0
-    },
-    {
-        "id": "fruitfulfun:rice_with_fruits",
-        "hunger": 9,
-        "saturation": 10.8
+        "id": "alexsmobsdelight:protein_block",
+        "hunger": 8,
+        "saturation": 8.0
     },
     {
         "id": "farmersdelight:onion",
@@ -1380,9 +1900,24 @@
         "saturation": 4.5
     },
     {
+        "id": "cosmopolitan:tranquil_split_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
         "id": "create_central_kitchen:incomplete_bacon_sandwich",
         "hunger": 5,
         "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:classic_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:lime_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:prawn_stew",
@@ -1425,9 +1960,9 @@
         "saturation": 9.6
     },
     {
-        "id": "alexscaves:frosted_gingerbread_brick_stairs",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "alexsmobsdelight:pot_of_whale_meat_stewed_with_pork",
+        "hunger": 16,
+        "saturation": 27.2
     },
     {
         "id": "dungeonsdelight:spider_bubble_tea",
@@ -1435,9 +1970,39 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:ant_cookie",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
+        "id": "alexsmobsdelight:dried_kelp_tentacles_sandwich",
+        "hunger": 12,
+        "saturation": 16.8
+    },
+    {
+        "id": "cosmopolitan:mana_salad",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
         "id": "collectorsreap:glow_berry_gummy",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:strawberry_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:raindroop_cake",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
+        "id": "alexsmobsdelight:maggot_cream_soup",
+        "hunger": 8,
+        "saturation": 12.8
     },
     {
         "id": "brewinandchewin:pizza_slice",
@@ -1450,9 +2015,24 @@
         "saturation": 7.0
     },
     {
+        "id": "cosmopolitan:sweet_qingtuan",
+        "hunger": 5,
+        "saturation": 3.0
+    },
+    {
+        "id": "cosmopolitan:condensed_milk_bottle",
+        "hunger": 3,
+        "saturation": 0.0
+    },
+    {
         "id": "collectorsreap:strong_limbo_brew",
         "hunger": 0,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:neapolitan_ice_cream_bagel",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "collectorsreap:portobello_wrap",
@@ -1460,14 +2040,14 @@
         "saturation": 16.0
     },
     {
-        "id": "alexscaves:gelatin_red",
-        "hunger": 3,
-        "saturation": 1.5
+        "id": "cosmopolitan:fish_kebab",
+        "hunger": 8,
+        "saturation": 14.4
     },
     {
-        "id": "alexscaves:rock_candy_white",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:ice_cream_float",
+        "hunger": 3,
+        "saturation": 1.8
     },
     {
         "id": "create_central_kitchen:sweet_berry_cake_slice",
@@ -1480,6 +2060,11 @@
         "saturation": 16.2
     },
     {
+        "id": "cosmopolitan:farina",
+        "hunger": 4,
+        "saturation": 4.0
+    },
+    {
         "id": "collectorsreap:dragon_stew_cup",
         "hunger": 4,
         "saturation": 4.4
@@ -1490,9 +2075,24 @@
         "saturation": 1.0
     },
     {
+        "id": "cosmopolitan:wheatgrass_cubecake",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
+        "id": "cosmopolitan:pumpkin_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "collectorsreap:lime_pie_slice",
         "hunger": 3,
         "saturation": 1.2
+    },
+    {
+        "id": "alexsmobsdelight:anaconda_catfish_stick",
+        "hunger": 11,
+        "saturation": 18.7
     },
     {
         "id": "collectorsreap:coffee_gummy",
@@ -1500,19 +2100,24 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:cooked_moose_rib_piece",
+        "hunger": 4,
+        "saturation": 6.8
+    },
+    {
+        "id": "alexsmobsdelight:raw_crocodile_tail",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "create_central_kitchen:mulberry_pie_slice",
         "hunger": 3,
         "saturation": 1.8
     },
     {
-        "id": "rainbow:monster_meat",
-        "hunger": 5,
-        "saturation": 50.0
-    },
-    {
-        "id": "fruitfulfun:orange",
+        "id": "cosmopolitan:roasted_mushroom",
         "hunger": 3,
-        "saturation": 3.0
+        "saturation": 1.2
     },
     {
         "id": "species:birtday_cake_slice",
@@ -1520,14 +2125,19 @@
         "saturation": 4.8
     },
     {
+        "id": "alexsmobsdelight:cod_and_turtle_meat_congee",
+        "hunger": 8,
+        "saturation": 12.0
+    },
+    {
+        "id": "cosmopolitan:sweet_berry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "windswept:goat",
         "hunger": 2,
         "saturation": 1.2
-    },
-    {
-        "id": "alexscaves:gelatin_green",
-        "hunger": 3,
-        "saturation": 1.5
     },
     {
         "id": "collectorsreap:pink_noodles",
@@ -1540,14 +2150,19 @@
         "saturation": 10.4
     },
     {
+        "id": "cosmopolitan:charmed_infusion",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "mynethersdelight:hot_cream",
         "hunger": 1,
         "saturation": 16.0
     },
     {
-        "id": "cavedelight:star_cookie",
-        "hunger": 1,
-        "saturation": 1.0
+        "id": "cosmopolitan:banana_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "windswept:mutton_pie",
@@ -1558,6 +2173,11 @@
         "id": "farmersdelight:pasta_with_mutton_chop",
         "hunger": 12,
         "saturation": 19.2
+    },
+    {
+        "id": "alexsmobsdelight:roast_seagull",
+        "hunger": 14,
+        "saturation": 23.8
     },
     {
         "id": "collectorsreap:pomegranate_cake_slice",
@@ -1590,6 +2210,11 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:cockroach_protein_soup_cup",
+        "hunger": 4,
+        "saturation": 6.4
+    },
+    {
         "id": "tide:walleye",
         "hunger": 2,
         "saturation": 0.4
@@ -1605,9 +2230,19 @@
         "saturation": 18.0
     },
     {
+        "id": "cosmopolitan:popwart",
+        "hunger": 5,
+        "saturation": 5.0
+    },
+    {
         "id": "collectorsreap:sweet_berry_gummy",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:tuber",
+        "hunger": 1,
+        "saturation": 0.8
     },
     {
         "id": "alexsmobs:cooked_kangaroo_meat",
@@ -1615,19 +2250,29 @@
         "saturation": 13.6
     },
     {
-        "id": "cavedelight:plate_of_roasted_dino_chop",
-        "hunger": 14,
-        "saturation": 22.4
-    },
-    {
         "id": "tide:large_cooked_fish",
         "hunger": 10,
         "saturation": 24.0
     },
     {
+        "id": "alexsmobsdelight:raw_mudskipper_slice",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
         "id": "tide:mooneye",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:exquisite_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:ardent_split_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
     },
     {
         "id": "delighto_flight:cheese_cloud_berry_jam",
@@ -1660,11 +2305,6 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:rock_candy_green",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "collectorsreap:pomegranate_gummy",
         "hunger": 2,
         "saturation": 0.0
@@ -1681,6 +2321,21 @@
     },
     {
         "id": "minecraft:chicken",
+        "hunger": 2,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:netheresso",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:carrot_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:detoxify_tea",
         "hunger": 2,
         "saturation": 1.2
     },
@@ -1720,6 +2375,16 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:flying_fish_stew",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
+        "id": "cosmopolitan:classic_fruit_salad",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "minecraft:poisonous_potato",
         "hunger": 2,
         "saturation": 1.2
@@ -1730,14 +2395,34 @@
         "saturation": 3.0
     },
     {
+        "id": "cosmopolitan:chorus_fruit_cubecake",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
         "id": "delighto_flight:charged_rose_tea",
         "hunger": 0,
         "saturation": 0.0
     },
     {
-        "id": "cavedelight:prehistoric_egg_rice",
-        "hunger": 12,
-        "saturation": 7.2
+        "id": "cosmopolitan:colorful_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
+        "id": "cosmopolitan:warped_ghostcream",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:wildberry_medley",
+        "hunger": 6,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:flower_love",
+        "hunger": 9,
+        "saturation": 12.6
     },
     {
         "id": "collectorsreap:tropical_shaved_ice",
@@ -1745,14 +2430,44 @@
         "saturation": 18.0
     },
     {
+        "id": "cosmopolitan:frost_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_mudskipper_slice",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
         "id": "collectorsreap:lime_green_tea",
         "hunger": 0,
         "saturation": 0.0
     },
     {
-        "id": "fruitfulfun:cherry",
+        "id": "cosmopolitan:couscous_with_vegetables",
+        "hunger": 12,
+        "saturation": 24.0
+    },
+    {
+        "id": "cosmopolitan:herbal_cookie",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:warped_funguis_bottle",
         "hunger": 3,
-        "saturation": 1.8
+        "saturation": 0.6
+    },
+    {
+        "id": "cosmopolitan:chocolate_roll_slice",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
+        "id": "cosmopolitan:ardent_split_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "mynethersdelight:chilidog",
@@ -1765,11 +2480,6 @@
         "saturation": 7.2
     },
     {
-        "id": "alexscaves:frosted_gingerbread_block",
-        "hunger": 4,
-        "saturation": 0.8
-    },
-    {
         "id": "tide:violet_carp",
         "hunger": 2,
         "saturation": 0.4
@@ -1780,9 +2490,24 @@
         "saturation": 4.0
     },
     {
+        "id": "cosmopolitan:shoofly_pie",
+        "hunger": 12,
+        "saturation": 4.8
+    },
+    {
         "id": "collectorsreap:carbonara_pasta",
         "hunger": 14,
         "saturation": 22.4
+    },
+    {
+        "id": "cosmopolitan:collective_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:wild_risotto",
+        "hunger": 12,
+        "saturation": 24.0
     },
     {
         "id": "atmospheric:dragon_fruit",
@@ -1793,6 +2518,11 @@
         "id": "collectorsreap:lime_cake_slice",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "alexsmobsdelight:whale_skin_stew",
+        "hunger": 20,
+        "saturation": 24.0
     },
     {
         "id": "tide:blue_neonfish",
@@ -1820,6 +2550,31 @@
         "saturation": 3.6
     },
     {
+        "id": "alexsmobsdelight:banana_roll_slice",
+        "hunger": 6,
+        "saturation": 6.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_mudskipper",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:chorus_fruit_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_stuffed_crocodile_head",
+        "hunger": 20,
+        "saturation": 34.0
+    },
+    {
+        "id": "cosmopolitan:rodgrod",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
         "id": "farmersdelight:pasta_with_meatballs",
         "hunger": 12,
         "saturation": 19.2
@@ -1845,9 +2600,9 @@
         "saturation": 1.8
     },
     {
-        "id": "alexscaves:frosted_gingerbread_stairs",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:chocolate_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "brewinandchewin:saccharine_rum",
@@ -1858,11 +2613,6 @@
         "id": "minecraft:bread",
         "hunger": 5,
         "saturation": 6.0
-    },
-    {
-        "id": "alexscaves:rock_candy_gray",
-        "hunger": 2,
-        "saturation": 0.4
     },
     {
         "id": "collectorsreap:dragon_stew",
@@ -1885,14 +2635,19 @@
         "saturation": 1.2
     },
     {
-        "id": "alexscaves:gingerbread_crumbs",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "alexsmobs:moose_ribs",
         "hunger": 3,
         "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:whale_meat_with_tentacles",
+        "hunger": 24,
+        "saturation": 40.8
+    },
+    {
+        "id": "cosmopolitan:apple_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "delighto_flight:sparktricity_soda",
@@ -1905,34 +2660,29 @@
         "saturation": 7.2
     },
     {
-        "id": "alexscaves:cake_layer",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "brewinandchewin:quiche_slice",
         "hunger": 4,
         "saturation": 6.4
     },
     {
-        "id": "alexscaves:rock_candy_light_gray",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:stobhach_gaelach_cup",
+        "hunger": 6,
+        "saturation": 9.6
     },
     {
-        "id": "alexscaves:trilocaris_tail",
-        "hunger": 2,
-        "saturation": 1.2
-    },
-    {
-        "id": "alexscaves:gummy_ring_red",
-        "hunger": 3,
-        "saturation": 0.9
+        "id": "rainbow:monster_meat",
+        "hunger": 5,
+        "saturation": 50.0
     },
     {
         "id": "netherexp:roasted_bone",
         "hunger": 9,
         "saturation": 14.4
+    },
+    {
+        "id": "alexsmobsdelight:banana_slug_slime_custard",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "dungeonsdelight:scaly_fiddlehead_risotto",
@@ -1955,14 +2705,19 @@
         "saturation": 0.1
     },
     {
+        "id": "cosmopolitan:spaghettieis",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
         "id": "collectorsreap:pink_dragon_fruit_cake_slice",
         "hunger": 2,
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:lanternfish",
-        "hunger": 1,
-        "saturation": 0.35
+        "id": "alexsmobsdelight:shrimp_fried_egg",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "atmospheric:currant",
@@ -1975,6 +2730,11 @@
         "saturation": 0.8
     },
     {
+        "id": "alexsmobsdelight:bison_tartare",
+        "hunger": 7,
+        "saturation": 7.0
+    },
+    {
         "id": "create_central_kitchen:aloe_cake_slice",
         "hunger": 1,
         "saturation": 0.2
@@ -1985,9 +2745,44 @@
         "saturation": 8.0
     },
     {
+        "id": "alexsmobsdelight:cooked_maggot",
+        "hunger": 2,
+        "saturation": 2.4
+    },
+    {
+        "id": "caverns_and_chasms:cavefish",
+        "hunger": 3,
+        "saturation": 0.6
+    },
+    {
         "id": "mynethersdelight:plate_of_cold_striderloaf",
         "hunger": 11,
         "saturation": 2.2
+    },
+    {
+        "id": "alexsmobsdelight:cheese_seal_burger",
+        "hunger": 12,
+        "saturation": 20.4
+    },
+    {
+        "id": "cosmopolitan:berry_cream_cheese_bagel",
+        "hunger": 7,
+        "saturation": 11.2
+    },
+    {
+        "id": "cosmopolitan:chard",
+        "hunger": 1,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:bastion_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:green_sauce",
+        "hunger": 4,
+        "saturation": 8.0
     },
     {
         "id": "collectorsreap:wild_berry_gummy",
@@ -1998,6 +2793,11 @@
         "id": "tide:deep_grouper",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "alexsmobsdelight:crocodile_rice",
+        "hunger": 6,
+        "saturation": 4.8
     },
     {
         "id": "mynethersdelight:crimson_stroganoff",
@@ -2015,14 +2815,24 @@
         "saturation": 6.0
     },
     {
-        "id": "alexscaves:licoroot_vine",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "farmersdelight:ratatouille",
         "hunger": 10,
         "saturation": 12.0
+    },
+    {
+        "id": "cosmopolitan:sunny_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:arbutus_berry_cookie",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:fiddlehead",
+        "hunger": 1,
+        "saturation": 0.8
     },
     {
         "id": "collectorsreap:lucuma_bread",
@@ -2033,6 +2843,11 @@
         "id": "mynethersdelight:roasted_sausage",
         "hunger": 4,
         "saturation": 2.8
+    },
+    {
+        "id": "cosmopolitan:recovery_lava_cake",
+        "hunger": 8,
+        "saturation": 4.8
     },
     {
         "id": "dungeonsdelight:soaked_skewer",
@@ -2048,11 +2863,6 @@
         "id": "collectorsreap:pomegranate_mutton",
         "hunger": 14,
         "saturation": 21.0
-    },
-    {
-        "id": "alexscaves:frosted_gingerbread_wall",
-        "hunger": 2,
-        "saturation": 0.4
     },
     {
         "id": "dungeonsdelight:chloropasta",
@@ -2075,11 +2885,6 @@
         "saturation": 0.8
     },
     {
-        "id": "alexscaves:sweetish_fish_yellow",
-        "hunger": 2,
-        "saturation": 0.8
-    },
-    {
         "id": "tide:cave_crawler",
         "hunger": 2,
         "saturation": 0.4
@@ -2090,9 +2895,29 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:bowl_of_wild_stew",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
         "id": "endergetic:cooked_eetle_egg",
         "hunger": 8,
         "saturation": 12.8
+    },
+    {
+        "id": "alexsmobsdelight:cooked_seal_meat",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:smoggy_aperol",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:magebloom_tart",
+        "hunger": 5,
+        "saturation": 5.0
     },
     {
         "id": "dungeonsdelight:glow_berry_gelatin",
@@ -2100,9 +2925,24 @@
         "saturation": 7.0
     },
     {
+        "id": "alexsmobsdelight:seal_sandwich",
+        "hunger": 12,
+        "saturation": 14.4
+    },
+    {
+        "id": "alexsmobsdelight:cooked_bison_meat_cubes",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
         "id": "functionality:glow_herb",
         "hunger": 1,
         "saturation": 0.6
+    },
+    {
+        "id": "cosmopolitan:geode_bread",
+        "hunger": 3,
+        "saturation": 4.2
     },
     {
         "id": "collectorsreap:yucca_gummy",
@@ -2115,9 +2955,29 @@
         "saturation": 6.0
     },
     {
+        "id": "cosmopolitan:berry_syrup_bottle",
+        "hunger": 5,
+        "saturation": 1.0
+    },
+    {
         "id": "create:builders_tea",
         "hunger": 1,
         "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:seasonal_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:source_berry_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:mint_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:deluxe_salad",
@@ -2145,14 +3005,24 @@
         "saturation": 3.6
     },
     {
+        "id": "cosmopolitan:zebra_cake",
+        "hunger": 6,
+        "saturation": 6.0
+    },
+    {
         "id": "tide:sun_emblem",
         "hunger": 2,
         "saturation": 0.4
     },
     {
-        "id": "cavedelight:flytrap_taco",
-        "hunger": 10,
-        "saturation": 12.0
+        "id": "tide:apple_bobber",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:raw_tarantula_hawk_abdomen",
+        "hunger": 3,
+        "saturation": 1.8
     },
     {
         "id": "tide:abyss_angler",
@@ -2160,14 +3030,44 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:bacon_egg_bagel",
+        "hunger": 9,
+        "saturation": 14.4
+    },
+    {
+        "id": "cosmopolitan:chorus_fruit_americano",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:raw_crocodile_claw",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "mynethersdelight:sausage_and_potatoes",
         "hunger": 11,
         "saturation": 12.1
     },
     {
+        "id": "cosmopolitan:blisterberry_sorbet",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "mynethersdelight:plate_of_striderloaf",
         "hunger": 5,
         "saturation": 12.5
+    },
+    {
+        "id": "alexsmobsdelight:raw_bison_meat_cubes",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "cosmopolitan:forlorn_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
     },
     {
         "id": "collectorsreap:big_rice_ball",
@@ -2180,19 +3080,24 @@
         "saturation": 7.8
     },
     {
+        "id": "cosmopolitan:blisterberry_tart",
+        "hunger": 5,
+        "saturation": 5.0
+    },
+    {
+        "id": "alexsmobsdelight:raw_anaconda",
+        "hunger": 10,
+        "saturation": 6.0
+    },
+    {
         "id": "dungeonsdelight:fried_ghast_calamari",
         "hunger": 4,
         "saturation": 4.8
     },
     {
-        "id": "bosses_delight:crystal_cup_cake",
-        "hunger": 8,
-        "saturation": 32.0
-    },
-    {
-        "id": "alexscaves:chocolate_ice_cream",
-        "hunger": 4,
-        "saturation": 1.6
+        "id": "alexsmobsdelight:banana_roll",
+        "hunger": 12,
+        "saturation": 14.4
     },
     {
         "id": "farmersdelight:barbecue_stick",
@@ -2205,14 +3110,19 @@
         "saturation": 14.0
     },
     {
-        "id": "artifacts:everlasting_beef",
-        "hunger": 3,
-        "saturation": 1.8
+        "id": "cosmopolitan:molasses_bottle",
+        "hunger": 4,
+        "saturation": 0.8
     },
     {
         "id": "minecraft:potato",
         "hunger": 1,
         "saturation": 0.6
+    },
+    {
+        "id": "alexsmobsdelight:rainbow_custard",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "collectorsreap:lime_cookie",
@@ -2230,9 +3140,29 @@
         "saturation": 9.1
     },
     {
+        "id": "alexsmobsdelight:stuffed_tarantula_hawk",
+        "hunger": 14,
+        "saturation": 14.0
+    },
+    {
+        "id": "cosmopolitan:wheatgrass",
+        "hunger": 2,
+        "saturation": 2.0
+    },
+    {
         "id": "quark:crab_leg",
         "hunger": 1,
         "saturation": 0.6
+    },
+    {
+        "id": "caverns_and_chasms:caviar",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:flying_fish_roll",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "collectorsreap:sunny_ice_cream",
@@ -2260,6 +3190,11 @@
         "saturation": 1.2
     },
     {
+        "id": "farmersdelight:onion_soup",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
         "id": "tide:small_cooked_fish",
         "hunger": 4,
         "saturation": 3.2
@@ -2280,14 +3215,9 @@
         "saturation": 7.2
     },
     {
-        "id": "bosses_delight:blazing_eye_shards",
+        "id": "cosmopolitan:pink_dragon_fruit_ice_cream_cone",
         "hunger": 4,
-        "saturation": 8.0
-    },
-    {
-        "id": "chromaticarsenal:cosmicola",
-        "hunger": 15,
-        "saturation": 21.0
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:platinum_bass_stew_cup",
@@ -2295,14 +3225,24 @@
         "saturation": 5.0
     },
     {
+        "id": "cosmopolitan:carrot_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "collectorsreap:chieftain_claw",
         "hunger": 5,
         "saturation": 5.0
     },
     {
-        "id": "cavedelight:cooked_dino_cut",
+        "id": "alexsmobsdelight:anaconda_congee",
         "hunger": 8,
-        "saturation": 4.8
+        "saturation": 12.8
+    },
+    {
+        "id": "cataclysm:amethyst_crab_meat",
+        "hunger": 6,
+        "saturation": 14.4
     },
     {
         "id": "tide:endergazer",
@@ -2315,9 +3255,24 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:licoroot",
-        "hunger": 3,
-        "saturation": 0.6
+        "id": "caverns_and_chasms:bejeweled_apple",
+        "hunger": 4,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:berry_syrup_shaved_ice_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:droopfruit_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:azure_berry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "farmersdelight:dog_food",
@@ -2330,14 +3285,14 @@
         "saturation": 0.6
     },
     {
-        "id": "alexscaves:green_soylent",
-        "hunger": 3,
-        "saturation": 2.1
+        "id": "alexsmobsdelight:cooked_octopus_tentacle",
+        "hunger": 4,
+        "saturation": 4.8
     },
     {
-        "id": "fruitfulfun:citron",
-        "hunger": 3,
-        "saturation": 1.8
+        "id": "alexsmobsdelight:devils_hole_pupfish_stew",
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "collectorsreap:platinum_bass_slice",
@@ -2355,6 +3310,11 @@
         "saturation": 20.8
     },
     {
+        "id": "alexsmobsdelight:cooked_bear_meat",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
         "id": "create_central_kitchen:chocolate_cake_slice",
         "hunger": 3,
         "saturation": 1.8
@@ -2370,9 +3330,14 @@
         "saturation": 6.0
     },
     {
-        "id": "bosses_delight:broken_obsidian_heart",
-        "hunger": 4,
-        "saturation": 8.0
+        "id": "cosmopolitan:glow_berry_cubecake",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
+        "id": "alexsmobsdelight:mosquito_repellent_stew_cup",
+        "hunger": 2,
+        "saturation": 3.2
     },
     {
         "id": "create_central_kitchen:incomplete_pumpkin_pie",
@@ -2390,19 +3355,9 @@
         "saturation": 12.6
     },
     {
-        "id": "bosses_delight:bowl_of_obsidian_glazed_dragon_head",
-        "hunger": 16,
-        "saturation": 35.2
-    },
-    {
         "id": "alexsmobs:banana",
         "hunger": 4,
         "saturation": 2.4
-    },
-    {
-        "id": "alexscaves:sweet_puff",
-        "hunger": 1,
-        "saturation": 0.2
     },
     {
         "id": "mynethersdelight:bleeding_tartar",
@@ -2418,11 +3373,6 @@
         "id": "atmospheric:orange",
         "hunger": 4,
         "saturation": 2.4
-    },
-    {
-        "id": "alexscaves:darkened_apple",
-        "hunger": 4,
-        "saturation": 2.8
     },
     {
         "id": "tide:glowfish",
@@ -2450,9 +3400,14 @@
         "saturation": 16.2
     },
     {
-        "id": "cavedelight:slice_of_pinenut_pie",
-        "hunger": 3,
-        "saturation": 1.2
+        "id": "cosmopolitan:underground_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:broccoli_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "tide:judgment_fish",
@@ -2475,9 +3430,14 @@
         "saturation": 1.6
     },
     {
-        "id": "alexscaves:rock_candy_black",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "alexsmobsdelight:raw_catfish_slice",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:midnight_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "create_central_kitchen:incomplete_lime_pie",
@@ -2495,6 +3455,11 @@
         "saturation": 0.2
     },
     {
+        "id": "alexsmobsdelight:canned_bear_meat",
+        "hunger": 20,
+        "saturation": 24.0
+    },
+    {
         "id": "mynethersdelight:blue_tenderloin_steak",
         "hunger": 9,
         "saturation": 14.4
@@ -2503,11 +3468,6 @@
         "id": "dungeonsdelight:gelled_salad",
         "hunger": 8,
         "saturation": 9.6
-    },
-    {
-        "id": "alexscaves:stinky_fish",
-        "hunger": 1,
-        "saturation": 0.2
     },
     {
         "id": "mynethersdelight:strider_with_grilled_fungus",
@@ -2525,24 +3485,19 @@
         "saturation": 12.8
     },
     {
-        "id": "alexscaves:purple_soda_bottle",
+        "id": "alexsmobsdelight:cooked_tarantula_hawk_larva",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "cosmopolitan:berry_syrup_gummy",
         "hunger": 2,
-        "saturation": 0.4
+        "saturation": 0.0
     },
     {
         "id": "brewinandchewin:steel_toe_stout",
         "hunger": 0,
         "saturation": 0.0
-    },
-    {
-        "id": "alexscaves:lollipop_bunch",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
-        "id": "alexscaves:pine_nuts",
-        "hunger": 2,
-        "saturation": 0.7
     },
     {
         "id": "functionality:cooked_terrapin",
@@ -2585,9 +3540,19 @@
         "saturation": 0.8
     },
     {
-        "id": "cavedelight:volcanic_chop",
-        "hunger": 16,
-        "saturation": 28.8
+        "id": "cosmopolitan:magnetic_cave_cone",
+        "hunger": 3,
+        "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:classic_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "dungeonsdelight:blazing_blood_sausage",
@@ -2610,6 +3575,11 @@
         "saturation": 3.0
     },
     {
+        "id": "cosmopolitan:bush_bread",
+        "hunger": 4,
+        "saturation": 4.8
+    },
+    {
         "id": "collectorsreap:uni_roll",
         "hunger": 7,
         "saturation": 8.4
@@ -2623,6 +3593,11 @@
         "id": "tide:catfish",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:cream",
+        "hunger": 1,
+        "saturation": 0.0
     },
     {
         "id": "delighto_flight:lotus_seed_cake",
@@ -2640,6 +3615,11 @@
         "saturation": 2.0
     },
     {
+        "id": "cosmopolitan:occult_apple",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "brewinandchewin:flaxen_cheese_wedge",
         "hunger": 4,
         "saturation": 8.0
@@ -2650,9 +3630,19 @@
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:spelunkie",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:blisterberry_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:ghostcream",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_stuffed_crocodile",
+        "hunger": 12,
+        "saturation": 20.4
     },
     {
         "id": "farmersdelight:salmon_roll",
@@ -2663,6 +3653,11 @@
         "id": "collectorsreap:crab_noodles",
         "hunger": 13,
         "saturation": 19.5
+    },
+    {
+        "id": "alexsmobsdelight:raw_tarantula_hawk_larva",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:cannoli",
@@ -2700,9 +3695,19 @@
         "saturation": 9.6
     },
     {
+        "id": "cosmopolitan:meadow_bread",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
         "id": "farmersdelight:steak_and_potatoes",
         "hunger": 12,
         "saturation": 19.2
+    },
+    {
+        "id": "alexsmobsdelight:lobster_roll",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "collectorsreap:adzuki_gummy",
@@ -2720,11 +3725,6 @@
         "saturation": 13.2
     },
     {
-        "id": "alexscaves:sweetish_fish_pink",
-        "hunger": 2,
-        "saturation": 0.8
-    },
-    {
         "id": "minecraft:suspicious_stew",
         "hunger": 6,
         "saturation": 7.2
@@ -2740,14 +3740,9 @@
         "saturation": 19.2
     },
     {
-        "id": "alexscaves:sugar_glass",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
-        "id": "alexscaves:block_of_frosted_chocolate",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:frost_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "tide:mahi_mahi",
@@ -2780,9 +3775,9 @@
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:sweetberry_ice_cream",
-        "hunger": 4,
-        "saturation": 1.6
+        "id": "cosmopolitan:funguis_bottle",
+        "hunger": 3,
+        "saturation": 0.6
     },
     {
         "id": "dungeonsdelight:hydra_fricassee",
@@ -2795,14 +3790,19 @@
         "saturation": 4.8
     },
     {
+        "id": "cosmopolitan:twilight_chartreuse",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "endergetic:bolloom_fruit",
         "hunger": 2,
         "saturation": 1.2
     },
     {
-        "id": "alexscaves:block_of_chocolate",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:stobhach_gaelach",
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "collectorsreap:baked_portobello_cap",
@@ -2820,19 +3820,29 @@
         "saturation": 7.2
     },
     {
+        "id": "cosmopolitan:water_pie_slice",
+        "hunger": 2,
+        "saturation": 0.8
+    },
+    {
         "id": "collectorsreap:green_tea_gummy",
         "hunger": 2,
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:frosted_gingerbread_brick_slab",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:rainbow_ice_cream_sandwich_smc",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "delighto_flight:chicken_soup_with_lotus_seeds",
         "hunger": 10,
         "saturation": 16.0
+    },
+    {
+        "id": "alexsmobsdelight:raw_devils_hole_pupfish_slice",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "dungeonsdelight:sculk_apple",
@@ -2845,24 +3855,44 @@
         "saturation": 0.8
     },
     {
+        "id": "cosmopolitan:trifle",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
         "id": "dungeonsdelight:malicious_sandwich",
         "hunger": 9,
         "saturation": 16.2
     },
     {
-        "id": "alexscaves:gingerbread_stairs",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:condensed_milk_bucket",
+        "hunger": 3,
+        "saturation": 0.0
     },
     {
-        "id": "alexscaves:gingerbread_wall",
+        "id": "cosmopolitan:enchanted_fruit_gummy",
         "hunger": 2,
-        "saturation": 0.4
+        "saturation": 0.0
     },
     {
         "id": "farmersdelight:mixed_salad",
         "hunger": 6,
         "saturation": 7.2
+    },
+    {
+        "id": "alexsmobsdelight:ants_climbing_a_tree",
+        "hunger": 12,
+        "saturation": 20.4
+    },
+    {
+        "id": "cosmopolitan:orange_americano",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:raw_seagull",
+        "hunger": 1,
+        "saturation": 0.6
     },
     {
         "id": "dungeonsdelight:bug_chops",
@@ -2880,6 +3910,26 @@
         "saturation": 19.8
     },
     {
+        "id": "alexsmobsdelight:raw_tusklin_meat_piece",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "cosmopolitan:beetroot_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:starcloud_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:raw_moose_rib_piece",
+        "hunger": 2,
+        "saturation": 2.4
+    },
+    {
         "id": "dungeonsdelight:wardenzola",
         "hunger": 4,
         "saturation": 4.8
@@ -2888,11 +3938,6 @@
         "id": "collectorsreap:lucuma",
         "hunger": 2,
         "saturation": 0.4
-    },
-    {
-        "id": "cavedelight:cooked_curious_insect",
-        "hunger": 3,
-        "saturation": 3.6
     },
     {
         "id": "tide:anchovy",
@@ -2905,24 +3950,9 @@
         "saturation": 10.0
     },
     {
-        "id": "alexscaves:rock_candy_cyan",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "collectorsreap:vanilla_gummy",
         "hunger": 2,
         "saturation": 0.0
-    },
-    {
-        "id": "alexscaves:cooked_radgill",
-        "hunger": 5,
-        "saturation": 3.0
-    },
-    {
-        "id": "alexscaves:block_of_vanilla_frosting",
-        "hunger": 1,
-        "saturation": 0.2
     },
     {
         "id": "tide:bluegill",
@@ -2940,24 +3970,19 @@
         "saturation": 12.0
     },
     {
-        "id": "alexscaves:cooked_tripodfish",
-        "hunger": 5,
-        "saturation": 3.4
+        "id": "cosmopolitan:astera_gummy",
+        "hunger": 2,
+        "saturation": 0.0
     },
     {
-        "id": "bosses_delight:crystal_fruit_slice",
-        "hunger": 2,
-        "saturation": 8.0
+        "id": "alexsmobsdelight:raw_centipede_body",
+        "hunger": 3,
+        "saturation": 1.8
     },
     {
         "id": "collectorsreap:platinum_bass_head",
         "hunger": 2,
         "saturation": 0.4
-    },
-    {
-        "id": "tide:enchanted_golden_apple_fishing_bobber",
-        "hunger": 4,
-        "saturation": 9.6
     },
     {
         "id": "collectorsreap:pink_dragon_fruit",
@@ -2970,9 +3995,14 @@
         "saturation": 5.0
     },
     {
-        "id": "bosses_delight:blazing_eye_pie_slice",
-        "hunger": 6,
-        "saturation": 12.0
+        "id": "cosmopolitan:moss_pie_slice",
+        "hunger": 1,
+        "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:kabloom_gummy",
+        "hunger": 2,
+        "saturation": 0.0
     },
     {
         "id": "dungeonsdelight:wardenzola_crumbles",
@@ -2980,9 +4010,9 @@
         "saturation": 1.2
     },
     {
-        "id": "alexscaves:sprinkles",
-        "hunger": 1,
-        "saturation": 0.2
+        "id": "cosmopolitan:tuber_puree_cone_with_confiture",
+        "hunger": 4,
+        "saturation": 4.0
     },
     {
         "id": "collectorsreap:mint_cannoli",
@@ -2990,9 +4020,14 @@
         "saturation": 20.0
     },
     {
-        "id": "bosses_delight:obsidian_onion",
+        "id": "cosmopolitan:tricolored_ice_cream_sandwich",
         "hunger": 6,
-        "saturation": 9.6
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:iced_americano",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "windswept:lavender_tea",
@@ -3000,14 +4035,29 @@
         "saturation": 0.6
     },
     {
+        "id": "cosmopolitan:vanilla_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:jelly_roll_slice",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
         "id": "create_central_kitchen:incomplete_mulberry_pie",
         "hunger": 2,
         "saturation": 0.8
     },
     {
-        "id": "fruitfulfun:lemon_roast_chicken",
-        "hunger": 16,
-        "saturation": 25.6
+        "id": "cosmopolitan:strawberry_vanilla_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
+        "id": "alexsmobsdelight:maggot_salad",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "collectorsreap:prawn_po_boy",
@@ -3015,14 +4065,24 @@
         "saturation": 17.0
     },
     {
+        "id": "alexsmobsdelight:seagull_soup",
+        "hunger": 7,
+        "saturation": 8.4
+    },
+    {
         "id": "collectorsreap:pomegranate_seeds",
         "hunger": 2,
         "saturation": 2.0
     },
     {
-        "id": "bosses_delight:bowl_of_crystal_fruit_cube",
-        "hunger": 12,
-        "saturation": 28.8
+        "id": "cosmopolitan:glacier_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:cooked_centipede_body",
+        "hunger": 7,
+        "saturation": 8.4
     },
     {
         "id": "collectorsreap:lime_popsicle",
@@ -3030,9 +4090,19 @@
         "saturation": 1.2
     },
     {
+        "id": "cosmopolitan:ectocaramel",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
         "id": "dungeonsdelight:sculk_catblueberry",
         "hunger": 5,
         "saturation": 5.0
+    },
+    {
+        "id": "cosmopolitan:gulime",
+        "hunger": 4,
+        "saturation": 0.8
     },
     {
         "id": "brewinandchewin:apple_jelly",
@@ -3040,14 +4110,29 @@
         "saturation": 12.0
     },
     {
-        "id": "cavedelight:honey_glazed_dino_nugget",
-        "hunger": 3,
-        "saturation": 7.8
+        "id": "alexsmobsdelight:cooked_crocodile_tail",
+        "hunger": 12,
+        "saturation": 14.4
+    },
+    {
+        "id": "cosmopolitan:spinalberry_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:glacier_essence",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "environmental:koi",
         "hunger": 1,
         "saturation": 0.2
+    },
+    {
+        "id": "cosmopolitan:greenday_juice",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "farmersdelight:grilled_salmon",
@@ -3060,11 +4145,6 @@
         "saturation": 12.0
     },
     {
-        "id": "alexscaves:block_of_polished_chocolate",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "tide:voidseeker",
         "hunger": 6,
         "saturation": 8.4
@@ -3075,9 +4155,29 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
+        "id": "cosmopolitan:flavored_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:glow_berry_milkshake",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "dungeonsdelight:cooked_sniffer_shank",
         "hunger": 8,
         "saturation": 14.4
+    },
+    {
+        "id": "cosmopolitan:bagel",
+        "hunger": 4,
+        "saturation": 4.8
     },
     {
         "id": "collectorsreap:tiger_prawn",
@@ -3100,14 +4200,24 @@
         "saturation": 6.0
     },
     {
-        "id": "alexscaves:frostmint",
-        "hunger": 3,
-        "saturation": 0.6
+        "id": "cosmopolitan:beetroot_mixed_rice",
+        "hunger": 14,
+        "saturation": 28.0
     },
     {
         "id": "alexsmobs:lobster_tail",
         "hunger": 2,
         "saturation": 1.6
+    },
+    {
+        "id": "alexsmobsdelight:cooked_whale_meat",
+        "hunger": 16,
+        "saturation": 19.2
+    },
+    {
+        "id": "tide:enchanted_golden_apple_bobber",
+        "hunger": 4,
+        "saturation": 9.6
     },
     {
         "id": "farmersdelight:sweet_berry_cheesecake_slice",
@@ -3120,12 +4230,12 @@
         "saturation": 2.8
     },
     {
-        "id": "tide:snook",
+        "id": "cosmopolitan:arbutus_berry_gummy",
         "hunger": 2,
-        "saturation": 0.4
+        "saturation": 0.0
     },
     {
-        "id": "alexscaves:gingerbread_brick_slab",
+        "id": "tide:snook",
         "hunger": 2,
         "saturation": 0.4
     },
@@ -3140,9 +4250,29 @@
         "saturation": 11.2
     },
     {
+        "id": "alexsmobsdelight:banana_slug_slime_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
+        "id": "alexsmobsdelight:slice_of_smoked_tusklin_sausage",
+        "hunger": 6,
+        "saturation": 10.2
+    },
+    {
         "id": "collectorsreap:chocolate_gummy",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:gravy_kangaroo_meat",
+        "hunger": 12,
+        "saturation": 16.8
+    },
+    {
+        "id": "cosmopolitan:chard_rolls",
+        "hunger": 5,
+        "saturation": 8.0
     },
     {
         "id": "environmental:cherries",
@@ -3150,24 +4280,14 @@
         "saturation": 0.2
     },
     {
-        "id": "alexscaves:block_of_chiseled_chocolate",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
-        "id": "fruitfulfun:lime",
-        "hunger": 3,
-        "saturation": 1.8
-    },
-    {
-        "id": "alexscaves:block_of_frosting",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "farmersdelight:fried_egg",
         "hunger": 4,
         "saturation": 3.2
+    },
+    {
+        "id": "alexsmobsdelight:crocodile_stewed_with_catfish",
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "mynethersdelight:hot_cream_cone",
@@ -3178,6 +4298,11 @@
         "id": "collectorsreap:portobello_risotto",
         "hunger": 12,
         "saturation": 20.4
+    },
+    {
+        "id": "alexsmobsdelight:whale_meat",
+        "hunger": 10,
+        "saturation": 6.0
     },
     {
         "id": "farmersdelight:kelp_roll_slice",
@@ -3200,6 +4325,11 @@
         "saturation": 18.0
     },
     {
+        "id": "alexsmobsdelight:honey_glazed_moose_ribs",
+        "hunger": 14,
+        "saturation": 23.8
+    },
+    {
         "id": "collectorsreap:pomegranate_slice",
         "hunger": 4,
         "saturation": 4.0
@@ -3215,9 +4345,9 @@
         "saturation": 21.6
     },
     {
-        "id": "alexscaves:gingerbread_bricks",
-        "hunger": 4,
-        "saturation": 0.8
+        "id": "alexsmobsdelight:fried_tusklin_meat",
+        "hunger": 12,
+        "saturation": 20.4
     },
     {
         "id": "farmersdelight:cod_slice",
@@ -3225,9 +4355,24 @@
         "saturation": 0.2
     },
     {
-        "id": "alexscaves:wafer_cookie_wall",
-        "hunger": 1,
-        "saturation": 0.1
+        "id": "cosmopolitan:matcha_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:blisterberry_droopfruit_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
+        "id": "alexsmobsdelight:cheese_seal_stick",
+        "hunger": 10,
+        "saturation": 12.0
+    },
+    {
+        "id": "cosmopolitan:aurora_kohakutou",
+        "hunger": 3,
+        "saturation": 3.6
     },
     {
         "id": "tide:snatcher_squid",
@@ -3240,6 +4385,11 @@
         "saturation": 3.6
     },
     {
+        "id": "cosmopolitan:abc_soup",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
         "id": "functionality:frog_leg",
         "hunger": 1,
         "saturation": 0.6
@@ -3248,6 +4398,11 @@
         "id": "mynethersdelight:rock_soup",
         "hunger": 7,
         "saturation": 10.5
+    },
+    {
+        "id": "alexsmobsdelight:braised_kangaroo_meatballs",
+        "hunger": 10,
+        "saturation": 12.0
     },
     {
         "id": "dungeonsdelight:sinigang",
@@ -3260,6 +4415,11 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:snow_cone",
+        "hunger": 3,
+        "saturation": 3.6
+    },
+    {
         "id": "atmospheric:currant_muffin",
         "hunger": 4,
         "saturation": 2.4
@@ -3270,19 +4430,24 @@
         "saturation": 14.4
     },
     {
+        "id": "alexsmobsdelight:raw_bear_meat",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "collectorsreap:prawn_roll",
         "hunger": 7,
         "saturation": 8.4
     },
     {
-        "id": "opalus:stuffed_sorrowsquash",
-        "hunger": 14,
-        "saturation": 21.0
-    },
-    {
         "id": "dungeonsdelight:fried_bug_chops",
         "hunger": 8,
         "saturation": 12.8
+    },
+    {
+        "id": "cosmopolitan:passion_fruit_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "tide:brook_trout",
@@ -3295,14 +4460,14 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:gumball_pile",
-        "hunger": 3,
-        "saturation": 1.2
-    },
-    {
         "id": "netherexp:cerebrage",
         "hunger": 5,
         "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:cachaca",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "collectorsreap:stuffed_portobello_cap",
@@ -3310,9 +4475,9 @@
         "saturation": 16.0
     },
     {
-        "id": "alexscaves:cooked_trilocaris_tail",
-        "hunger": 5,
-        "saturation": 5.0
+        "id": "cosmopolitan:astera_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:lime_ice_cream",
@@ -3320,19 +4485,14 @@
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:guano",
-        "hunger": -1,
-        "saturation": -4.0
-    },
-    {
-        "id": "alexscaves:rock_candy_purple",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "create_central_kitchen:incomplete_apple_pie",
         "hunger": 2,
         "saturation": 0.8
+    },
+    {
+        "id": "cosmopolitan:shielding_butter_bun",
+        "hunger": 5,
+        "saturation": 6.0
     },
     {
         "id": "alexsmobs:rainbow_jelly",
@@ -3340,9 +4500,29 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:green_cream_stew_cup",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
+        "id": "cosmopolitan:shoofly_pie_slice",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
+        "id": "cosmopolitan:penuche",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
         "id": "dungeonsdelight:soft_serve_sniffer_egg",
         "hunger": 4,
         "saturation": 3.2
+    },
+    {
+        "id": "alexsmobsdelight:leafcutter_ant",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "dungeonsdelight:smoked_spider_meat",
@@ -3360,6 +4540,11 @@
         "saturation": 15.3
     },
     {
+        "id": "cosmopolitan:berry_cheesecake_bar",
+        "hunger": 6,
+        "saturation": 2.4
+    },
+    {
         "id": "atmospheric:roasted_yucca_fruit",
         "hunger": 3,
         "saturation": 3.6
@@ -3370,19 +4555,39 @@
         "saturation": 5.4
     },
     {
+        "id": "cosmopolitan:soulblight_funguis_bottle",
+        "hunger": 3,
+        "saturation": 0.6
+    },
+    {
         "id": "collectorsreap:beetroot_gummy",
         "hunger": 2,
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:candy_cane",
+        "id": "cosmopolitan:moss_pie",
+        "hunger": 4,
+        "saturation": 1.6
+    },
+    {
+        "id": "alexsmobsdelight:sopa_de_macaco_cup",
         "hunger": 2,
-        "saturation": 0.4
+        "saturation": 3.2
     },
     {
         "id": "tide:bedrock_bug",
         "hunger": 1,
         "saturation": 0.1
+    },
+    {
+        "id": "cosmopolitan:chocolate_roll",
+        "hunger": 15,
+        "saturation": 24.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_tusklin_meat",
+        "hunger": 12,
+        "saturation": 14.4
     },
     {
         "id": "functionality:bear_venison",
@@ -3395,19 +4600,24 @@
         "saturation": 0.4
     },
     {
-        "id": "cavedelight:trilocaris_roll",
-        "hunger": 10,
-        "saturation": 10.0
-    },
-    {
         "id": "atmospheric:passion_fruit_sorbet",
         "hunger": 15,
         "saturation": 18.0
     },
     {
+        "id": "alexsmobsdelight:lobster_head_stew",
+        "hunger": 8,
+        "saturation": 12.8
+    },
+    {
         "id": "collectorsreap:portobello_rice_soup_cup",
         "hunger": 7,
         "saturation": 5.6
+    },
+    {
+        "id": "alexsmobsdelight:rainbow_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
     },
     {
         "id": "collectorsreap:black_tea_gummy",
@@ -3420,6 +4630,11 @@
         "saturation": 1.2
     },
     {
+        "id": "cosmopolitan:warped_velvet_cubecake",
+        "hunger": 3,
+        "saturation": 3.0
+    },
+    {
         "id": "collectorsreap:mint_limeade",
         "hunger": 6,
         "saturation": 4.2
@@ -3428,6 +4643,16 @@
         "id": "rainbow:tengzou_noodles",
         "hunger": 20,
         "saturation": 40.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_bison_meat",
+        "hunger": 12,
+        "saturation": 14.4
+    },
+    {
+        "id": "alexsmobsdelight:kiviak",
+        "hunger": 3,
+        "saturation": 3.6
     },
     {
         "id": "tide:blossom_bass",
@@ -3445,9 +4670,19 @@
         "saturation": 21.0
     },
     {
+        "id": "cosmopolitan:kabloom_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
         "id": "farmersdelight:dumplings",
         "hunger": 8,
         "saturation": 12.8
+    },
+    {
+        "id": "alexsmobsdelight:eternal_cooked_seagull",
+        "hunger": 3,
+        "saturation": 3.6
     },
     {
         "id": "windswept:ginger_root",
@@ -3455,19 +4690,14 @@
         "saturation": 0.2
     },
     {
-        "id": "fruitfulfun:chorus_fruit_pie",
-        "hunger": 8,
-        "saturation": 9.6
-    },
-    {
-        "id": "cavedelight:curious_insect",
-        "hunger": 3,
+        "id": "cosmopolitan:blisterberry_gummy",
+        "hunger": 2,
         "saturation": 0.0
     },
     {
-        "id": "legendary_monsters:infected_chorus_fruit",
-        "hunger": 5,
-        "saturation": 2.0
+        "id": "alexsmobsdelight:raw_turtle_meat",
+        "hunger": 10,
+        "saturation": 6.0
     },
     {
         "id": "farmersdelight:vegetable_soup",
@@ -3480,14 +4710,34 @@
         "saturation": 21.0
     },
     {
+        "id": "alexsmobsdelight:kangaroo_meat_stew",
+        "hunger": 8,
+        "saturation": 12.8
+    },
+    {
+        "id": "alexsmobsdelight:cooked_turtle_meat",
+        "hunger": 16,
+        "saturation": 19.2
+    },
+    {
         "id": "collectorsreap:chocolate_arils",
         "hunger": 4,
         "saturation": 2.0
     },
     {
-        "id": "alexscaves:sweetish_fish_green",
-        "hunger": 2,
-        "saturation": 0.8
+        "id": "alexsmobsdelight:tentacle_medley",
+        "hunger": 10,
+        "saturation": 12.0
+    },
+    {
+        "id": "alexsmobsdelight:dried_shredded_squid",
+        "hunger": 4,
+        "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:organic_muffin",
+        "hunger": 5,
+        "saturation": 8.0
     },
     {
         "id": "farmersdelight:stuffed_pumpkin",
@@ -3525,6 +4775,11 @@
         "saturation": 3.6
     },
     {
+        "id": "cosmopolitan:ectocaramel_pomegranate_cream_bun",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
         "id": "alexsmobs:kangaroo_burger",
         "hunger": 12,
         "saturation": 24.0
@@ -3535,9 +4790,14 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:travelers_panini",
+        "hunger": 10,
+        "saturation": 20.0
+    },
+    {
         "id": "tide:alpha_fish",
-        "hunger": 6,
-        "saturation": 3.6
+        "hunger": 2,
+        "saturation": 0.4
     },
     {
         "id": "domesticationinnovation:sinister_carrot",
@@ -3570,11 +4830,6 @@
         "saturation": 1.8
     },
     {
-        "id": "alexscaves:rock_candy_brown",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "collectorsreap:prawn_spread",
         "hunger": 9,
         "saturation": 15.3
@@ -3590,14 +4845,19 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:gingerbread_brick_stairs",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:wildberry_punch",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
-        "id": "alexscaves:slam",
-        "hunger": 4,
-        "saturation": 4.0
+        "id": "cosmopolitan:summer_cordial",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:exotic_mirage",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "mynethersdelight:strider_slice",
@@ -3610,9 +4870,14 @@
         "saturation": 17.6
     },
     {
-        "id": "alexscaves:sundae",
-        "hunger": 12,
-        "saturation": 8.4
+        "id": "cosmopolitan:mendosteen_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:glazed_fish_roll",
+        "hunger": 9,
+        "saturation": 10.8
     },
     {
         "id": "collectorsreap:limeade",
@@ -3630,9 +4895,19 @@
         "saturation": 6.0
     },
     {
+        "id": "cosmopolitan:strawberry_gulime",
+        "hunger": 4,
+        "saturation": 0.8
+    },
+    {
         "id": "farmersdelight:honey_cookie",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:aloe_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "minecraft:mutton",
@@ -3645,6 +4920,11 @@
         "saturation": 0.1
     },
     {
+        "id": "alexsmobsdelight:fried_tentacles_stick",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
         "id": "collectorsreap:strawberry_cannoli",
         "hunger": 8,
         "saturation": 20.0
@@ -3655,9 +4935,19 @@
         "saturation": 1.8
     },
     {
-        "id": "bosses_delight:blossom_salad",
-        "hunger": 6,
-        "saturation": 24.0
+        "id": "cosmopolitan:arbutus_berries",
+        "hunger": 4,
+        "saturation": 1.6
+    },
+    {
+        "id": "cosmopolitan:black_cow",
+        "hunger": 3,
+        "saturation": 1.8
+    },
+    {
+        "id": "cosmopolitan:cha_jau",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "farmersdelight:glow_berry_custard",
@@ -3675,9 +4965,19 @@
         "saturation": 6.0
     },
     {
+        "id": "alexsmobsdelight:cooked_flying_fish",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
         "id": "functionality:chevon",
         "hunger": 3,
         "saturation": 1.8
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_stuffed_crocodile_tail",
+        "hunger": 18,
+        "saturation": 30.6
     },
     {
         "id": "minecraft:cookie",
@@ -3685,9 +4985,24 @@
         "saturation": 0.4
     },
     {
+        "id": "alexsmobsdelight:raw_tusklin_sausage",
+        "hunger": 6,
+        "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:chorus_gulime",
+        "hunger": 4,
+        "saturation": 0.8
+    },
+    {
         "id": "collectorsreap:asparagus_aspic",
         "hunger": 2,
         "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:crispy_tarantula_hawk_wing",
+        "hunger": 12,
+        "saturation": 14.4
     },
     {
         "id": "minecraft:rabbit_stew",
@@ -3700,9 +5015,19 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:sugarcane_pieces",
+        "hunger": 2,
+        "saturation": 1.6
+    },
+    {
         "id": "dungeonsdelight:tower_boreito",
         "hunger": 12,
         "saturation": 28.8
+    },
+    {
+        "id": "cosmopolitan:steeleaf_nectar",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "collectorsreap:mediterranean_salmon",
@@ -3745,11 +5070,6 @@
         "saturation": 21.0
     },
     {
-        "id": "alexscaves:frosted_gingerbread_slab",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "tide:chorus_cod",
         "hunger": 2,
         "saturation": 0.4
@@ -3765,6 +5085,16 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:surflygfisk_open",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "alexsmobsdelight:dried_kelp_rolled_tarantula_hawk_larva",
+        "hunger": 10,
+        "saturation": 12.0
+    },
+    {
         "id": "mynethersdelight:spicy_skewer",
         "hunger": 7,
         "saturation": 12.6
@@ -3775,9 +5105,19 @@
         "saturation": 9.6
     },
     {
+        "id": "cosmopolitan:delightful_ice_cream",
+        "hunger": 12,
+        "saturation": 7.2
+    },
+    {
         "id": "dungeonsdelight:monster_burger",
         "hunger": 20,
         "saturation": 40.0
+    },
+    {
+        "id": "cosmopolitan:green_cream_stew",
+        "hunger": 12,
+        "saturation": 19.2
     },
     {
         "id": "farmersdelight:cabbage_leaf",
@@ -3785,9 +5125,9 @@
         "saturation": 0.8
     },
     {
-        "id": "alexscaves:hot_chocolate_bottle",
-        "hunger": 4,
-        "saturation": 2.0
+        "id": "alexsmobsdelight:serve_of_fried_tarantula_hawk",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "mynethersdelight:spicy_noodle_soup",
@@ -3805,11 +5145,6 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:rock_candy_blue",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "farmersdelight:bone_broth",
         "hunger": 8,
         "saturation": 11.2
@@ -3820,9 +5155,14 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:block_of_chocolate_frosting",
-        "hunger": 1,
-        "saturation": 0.2
+        "id": "alexsmobsdelight:turtle_jelly",
+        "hunger": 6,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:water_pie",
+        "hunger": 8,
+        "saturation": 3.2
     },
     {
         "id": "brewinandchewin:cocoa_fudge",
@@ -3835,9 +5175,19 @@
         "saturation": 3.6
     },
     {
-        "id": "cavedelight:trilocaris_noodles",
-        "hunger": 16,
-        "saturation": 28.8
+        "id": "cosmopolitan:lush_stew",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:lush_confiture_bottle",
+        "hunger": 5,
+        "saturation": 1.0
+    },
+    {
+        "id": "cosmopolitan:eton_mess",
+        "hunger": 8,
+        "saturation": 8.0
     },
     {
         "id": "atmospheric:candied_orange_slices",
@@ -3845,9 +5195,9 @@
         "saturation": 3.6
     },
     {
-        "id": "alexscaves:rock_candy_light_blue",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "alexsmobsdelight:gazing_into_the_abyss",
+        "hunger": 13,
+        "saturation": 15.6
     },
     {
         "id": "tide:guppy",
@@ -3855,14 +5205,19 @@
         "saturation": 0.1
     },
     {
-        "id": "alexscaves:rock_candy_lime",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "collectorsreap:pomegranate_bean_salad",
         "hunger": 8,
         "saturation": 5.6
+    },
+    {
+        "id": "alexsmobsdelight:moose_stew",
+        "hunger": 8,
+        "saturation": 12.8
+    },
+    {
+        "id": "alexsmobsdelight:raw_crocodile_meat",
+        "hunger": 2,
+        "saturation": 1.2
     },
     {
         "id": "farmersdelight:cabbage",
@@ -3880,9 +5235,9 @@
         "saturation": 12.6
     },
     {
-        "id": "cavedelight:stuffed_trilo_tails",
-        "hunger": 10,
-        "saturation": 16.0
+        "id": "cosmopolitan:blisterberry_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "create_central_kitchen:yucca_cake_slice",
@@ -3890,14 +5245,14 @@
         "saturation": 0.2
     },
     {
-        "id": "alexscaves:caramel_apple",
-        "hunger": 6,
-        "saturation": 2.4
-    },
-    {
         "id": "brewinandchewin:dread_nog",
         "hunger": 0,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:enchanted_fruit_milkshake",
+        "hunger": 2,
+        "saturation": 6.0
     },
     {
         "id": "farmersdelight:chicken_sandwich",
@@ -3910,9 +5265,24 @@
         "saturation": 6.0
     },
     {
+        "id": "cosmopolitan:broccoli_americano",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:plate_of_mushrooms_braised_with_centipede",
+        "hunger": 16,
+        "saturation": 27.2
+    },
+    {
         "id": "tide:ocean_perch",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "tide:golden_apple_bobber",
+        "hunger": 4,
+        "saturation": 9.6
     },
     {
         "id": "tide:neptune_koi",
@@ -3923,6 +5293,16 @@
         "id": "farmersdelight:fish_stew",
         "hunger": 12,
         "saturation": 19.2
+    },
+    {
+        "id": "cosmopolitan:broccoli_gummy",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:berry_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
     },
     {
         "id": "farmersdelight:cooked_salmon_slice",
@@ -3940,6 +5320,11 @@
         "saturation": 12.8
     },
     {
+        "id": "cosmopolitan:glimmering_gulime",
+        "hunger": 4,
+        "saturation": 0.8
+    },
+    {
         "id": "minecraft:cooked_porkchop",
         "hunger": 8,
         "saturation": 12.8
@@ -3955,9 +5340,14 @@
         "saturation": 6.8
     },
     {
-        "id": "alexscaves:gingerbread_brick_wall",
-        "hunger": 2,
-        "saturation": 0.4
+        "id": "cosmopolitan:delightful_ice_cream_sandwich",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:pickled_maggots",
+        "hunger": 8,
+        "saturation": 9.6
     },
     {
         "id": "dungeonsdelight:bubblegunk",
@@ -3975,9 +5365,9 @@
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:wafer_cookie_slab",
-        "hunger": 1,
-        "saturation": 0.1
+        "id": "cosmopolitan:strawberry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "alexsmobs:mosquito_repellent_stew",
@@ -3988,6 +5378,16 @@
         "id": "tide:ash_perch",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "cosmopolitan:enchanted_cosmopolitan_cocktail",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:howling_cookie",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "tide:ender_glider",
@@ -4005,14 +5405,14 @@
         "saturation": 1.2
     },
     {
-        "id": "alexscaves:peppermint_powder",
-        "hunger": 1,
-        "saturation": 0.2
-    },
-    {
         "id": "tide:pale_clubfish",
         "hunger": 2,
         "saturation": 0.4
+    },
+    {
+        "id": "alexsmobsdelight:raw_bear_meat_slice",
+        "hunger": 2,
+        "saturation": 1.2
     },
     {
         "id": "collectorsreap:clam_meatball_stew",
@@ -4020,9 +5420,24 @@
         "saturation": 16.0
     },
     {
+        "id": "cataclysm:blessed_amethyst_crab_meat",
+        "hunger": 6,
+        "saturation": 14.4
+    },
+    {
+        "id": "alexsmobsdelight:catfish_stew",
+        "hunger": 12,
+        "saturation": 19.2
+    },
+    {
         "id": "dungeonsdelight:spider_pie_slice",
         "hunger": 3,
         "saturation": 1.8
+    },
+    {
+        "id": "farmersdelight:gleaming_salad",
+        "hunger": 14,
+        "saturation": 21.0
     },
     {
         "id": "minecraft:cod",
@@ -4045,19 +5460,44 @@
         "saturation": 3.2
     },
     {
+        "id": "cosmopolitan:warped_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
         "id": "farmersdelight:squid_ink_pasta",
         "hunger": 14,
         "saturation": 21.0
     },
     {
-        "id": "alexscaves:jelly_bean",
+        "id": "alexsmobsdelight:raw_tusklin_meat",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:yucca_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:cut_tubers",
         "hunger": 1,
-        "saturation": 0.1
+        "saturation": 0.4
     },
     {
         "id": "collectorsreap:pink_dragon_fruit_milkshake",
         "hunger": 2,
         "saturation": 6.0
+    },
+    {
+        "id": "alexsmobsdelight:devils_hole_pupfish_roll",
+        "hunger": 7,
+        "saturation": 8.4
+    },
+    {
+        "id": "cosmopolitan:berry_syrup_americano",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "collectorsreap:portobello_quiche_slice",
@@ -4070,19 +5510,14 @@
         "saturation": 1.2
     },
     {
-        "id": "cavedelight:plate_of_grotto_burnt_ends",
-        "hunger": 14,
-        "saturation": 22.4
+        "id": "cosmopolitan:generic_romance",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
-        "id": "dungeonsdelight:ominous_omelette",
-        "hunger": 7,
-        "saturation": 11.2
-    },
-    {
-        "id": "bosses_delight:ancient_roll",
-        "hunger": 6,
-        "saturation": 14.4
+        "id": "cosmopolitan:rice_pudding",
+        "hunger": 5,
+        "saturation": 6.0
     },
     {
         "id": "dungeonsdelight:logo_item",
@@ -4090,14 +5525,9 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:rock_candy_magenta",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
-        "id": "cavedelight:boiled_dino_egg",
-        "hunger": 1,
-        "saturation": 0.8
+        "id": "alexsmobsdelight:bowl_of_honey_glazed_bear_meat_with_salmon",
+        "hunger": 16,
+        "saturation": 27.2
     },
     {
         "id": "collectorsreap:clam_meat",
@@ -4105,9 +5535,19 @@
         "saturation": 1.8
     },
     {
-        "id": "bosses_delight:bowl_of_lich_smoothies",
-        "hunger": 12,
-        "saturation": 28.8
+        "id": "cosmopolitan:source_berry_milkshake",
+        "hunger": 2,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:yule_log_slice",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
+        "id": "cosmopolitan:glazed_fish",
+        "hunger": 5,
+        "saturation": 6.0
     },
     {
         "id": "environmental:cooked_venison",
@@ -4115,14 +5555,24 @@
         "saturation": 9.6
     },
     {
-        "id": "cavedelight:slice_of_tectonic_cheesecake",
-        "hunger": 6,
-        "saturation": 2.4
+        "id": "alexsmobsdelight:whale_burger",
+        "hunger": 24,
+        "saturation": 40.8
     },
     {
-        "id": "alexscaves:gelatin_yellow",
+        "id": "cosmopolitan:birch_sap_bottle",
+        "hunger": 4,
+        "saturation": 0.8
+    },
+    {
+        "id": "alexsmobsdelight:cooked_centipede_leg",
+        "hunger": 4,
+        "saturation": 4.8
+    },
+    {
+        "id": "cosmopolitan:lush_stew_cup",
         "hunger": 3,
-        "saturation": 1.5
+        "saturation": 3.6
     },
     {
         "id": "delighto_flight:thunder_fruit_stew",
@@ -4130,19 +5580,34 @@
         "saturation": 20.8
     },
     {
+        "id": "cosmopolitan:gamblers_popsicle_double",
+        "hunger": 6,
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:kabloom_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
         "id": "mynethersdelight:ghast_salad",
         "hunger": 8,
         "saturation": 13.6
     },
     {
-        "id": "alexscaves:vanilla_ice_cream",
-        "hunger": 4,
-        "saturation": 1.6
+        "id": "cosmopolitan:flying_dutchman_burger",
+        "hunger": 8,
+        "saturation": 16.0
     },
     {
         "id": "mynethersdelight:plate_of_ghasta_with_cream",
         "hunger": 8,
         "saturation": 14.4
+    },
+    {
+        "id": "alexsmobsdelight:smoked_tusklin_sandwich",
+        "hunger": 12,
+        "saturation": 20.4
     },
     {
         "id": "functionality:gilded_sniffon",
@@ -4170,9 +5635,19 @@
         "saturation": 8.4
     },
     {
+        "id": "cosmopolitan:berry_popsicle",
+        "hunger": 3,
+        "saturation": 1.2
+    },
+    {
         "id": "collectorsreap:dried_pink_dragon_fruit",
         "hunger": 6,
         "saturation": 4.8
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_stuffed_grilled_anaconda",
+        "hunger": 14,
+        "saturation": 23.8
     },
     {
         "id": "dungeonsdelight:spider_extract",
@@ -4180,14 +5655,9 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:gingerbread_block",
-        "hunger": 4,
-        "saturation": 0.8
-    },
-    {
-        "id": "alexscaves:alex_meal",
-        "hunger": 40,
-        "saturation": 400.0
+        "id": "cosmopolitan:llama_marshmallow",
+        "hunger": 2,
+        "saturation": 2.0
     },
     {
         "id": "collectorsreap:prickly_pear_gummy",
@@ -4200,9 +5670,29 @@
         "saturation": 0.0
     },
     {
+        "id": "cosmopolitan:tuber_puree_cone",
+        "hunger": 3,
+        "saturation": 3.6
+    },
+    {
         "id": "collectorsreap:clam_meatball_stew_cup",
         "hunger": 5,
         "saturation": 4.0
+    },
+    {
+        "id": "cosmopolitan:carrot_milkshake",
+        "hunger": 2,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:berry_syrup_shaved_ice",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:mashed_potato",
+        "hunger": 6,
+        "saturation": 7.2
     },
     {
         "id": "netherexp:cooked_hogham",
@@ -4210,14 +5700,24 @@
         "saturation": 12.8
     },
     {
+        "id": "alexsmobsdelight:cave_centipede_soup_cup",
+        "hunger": 5,
+        "saturation": 8.0
+    },
+    {
+        "id": "alexsmobsdelight:fried_ants",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
         "id": "farmersdelight:beef_patty",
         "hunger": 4,
         "saturation": 6.4
     },
     {
-        "id": "fruitfulfun:lemon",
-        "hunger": 2,
-        "saturation": 4.0
+        "id": "alexsmobsdelight:grilled_rattle_tail",
+        "hunger": 10,
+        "saturation": 17.0
     },
     {
         "id": "minecraft:beetroot_soup",
@@ -4228,16 +5728,6 @@
         "id": "dungeonsdelight:sculk_mayo",
         "hunger": 1,
         "saturation": 0.4
-    },
-    {
-        "id": "cavedelight:shish_kebab",
-        "hunger": 10,
-        "saturation": 16.0
-    },
-    {
-        "id": "bosses_delight:nectar_jelly",
-        "hunger": 8,
-        "saturation": 12.8
     },
     {
         "id": "minecraft:salmon",
@@ -4260,9 +5750,19 @@
         "saturation": 0.4
     },
     {
+        "id": "cosmopolitan:lush_snow_cone",
+        "hunger": 15,
+        "saturation": 18.0
+    },
+    {
         "id": "netherexp:hogham",
         "hunger": 6,
         "saturation": 7.2
+    },
+    {
+        "id": "cosmopolitan:taiga_gulime",
+        "hunger": 4,
+        "saturation": 0.8
     },
     {
         "id": "minecraft:baked_potato",
@@ -4273,6 +5773,11 @@
         "id": "minecraft:cooked_salmon",
         "hunger": 6,
         "saturation": 9.6
+    },
+    {
+        "id": "alexsmobsdelight:cooked_kangaroo_meat_slice",
+        "hunger": 4,
+        "saturation": 6.8
     },
     {
         "id": "dungeonsdelight:creeperilla",
@@ -4290,11 +5795,6 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:cookie_block",
-        "hunger": 2,
-        "saturation": 0.4
-    },
-    {
         "id": "farmersdelight:hamburger",
         "hunger": 11,
         "saturation": 17.6
@@ -4305,9 +5805,34 @@
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:gelatin_pink",
-        "hunger": 3,
-        "saturation": 1.5
+        "id": "cosmopolitan:strawberry_tanghulu",
+        "hunger": 6,
+        "saturation": 7.2
+    },
+    {
+        "id": "alexsmobsdelight:braised_alligator_snapping_turtle",
+        "hunger": 16,
+        "saturation": 27.2
+    },
+    {
+        "id": "cosmopolitan:llama_marshmallow_trader",
+        "hunger": 2,
+        "saturation": 2.0
+    },
+    {
+        "id": "cosmopolitan:enchanted_fruit_ice_cream",
+        "hunger": 6,
+        "saturation": 3.6
+    },
+    {
+        "id": "alexsmobsdelight:tusklin_hot_dog",
+        "hunger": 20,
+        "saturation": 34.0
+    },
+    {
+        "id": "cosmopolitan:torchberry_ice_cream_cone",
+        "hunger": 4,
+        "saturation": 2.4
     },
     {
         "id": "mynethersdelight:plate_of_stuffed_hoglin",
@@ -4315,9 +5840,39 @@
         "saturation": 9.6
     },
     {
+        "id": "cosmopolitan:strawberry_matcha_latte",
+        "hunger": 0,
+        "saturation": 0.0
+    },
+    {
+        "id": "alexsmobsdelight:cooked_devils_hole_pupfish",
+        "hunger": 5,
+        "saturation": 6.0
+    },
+    {
+        "id": "alexsmobsdelight:tempura",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
+        "id": "alexsmobsdelight:true_ants_climbing_a_tree",
+        "hunger": 12,
+        "saturation": 20.4
+    },
+    {
         "id": "functionality:whispering_herb",
         "hunger": 1,
         "saturation": 0.6
+    },
+    {
+        "id": "cosmopolitan:cream_bucket",
+        "hunger": 1,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:droopfruit_sorbet",
+        "hunger": 6,
+        "saturation": 3.6
     },
     {
         "id": "brewinandchewin:vodka",
@@ -4325,19 +5880,24 @@
         "saturation": 0.0
     },
     {
+        "id": "cosmopolitan:hot_cattail",
+        "hunger": 5,
+        "saturation": 10.0
+    },
+    {
         "id": "tide:marstilus",
         "hunger": 2,
         "saturation": 0.4
     },
     {
-        "id": "alexscaves:stripped_candy_cane_block",
+        "id": "alexsmobsdelight:raw_mudskipper",
         "hunger": 2,
         "saturation": 0.4
     },
     {
-        "id": "cavedelight:dino_chop_pasta",
-        "hunger": 12,
-        "saturation": 19.2
+        "id": "cosmopolitan:herbal_powder",
+        "hunger": 2,
+        "saturation": 0.0
     },
     {
         "id": "dungeonsdelight:ghoulash",
@@ -4345,9 +5905,34 @@
         "saturation": 9.6
     },
     {
+        "id": "cosmopolitan:taiga_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
+    },
+    {
         "id": "farmersdelight:smoked_ham",
         "hunger": 10,
         "saturation": 16.0
+    },
+    {
+        "id": "alexsmobsdelight:bowl_of_stuffed_crocodile_leg",
+        "hunger": 16,
+        "saturation": 27.2
+    },
+    {
+        "id": "cosmopolitan:mashed_potato_cone",
+        "hunger": 2,
+        "saturation": 2.4
+    },
+    {
+        "id": "alexsmobsdelight:turtle_meat_fried_rice",
+        "hunger": 12,
+        "saturation": 20.4
+    },
+    {
+        "id": "cosmopolitan:neverending_night",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "collectorsreap:limbo_brew",
@@ -4355,9 +5940,19 @@
         "saturation": 0.0
     },
     {
+        "id": "alexsmobsdelight:banana_slice",
+        "hunger": 2,
+        "saturation": 1.2
+    },
+    {
         "id": "tide:uranias_pisces",
         "hunger": 6,
         "saturation": 3.6
+    },
+    {
+        "id": "cosmopolitan:arid_gulime_small",
+        "hunger": 1,
+        "saturation": 0.2
     },
     {
         "id": "mynethersdelight:magma_cake_slice",
@@ -4385,9 +5980,14 @@
         "saturation": 0.4
     },
     {
-        "id": "bosses_of_mass_destruction:crystal_fruit",
+        "id": "cosmopolitan:lime_ice_cream_cone",
         "hunger": 4,
-        "saturation": 9.6
+        "saturation": 2.4
+    },
+    {
+        "id": "cosmopolitan:spring_soda",
+        "hunger": 0,
+        "saturation": 0.0
     },
     {
         "id": "alexsmobs:flying_fish",
@@ -4400,11 +6000,6 @@
         "saturation": 25.2
     },
     {
-        "id": "opalus:zombie_brain",
-        "hunger": 1,
-        "saturation": 1.2
-    },
-    {
         "id": "delighto_flight:mushroom_hotpot",
         "hunger": 8,
         "saturation": 17.6
@@ -4415,14 +6010,14 @@
         "saturation": 1.2
     },
     {
-        "id": "cavedelight:lux_and_ham_sandwich",
-        "hunger": 10,
-        "saturation": 16.0
-    },
-    {
         "id": "brewinandchewin:beer",
         "hunger": 0,
         "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:baked_fiddlehead",
+        "hunger": 2,
+        "saturation": 2.4
     },
     {
         "id": "farmersdelight:pie_crust",
@@ -4435,6 +6030,11 @@
         "saturation": 21.0
     },
     {
+        "id": "alexsmobsdelight:cooked_crocodile_claw",
+        "hunger": 8,
+        "saturation": 9.6
+    },
+    {
         "id": "wetland_whimsy:pennywort_salad",
         "hunger": 2,
         "saturation": 16.0
@@ -4443,6 +6043,26 @@
         "id": "mynethersdelight:spicy_curry",
         "hunger": 15,
         "saturation": 19.5
+    },
+    {
+        "id": "cosmopolitan:mocha",
+        "hunger": 2,
+        "saturation": 0.0
+    },
+    {
+        "id": "cosmopolitan:apple_milkshake",
+        "hunger": 2,
+        "saturation": 6.0
+    },
+    {
+        "id": "cosmopolitan:baked_cod_with_mashed_potatoes",
+        "hunger": 16,
+        "saturation": 22.4
+    },
+    {
+        "id": "alexsmobsdelight:lobster_pasta",
+        "hunger": 14,
+        "saturation": 23.8
     },
     {
         "id": "collectorsreap:clam_chowder",
@@ -4455,12 +6075,27 @@
         "saturation": 10.0
     },
     {
+        "id": "cosmopolitan:molasses_cookie",
+        "hunger": 2,
+        "saturation": 0.4
+    },
+    {
+        "id": "alexsmobsdelight:swamp_soup",
+        "hunger": 8,
+        "saturation": 12.0
+    },
+    {
         "id": "brewinandchewin:mead",
         "hunger": 0,
         "saturation": 0.0
     },
     {
-        "id": "alexscaves:frosted_gingerbread_bricks",
+        "id": "alexsmobsdelight:catfish_roll",
+        "hunger": 7,
+        "saturation": 8.4
+    },
+    {
+        "id": "cosmopolitan:underground_gulime",
         "hunger": 4,
         "saturation": 0.8
     },

@@ -1,10 +1,9 @@
 // ==========================================
 // 📚 AI 知识库导出工具 (Dump Knowledge)
-// 功能：导出当前环境的所有物品、药水、实体、流体等数据
+// 功能：导出当前环境的所有物品、药水、实体、流体、生成结构等数据 (CSV格式)
 // ==========================================
 
 let $Registries = Java.loadClass("net.minecraft.core.registries.Registries");
-let SPLIT_THRESHOLD = 200 * 1024; // 200KB 阈值
 
 // 定义辅助函数，将 Java 集合转换为 JS 数组
 function toJsArray(collection) {
@@ -78,6 +77,36 @@ function collectTags(server, type) {
     return Array.from(new Set(tagList));
 }
 
+// 将简单字符串数组转换为单列CSV
+function arrayToCsv(arr, header) {
+    let csv = header + "\n";
+    arr.forEach(item => {
+        csv += "\"" + String(item).replace(/"/g, "\"\"") + "\"\n";
+    });
+    return csv;
+}
+
+// 将食物数据转换为CSV (多列)
+function foodsToCsv(foods) {
+    let csv = "id,hunger,saturation\n";
+    foods.forEach(f => {
+        csv += "\"" + String(f.id).replace(/"/g, "\"\"") + "\"," + f.hunger + "," + f.saturation + "\n";
+    });
+    return csv;
+}
+
+// 将标签数据转换为CSV (type,tag)
+function tagsToCsv(tags) {
+    let csv = "type,tag\n";
+    let keys = Object.keys(tags);
+    keys.forEach(type => {
+        tags[type].forEach(tag => {
+            csv += type + ",\"" + String(tag).replace(/"/g, "\"\"") + "\"\n";
+        });
+    });
+    return csv;
+}
+
 ServerEvents.commandRegistry(event => {
     let { commands: Commands } = event;
 
@@ -106,6 +135,9 @@ ServerEvents.commandRegistry(event => {
                         blocks: getRegistryIds(server, $Registries.BLOCK),
                         biomes: getRegistryIds(server, $Registries.BIOME),
                         enchantments: getRegistryIds(server, $Registries.ENCHANTMENT),
+                        structures: getRegistryIds(server, $Registries.STRUCTURE), // 生成结构
+                        structure_sets: getRegistryIds(server, $Registries.STRUCTURE_SET), // 结构集
+                        template_pools: getRegistryIds(server, $Registries.TEMPLATE_POOL), // 模板池
                         tags: {
                             item: collectTags(server, 'item'),
                             block: collectTags(server, 'block'),
@@ -132,56 +164,60 @@ ServerEvents.commandRegistry(event => {
                         }
                     });
 
-                    let fullJson = JSON.stringify(data, null, 4);
-                    let baseDir = 'kubejs/data';
+                    // 准备输出目录
+                    let baseDir = 'kubejs';
                     if (!FilesJS.exists(baseDir)) FilesJS.createDirectory(baseDir);
+                    let splitDir = baseDir + '/knowledge_base';
+                    if (!FilesJS.exists(splitDir)) FilesJS.createDirectory(splitDir);
 
-                    if (fullJson.length > SPLIT_THRESHOLD) {
-                        if (player) player.tell("§e[AI知识库] 数据量较大 (" + (fullJson.length / 1024).toFixed(1) + "KB)，正在执行模块化拆分导出...");
-                        
-                        let splitDir = baseDir + '/knowledge_base';
-                        if (!FilesJS.exists(splitDir)) FilesJS.createDirectory(splitDir);
+                    // 写入各模块 CSV 文件
+                    // 简单数组模块写入单列CSV
+                    let simpleModules = [
+                        { key: 'items', file: 'items.csv', header: 'id' },
+                        { key: 'effects', file: 'effects.csv', header: 'id' },
+                        { key: 'entities', file: 'entities.csv', header: 'id' },
+                        { key: 'fluids', file: 'fluids.csv', header: 'id' },
+                        { key: 'blocks', file: 'blocks.csv', header: 'id' },
+                        { key: 'biomes', file: 'biomes.csv', header: 'id' },
+                        { key: 'enchantments', file: 'enchantments.csv', header: 'id' },
+                        { key: 'structures', file: 'structures.csv', header: 'id' },
+                        { key: 'structure_sets', file: 'structure_sets.csv', header: 'id' },
+                        { key: 'template_pools', file: 'template_pools.csv', header: 'id' }
+                    ];
+                    simpleModules.forEach(mod => {
+                        FilesJS.writeFile(splitDir + '/' + mod.file, arrayToCsv(data[mod.key], mod.header));
+                    });
 
-                        // 索引文件
-                        let index = {
-                            version: data.version,
-                            timestamp: data.timestamp,
-                            minecraft_version: data.minecraft_version,
-                            mod_count: data.mod_count,
-                            description: "由于数据超过 200KB，已拆分为多个模块文件以优化加载。",
-                            modules: {}
-                        };
+                    // foods.csv (多列)
+                    FilesJS.writeFile(splitDir + '/foods.csv', foodsToCsv(data.foods));
 
-                        // 模块列表
-                        let modules = ['items', 'foods', 'effects', 'entities', 'fluids', 'blocks', 'biomes', 'enchantments', 'tags'];
-                        modules.forEach(mod => {
-                            let modFileName = `${mod}.json`;
-                            let modPath = `${splitDir}/${modFileName}`;
-                            FilesJS.writeFile(modPath, JSON.stringify(data[mod], null, 4));
-                            index.modules[mod] = {
-                                file: modFileName,
-                                count: Array.isArray(data[mod]) ? data[mod].length : Object.keys(data[mod]).length
-                            };
-                        });
+                    // tags.csv (合并所有标签类型)
+                    FilesJS.writeFile(splitDir + '/tags.csv', tagsToCsv(data.tags));
 
-                        FilesJS.writeFile(`${splitDir}/index.json`, JSON.stringify(index, null, 4));
+                    // 写入索引 CSV
+                    let indexCsv = "module,file,count\n";
+                    indexCsv += "items,items.csv," + data.items.length + "\n";
+                    indexCsv += "foods,foods.csv," + data.foods.length + "\n";
+                    simpleModules.forEach(mod => {
+                        if (mod.key !== 'items') { // items 已单独写入
+                            indexCsv += mod.key + "," + mod.file + "," + data[mod.key].length + "\n";
+                        }
+                    });
+                    let tagKeys = Object.keys(data.tags);
+                    let totalTags = 0;
+                    tagKeys.forEach(k => { totalTags += data.tags[k].length; });
+                    indexCsv += "tags,tags.csv," + totalTags + "\n";
+                    FilesJS.writeFile(splitDir + '/index.csv', indexCsv);
 
-                        let msg = `§b[AI知识库] 拆分导出成功！\n§7索引文件: §e${splitDir}/index.json`;
-                        if (player) player.tell(msg);
-                        console.log(msg);
-                    } else {
-                        let fileName = `${baseDir}/knowledge_base.json`;
-                        FilesJS.writeFile(fileName, fullJson);
-                        let msg = `§b[AI知识库] 导出成功！文件已保存至: §e${fileName}`;
-                        if (player) player.tell(msg);
-                        console.log(msg);
-                    }
+                    let msg = "§b[AI知识库] CSV导出成功！文件已保存至: §e" + splitDir + "/";
+                    if (player) player.tell(msg);
+                    console.log(msg);
                     
                     return 1;
                 } catch (err) {
-                    let errorMsg = `§c[AI知识库] 导出失败: ${err.message}`;
+                    let errorMsg = "§c[AI知识库] 导出失败: " + err.message;
                     if (player) player.tell(errorMsg);
-                    console.error(`[DumpKnowledge] 致命错误: ${err}`);
+                    console.error("[DumpKnowledge] 致命错误: " + err);
                     return 0;
                 }
             })

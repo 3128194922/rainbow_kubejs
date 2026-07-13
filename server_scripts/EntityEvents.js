@@ -115,10 +115,10 @@ EntityEvents.hurt(event => {
     let healthAfter = entity.health - event.damage;
     if (healthAfter > 0) return;
 
-    if (!hasCurios(entity, 'rainbow:master_ball')) return;
+    if (!hasCurios(entity, 'rainbow:dead_river')) return;
     if (!hasCurios(entity, 'rainbow:lilith_hug')) return;
 
-    let necklace = getCuriosItem(entity, 'rainbow:master_ball');
+    let necklace = getCuriosItem(entity, 'rainbow:dead_river');
     if (!necklace) return;
 
     let nbt = necklace.getNbt();
@@ -172,9 +172,5 @@ EntityEvents.death(event => {
             attacker.cooldowns.removeCooldown(offHandItem);
             attacker.cooldowns.addCooldown("rainbow:dice",SecoundToTick(6))
         }
-    }
-    // 怪物猎人勋章：击杀获得狂暴效果
-    if (hasCurios(attacker, "rainbow:monster_charm")) {
-        attacker.potionEffects.add("neapolitan:berserking", SecoundToTick(5), 0, false, false)
     }
 })

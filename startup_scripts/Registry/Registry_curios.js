@@ -58,11 +58,6 @@ StartupEvents.registry('item', event => {
                     if (stack.nbt == null) {
                         stack.nbt = {};
                     }
-                    // 在curioTick中安全调用hasCurios，结果缓存到NBT供modifyAttribute读取
-                    let player = slotContext.entity();
-                    if (player != null) {
-                        stack.nbt.putBoolean("hasBerserk", hasCurios(player, "rainbow:berserk_emblem"));
-                    }
                     if (stack.nbt.getBoolean("update") == null) {
                         stack.nbt.putBoolean("update", false)
                     }
@@ -254,52 +249,6 @@ StartupEvents.registry("item", (event) => {
     event.create('rainbow:berserk_emblem')
         .rarity("epic")
         .maxStackSize(1)
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .modifyAttribute(event => {
-                    try{
-                    let player = event.slotContext.entity();
-
-                    if (player == null) return;
-
-                    let playerHP = player.getHealth();
-                    let playerMaxHP = player.getMaxHealth();
-                    let percentage = 0;
-                    let foodData = player.getFoodData();
-                    let hungry = foodData ? foodData.foodLevel : 0;
-
-                    percentage = ((1 - playerHP / playerMaxHP) * 0.8 + (1 - hungry / 20) * 0.4) + 1;
-
-                    //console.log("血战沙场之证属性倍率：" + percentage);
-                    event.modify("generic.attack_damage", "berserk_emblem", 0.01 * percentage, "multiply_total");
-                    //event.modify("generic.attack_speed", "berserk_emblem", 0.1 * percentage, "multiply_total");
-                    event.modify("generic.movement_speed", "berserk_emblem", 0.05 * percentage, "multiply_total");
-                    event.modify("generic.armor_toughness", "berserk_emblem", 0.05 * percentage, "multiply_total");
-                    }catch(e)
-                    {
-                        console.log("血战沙场之证出错："+e)
-                    }
-                })
-                .curioTick((slotContext, stack) => {
-                    if (stack.nbt == null) {
-                        stack.nbt = {};
-                    }
-                    if (stack.nbt.getBoolean("update") == null) {
-                        stack.nbt.putBoolean("update", false)
-                    }
-                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"))
-                })
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-
-                    if (entity == null) return;
-
-                    if (hasCurios(entity, 'rainbow:berserk_emblem')) {
-                        return false;
-                    }
-                    return true;
-                })
-        )
         .tag("curios:charm")
 });
 
@@ -390,37 +339,6 @@ StartupEvents.registry('item', event => {
           }
         })
     )
-})
-
-// 怪物猎人勋章
-StartupEvents.registry('item', event => {
-    event.create('rainbow:monster_charm')
-        .displayName("怪物猎人勋章")
-        .rarity("epic")
-        .maxStackSize(1)
-        .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    let level = player.level;
-                    let pos = player.getBlock().pos;
-                    if (player.age % SecoundToTick(10)) return;
-
-                    player.potionEffects.add("absorption", SecoundToTick(5), 1, false, false)
-                    //player.potionEffects.add("sob:spite", SecoundToTick(5), 1, false, false)
-                })
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-
-                    if (entity == null) return;
-
-                    if (hasCurios(entity, 'rainbow:monster_charm')) {
-                        return false;
-                    }
-                    return true;
-                })
-        )
 })
 
 // 曙旼始灵
@@ -888,11 +806,10 @@ StartupEvents.registry('item', event => {
 
 // 大师球
 StartupEvents.registry('item', event => {
-    event.create('rainbow:master_ball')
+    event.create('rainbow:dead_river')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .texture('rainbow:item/mind_ctroller_detention')
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .curioTick((slotContext, stack) => {
@@ -1827,8 +1744,8 @@ StartupEvents.registry('item', event => {
                     tag.putBoolean("Moving", moving);
 
                     // 不移动时每秒恢复 1 血量
-                    if (!moving) {
-                        player.heal(1);
+                    if (!moving && player.age % 20 === 0) {
+                        player.heal(2);
                     }
                 })
         )
@@ -1860,6 +1777,7 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
+                .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
         )
 })
 
@@ -1925,8 +1843,8 @@ StartupEvents.registry('item', event => {
     event.create("rainbow:power_glove")
             .rarity("epic")
             .maxStackSize(1)
-            .tooltip(Text.gold("[手套]"))
-            .tag("rainbow:glove")
+            //.tooltip(Text.gold("[手套]"))
+            //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1947,8 +1865,8 @@ StartupEvents.registry('item', event => {
     event.create("rainbow:fire_gauntlet")
             .rarity("epic")
             .maxStackSize(1)
-            .tooltip(Text.gold("[手套]"))
-            .tag("rainbow:glove")
+            //.tooltip(Text.gold("[手套]"))
+            //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1970,8 +1888,8 @@ StartupEvents.registry('item', event => {
     event.create("rainbow:ender_glove")
             .rarity("epic")
             .maxStackSize(1)
-            .tooltip(Text.gold("[手套]"))
-            .tag("rainbow:glove")
+            //.tooltip(Text.gold("[手套]"))
+            //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1992,8 +1910,8 @@ StartupEvents.registry('item', event => {
     event.create("rainbow:living_gauntlet")
             .rarity("epic")
             .maxStackSize(1)
-            .tooltip(Text.gold("[手套]"))
-            .tag("rainbow:glove")
+            //.tooltip(Text.gold("[手套]"))
+            //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -2035,8 +1953,8 @@ StartupEvents.registry('item', event => {
 // 荷鲁斯之爪
 StartupEvents.registry('item', event => {
     event.create('rainbow:clawofhorus')
-        .tooltip(Text.gold("[手套]"))
-        .tag("rainbow:glove")
+        //.tooltip(Text.gold("[手套]"))
+        //.tag("rainbow:glove")
         .displayName("荷鲁斯之爪")
         .rarity("epic")
         .maxStackSize(1)
@@ -2052,39 +1970,77 @@ StartupEvents.registry('item', event => {
                 })
                 .modifyAttribute(e => {
                     let stack = e.stack;
-                    let player = e.slotContext.entity();
+                    if (!stack)
+                        {
+                            stack = {};
+                        }
 
-                    if (!stack || !player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
+                    // 从物品 NBT 读取隐匿状态（curioTick 每 tick 同步），NBT 为 null 时默认非隐匿，确保首次查询也能返回修饰符
+                    let isStealth = stack.nbt ? stack.nbt.getBoolean("isStealth") : false;
+                    let bonus = isStealth ? 1 : 0;
 
-                    let nbt = stack.nbt;
-                    if (!nbt) return;
-
-                    let hunted = nbt.getInt("isBeingHunted") || 0;
-
-                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", hunted, "addition");
-                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.1 * hunted, "multiply_total");
+                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", bonus, "addition");
+                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.5 * bonus, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
-                    let nbt = stack.nbt;
 
                     let player = slotContext.entity();
-                    if (!player || player.cooldowns.isOnCooldown("rainbow:clawofhorus")) return;
-
-                    let attacker = player.lastHurtByMob;
-                    let isBeingHunted = 1;
-
-                    if (attacker && attacker.target == player) {
-                        isBeingHunted = 0;
-                    }
-
-                    // 仅在状态变化时更新 NBT
-                    if (nbt.getInt("isBeingHunted") !== isBeingHunted) {
-                        nbt.putInt("isBeingHunted", isBeingHunted);
-                        if (isBeingHunted === 0) {
-                            player.cooldowns.addCooldown("rainbow:clawofhorus", 100);
-                        }
-                    }
+                    if (!player) return;
+                    // 将隐匿状态同步到物品 NBT，随网络同步至客户端供 tooltip 渲染
+                    let isStealth = player.persistentData.getBoolean("isStealth");
+                    stack.getOrCreateTag().putBoolean("isStealth", isStealth);
                 })
         );
 });
+
+// 末地空气
+StartupEvents.registry('item', event => {
+    event.create('rainbow:ender_air')
+        .maxDamage(300)
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(e => {
+                    let stack = e.stack;
+                    if (!stack) return;
+
+                    // 从物品 NBT 读取隐匿状态和护甲数量（由 curioTick 每 tick 同步）
+                    let isStealth = stack.nbt ? stack.nbt.getBoolean("isStealth") : false;
+                    let armorCount = stack.nbt ? stack.nbt.getInt("armorCount") : 0;
+
+                    // 有任意护甲且不被索敌时，加 4% 伤害
+                    e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * (isStealth ? 1 : 0), "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    if (!stack.nbt) stack.nbt = {};
+
+                    let player = slotContext.entity();
+                    if (!player) return;
+
+                    // 同步隐匿状态（参考荷鲁斯之爪）
+                    let isStealth = player.persistentData.getBoolean("isStealth");
+                    stack.getOrCreateTag().putBoolean("isStealth", isStealth);
+
+                    // 统计穿戴的护甲数量
+                    let armorCount = 0;
+                    let armorSlots = player.getInventory().armor;
+                    for (let i = 0; i < armorSlots.size(); i++) {
+                        if (!armorSlots.get(i).isEmpty()) armorCount++;
+                    }
+                    stack.getOrCreateTag().putInt("armorCount", armorCount);
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:ender_air')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
+})

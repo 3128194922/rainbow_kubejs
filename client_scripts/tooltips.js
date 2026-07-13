@@ -65,6 +65,14 @@ ItemEvents.tooltip(event => {
     })
 })
 
+//手套
+ItemEvents.tooltip(event => {
+    // 使用标签过滤器匹配目标物品
+    event.addAdvanced('#rainbow:glove', (item, advanced, text) => {
+        text.add(1, Text.gold("[手套]"))
+    })
+})
+
 //物品介绍实例
 ItemEvents.tooltip((event) => {
     //添加一个最普通的文本，这个文本是在最下面进行显示的
@@ -92,42 +100,8 @@ ItemEvents.tooltip((event) => {
         let count = item.nbt ? (item.nbt.swordnumber || 0) : 0;
         text.add(1, Text.red("已吞噬剑数:").append(Text.yellow(`${count}`)));
     })*/
-    event.addAdvanced('gimmethat:giants_ring', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("碰撞体积变大1.5倍"));
-            text.add(2, Text.aqua("冲刺可以对比自己体型小的生物造成伤害"));
-        }
-        text.add(Text.darkGray("**Third-Party Licenses**"))
-        text.add(Text.darkGray("MIT License"))
-        text.add(Text.darkGray("Project: demis-enigmatic-dice"))
-    })
-    event.addAdvanced('gimmethat:moon', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("手持失去重力"));
-            text.add(2, Text.aqua("空中蹲下可以恢复重力"));
-        }
-        text.add(Text.darkGray("**Third-Party Licenses**"))
-        text.add(Text.darkGray("MIT License"))
-        text.add(Text.darkGray("Project: demis-enigmatic-dice"))
-    })
-    event.addAdvanced('gimmethat:gravity_core', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("可以进行二段跳"));
-            text.add(2, Text.aqua("在空中按住[SHIFT]可以对地践踏"));
-        }
-        text.add(Text.darkGray("**Third-Party Licenses**"))
-        text.add(Text.darkGray("MIT License"))
-        text.add(Text.darkGray("Project: demis-enigmatic-dice"))
-    })
     event.addAdvanced('rainbow:berserk_emblem', (item, advanced, text) => {
-            text.add(1, Text.aqua("根据已经损失的血量增加属性"));
-            //text.add(2, Text.red("联动饕餮护符"));
+            text.add(1, Text.aqua("攻击半血以下的实体伤害翻倍"));
     })
     /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -207,7 +181,7 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("减免10%所受伤害"));
-            text.add(2, Text.aqua("延长无敌帧至3s"));
+            text.add(2, Text.aqua("延长无敌帧至1.5s"));
         }
     })
     event.addAdvanced(['rainbow:despair_insignia'], (item, advanced, text) => {
@@ -233,15 +207,6 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("猪灵不会攻击你"));
             text.add(2, Text.aqua("无敌帧延长到2s"));
-        }
-    })
-    event.addAdvanced('rainbow:monster_charm', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("定期获得伤害吸收buff"));
-            text.add(2, Text.aqua("在特定结构内获得仇怨buff"));
-            text.add(3, Text.aqua(`按[${global.regKeyCharm.getKey().getDisplayName().getString()}]启动召唤宠物`));
         }
     })
     event.addAdvanced('rainbow:monster_meat', (item, advanced, text) => {
@@ -354,7 +319,7 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:infernotooth_necklace', (item, advanced, text) => {
         text.add(1, Text.gray("与海牙吊坠互斥"));
     })
-    event.addAdvanced('rainbow:master_ball', (item, advanced, text) => {
+    event.addAdvanced('rainbow:dead_river', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         let nbt = item.getNbt();
         let souls = nbt !== null ? nbt.getInt("Souls") : 0;
@@ -363,8 +328,13 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.remove(2)
             text.add(1, Text.aqua("击杀生物储存灵魂"));
-            text.add(2, Text.aqua("配合莉莉丝之拥可消耗灵魂免死一次"));
-            text.add(3, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
+            text.add(2, Text.aqua("技能：释放所有灵魂召唤幽魂护卫"));
+            text.add(3, Text.aqua("消耗3：壮硕幽魂 (高血高攻)"));
+            text.add(4, Text.aqua("消耗2：悍将幽魂 (冲刺破盾)"));
+            text.add(5, Text.aqua("消耗1：引导幽魂 (均衡型)"));
+            text.add(6, Text.aqua("优先召唤高消耗变种"));
+            text.add(7, Text.aqua("配合莉莉丝之拥可消耗灵魂免死一次"));
+            text.add(8, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
         }
     })
     event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
@@ -509,12 +479,13 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("没有被生物盯上时获得暴击率与暴击伤害加成"));
-            text.add(2, Text.aqua("被生物盯上时加成暂时失效并进入冷却"));
+            text.add(1, Text.aqua("隐匿时获得暴击率与暴击伤害加成"));
+            text.add(2, Text.aqua("潜行/隐身/少穿盔甲可扩大隐匿范围"));
+            text.add(3, Text.aqua("被索敌发现时加成暂时失效"));
         }
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
-        text.add(1, Text.aqua("不移动时每秒恢复 20 点生命值"));
+        text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:dark_sun_ring', (item, advanced, text) => {
@@ -552,6 +523,14 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("动能伤害越高，践踏伤害越高"));
         }
     })
+    event.addAdvanced('species:kinetic_core', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("受到伤害时触发范围动能爆破"));
+            text.add(2, Text.aqua("爆破伤害与范围随受伤值动态提升"));
+        }
+    })
     event.addAdvanced('rainbow:giants_ring', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -585,6 +564,14 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua("放置时自动还原结构，含方块实体"));
         }
     })
+    event.addAdvanced('rainbow:ender_air', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("穿戴盔甲且进入隐匿状态"));
+            text.add(2, Text.aqua("隐匿时每件盔甲提供 4% 伤害加成"));
+        }
+    })
     event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -595,5 +582,14 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
         text.add(Text.darkGray("美术资源：Embers Rekindled"))
+    })
+    //滴水兽
+    event.addAdvanced('oreganized:gargoyle', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("站立不动时提供 +30 盔甲值"));
+            text.add(2, Text.aqua("移动时盔甲加成消失"));
+        }
     })
 })

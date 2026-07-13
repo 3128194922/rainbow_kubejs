@@ -1,9 +1,9 @@
 let $CuriosApi = Java.loadClass("top.theillusivec4.curios.api.CuriosApi")
 
 // 检测实体是否装备了指定饰品物品
-function hasCurios(entity, stack) {
+/*function hasCurios(entity, stack) {
     return $CuriosApi.getCuriosHelper().findEquippedCurio(stack, entity).isPresent()
-}
+}*/
 // 饰品槽位操作：shrink收缩/grow扩容/getfor查询数量/setfor设置数量/unlock解锁/lock锁定
 function CuriosSlotMethod(method, slot, player, amount) {
     switch (method) {
@@ -29,7 +29,13 @@ function CuriosSlotMethod(method, slot, player, amount) {
 // 安全获取玩家的饰品背包，兼容不同版本API
 function getCuriosInventorySafe(player) {
     if (player == null) return null
-    return player.getCuriosInventory ? player.getCuriosInventory() : player.curiosInventory
+    //先检查实体是否有curios能力，避免对非玩家实体抛IllegalStateException
+    try {
+        if (!$CuriosApi.getCuriosInventory(player).isPresent()) return null
+        return $CuriosApi.getCuriosInventory(player).resolve().get()
+    } catch (e) {
+        return null
+    }
 }
 
 // 获取指定槽位类型的饰品处理器

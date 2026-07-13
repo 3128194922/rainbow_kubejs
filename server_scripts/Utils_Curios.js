@@ -25,7 +25,12 @@ function CuriosSlotMethod(method, slot, player, amount) {
 }
 function getCuriosInventorySafe(player) {
     if (player == null) return null
-    return player.getCuriosInventory ? player.getCuriosInventory() : player.curiosInventory
+    try {
+        if (!$CuriosApi.getCuriosInventory(player).isPresent()) return null
+        return $CuriosApi.getCuriosInventory(player).resolve().get()
+    } catch (e) {
+        return null
+    }
 }
 function getCuriosHandler(player, slotType) {
     let curios = getCuriosInventorySafe(player)

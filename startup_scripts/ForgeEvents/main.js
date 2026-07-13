@@ -109,3 +109,38 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
         console.log(e)
     }
 })
+//物品动态属性修改事件 主入口
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
+
+    try {
+        if (!item || item.getNbt() == null) return;
+
+        handleItemAttributeModifier(event);
+    } catch (e) {
+        console.log(e);
+    }
+});
+//玩家攻击实体事件 主入口
+ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", event => {
+    let entity = event.getEntity();
+    let target = event.getTarget();
+
+    if (entity.level.clientSide) return;
+    if (entity.getType() == null || target.getType() == null) return;
+
+    try
+    {
+        // 武器攻击实现
+        handleAttackWeapon(event, entity, target);
+
+        // 饰品攻击实现
+        handleAttackCurios(event, entity, target);
+    }
+    catch(e)
+    {
+        console.log('AttackEntityEvent报错:')
+        console.log(e)
+    }
+})

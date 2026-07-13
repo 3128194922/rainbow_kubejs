@@ -82,6 +82,121 @@ ItemEvents.modification(event => {
    })
 })*/
 
+//锡纸
+ItemEvents.modification(event => {
+   event.modify('caverns_and_chasms:tinplate', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .addAttribute(
+                   "minecraft:generic.armor_toughness",
+                   "tinplate",
+                   2,
+                   'addition'
+               )
+       )
+   })
+})
+//鞍背蛋
+ItemEvents.modification(event => {
+   event.modify('caverns_and_chasms:saddled_egg', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .addAttribute(
+                   "minecraft:generic.armor_toughness",
+                   "saddled_egg",
+                   5,
+                   'addition'
+               )
+       )
+   })
+})
+//魔术硬币
+ItemEvents.modification(event => {
+   event.modify('species:wicked_swapper', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .addAttribute(
+                   "attributeslib:dodge_chance",
+                   "wicked_swapper",
+                   0.1,
+                   'multiply_base'
+               )
+       )
+   })
+})
+//滴水兽
+ItemEvents.modification(event => {
+   event.modify('oreganized:gargoyle', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'oreganized:gargoyle')) return false;
+                    return true;
+                })
+               .modifyAttribute(ev => {
+                    let stack = ev.stack;
+                    let moving = stack.getOrCreateTag().getBoolean("Moving");
+                    if (!moving) {
+                        ev.modify("minecraft:generic.armor", "sprite", 30, "addition");
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (!player || player.level.isClientSide()) return;
+
+                    let tag = stack.getOrCreateTag();
+                    let lastX = tag.getDouble("lastX");
+                    let lastZ = tag.getDouble("lastZ");
+
+                    let dx = player.x - lastX;
+                    let dz = player.z - lastZ;
+                    let moving = (dx * dx + dz * dz) > 1.0e-6;
+
+                    tag.putDouble("lastX", player.x);
+                    tag.putDouble("lastZ", player.z);
+                    tag.putBoolean("Moving", moving);
+
+                    if (!moving) {
+                        stack.nbt.putBoolean("Moving", false);
+                    }else
+                    {
+                        stack.nbt.putBoolean("Moving", true);
+                    }
+                })
+       )
+   })
+})
+//动能核心
+ItemEvents.modification(event => {
+   event.modify('species:kinetic_core', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'species:kinetic_core')) return false;
+                    return true;
+                })
+       )
+   })
+})
+//末影手套
+/*ItemEvents.modification(event => {
+   event.modify('royalvariations:spectral_gauntlet', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'royalvariations:spectral_gauntlet')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+       )
+   })
+})*/
 //铜 套装 宠物流派
 ItemEvents.modification(event => {
    let items = ['caverns_and_chasms:copper_helmet', 'caverns_and_chasms:copper_chestplate', 'caverns_and_chasms:copper_leggings','caverns_and_chasms:copper_boots']

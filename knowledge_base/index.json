@@ -1,41 +1,53 @@
 {
     "version": "1.2.0",
-    "timestamp": "二月 1, 2026 6:05:52 下午 CST",
+    "timestamp": "七月 12, 2026 6:18:50 下午 CST",
     "minecraft_version": 2001,
-    "mod_count": 195,
+    "mod_count": 171,
     "description": "由于数据超过 200KB，已拆分为多个模块文件以优化加载。",
     "modules": {
         "items": {
             "file": "items.json",
-            "count": 7660.0
+            "count": 8423.0
         },
         "foods": {
             "file": "foods.json",
-            "count": 894.0
+            "count": 1221.0
         },
         "effects": {
             "file": "effects.json",
-            "count": 240.0
+            "count": 237.0
         },
         "entities": {
             "file": "entities.json",
-            "count": 793.0
+            "count": 768.0
         },
         "fluids": {
             "file": "fluids.json",
-            "count": 152.0
+            "count": 282.0
         },
         "blocks": {
             "file": "blocks.json",
-            "count": 5248.0
+            "count": 5609.0
         },
         "biomes": {
             "file": "biomes.json",
-            "count": 110.0
+            "count": 105.0
         },
         "enchantments": {
             "file": "enchantments.json",
-            "count": 191.0
+            "count": 154.0
+        },
+        "structures": {
+            "file": "structures.json",
+            "count": 94.0
+        },
+        "structure_sets": {
+            "file": "structure_sets.json",
+            "count": 69.0
+        },
+        "template_pools": {
+            "file": "template_pools.json",
+            "count": 412.0
         },
         "tags": {
             "file": "tags.json",

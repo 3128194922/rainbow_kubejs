@@ -153,65 +153,6 @@ function uuidToIntArray(uuidString) {
     return `[I;${part1},${part2},${part3},${part4}]`
 }
 
-// --- 怪物护符 ---
-registerSkill('rainbow:monster_charm', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (!player.cooldowns.isOnCooldown('rainbow:monster_charm')) {
-        let entity = player.level.createEntity("easy_npc:humanoid");
-        if (entity) {
-            let PlayerName = player.getDisplayName().getString();
-            let entityUUID = entity.uuid.toString();
-            
-            entity.setCustomName(Text.of(`${PlayerName}`));
-            entity.setPositionAndRotation(player.x, player.y, player.z, player.yaw, player.pitch);
-            entity.mergeNbt({
-                ObjectiveData: {
-                    HasObjectives: true,
-                    ObjectiveDataSet: [
-                        { Type: "FOLLOW_OWNER", Prio: 2 },
-                        { Type: "MELEE_ATTACK", Prio: 2 },
-                        { Type: "OWNER_HURT_BY_TARGET", Prio: 2 },
-                        { Type: "HURT_BY_TARGET", Prio: 2 }
-                    ]
-                }
-            })
-            entity.spawn();
-            
-            let level = player.level;
-            
-            // 设置 Type
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.Type set value "PLAYER_SKIN"`
-            );
-            
-            // 复制玩家的 UUID 到 NPC（最关键的一步）
-            // Minecraft 命令可以直接从一个实体的 UUID 复制到另一个实体的 NBT
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.UUID set from entity ${player.stringUuid} UUID`
-            );
-            
-            // 设置 Timestamp
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} SkinData.Timestamp set value ${Date.now()}`
-            );
-            
-            // 同步客户端
-            level.getServer().runCommandSilent(
-                `/execute as ${entityUUID} at @s run tp @s ~ ~ ~ ~ ~`
-            );
-            
-            // 设置主人
-            level.getServer().runCommandSilent(
-                `/easy_npc owner set ${entityUUID} ${PlayerName}`
-            );
-
-            // 设置 TargetOwnerUUID（从玩家复制）
-            level.getServer().runCommandSilent(
-                `/data modify entity ${entityUUID} ObjectiveData.ObjectiveDataSet[0].TargetOwnerUUID set from entity ${player.stringUuid} UUID`
-            )
-        }
-    }
-});
-
 // --- 时间神石 ---
 registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if(player.cooldowns.isOnCooldown("rainbow:chronos")) return;
@@ -718,7 +659,7 @@ registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenu
 
     event.server.scheduleInTicks(pulseInterval, pulse);
 
-    player.cooldowns.addCooldown('rainbow:the_bible', SecoundToTick(30));
+    player.cooldowns.addCooldown('rainbow:the_bible', SecoundToTick(90));
 });
 
 // --- 烟花拳套 ---
@@ -865,6 +806,54 @@ registerSkill('minecraft:firework_rocket', (event, player, itemStack, isSubmenu,
     event.server.scheduleInTicks(1, tickDash);
 });
 
+// --- 死河 ---
+registerSkillSound('rainbow:dead_river', 'rainbow:voice.null');
+registerSkill('rainbow:dead_river', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:dead_river")) return;
+    if (player.level.clientSide) return;
+    if (!hasCurios(player, "rainbow:lilith_hug")) return;
+
+    let nbt = itemStack.nbt;
+    if (!nbt) return;
+
+    let souls = nbt.getInt("Souls") || 0;
+    if (souls <= 0) {
+        player.tell(Text.gray("死河中没有任何灵魂。"));
+        return;
+    }
+
+    let pos = player.getBlock().pos;
+    let serverLevel = player.level;
+    let totalConsumed = 0;
+
+    // 优先召唤高消耗变种，花光所有灵魂
+    // HULKING_SPECTRE (消耗 3) > JOUSTING_SPECTRE (消耗 2) > SPECTRE (消耗 1)
+    while (souls >= 3) {
+        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.HULKING_SPECTRE, true);
+        souls -= 3;
+        totalConsumed += 3;
+    }
+
+    while (souls >= 2) {
+        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.JOUSTING_SPECTRE, true);
+        souls -= 2;
+        totalConsumed += 2;
+    }
+
+    while (souls >= 1) {
+        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.SPECTRE, true);
+        souls -= 1;
+        totalConsumed += 1;
+    }
+
+    // 消耗所有灵魂
+    nbt.putInt("Souls", 0);
+    player.tell(Text.aqua("死河释放了 " + totalConsumed + " 个灵魂。"));
+    player.cooldowns.addCooldown("rainbow:dead_river", SecoundToTick(10));
+});
 // ==========================================
 // 主入口逻辑
 // ==========================================

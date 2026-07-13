@@ -44,7 +44,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
     if (hasCurios(victim, "rainbow:the_wafer")) {
             try{
                 event.setAmount(event.getAmount() * 0.9);
-                victim.invulnerableTime = 60;
+                victim.invulnerableTime = 30;
 
             }catch(e)
             {

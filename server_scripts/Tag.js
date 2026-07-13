@@ -8,27 +8,28 @@ ServerEvents.tags("item", event => {
     global.foodlist.forEach(food=>{
         event.add("rainbow:food",food)
     })
-    
+
     // 饰品相关标签
     event.add("curios:charm",['create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
-    ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket'])
+    ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket','caverns_and_chasms:tinplate','caverns_and_chasms:saddled_egg','species:wicked_swapper',
+    'oreganized:gargoyle','species:kinetic_core'])
     event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
     event.add('offhandattack:is_duel',['#forge:tools/knives'])
     event.add('offhandattack:is_hands',['rainbow:baseball_bat','savage_and_ravage:cleaver_of_beheading', 'rainbow:baseball_power'])
     //event.add('offhandattack:can_hands_use',[''])
 
     // 技能饰品
-    event.add('skillwheel:skills',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
+    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
-    'rainbow:sculk_affinity'])
+    'rainbow:sculk_affinity','rainbow:dead_river'])
 
-    event.add('skillwheel:skills_ui',['rainbow:monster_charm', 'rainbow:drowned_heart', 'rainbow:eye_of_satori',
+    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
-    'rainbow:sculk_affinity'])
+    'rainbow:sculk_affinity','rainbow:dead_river'])
 
     //技能饰品二级菜单
     event.add('skillwheel:submenu',['rainbow:lyre'])
@@ -81,6 +82,14 @@ ServerEvents.tags("item", event => {
     // 头部饰品标签
     retagItem(event,['farmersdelight:skillet', 'rainbow:eldritch_pan', 'dungeonsdelight:golden_cleaver', 'farmersdelight:basket'],
         "curios:head")
+
+    // 饰品栏位
+    retagItem(event,["tide:fish_finder", "tide:weather_radio", "tide:depth_meter", "tide:climate_gauge", "tide:lunar_calendar", 
+        "functionality:fins", "functionality:obsidian_fins", "royalvariations:spectral_gauntlet", "cataclysm:sticky_gloves", "cataclysm:sturdy_boots",
+         "cataclysm:unbreakable_skull", "cataclysm:vitality_ankh", "cataclysm:berserker_soul_amulet", "cataclysm:ring_of_grudged",
+          "cataclysm:chitin_claw", "cataclysm:blazing_grips", "cataclysm:belt_of_beginner", "clanginghowl:reanimator","tide:pocket_watch", 
+        "clanginghowl:bloody_battery", "clanginghowl:jet_boots", "clanginghowl:tendon_strengthener", "clanginghowl:energy_glove"],
+    "curios:charm")
     
     // 箭矢标签
     event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", 'mysticartifacts:sculk_arrow', 
@@ -95,7 +104,7 @@ ServerEvents.tags("item", event => {
     ])
 
     // 后室可放置方块
-    event.add('rainbow:docker', ['rainbow:docker_shooter', 'rainbow:docker_shooter_fire', 'rainbow:docker_shooter_plus', 'rainbow:docker_shooter_parabola'])
+    event.add('rainbow:docker', ['rainbow:docker', 'rainbow:luban_lock'])
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])

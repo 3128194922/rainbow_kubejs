@@ -71,4 +71,11 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
     if (source.getType() == "starve" && hasCurios(victim, "rainbow:gluttony_charm")) {
         event.setCanceled(true);
     }
+
+    // --- 血战沙场之证（攻击半血以下实体伤害翻倍） ---
+    if (attacker && hasCurios(attacker, "rainbow:berserk_emblem")) {
+        if (victim instanceof LivingEntity && victim.getHealth() < victim.getMaxHealth() * 0.5) {
+            event.setAmount(event.getAmount() * 2);
+        }
+    }
 }

@@ -46,82 +46,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpe
     }
 });
 
-// 玩家攻击实体事件
-ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", event => {
-    try {
-        let entity = event.getEntity();
-        let target = event.getTarget();
-
-        if (entity.level.clientSide) return;
-
-        if (entity.getType() != null && target.getType() != null) {
-            // 泰拉刃：增加充能等级
-            if (entity.getItemInHand("main_hand") === 'rainbow:terasword') {
-                if (!entity.getItemInHand("main_hand").nbt.power) {
-                    entity.getItemInHand("main_hand").nbt.power = 1;
-                }
-                else {
-                    if (entity.getItemInHand("main_hand").nbt.power < 4) {
-                        entity.getItemInHand("main_hand").nbt.power = entity.getItemInHand("main_hand").nbt.power + 1;
-                    }
-                    else {
-                        return;
-                    }
-                }
-            }
-            // 动力剑：充能逻辑
-            if (entity.getItemInHand("main_hand") === 'rainbow:baseball_power') {
-                console.log(entity.getItemInHand("main_hand").getNbt().getInt("Power"))
-                if (!entity.getItemInHand("main_hand").getNbt().getInt("Power")) {
-                    entity.getItemInHand("main_hand").getNbt().putInt("Power", 4)
-                } else {
-                    entity.getItemInHand("main_hand").getNbt().putInt("Power", entity.getItemInHand("main_hand").getNbt().getInt("Power") - 1)
-                }
-
-                // 充能耗尽，变回普通棒球棍
-                if (entity.getItemInHand("main_hand").getNbt().getInt("Power") == 1) {
-                    entity.setItemInHand("main_hand", "rainbow:baseball_bat")
-                    entity.cooldowns.addCooldown("rainbow:baseball_bat", SecoundToTick(40))
-                }
-            }
-            // 决斗剑：初始化类型
-            if (entity.getItemInHand("main_hand") === 'rainbow:duel') {
-                if (!entity.getItemInHand("main_hand").nbt.type) {
-                    entity.getItemInHand("main_hand").nbt.type = none;
-                }
-            }
-        }
-    } catch (e) {
-        console.log("玩家攻击事件出现问题：")
-        console.log(e)
-    }
-});
-
-ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", event => {
-    try {
-        let entity = event.getEntity();
-        let target = event.getTarget();
-
-        if (entity.level.clientSide) return;
-
-        // 末影手套：攻击时为目标附着末影火 3秒
-        if (hasCurios(entity, 'rainbow:ender_glove')) {
-            if (global.SFire) {
-                global.SFire.setOnFire(target, 3, "endergetic:ender");
-            }
-        }
-        // 生灵手套：攻击时为目标附着生灵火 3秒
-        if (hasCurios(entity, 'rainbow:living_gauntlet')) {
-            if (global.SFire) {
-                global.SFire.setOnFire(target, 3, "dungeonsdelight:living");
-            }
-        }
-    } catch (e) {
-        console.log("玩家攻击事件出现问题：")
-        console.log(e)
-    }
-});
-
 // 玩家右键实体事件
 ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerInteractEvent$EntityInteract", event => {
     try {
@@ -138,84 +62,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerInteractEvent$
     } catch (e) {
         console.log("玩家右键生物事件出现问题：")
         console.log(e)
-    }
-});
-
-// 物品动态属性修改事件
-ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
-    let item = event.getItemStack();
-    let slotType = event.getSlotType();
-
-    try {
-        if (!item || item.getNbt() == null) return;
-
-        // 邪恶面具：根据 maskId 动态添加属性
-        if (item.id === "species:wicked_mask" && slotType === "head") {
-            let maskId = item.getNbt().getString("id")
-            let attrs = global.MobMaskAttributeConfig[maskId]
-
-            // ✅ 统一为数组，自动兼容 0、1、多个
-            if (!attrs) return
-            if (!Array.isArray(attrs)) attrs = [attrs]
-
-            attrs.forEach(attr => {
-                if (!attr || !attr.attribute) return
-                event.addModifier(
-                    attr.attribute,
-                    new AttributeModifier(
-                        attr.UUID,
-                        attr.ID,
-                        attr.NUMBER,
-                        attr.OPERATION
-                    )
-                )
-            })
-        }
-
-        // 🍳 饕餮之锅：食物数量影响攻击力
-        let foodnum = item.getNbt().getInt("foodnumber") || 0;
-        if (item.id === "rainbow:eldritch_pan" && slotType === "mainhand") {
-            event.addModifier(
-                "generic.attack_damage",
-                new AttributeModifier(
-                    'e93f7408-d7f1-4df1-a28f-43c2e16b004e',
-                    'eldritch_pan',
-                    1 * foodnum,
-                    "addition"
-                )
-            );
-        }
-        /*
-                // 🗡️ 饕餮剑：剑数量影响攻击力
-                let swordnum = item.getNbt().getInt("swordnumber") || 0;
-                if (item.id === "rainbow:eldritch_sword" && slotType === "mainhand") {
-                    event.addModifier(
-                        "generic.attack_damage",
-                        new AttributeModifier(
-                            'a1234567-b890-1234-c567-d89012345678', // 随机 UUID
-                            'eldritch_sword',
-                            1 * swordnum,
-                            "addition"
-                        )
-                    );
-                }
-        */
-        // 🗡️ 群系之刃：群系系数影响攻击力
-        /*let biomenum = item.getNbt().getInt("biomenum") || 0;
-        if (item.id === "rainbow:biome_of_sword" && slotType === "mainhand") {
-            event.addModifier(
-                "generic.attack_damage",
-                new AttributeModifier(
-                    'b6ea6b0f-a294-44d5-a5af-8793b02b19c4',
-                    'biome_of_sword',
-                    1 * biomenum,
-                    "addition"
-                )
-            );
-        }*/
-
-    } catch (e) {
-        console.log(e);
     }
 });
 
@@ -452,7 +298,14 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         } else {
             nbt.putInt("kill", 0);
             item.setDamageValue(item.getDamageValue() + Integer.valueOf("100"))
-            // 这里应该有生成战利品的逻辑，但目前只提示
+            // 宝箱吊坠满 100 击杀：从战利品表生成奖励
+            try {
+                let pos = player.block.getPos();
+                player.server.runCommandSilent("loot spawn " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " loot rainbow:treasure_necklace");
+            } catch (lootErr) {
+                console.log("宝箱吊坠战利品生成出现问题：");
+                console.log(lootErr);
+            }
         }
 
     } catch (e) {
@@ -468,7 +321,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         if (!player || !player.isPlayer()) return;
 
         // 大师球储存灵魂
-        let item = getCuriosItem(player, "rainbow:master_ball");
+        let item = getCuriosItem(player, "rainbow:dead_river");
         if (!item) return;
 
         if (player.getItemInHand("main_hand").id == 'species:spectralibur') return;

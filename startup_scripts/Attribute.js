@@ -96,6 +96,7 @@ EntityJSEvents.attributes(event => {
     event.modify('minecraft:player', helper => {
         helper.add('caverns_and_chasms:magic_damage', 0.0);
         helper.add('caverns_and_chasms:magic_protection', 1.0);
+        helper.add('caverns_and_chasms:stealth', 0.0);
     });
 
 });

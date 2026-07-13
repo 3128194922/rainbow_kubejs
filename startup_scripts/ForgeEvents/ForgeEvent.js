@@ -95,7 +95,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityJoinLevelEvent", even
     
     if(level.isClientSide()) return;
     
-    let WHITE_ENTITY = ["dungeonnowloading:sealed_chaos"]
+    let WHITE_ENTITY = ["dungeonnowloading:sealed_chaos","species:spectre"]
     
     let entity = event.getEntity();
     

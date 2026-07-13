@@ -108,7 +108,7 @@
 	"item.rainbow.the_wafer": "圣饼",
 	"item.rainbow.mini_moon": "迷你月球",
 	"item.rainbow.treasure_necklace": "宝藏项链",
-	"item.rainbow.master_ball": "大师球",
+	"item.rainbow.dead_river": "死河",
 	"item.rainbow.lyre": "天琴座",
 	"item.rainbow.musical_score": "乐谱",
 	"item.rainbow.ancientaegis": "远古之庇护",
@@ -149,6 +149,7 @@
 	"item.rainbow.living_gauntlet": "生灵手套",
 	"item.rainbow.quiver": "箭袋",
 	"item.rainbow.cursed_bones": "被诅咒的骨头",
+	"item.rainbow.ender_air": "末地空气",
 
 	"attribute.name.generic.extra_summoning": "额外召唤",
 	"attribute.name.generic.boom_damage": "爆炸伤害",

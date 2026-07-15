@@ -1,0 +1,290 @@
+
+["Germonium Misc Settings"]
+	#If true Germonium Infernium variants will have a Purple Fire instead of a Red one (Reference to Scaling Health by SilentChaos512). This requires a Restart.
+	infernium_alt_texture = false
+	#If true Germonium Infernium variants will have a Cyan Fire instead of a Red one. This requires a Restart.
+	infernium_alt_texture2 = false
+	#If true Germonium Infernium variants will have a Rainbow Fire instead of a Red one. This requires a Restart.
+	infernium_alt_texture3 = false
+	#If true Germonium Celestium variants will have a Cyan Fire instead of a Rainbow one (Reference to the v1.0.0 textures of ZG Mobs). This requires a Restart.
+	celestium_alt_texture = false
+	#If true Germonium Celestium variants will have a Red Fire instead of a Rainbow one. This requires a Restart.
+	celestium_alt_texture2 = false
+	#If true Germonium Celestium variants will have a Purple Fire instead of a Rainbow one. This requires a Restart.
+	celestium_alt_texture3 = false
+
+["Heart Crystal Settings"]
+	#If true most Heart Crystal items will be replaced with their LSO counterparts.
+	lso_compat = false
+	#If true Extra Health provided by the Heart Crystals will be lost on Death.
+	loose_extra_health_on_death = false
+	#The amount of Extra Health provided by the Heart Crystals lost on Death.
+	#Range: 1.0 ~ 1.7976931348623157E308
+	extra_health_lost_per_death = 2.0
+	#The amount of Maximum Extra Health provided by the Heart Crystals.
+	#Range: 1.0 ~ 1.7976931348623157E308
+	max_extra_health = 20.0
+	#The amount of Extra Health provided by one Heart Crystal. If value is 0 the Heart Crystal will not add any Extra Health.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	extra_health_per_heart = 2.0
+	#If true Heart Crystals will add the Regeneration Effect to the Consumer.
+	allow_heart_regen = true
+	#The duration (in ticks) of the Regeneration Effect provided by the Heart Crystals.
+	#Range: > 0
+	heart_regen_duration = 100
+	#The amplifier of the Regeneration Effect provided by the Heart Crystals. Note that amplifier with a value of 0 means level 1, value 1 means level 2 and so on.
+	#Range: > 0
+	heart_regen_amplifier = 1
+	#The Minimum XP Level required to use The Heart Crystal item. If value is 0 there will be no XP requirements.
+	#Range: > 0
+	min_level_required = 10
+	#The amount of XP Levels that will be consumed when using The Heart Crystal item. If value is 0 no XP Levels will be consumed.
+	#Range: > 0
+	xp_levels_consumed = 5
+	#The Use Duration (in ticks) of The Heart Crystal item.
+	#Range: > 1
+	heart_use_duration = 30
+
+	["Heart Crystal Settings"."Heart Crystal Drop Settings"]
+		#The Drop Rate for Germonium Infernium variants. If value is 0 Germonium Infernium will drop no Heart Crystal X items.
+		#Range: 0.0 ~ 100.0
+		infernium_drop_rate = 50.0
+		#The Minimum amount of Heart Crystal X item drops for Germonium Infernium variants.
+		#Range: > 0
+		infernium_drop_min = 2
+		#The Maximum amount of Heart Crystal X item drops for Germonium Infernium variants.
+		#Range: > 0
+		infernium_drop_max = 6
+		#Which type of heart item Infernium mobs can drop. Options: HEART, SHARD, DUST
+		#Allowed Values: HEART, SHARD, DUST
+		infernium_drop_type = "SHARD"
+		#The Drop Rate for Germonium Infernium variants. If value is 0 Germonium Infernium will drop no Heart Crystal X items.
+		#Range: 0.0 ~ 100.0
+		celestium_drop_rate = 100.0
+		#The Minimum amount of Heart Crystal X item drops for Germonium Infernium variants.
+		#Range: > 0
+		celestium_drop_min = 1
+		#The Maximum amount of Heart Crystal X item drops for Germonium Infernium variants.
+		#Range: > 0
+		celestium_drop_max = 3
+		#Which type of heart item Celestium mobs can drop. Options: HEART, SHARD, DUST
+		#Allowed Values: HEART, SHARD, DUST
+		celestium_drop_type = "HEART"
+
+	["Heart Crystal Settings"."Heart Crystal Items Loot Settings"]
+		#Enable or disable Heart Crystal X items loot in chests (abandoned mineshaft, dungeon, desert pyramid, etc).
+		chestLootEnabled = true
+		#Chance that Heart Crystal X items loot appears in a target chest (0.0 - 100.0).
+		#Range: 0.0 ~ 100.0
+		chestLootChance = 25.0
+		#The number of weight Heart Crystal X items should have in loot. Higher means it will be really common loot, lower means a more rarer loot depending on the loot table.
+		#Range: 1 ~ 100
+		heartItemWeight = 3
+		#Minimum number of Heart Crystal X items to add to loot.
+		#Range: 0 ~ 64
+		minHeartItems = 0
+		#Maximum number of Heart Crystal X items to inject.
+		#Range: 1 ~ 64
+		maxHeartItems = 4
+		#Which Heart Crystal X items to inject into chests: DUST, SHARD, or HEART.
+		#Allowed Values: DUST, SHARD, HEART
+		heartItem = "DUST"
+		#    List of chest loot tables that should receive injected loot.
+		#    Format: "namespace:path"
+		#    Examples:
+		#      "minecraft:chests/abandoned_mineshaft"
+		#      "minecraft:chests/simple_dungeon"
+		#      "minecraft:chests/desert_pyramid"
+		#
+		tables = ["minecraft:chests/abandoned_mineshaft", "minecraft:chests/simple_dungeon", "minecraft:chests/desert_pyramid"]
+
+["Germonium Spawning"]
+	#If true no Germonium variants will spawn.
+	disableGermonium = false
+	#If true it will allow Germonium variants to spawn from Monster Spawners. If false no Germonium variants will spawn from Monster Spawners.
+	allowGermoniumFromSpawners = false
+	#It determines the general chance for a hostile mob to become a Germonium Variant. If % is 1.0 then thats 1%
+	#Range: 0.0 ~ 100.0
+	germoniumBaseChance = 1.0
+	#It determines the chance for Germonium Celestiums to spawn. If for example the % is 50 now there is a 50% chance for both Variants. If % is 0, Germonium Celestiums will not spawn.
+	#Range: 0.0 ~ 100.0
+	germoniumEqualizer = 1.0
+	#Blacklist of entities or tags that cannot become Germonium variants.
+	#Use entries like:
+	# - 'minecraft:wither' for a specific entity
+	# - '#forge:bosses' for a tag
+	# - you can also use regex for example: '/^minecraft:(zombie|creeper|enderman|skeleton|spider)$/' or '/^minecraft:[a-z0-9_]+$/'
+	entityBlacklist = ["minecraft:ender_dragon", "minecraft:wither"]
+
+["Germonium Mobs Settings"]
+	#It determines the Minimum added Size for Germonium Slimes.
+	#Range: 0.0 ~ 50.0
+	germoniumSlimeSizeMin = 5.0
+	#It determines the Maximum added Size for Germonium Slimes.
+	#Range: 0.0 ~ 50.0
+	germoniumSlimeSizeMax = 10.0
+	#It determines the Minimum added Size for Germonium Magma Cubes.
+	#Range: 0.0 ~ 50.0
+	germoniumMagmaSizeMin = 5.0
+	#It determines the Maximum added Size for Germonium Magma Cubes.
+	#Range: 0.0 ~ 50.0
+	germoniumMagmaSizeMax = 10.0
+	#It determines the Minimum added Size for Germonium Phantoms.
+	#Range: 0.0 ~ 50.0
+	germoniumPhantomSizeMin = 3.0
+	#It determines the Maximum added Size for Germonium Phantoms
+	#Range: 0.0 ~ 50.0
+	germoniumPhantomSizeMax = 6.0
+	#It determines the Minimum added Explosion Power for Germonium Ghasts. Vanilla Ghasts have a base Explosion Power of 1
+	#Range: 0.0 ~ 50.0
+	germoniumGhastExplosionPowerMin = 3.0
+	#It determines the Maximum added Explosion Power for Germonium Ghasts. Vanilla Ghasts have a base Explosion Power of 1
+	#Range: 0.0 ~ 50.0
+	germoniumGhastExplosionPowerMax = 5.0
+	#It determines the % for Germonium Creepers to spawn charged. If value is 0 no Charged Creepers will spawn.
+	#Range: 0.0 ~ 100.0
+	germoniumCreeperChargedChance = 25.0
+	#It determines the Minimum added Explosion Power for Germonium Creepers. If value is 0 the minimum extra explosion power is gonna be 0. Vanilla Creepers have a base Explosion Power of 3, If they are charged their base gets multiplied by 2.
+	#Range: 0.0 ~ 50.0
+	germoniumCreeperExplosionPowerMin = 1.0
+	#It determines the Maximum added Explosion Power for Germonium Creepers. If value is 0 the maximum extra explosion power is gonna be 0. Vanilla Creepers have a base Explosion Power of 3, If they are charged their base gets multiplied by 2.
+	#Range: 0.0 ~ 50.0
+	germoniumCreeperExplosionPowerMax = 4.0
+
+["Germonium Attributes"]
+	#The amount of Health added to Germonium Inferniums. If value is 0 it will not add any Health.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	infernium_add_health = 50.0
+	#The amount of Health added to Germonium Celestiums. If value is 0 it will not add any Health.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	celestium_add_health = 100.0
+	#The amount of Damage added to Germonium Inferniums. If value is 0 it will not add any Damage.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	infernium_add_damage = 10.0
+	#The amount of Damage added to Germonium Celestiums. If value is 0 it will not add any Damage.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	celestium_add_damage = 20.0
+	#The amount of Armor added to Germonium Inferniums. If value is 0 it will not add any Armor.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	infernium_add_armor = 20.0
+	#The amount of Armor added to Germonium Celestiums. If value is 0 it will not add any Armor.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	celestium_add_armor = 40.0
+	#The amount of Armor Toughness added to Germonium Inferniums. If value is 0 it will not add any Armor Toughness.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	infernium_add_armort = 20.0
+	#The amount of Armor Toughness added to Germonium Celestiums. If value is 0 it will not add any Armor Toughness.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	celestium_add_armort = 40.0
+	#The % of Speed added to Germonium Inferniums. If value is 0 it will not add Speed. If for example % is 0.5, that is +50% more Speed.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	infernium_mult_speed = 0.5
+	#The % of Speed added to Germonium Celestiums. If value is 0 it will not add Speed. If for example % is 1.0, that is +100% more Speed.
+	#Range: 0.0 ~ 1.7976931348623157E308
+	celestium_mult_speed = 1.0
+	#The % of Knockback Resistance added to Germonium Inferniums. If value is 0 it will not add Knockback Resistance. If for example % is 0.5, that is +50% Knockback Resistance.
+	#Range: 0.0 ~ 1.0
+	infernium_add_kb = 0.5
+	#The % of Knockback Resistance added to Germonium Celestiums. If value is 0 it will not add Knockback Resistance. If for example % is 1.0, that is +100% Knockback Resistance.
+	#Range: 0.0 ~ 1.0
+	celestium_add_kb = 1.0
+
+["Germonium Abilities"]
+
+	["Germonium Abilities"."Germonium Immunities"]
+		#If true Germonium variants will have Damage Immunity against suffocation (in blocks).
+		germonium_immune_to_suffocation = true
+		#If true Germonium variants will have Damage Immunity against drowning (underwater).
+		germonium_immune_to_drowning = true
+		#If true Germonium Infernium variants will receive no damage from shulker bullets from other Germonium Infernium variants. If false it can lead to infighting between Germoniums.
+		infernium_immune_to_infernium_bullets = true
+		#If true Germonium Infernium variants will receive no damage from shulker bullets from other Germonium Celestium variants. If false it can lead to infighting between Germoniums.
+		infernium_immune_to_celestium_bullets = true
+		#If true Germonium Celestium variants will receive no damage from shulker bullets from other Germonium Celestium variants. If false it can lead to infighting between Germoniums.
+		celestium_immune_to_celestium_bullets = true
+		#If true Germonium Celestium variants will receive no damage from shulker bullets from other Germonium Infernium variants. If false it can lead to infighting between Germoniums.
+		celestium_immune_to_infernium_bullets = true
+
+	["Germonium Abilities"."Celestium Death Roll"]
+		#The minimum amount of Germonium Infernium mobs that will be spawned when a Germonium Celestium dies.
+		#Range: > 0
+		celestium_death_roll_min = 1
+		#The maximum amount of Germonium Infernium mobs that will be spawned when a Germonium Celestium dies.
+		#Range: > 0
+		celestium_death_roll_max = 3
+		#List of entities that can spawn when a Celestium dies. Namespaced IDs like 'minecraft:zombie'. Blacklisted entities will be skipped.
+		entityArray = ["minecraft:zombie", "minecraft:skeleton", "minecraft:husk", "minecraft:stray", "minecraft:vindicator", "minecraft:ravager", "minecraft:evoker", "minecraft:pillager", "minecraft:witch", "minecraft:enderman", "minecraft:phantom", "minecraft:slime", "minecraft:magma_cube", "minecraft:vex", "minecraft:wither_skeleton", "minecraft:blaze", "minecraft:zombie_villager", "minecraft:guardian", "minecraft:silverfish", "minecraft:illusioner"]
+
+	["Germonium Abilities"."Germonium XP Multiplier"]
+		#The multiplier for Germonium Inferniums XP. If value is 1 it will not mutiply any XP dropped.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		infernium_xp_multiplier = 40.0
+		#The multiplier for Germonium Celestiums XP. If value is 1 it will not mutiply any XP dropped.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		celestium_xp_multiplier = 80.0
+
+	["Germonium Abilities"."Germonium Reflect Damage"]
+		#The % for Germonium Inferniums to reflect damage back. If % is 0 it will never reflect any damage back.
+		#Range: 0.0 ~ 100.0
+		infernium_reflect_chance = 30.0
+		#The % for Germonium Celestiums to reflect damage back. If % is 0 it will never reflect any damage back.
+		#Range: 0.0 ~ 100.0
+		celestium_reflect_chance = 50.0
+		#The % of damage reflected by Germonium Inferniums. If % is 30 it will only reflect 30% of the damage back.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		infernium_reflect_damage = 30.0
+		#The % of damage reflected by Germonium Celestiums. If % is 50 it will only reflect 50% of the damage back.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		celestium_reflect_damage = 50.0
+		#The cap of damage a Germonium Infernium can reflect. For example if the value is 25, only a max of 25 damage can be reflected.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		infernium_reflect_damage_cap = 25.0
+		#The cap of damage a Germonium Celestium can reflect. For example if the value is 50, only a max of 50 damage can be reflected.
+		#Range: 1.0 ~ 1.7976931348623157E308
+		celestium_reflect_damage_cap = 50.0
+
+	["Germonium Abilities"."Shulker Bullets"]
+		#Wether the Germonium variants should or should not shoot shulker bullets
+		enable_shulker_bullets = true
+		#The amount of shulker bullets a Germonium Infernium can shoot at the same time. If 0 no bullets are gonna be shot.
+		#Range: > 0
+		infernium_bullets = 1
+		#The amount of shulker bullets a Germonium Celestium can shoot at the same time. If 0 no bullets are gonna be shot.
+		#Range: > 0
+		celestium_bullets = 3
+		#Minimum shulker bullet ability cooldown time (in ticks).
+		#Range: > 0
+		shulker_min_cooldown = 200
+		#Maximum shulker bullet ability cooldown time (in ticks).
+		#Range: > 0
+		shulker_max_cooldown = 400
+		#The Damage of the shulker bullet shot from Germonium variants. If Damage is 0, the bullet will not deal any damage.
+		#Range: 0.0 ~ 1.7976931348623157E308
+		germonium_bullet_damage = 12.0
+		#If the shulker bullets from Germonium Inferniums should destroy blocks.
+		infernium_shulker_bullets_destroy = false
+		#If the shulker bullets from Germonium Celestiums should destroy blocks.
+		celestium_shulker_bullets_destroy = false
+		#The % for a shulker bullet from a Germonium Infernium to apply a negative effect (Wither, Instant Damage, etc).
+		#Range: 0.0 ~ 100.0
+		infernium_bullet_effect_chance = 25.0
+		#The % for a shulker bullet from a Germonium Celestium to apply a negative effect (Wither, Instant Damage, etc).
+		#Range: 0.0 ~ 100.0
+		celestium_bullet_effect_chance = 50.0
+		#List of effects applied by Infernium bullets in format effect:duration:amplifier
+		inferniumEffects = ["wither:200:2", "instant_damage:1:2", "slowness:200:3", "weakness:200:1", "mining_fatigue:200:3"]
+		#List of effects applied by Celestium bullets in format effect:duration:amplifier
+		celestiumEffects = ["wither:300:4", "instant_damage:1:3", "slowness:300:4", "weakness:300:3", "mining_fatigue:300:4"]
+		#The % for a shulker bullet from a Germonium Infernium to explode on impact.
+		#Range: 0.0 ~ 100.0
+		infernium_bullet_explosion_chance = 25.0
+		#The % for a shulker bullet from a Germonium Celestium to explode on impact.
+		#Range: 0.0 ~ 100.0
+		celestium_bullet_explosion_chance = 50.0
+		#The value of the explosion from a Germonium Infernium shulker bullet.
+		#Range: 0.0 ~ 1.7976931348623157E308
+		infernium_bullet_explosion_radius = 4.0
+		#The value of the explosion from a Germonium Infernium shulker bullet.
+		#Range: 0.0 ~ 1.7976931348623157E308
+		celestium_bullet_explosion_radius = 6.0
+

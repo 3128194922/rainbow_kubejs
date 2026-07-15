@@ -1,0 +1,6 @@
+
+["Hemolymph Blaster Config (血淋巴喷射器配置)"]
+	#血淋巴喷射器造成的伤害 (Hemolymph Blaster damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	hemolymphBlasterDamage = 7.0
+

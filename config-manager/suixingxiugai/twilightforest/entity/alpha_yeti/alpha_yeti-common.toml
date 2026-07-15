@@ -1,0 +1,38 @@
+
+["Alpha Yeti Config (雪怪首领配置)"]
+	#雪怪首领最大血量 (Alpha Yeti max health)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	alphaYetiMaxHealth = 200.0
+	#雪怪首领移动速度 (Alpha Yeti movement speed)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	alphaYetiMovementSpeed = 0.38
+	#雪怪首领攻击伤害 (Alpha Yeti attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	alphaYetiAttackDamage = 1.0
+	#雪怪首领跟随范围 (Alpha Yeti follow range)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	alphaYetiFollowRange = 40.0
+	#雪怪首领击退抗性 (Alpha Yeti knockback resistance)
+	#Range: 0.0 ~ 1.0
+	alphaYetiKnockbackResistance = 0.5
+	#雪怪首领经验值奖励 (Alpha Yeti XP reward)
+	#Range: > 0
+	alphaYetiXpReward = 317
+	#雪怪首领是否会抛掷实体 (Whether Alpha Yeti can throw entities)
+	alphaYetiCanThrowEntity = true
+	#雪怪首领是否会使用寒冰炸弹 (Whether Alpha Yeti can use ice bombs)
+	alphaYetiCanUseIceBomb = true
+	#雪怪首领是否会使用寒冰狂暴 (Whether Alpha Yeti can use ice rampage)
+	alphaYetiCanUseIceRampage = true
+	#雪怪首领寒冰狂暴技能冷却时间，单位：tick (Alpha Yeti ice rampage cooldown time, unit: tick)
+	#Range: > 0
+	alphaYetiIceRampageTimeout = 10
+	#雪怪首领寒冰狂暴技能持续时间，单位：tick (Alpha Yeti ice rampage duration, unit: tick)
+	#Range: > 0
+	alphaYetiIceRampageDuration = 180
+	#雪怪首领寒冰狂暴技能结束后疲劳时间，单位：tick (Alpha Yeti ice rampage tired duration, unit: tick)
+	#Range: > 0
+	alphaYetiIceRampageTiredDuration = 100
+	#雪怪首领在寒冰狂暴期间是否会使用落冰 (Whether Alpha Yeti can use falling ice during ice rampage)
+	alphaYetiCanUseFallingIce = true
+

@@ -1,0 +1,12 @@
+
+["Cyclops Config (独眼巨人配置)"]
+	#独眼巨人抓起攻击啃食目标造成的伤害 (Amount of damage done with cyclops bite attack when grabbing and eating a target)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	cyclopsBiteStrength = 40.0
+	#独眼巨人是否能踩踏攻击 (Whether cyclops can perform stomp attacks)
+	cyclopsCanStompAttack = true
+	#独眼巨人是否能抓取攻击 (Whether cyclops can perform grab attacks)
+	cyclopsCanGrabAttack = true
+	#独眼巨人是否能踢击攻击 (Whether cyclops can perform kick attacks)
+	cyclopsCanKickAttack = true
+

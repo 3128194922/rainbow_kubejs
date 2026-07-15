@@ -1,0 +1,9 @@
+
+["Lifedrain Scepter Config (吸血权杖配置)"]
+	#吸血权杖使用次数 (Number of uses for lifedrain scepter)
+	#Range: > 1
+	lifedrainScepterUses = 99
+	#吸血权杖冷却时间 (Cooldown time for lifedrain scepter in ticks)
+	#Range: > 0
+	lifedrainScepterCooldown = 0
+

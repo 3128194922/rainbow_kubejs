@@ -1,0 +1,11 @@
+
+["Dragon Den Config (龙巢配置)"]
+	#地下龙巢生成Y轴最低高度 (Underground dragon den generation minimum Y level)
+	#Range: > -2147483648
+	undergroundDragonDenMinYLevel = -50
+	#地下龙巢生成Y轴最大高度 (Underground dragon den generation maximum Y level)
+	#Range: > -2147483648
+	undergroundDragonDenMaxYLevel = 10
+	#地下龙巢是否可以凭空生成 (Whether underground dragon dens can generate in mid-air)
+	undergroundDragonDenCanGenerateInMidAir = false
+

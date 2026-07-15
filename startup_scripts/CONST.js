@@ -47,6 +47,10 @@ const Stats = Java.loadClass('net.minecraft.stats.Stats')
 const EnchantmentHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper')
 const Enchantments = Java.loadClass('net.minecraft.world.item.enchantment.Enchantments')
 
+const $SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
+const $SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+
+
 
 global.CURIONUMBER = 4
 global.CURSES = [

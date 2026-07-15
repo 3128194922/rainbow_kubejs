@@ -1,0 +1,5 @@
+
+["Siren Config (塞壬配置)"]
+	#塞壬是否能唱歌 (Whether siren can sing)
+	sirenCanSing = true
+

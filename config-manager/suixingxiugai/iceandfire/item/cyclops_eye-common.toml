@@ -1,0 +1,28 @@
+
+["Cyclops Eye Configuration (巨人独眼配置)"]
+	#巨人独眼施加药水效果的半径范围 (Cyclops eye potion effect radius)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	cyclopsEyePotionEffectRadius = 10.0
+	#巨人独眼施加药水效果的等级 (Cyclops eye potion effect level)
+	#Range: > 0
+	cyclopsEyePotionEffectLevel = 1
+	#巨人独眼施加药水效果的ID (Cyclops eye potion effect ID)
+	cyclopsEyePotionEffectId = "minecraft:weakness"
+	#巨人独眼施加药水效果的持续时间 (tick) (Cyclops eye potion effect duration in (tick))
+	#Range: > 1
+	cyclopsEyePotionEffectDuration = 20
+	#作用范围内影响巨人独眼耐久度的最少生物数量 (Minimum number of mobs in range to affect cyclops eye durability)
+	#Range: > 1
+	cyclopsEyeMinAffectedMobs = 1
+	#作用范围内巨人独眼耐久度的减少量 (Cyclops eye durability reduction amount)
+	#Range: > 1
+	cyclopsEyeDurabilityReduction = 1
+	#作用范围内巨人独眼耐久度减少的速度 (tick) (Cyclops eye durability reduction speed (tick))
+	#Range: > 1
+	cyclopsEyeDurabilityReductionSpeed = 120
+	#是否播放巨人独眼碎裂音效 (Whether to play cyclops eye break sound)
+	cyclopsEyePlayBreakSound = true
+	#巨人独眼作用实体类型 (可选: mob, living, player, all, animal, monster, ambient, water_animal, flying)
+	#(Cyclops eye target entity type (options: mob, living, player, all, animal, monster, ambient, water_animal, flying))
+	cyclopsEyeTargetEntityType = "living"
+

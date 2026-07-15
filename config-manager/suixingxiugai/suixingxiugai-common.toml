@@ -1,0 +1,35 @@
+
+["Suixingxiugai Config (随性修改配置)"]
+	#是否禁用实验性警告 (Whether to disable experimental warning)
+	disableExperimentalWarning = true
+	#是否启用伤害随机化 (Whether to enable damage randomization)
+	enableDamageRandomization = false
+	#伤害随机化适用的实体类型 (可选: mob, living, player, all, animal, monster, ambient, water_animal, flying)
+	#(Entity types for damage randomization) (options: mob, living, player, all, animal, monster, ambient, water_animal, flying)
+	damageRandomizationEntityTypes = "living"
+	#伤害随机化适用的具体实体列表 (Specific entities for damage randomization)
+	damageRandomizationEntities = []
+	#伤害随机化的最小倍数 (Minimum damage multiplier for randomization)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	damageRandomizationMinMultiplier = 0.0
+	#伤害随机化的最大倍数 (Maximum damage multiplier for randomization)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	damageRandomizationMaxMultiplier = 5.0
+	#是否启用伤害数字显示 (Whether to enable damage number display)
+	enableDamageNumberDisplay = false
+	#伤害数字显示适用的实体类型 (可选: mob, living, player, all, animal, monster, ambient, water_animal, flying)
+	#(Entity types for damage number display) (options: mob, living, player, all, animal, monster, ambient, water_animal, flying)
+	damageNumberDisplayEntityTypes = "living"
+	#伤害数字显示适用的具体实体列表 (Specific entities for damage number display)
+	damageNumberDisplayEntities = []
+	#伤害数字显示的黑名单实体列表 (Blacklist entities for damage number display)
+	damageNumberDisplayBlacklistEntities = ["dummmmmmy:target_dummy"]
+	#伤害数字显示的颜色 (十六进制颜色代码)
+	#(Damage number display color) (Hex color code)
+	damageNumberColor = "#FFFFFF"
+	#暴击伤害数字显示的颜色 (十六进制颜色代码)
+	#(Critical damage number display color) (Hex color code)
+	critDamageNumberColor = "#FF0000"
+	#是否启用进入存档自动开启死亡不掉落 (Whether to enable keep inventory on enter world)
+	enableKeepInventoryOnEnterWorld = true
+

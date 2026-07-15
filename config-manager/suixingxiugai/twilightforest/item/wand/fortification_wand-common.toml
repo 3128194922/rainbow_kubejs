@@ -1,0 +1,16 @@
+
+["Fortification Wand Config (护盾权杖配置)"]
+	#护盾权杖目标选择功能 (Enable target selection for fortification wand)
+	enableFortificationWandTargeting = false
+	#护盾权杖单次施加的护盾数量 (Number of shields granted by fortification wand per use)
+	#Range: > 1
+	fortificationWandShieldAmount = 5
+	#护盾权杖施加的护盾免疫一切伤害 (Entities with fortification wand shields are invulnerable to all damage)
+	enableFortificationWandInvulnerability = false
+	#护盾权杖使用次数 (Number of uses for fortification wand)
+	#Range: > 1
+	fortificationWandUses = 9
+	#护盾权杖冷却时间 (Cooldown time for fortification wand in ticks)
+	#Range: > 0
+	fortificationWandCooldown = 1200
+

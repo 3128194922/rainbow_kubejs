@@ -2008,11 +2008,11 @@ StartupEvents.registry('item', event => {
                     if (!stack) return;
 
                     // 从物品 NBT 读取隐匿状态和护甲数量（由 curioTick 每 tick 同步）
-                    let isStealth = stack.nbt ? stack.nbt.getBoolean("isStealth") : false;
+                    let isStealth = stack.nbt.getBoolean("isStealth") ? 1 : 0;
                     let armorCount = stack.nbt ? stack.nbt.getInt("armorCount") : 0;
 
                     // 有任意护甲且不被索敌时，加 4% 伤害
-                    e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * (isStealth ? 1 : 0), "multiply_total");
+                    e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * isStealth, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};

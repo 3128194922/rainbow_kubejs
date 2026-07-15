@@ -811,7 +811,7 @@ registerSkillSound('rainbow:dead_river', 'rainbow:voice.null');
 registerSkill('rainbow:dead_river', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
     if (player.cooldowns.isOnCooldown("rainbow:dead_river")) return;
     if (player.level.clientSide) return;
-    if (!hasCurios(player, "rainbow:lilith_hug")) return;
+    //if (!hasCurios(player, "rainbow:lilith_hug")) return;
 
     let nbt = itemStack.nbt;
     if (!nbt) return;
@@ -853,6 +853,100 @@ registerSkill('rainbow:dead_river', (event, player, itemStack, isSubmenu, submen
     nbt.putInt("Souls", 0);
     player.tell(Text.aqua("死河释放了 " + totalConsumed + " 个灵魂。"));
     player.cooldowns.addCooldown("rainbow:dead_river", SecoundToTick(10));
+});
+
+// --- 捕梦网 ---
+registerSkillSound('windswept:dream_catcher', 'rainbow:voice.null');
+registerSkill('windswept:dream_catcher', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("windswept:dream_catcher")) return;
+    if (player.level.clientSide) return;
+    //if (!hasCurios(player, "windswept:dream_catcher")) return;
+
+    // 切换为观察者模式，3 秒后返回生存模式
+    player.runCommandSilent(`gamemode spectator`);
+    event.server.scheduleInTicks(60, function() {
+        if (player && player.isAlive()) {
+            player.runCommandSilent(`gamemode survival`);
+        }
+    });
+
+    player.cooldowns.addCooldown("windswept:dream_catcher", SecoundToTick(10));
+});
+
+// --- 闪电瓶 ---
+registerSkillSound('rainbow:bottled_lightning', 'rainbow:voice.null');
+registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:bottled_lightning")) return;
+    if (player.level.clientSide) return;
+    //if (!hasCurios(player, "rainbow:bottled_lightning")) return;
+
+    let playerUuid = player.getUuid().toString();
+    let durationTicks = 100; // 5 秒
+    let pulseInterval = 15;  // 每次脉冲间隔 tick
+    let radius = 10;
+
+    // 0. 调整天气为雨天
+    event.server.runCommandSilent(`weather rain`);
+
+    // 1. Dyeing 矩形警示范围（静态满尺寸，仅Y轴旋转）
+    event.server.runCommandSilent(
+        `/dyeing area add static bottled_lightning_warn ${playerUuid} -${radius} 0 -${radius} ${radius} 4 ${radius} 4040C0FF 1.0 12 -1`
+    );
+
+    // 2. 给予玩家 2 秒漂浮效果
+    player.potionEffects.add("minecraft:levitation", 100, 0, false, false);
+    //player.potionEffects.add("delighto_flight:arc", 100, 0, false, false);
+
+    // 3. 周期性脉冲：AABB 扫荡召唤闪电
+    let elapsed = 0;
+    let pulse = () => {
+        if (!player || !player.isAlive()) {
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bottled_lightning_warn`);
+            return;
+        }
+
+        if (elapsed >= durationTicks) {
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bottled_lightning_warn`);
+            return;
+        }
+
+        // AABB 检测周围实体
+        let area = player.boundingBox.inflate(radius);
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity) return;
+            if (!entity.isLiving() || !entity.isAlive()) return;
+            if (entity == player) return;
+
+            // 跳过友军（已驯服宠物/佣兵）
+            let OwnerName = entity.persistentData.OwnerName;
+            if (OwnerName && OwnerName == playerUuid) return;
+            if (entity.owner && entity.owner == player) return;
+
+            // 给敌方实体 5 秒漂浮
+            entity.potionEffects.add("minecraft:levitation", 20, 0, false, false);
+
+            // 在非友军位置召唤闪电
+            try {
+                let lightning = player.level.createEntity("minecraft:lightning_bolt");
+                if (lightning) {
+                    lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+                    lightning.spawn();
+                }
+            } catch(e) {
+                console.error("闪电瓶召唤闪电失败: " + e);
+            }
+        });
+
+        // 播放雷声
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.lightning_bolt.thunder", "weather", 1.0, 1.0);
+
+        elapsed += pulseInterval;
+        event.server.scheduleInTicks(pulseInterval, pulse);
+    };
+
+    event.server.scheduleInTicks(pulseInterval, pulse);
+
+    player.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(30));
 });
 // ==========================================
 // 主入口逻辑

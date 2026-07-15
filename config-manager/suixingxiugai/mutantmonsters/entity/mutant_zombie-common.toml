@@ -1,0 +1,12 @@
+
+["Mutant Zombie Config (突变僵尸配置)"]
+	#突变僵尸倒下苏醒次数 (Mutant zombie resurrection count)
+	#Range: > 1
+	mutantZombieResurrectionCount = 4
+	#突变僵尸是否能使用冲击波 (Whether mutant zombie can use slam ground attack)
+	mutantZombieEnableSlamGroundAttack = true
+	#突变僵尸是否能使用投掷攻击 (Whether mutant zombie can use throw attack)
+	mutantZombieEnableThrowAttack = true
+	#突变僵尸是否能使用怒吼 (Whether mutant zombie can use roar attack)
+	mutantZombieEnableRoarAttack = true
+

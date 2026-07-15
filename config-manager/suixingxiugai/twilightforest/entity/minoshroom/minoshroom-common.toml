@@ -1,0 +1,42 @@
+
+["Minoshroom Config (米诺菇配置)"]
+	#米诺菇最大血量 (Minoshroom max health)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	minoshroomMaxHealth = 120.0
+	#米诺菇击退抗性 (Minoshroom knockback resistance)
+	#Range: 0.0 ~ 1.0
+	minoshroomKnockbackResistance = 0.5
+	#米诺菇移动速度 (Minoshroom movement speed)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomMovementSpeed = 0.25
+	#米诺菇攻击伤害 (Minoshroom attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomAttackDamage = 4.0
+	#米诺菇经验值奖励 (Minoshroom XP reward)
+	#Range: > 0
+	minoshroomXpReward = 100
+	#米诺菇在普通难度下的攻击伤害加成 (Minoshroom attack damage boost on normal difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomDifficultyAttackDamageBoostNormal = 3.0
+	#米诺菇在困难难度下的攻击伤害加成 (Minoshroom attack damage boost on hard difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomDifficultyAttackDamageBoostHard = 6.0
+	#米诺菇手持斧子蓄力捶地的蓄力时间 (tick) (Minoshroom ground attack charge time (tick))
+	#Range: > 1
+	minoshroomGroundAttackChargeTime = 30
+	#米诺菇手持斧子蓄力捶地的蓄力伤害倍数 (Minoshroom ground attack damage multiplier)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomGroundAttackDamageMultiplier = 0.5
+	#米诺菇是否会冲撞 (Minoshroom can charge)
+	minoshroomCanCharge = true
+	#米诺菇冲撞蓄力时间 (tick) (Minoshroom charge time (tick))
+	#Range: > 1
+	minoshroomChargeTime = 15
+	#米诺菇的冲撞是否能破坏经过的方块 (Minoshroom charge can break blocks)
+	minoshroomChargeCanBreakBlocks = true
+	#米诺菇的冲撞击飞高度 (Minoshroom charge knockback height)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	minoshroomChargeKnockbackHeight = 0.35
+	#米诺菇是否会捶地 (Minoshroom can ground attack)
+	minoshroomCanGroundAttack = true
+

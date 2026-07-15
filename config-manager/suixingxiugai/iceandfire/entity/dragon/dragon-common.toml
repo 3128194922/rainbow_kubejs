@@ -1,0 +1,59 @@
+
+["Dragon Config (龙配置)"]
+	#启用龙复活指令 (Enable dragon resurrection command)
+	enableDragonResurrectionCommand = true
+	#地表生成的野生龙默认是否处于睡眠状态
+	#Whether wild dragons generated on the surface default to sleeping state
+	wildDragonDefaultSleepingSurface = true
+	#地下龙巢生成的野生龙默认是否处于睡眠状态
+	#Whether wild dragons generated in underground dens default to sleeping state
+	wildDragonDefaultSleepingUnderground = true
+
+	["Dragon Config (龙配置)"."Fire Dragon Config (火龙配置)"]
+		#火龙是否进入睡眠状态 (Whether fire dragons will enter sleep state)
+		fireDragonSleeping = true
+		#火龙是否会破坏方块 (Whether fire dragons can destroy blocks)
+		fireDragonDestroyBlocks = true
+		#已驯服的火龙是否会破坏方块 (Whether tamed fire dragons can destroy blocks)
+		tamedFireDragonDestroyBlocks = true
+		#火龙的龙息是否会破坏方块 (Whether fire dragon breath can destroy blocks)
+		fireDragonBreathDestroyBlocks = true
+		#已驯服的火龙的龙息是否会破坏方块 (Whether tamed fire dragon breath can destroy blocks)
+		tamedFireDragonBreathDestroyBlocks = true
+		#火龙是否能够吐龙息 (Whether fire dragons can breath fire)
+		fireDragonCanBreath = true
+		#已驯服的火龙是否能够吐龙息 (Whether tamed fire dragons can breath fire)
+		tamedFireDragonCanBreath = true
+
+	["Dragon Config (龙配置)"."Ice Dragon Config (冰龙配置)"]
+		#冰龙是否进入睡眠状态 (Whether ice dragons will enter sleep state)
+		iceDragonSleeping = true
+		#冰龙是否会破坏方块 (Whether ice dragons can destroy blocks)
+		iceDragonDestroyBlocks = true
+		#已驯服的冰龙是否会破坏方块 (Whether tamed ice dragons can destroy blocks)
+		tamedIceDragonDestroyBlocks = true
+		#冰龙的龙息是否会破坏方块 (Whether ice dragon breath can destroy blocks)
+		iceDragonBreathDestroyBlocks = true
+		#已驯服的冰龙的龙息是否会破坏方块 (Whether tamed ice dragon breath can destroy blocks)
+		tamedIceDragonBreathDestroyBlocks = true
+		#冰龙是否能够吐龙息 (Whether ice dragons can breath ice)
+		iceDragonCanBreath = true
+		#已驯服的冰龙是否能够吐龙息 (Whether tamed ice dragons can breath ice)
+		tamedIceDragonCanBreath = true
+
+	["Dragon Config (龙配置)"."Lightning Dragon Config (电龙配置)"]
+		#电龙是否进入睡眠状态 (Whether lightning dragons will enter sleep state)
+		lightningDragonSleeping = true
+		#电龙是否会破坏方块 (Whether lightning dragons can destroy blocks)
+		lightningDragonDestroyBlocks = true
+		#已驯服的电龙是否会破坏方块 (Whether tamed lightning dragons can destroy blocks)
+		tamedLightningDragonDestroyBlocks = true
+		#电龙的龙息是否会破坏方块 (Whether lightning dragon breath can destroy blocks)
+		lightningDragonBreathDestroyBlocks = true
+		#已驯服的电龙的龙息是否会破坏方块 (Whether tamed lightning dragon breath can destroy blocks)
+		tamedLightningDragonBreathDestroyBlocks = true
+		#电龙是否能够吐龙息 (Whether lightning dragons can breath lightning)
+		lightningDragonCanBreath = true
+		#已驯服的电龙是否能够吐龙息 (Whether tamed lightning dragons can breath lightning)
+		tamedLightningDragonCanBreath = true
+

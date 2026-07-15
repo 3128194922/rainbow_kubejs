@@ -1,0 +1,15 @@
+
+["Dragon Config (免疫凝视配置)"]
+	#免疫凝视装备列表 (Gaze Immunity Armor List)
+	#列表中的物品在头盔，胸甲，护腿，靴子则免疫凝视
+	#Items in this list provide immunity when worn as helmet, chestplate, leggings, or boots
+	gazeImmunityArmorList = []
+	#免疫凝视背包列表 (Gaze Immunity Inventory List)
+	#列表中的物品在物品栏，快捷栏，主/副手则免疫凝视
+	#Items in this list provide immunity when carried in inventory, hotbar, main hand, or off hand
+	gazeImmunityItemList = []
+	#免疫凝视饰品列表 (Gaze Immunity Curios List)
+	#列表中填写的饰品会免疫凝视
+	#Items in the list provide immunity when equipped as curios
+	gazeImmunityCuriosList = []
+

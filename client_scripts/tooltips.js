@@ -148,8 +148,21 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua(`开启后释放心灵墙`));
     })
     event.addAdvanced('rainbow:bottled_lightning', (item, advanced, text) => {
-        text.add(1, Text.aqua("攻击生物触发连锁闪电,最大连锁5"));
-        text.add(2, Text.aqua("下雨天最大连锁提升至10"));
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸被动：攻击触发链式闪电，连锁5（雨天连锁10）"));
+            text.add(2, Text.aqua("▸主动：召唤雷云风暴，5秒内对周围敌人持续落雷"));
+            text.add(3, Text.aqua("  并施加漂浮效果，冷却30秒"));
+        }
+    })
+    event.addAdvanced('windswept:dream_catcher', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸主动：进入灵体状态3秒，可穿墙逃生"));
+            text.add(2, Text.aqua("  时间结束后返回生存模式，冷却10秒"));
+        }
     })
     event.addAdvanced('rainbow:cactus', (item, advanced, text) => {
         text.add(1, Text.aqua("每30s恢复1饥饿值"));

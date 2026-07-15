@@ -1,0 +1,6 @@
+
+["Blood Sprayer Config (血液喷射器配置)"]
+	#血液喷射器造成的伤害 (Blood Sprayer damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	bloodSprayerDamage = 4.0
+

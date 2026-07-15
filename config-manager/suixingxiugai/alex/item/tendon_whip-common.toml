@@ -1,0 +1,16 @@
+
+["Tendon Whip Config (筋腱长鞭配置)"]
+	#筋腱长鞭攻击的距离 (Tendon Whip attack range)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	whipAttackRange = 5.0
+	#筋腱长鞭最多同时攻击生物数量 (Maximum number of entities that Tendon Whip can attack simultaneously)
+	#Range: > 1
+	whipMaxTargets = 3
+	#筋腱长鞭单次攻击的最大伤害 (Maximum damage per Tendon Whip attack)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	whipMaxDamage = 5.0
+	#筋腱长鞭是否需要蓄力满才能攻击 (Whether Tendon Whip requires full charge to attack)
+	whipRequireFullCharge = true
+	#筋腱长鞭是否开启右键快速收回 (Whether Tendon Whip quick retract with right click is enabled)
+	whipQuickRetract = true
+

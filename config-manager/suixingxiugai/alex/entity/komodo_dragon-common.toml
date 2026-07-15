@@ -1,0 +1,5 @@
+
+["Komodo Dragon Config (科莫多巨蜥配置)"]
+	#科莫多巨蜥是否会主动攻击 (Whether Komodo Dragons will actively attack)
+	komodoDragonWillAttack = false
+

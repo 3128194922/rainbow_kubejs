@@ -1,0 +1,12 @@
+
+["Gorgon Head Configuration (蛇发女妖头颅配置)"]
+	#蛇发女妖头颅使用次数 (Gorgon head uses)
+	#Range: > 1
+	gorgonHeadUses = 1
+	#是否播放蛇发女妖头颅碎裂音效 (Whether to play gorgon head break sound)
+	gorgonHeadPlayBreakSound = true
+	#蛇发女妖头颅是否必须石化目标实体才减少物品 (Whether the gorgon head must petrify the target entity to consume the item)
+	gorgonHeadMustPetrifyToConsume = true
+	#蛇发女妖头颅是否能石化一切实体 (Whether the gorgon head can petrify all entities)
+	gorgonHeadCanPetrifyAllEntities = false
+

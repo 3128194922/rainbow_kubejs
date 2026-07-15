@@ -1,0 +1,9 @@
+
+["Zombie Wand Config (僵尸权杖配置)"]
+	#僵尸权杖使用次数 (Number of uses for zombie wand)
+	#Range: > 1
+	zombieWandUses = 9
+	#僵尸权杖冷却时间 (Cooldown time for zombie wand in ticks)
+	#Range: > 0
+	zombieWandCooldown = 0
+

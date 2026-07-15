@@ -1,0 +1,5 @@
+
+["IceAndFire (冰火传说)"]
+	#启用石像恢复指令 (Enable statue restore command)
+	enableStatueRestoreCommand = true
+

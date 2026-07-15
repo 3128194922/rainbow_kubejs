@@ -1,0 +1,14 @@
+
+["Pocket Sand Config (含沙射之袋配置)"]
+	#含沙射之袋造成的伤害 (Pocket Sand damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	pocketSandDamage = 2.5
+	#含沙射之袋施加药水效果的等级 (Pocket Sand effect level)
+	#Range: > 0
+	pocketSandEffectLevel = 0
+	#含沙射之袋施加药水效果的ID (Pocket Sand effect ID)
+	pocketSandEffectId = "minecraft:blindness"
+	#含沙射之袋施加药水效果的持续时间 (tick) (Pocket Sand effect duration in ticks)
+	#Range: > 0
+	pocketSandEffectDuration = 100
+

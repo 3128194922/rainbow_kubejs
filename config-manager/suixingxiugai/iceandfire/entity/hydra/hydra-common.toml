@@ -1,0 +1,15 @@
+
+["Hydra Config (九头蛇配置)"]
+	#是否启用九头蛇单次伤害直接死亡 (Enable single hit kill for hydra)
+	enableSingleHitKill = false
+	#九头蛇单次受到多少伤害直接死亡 (How much damage in a single hit kills the hydra)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	singleHitDamageToKill = 2009.0
+	#是否启用九头蛇累计伤害直接死亡 (Enable cumulative damage kill for hydra)
+	enableCumulativeDamageKill = false
+	#九头蛇累计受到多少伤害直接死亡 (How much cumulative damage kills the hydra)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	cumulativeDamageToKill = 2009.0
+	#九头蛇受到特定伤害类型直接死亡 (Damage types that kill the hydra instantly)
+	damageTypesToKill = [""]
+

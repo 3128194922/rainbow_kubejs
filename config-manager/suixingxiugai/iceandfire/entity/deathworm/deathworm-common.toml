@@ -1,0 +1,5 @@
+
+["Death Worm Config (死亡蠕虫配置)"]
+	#死亡蠕虫可以穿过的方块列表 (List of blocks that death worms can pass through)
+	deathWormPassableBlocks = ["minecraft:sand", "minecraft:red_sand"]
+

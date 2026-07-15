@@ -1,0 +1,9 @@
+
+["Gorgon Config (蛇发女妖配置)"]
+	#蛇发女妖是否能使用石化 (Whether the gorgon can use petrify ability)
+	gorgonCanUsePetrify = true
+	#蛇发女妖是否能使用毒牙 (Whether the gorgon can use poison fang attack)
+	gorgonCanUsePoisonFang = true
+	#蛇发女妖是否能近战攻击 (Whether the gorgon can use melee attack)
+	gorgonCanUseMeleeAttack = true
+

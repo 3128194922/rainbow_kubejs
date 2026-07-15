@@ -40,7 +40,6 @@ StartupEvents.registry("item", event => {
     // 便携末影箱
     event.create("rainbow:mini_ender_chest").maxStackSize(1)
 
-
     // 秘封琥珀
     event.create("rainbow:amber_bee")
 

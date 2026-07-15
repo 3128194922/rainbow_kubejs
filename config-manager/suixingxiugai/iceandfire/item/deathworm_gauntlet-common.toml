@@ -1,0 +1,19 @@
+
+["IceAndFire (冰火传说)"]
+
+	["IceAndFire (冰火传说)"."Death Worm Gauntlet Config (死亡蠕虫手甲配置)"]
+		#死亡蠕虫手甲造成的伤害 (Damage dealt by the Death Worm Gauntlet)
+		#Range: 0.0 ~ 1.7976931348623157E308
+		deathWormGauntletDamage = 3.0
+		#死亡蠕虫手甲的作用范围（方块） (Range of the Death Worm Gauntlet (blocks))
+		#Range: 0.0 ~ 1.7976931348623157E308
+		deathWormGauntletRange = 5.0
+		#死亡蠕虫手甲使用间隔（tick） (Cooldown between uses of the Death Worm Gauntlet (tick))
+		#Range: > 0
+		deathWormGauntletCooldown = 12
+		#拉拽目标到玩家位置的力度 (Force with which targets are pulled towards the player)
+		#Range: 0.0 ~ 1.7976931348623157E308
+		deathWormGauntletPullForce = 0.5
+		#击退抗性是否降低拉拽力度 (Whether knockback resistance reduces pull force)
+		deathWormGauntletKnockbackResistanceReduction = true
+

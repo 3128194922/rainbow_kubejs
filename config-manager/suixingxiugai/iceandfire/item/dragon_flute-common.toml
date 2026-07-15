@@ -1,0 +1,11 @@
+
+["Dragon Flute Config (龙歌长笛配置)"]
+	#龙歌长笛是否能影响驯服外的生物 (Dragon Bone Flute Affects Wild Creatures)
+	dragonFluteAffectsWildDragons = false
+	#龙歌长笛冷却时间 (tick) (Dragon Bone Flute Cooldown Time (tick))
+	#Range: > 0
+	dragonFluteCooldown = 60
+	#龙歌长笛影响范围 (chunks) (Dragon Bone Flute Effect Range (chunks))
+	#Range: > 1
+	dragonFluteDistance = 8
+

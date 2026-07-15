@@ -1,0 +1,16 @@
+
+["Hydra Heart Config (九头蛇心脏配置)"]
+	#九头蛇心脏药水效果的血量阈值列表 (Health percentage thresholds for potion effect)
+	hydraHeartPotionThresholds = [0.75, 0.5, 0.25]
+	#九头蛇心脏药水效果等级列表 (Potion effect levels corresponding to thresholds)
+	hydraHeartPotionLevels = [0, 1, 2, 3]
+	#九头蛇心脏应用的药水效果ID (Potion effect ID applied by Hydra Heart)
+	hydraHeartPotionEffect = "minecraft:regeneration"
+	#九头蛇心脏药水效果的持续时间 (tick) (Potion effect duration applied by Hydra Heart (tick) )
+	#Range: > 1
+	hydraHeartPotionDuration = 900
+	#自身已拥有对应的药水效果是否还能触发 (Whether the effect can still be triggered if the player already has the corresponding potion effect)
+	hydraHeartApplyEffectIfAlreadyHas = true
+	#自身同时持有多个九头蛇心脏是否可以叠加药水等级 (Whether potion levels can be stacked when holding multiple Hydra Hearts)
+	hydraHeartStackPotionLevels = true
+

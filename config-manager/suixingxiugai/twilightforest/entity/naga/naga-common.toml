@@ -1,0 +1,105 @@
+
+["Naga Config (娜迦配置)"]
+	#娜迦最大血量 (Naga max health)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	nagaMaxHealth = 120.0
+	#娜迦移动速度 (Naga movement speed)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaMovementSpeed = 0.5
+	#娜迦头部攻击伤害 (Naga head attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaAttackDamage = 5.0
+	#娜迦身体段攻击伤害 (Naga segment attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaSegmentAttackDamage = 2.0
+	#娜迦身体段对动物攻击伤害倍数 (Naga segment attack damage multiplier against animals)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	nagaSegmentAttackDamageMultiplierAgainstAnimals = 3.0
+	#娜迦跟随距离 (Naga follow range)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaFollowRange = 80.0
+	#娜迦击退抗性 (Naga knockback resistance)
+	#Range: 0.0 ~ 1.0
+	nagaKnockbackResistance = 0.25
+	#娜迦经验值奖励 (Naga XP reward)
+	#Range: > 0
+	nagaXpReward = 217
+	#娜迦在普通难度下的血量加成 (Naga health boost on normal difficulty)
+	#Range: > 0
+	nagaDifficultyHealthBoostNormal = 80
+	#娜迦在困难难度下的血量加成 (Naga health boost on hard difficulty)
+	#Range: > 0
+	nagaDifficultyHealthBoostHard = 130
+	#娜迦头部在普通难度下的攻击伤害加成 (Naga head attack damage boost on normal difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaDifficultyAttackDamageBoostNormal = 2.0
+	#娜迦头部在困难难度下的攻击伤害加成 (Naga head attack damage boost on hard difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaDifficultyAttackDamageBoostHard = 3.0
+	#娜迦身体段在普通难度下的攻击伤害加成 (Naga segment attack damage boost on normal difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaDifficultySegmentAttackDamageBoostNormal = 1.0
+	#娜迦身体段在困难难度下的攻击伤害加成 (Naga segment attack damage boost on hard difficulty)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaDifficultySegmentAttackDamageBoostHard = 1.5
+	#娜迦眩晕持续时间 (Naga stun duration)
+	#Range: > 1
+	nagaStunDuration = 60
+	#娜迦眩晕伤害阈值 (Naga stun damage threshold)
+	#Range: > 1
+	nagaStunDamageThreshold = 15
+	#娜迦生命值恢复延迟时间 (tick) (Naga healing delay time (tick))
+	#Range: > 0
+	nagaHealingDelay = 600
+	#当实体或娜迦走出庭院边界时，娜迦会尝试回到中心点
+	#(When entities or Naga go beyond the courtyard boundary, Naga will try to return to the center point)
+	#娜迦庭院边界范围 X方向 (Naga courtyard boundary range X direction)
+	#Range: > 1
+	nagaCourtyardBoundX = 46
+	#娜迦庭院边界范围 Z方向 (Naga courtyard boundary range Z direction)
+	#Range: > 1
+	nagaCourtyardBoundZ = 46
+	#娜迦庭院边界范围 Y方向 (Naga courtyard boundary range Y direction)
+	#Range: > 1
+	nagaCourtyardBoundY = 7
+	#娜迦正常状态冲撞盾牌后盾牌的耐久消耗 (Naga normal state shield durability consumption after charging shield)
+	#Range: > 0
+	nagaShieldDamageOnChargeNormal = 5
+	#娜迦愤怒状态冲撞盾牌后盾牌的耐久消耗 (Naga enraged state shield durability consumption after charging shield)
+	#Range: > 0
+	nagaShieldDamageOnChargeEnraged = 10
+	#娜迦冲撞盾牌后盾牌的冷却时间 (tick) (Naga shield cooldown after charge (tick))
+	#Range: > 0
+	nagaShieldCooldown = 200
+	#娜迦头部推力系数 (Naga head push force coefficient)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaHeadChargePushForce = 2.0
+	#娜迦头部反作用力系数 (Naga head recoil force coefficient)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaHeadChargeRecoilForce = 0.0
+	#娜迦身体段推力系数 (Naga segment push force coefficient)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaSegmentChargePushForce = 2.0
+	#娜迦身体段反作用力系数 (Naga segment recoil force coefficient)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaSegmentChargeRecoilForce = 0.0
+	#娜迦正常状态冲撞盾牌自身受到的伤害 (Naga self damage when charging shield in normal state)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaAttackKnockbackForceNormal = 2.0
+	#娜迦愤怒状态冲撞盾牌自身受到的伤害 (Naga self damage when charging shield in enraged state)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	nagaAttackKnockbackForceEnraged = 4.0
+	#娜迦每段身体受到伤害时传递给主体的伤害比例 (Naga segment damage transfer ratio to main body)
+	#Range: 0.0 ~ 1.0
+	nagaSegmentDamageTransferRatio = 0.6666666666666666
+	#娜迦是否可以破坏方块 (Whether Naga can destroy blocks)
+	nagaCanDestroyBlocks = true
+	#娜迦冲撞时是否破坏方块 (Whether Naga can destroy blocks when charging)
+	nagaCanDestroyBlocksOnCharge = true
+	#娜迦死亡动画开始延迟 (tick) (Naga death animation start delay (tick))
+	#Range: > 0
+	nagaDeathAnimationStartDelay = 24
+	#娜迦死亡动画持续时间 (tick) (Naga death animation duration (tick))
+	#Range: > 1
+	nagaDeathAnimationDuration = 120
+

@@ -1,0 +1,6 @@
+
+["Meat Shredder Config (绞肉锯配置)"]
+	#绞肉锯右键造成的伤害 (Meat Shredder right-click damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	meatShredderRightClickDamage = 1.0
+

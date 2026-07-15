@@ -1,0 +1,7 @@
+
+["Gauntlet Config (下界铁掌配置)"]
+	#下界铁掌防御状态下是否可以被攻击 (Whether the Gauntlet can be attacked when in defensive state)
+	gauntletDefenseCanBeAttacked = true
+	#下界铁掌脱战后是否会自行恢复生命值 (Whether the Gauntlet will heal itself after leaving combat)
+	gauntletIdleHealEnabled = true
+

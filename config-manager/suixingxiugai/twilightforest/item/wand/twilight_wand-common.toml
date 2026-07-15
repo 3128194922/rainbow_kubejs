@@ -1,0 +1,9 @@
+
+["Twilight Wand Config (黄昏权杖配置)"]
+	#黄昏权杖使用次数 (Number of uses for twilight wand)
+	#Range: > 1
+	twilightWandUses = 99
+	#黄昏权杖冷却时间 (Cooldown time for twilight wand in ticks)
+	#Range: > 0
+	twilightWandCooldown = 0
+

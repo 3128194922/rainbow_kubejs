@@ -1,0 +1,61 @@
+
+["Lich Config (巫妖配置)"]
+	#巫妖最大血量 (Lich max health)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	lichMaxHealth = 100.0
+	#巫妖移动速度 (Lich movement speed)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichMovementSpeed = 0.45
+	#巫妖攻击伤害 (Lich attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichAttackDamage = 3.0
+	#巫妖经验值奖励 (Lich XP reward)
+	#Range: > 0
+	lichXpReward = 217
+	#巫妖的护盾可被更多伤害破坏 (Whether Lich's shield can be broken by more types of damage)
+	enableLichShieldModification = false
+	#巫妖的护盾数量 (Number of Lich's shields)
+	#Range: > 1
+	lichShieldStrength = 6
+	#巫妖第一形态的幻影召唤最大数量 (Maximum number of phantoms summoned in Lich's first phase)
+	#Range: > 0
+	lichPhantomSummonMaxCount = 4
+	#巫妖第一形态的幻影是否能被攻击 (Whether phantoms in Lich's first phase can be attacked)
+	lichPhantomCanBeAttacked = true
+	#巫妖第一形态的幻影死亡时是否生成箱子 (Whether phantoms in Lich's first phase drop a chest when killed)
+	lichPhantomDropChest = false
+	#巫妖是否能产生幻影 - 最高优先级 (Whether the Lich can spawn phantoms - Highest priority)
+	lichCanSpawnPhantom = true
+	#巫妖是否能生命吸取 - 最高优先级 (Whether the Lich can absorb minions to heal - Highest priority)
+	lichCanAbsorbMinions = true
+	#巫妖第二形态时是否会吸收怪物 (Whether the Lich can absorb mobs in phase 2)
+	lichCanAbsorbMobsInPhase2 = true
+	#巫妖第二形态时是否会吸收仆从 (Whether the Lich can absorb minions in phase 2)
+	lichCanAbsorbMinionsInPhase2 = true
+	#巫妖第三形态时是否会吸收怪物 (Whether the Lich can absorb mobs in phase 3)
+	lichCanAbsorbMobsInPhase3 = true
+	#巫妖第二形态时吸收怪物回复的生命值 (Health amount restored when Lich absorbs mobs in phase 2)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase2MobAbsorbHealAmount = 2.0
+	#巫妖第二形态时吸收怪物回复的血量阈值 (Health threshold for Lich to absorb mobs in phase 2)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase2MobAbsorbHealthThreshold = 50.0
+	#巫妖第二形态时吸收仆从回复的生命值 (Health amount restored when Lich absorbs minions in phase 2)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase2MinionAbsorbHealAmount = 10.0
+	#巫妖第二形态时吸收仆从回复的血量阈值 (Health threshold for Lich to absorb minions in phase 2)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase2MinionAbsorbHealthThreshold = 50.0
+	#巫妖第三形态时吸收怪物回复的生命值 (Health amount restored when Lich absorbs mobs in phase 3)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase3MobAbsorbHealAmount = 20.0
+	#巫妖第三形态时吸收怪物回复的血量阈值 (Health threshold for Lich to absorb mobs in phase 3)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	lichPhase3MobAbsorbHealthThreshold = 80.0
+	#巫妖第一形态是否会瞬移 (Whether the Lich can teleport in phase 1)
+	lichPhase1CanTeleport = true
+	#巫妖第二形态是否会瞬移 (Whether the Lich can teleport in phase 2)
+	lichPhase2CanTeleport = true
+	#巫妖第三形态是否会瞬移 (Whether the Lich can teleport in phase 3)
+	lichPhase3CanTeleport = true
+

@@ -1,0 +1,17 @@
+
+["Dragon Egg Config (龙蛋配置)"]
+	#火龙蛋孵化时间 (Fire dragon egg hatch time in ticks)
+	#Range: > 1
+	fireDragonEggHatchTime = 7200
+	#冰龙蛋孵化时间 (Ice dragon egg hatch time in ticks)
+	#Range: > 1
+	iceDragonEggHatchTime = 7200
+	#电龙蛋孵化时间 (Lightning dragon egg hatch time in ticks)
+	#Range: > 1
+	lightningDragonEggHatchTime = 7200
+	#冰龙蛋在水中结冰概率分母 (Ice dragon egg freeze probability denominator, 1 in X chance)
+	#Range: > 1
+	iceDragonEggFreezeProbability = 500
+	#电龙蛋孵化时是否降下雷电 (Whether lightning dragon egg spawns lightning when hatching)
+	lightningDragonEggSpawnLightning = true
+

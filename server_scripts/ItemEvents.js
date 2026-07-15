@@ -248,6 +248,14 @@ ItemEvents.rightClicked("rainbow:mini_ender_chest", event => {
     if (level.isClientSide()) return;
     player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
 });
+//末地空气
+ItemEvents.rightClicked("minecraft:glass_bottle", event => {
+    let { player, level, item } = event;
+    if (level.isClientSide()) return;
+    item.shrink(1);
+    player.addItem("rainbow:ender_air");
+});
+
 /*
 // --- 群系之剑：收集群系 ---
 ItemEvents.rightClicked("rainbow:biome_of_sword", event => {

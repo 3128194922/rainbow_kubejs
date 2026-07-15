@@ -1,0 +1,27 @@
+
+["Dread Mob Config (悚怖生物配置)"]
+	#悚怖所有生物是否无差别攻击其他生物 - 最高优先级
+	#Whether all dread mobs attack other mobs unconditionally - Highest priority
+	dreadMobsAttackAllMobs = true
+	#悚怖尸巫是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Lich attacks other mobs unconditionally - Secondary priority
+	dreadLichAttackMobs = true
+	#悚怖尸奴是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Thrall attacks other mobs unconditionally - Secondary priority
+	dreadThrallAttackMobs = true
+	#悚怖尸兽是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Beast attacks other mobs unconditionally - Secondary priority
+	dreadBeastAttackMobs = true
+	#悚怖食尸鬼是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Ghoul attacks other mobs unconditionally - Secondary priority
+	dreadGhoulAttackMobs = true
+	#悚怖劫蛛是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Scuttler attacks other mobs unconditionally - Secondary priority
+	dreadScuttlerAttackMobs = true
+	#悚怖尸骑是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Knight attacks other mobs unconditionally - Secondary priority
+	dreadKnightAttackMobs = true
+	#悚怖尸骑战马是否无差别攻击其他生物 - 次要优先级
+	#Whether Dread Knight Horse attacks other mobs unconditionally - Secondary priority
+	dreadKnightHorseAttackMobs = true
+

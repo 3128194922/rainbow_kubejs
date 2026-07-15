@@ -1,0 +1,36 @@
+
+["Knight Phantom Config (幻影骑士配置)"]
+	#幻影骑士最大血量 (Knight Phantom max health)
+	#Range: 1.0 ~ 1.7976931348623157E308
+	knightPhantomMaxHealth = 35.0
+	#幻影骑士飞行速度 (Knight Phantom flight speed)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	knightPhantomFlightSpeed = 0.1
+	#幻影骑士攻击伤害 (Knight Phantom attack damage)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	knightPhantomAttackDamage = 1.0
+	#幻影骑士经验值奖励 (Knight Phantom XP reward)
+	#Range: > 0
+	knightPhantomXpReward = 93
+	#幻影骑士护甲值 (Knight Phantom armor value)
+	#Range: 0.0 ~ 1.7976931348623157E308
+	knightPhantomArmor = 4.0
+	#幻影骑士是否能穿过方块 (Whether Knight Phantom can pass through blocks)
+	knightPhantomCanNoClip = true
+	#幻影骑士佩戴的头盔 (Knight Phantom helmet item)
+	knightPhantomHelmetItem = "twilightforest:phantom_helmet"
+	#幻影骑士佩戴的胸甲 (Knight Phantom chestplate item)
+	knightPhantomChestplateItem = "twilightforest:phantom_chestplate"
+	#幻影骑士佩戴的护腿 (Knight Phantom leggings item)
+	knightPhantomLeggingsItem = "minecraft:air"
+	#幻影骑士佩戴的靴子 (Knight Phantom boots item)
+	knightPhantomBootsItem = "minecraft:air"
+	#幻影骑士主手序号0物品 (Knight Phantom main hand number 0 item)
+	knightPhantomMainHandNumber0Item = "twilightforest:knightmetal_sword"
+	#幻影骑士主手序号1物品 (Knight Phantom main hand number 1 item)
+	knightPhantomMainHandNumber1Item = "twilightforest:knightmetal_axe"
+	#幻影骑士主手序号2物品 (Knight Phantom main hand number 2 item)
+	knightPhantomMainHandNumber2Item = "twilightforest:knightmetal_pickaxe"
+	#幻影骑士副手物品 (Knight Phantom off hand item)
+	knightPhantomOffHandItem = "minecraft:air"
+

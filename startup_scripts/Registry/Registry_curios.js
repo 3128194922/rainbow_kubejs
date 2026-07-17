@@ -804,7 +804,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-// 大师球
+// 死河
 StartupEvents.registry('item', event => {
     event.create('rainbow:dead_river')
         .rarity("epic")
@@ -838,7 +838,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-// 觉之瞳
+// 觉妖怪之瞳
 StartupEvents.registry('item', event => {
     event.create('rainbow:eye_of_satori')
         .rarity("epic")
@@ -1414,7 +1414,7 @@ StartupEvents.registry('item', event => {
 })
 */
 
-// 重力核心
+// 牧神符文
 StartupEvents.registry('item', event => {
     event.create('rainbow:gravity_core')
         .rarity("epic")
@@ -1432,7 +1432,7 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-                .addAttribute("oreganized:kinetic_damage", "gravity_core", 5, "addition")
+                .addAttribute("oreganized:kinetic_damage", "gravity_core", 3, "addition")
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
 
@@ -1547,7 +1547,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-// 石鬼像
+// 艾摩石
 StartupEvents.registry('item', event => {
     event.create('rainbow:moai_charm')
         .rarity("epic")
@@ -1839,7 +1839,7 @@ StartupEvents.registry('item', event => {
 })
 
 //动力手套
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create("rainbow:power_glove")
             .rarity("epic")
             .maxStackSize(1)
@@ -1859,8 +1859,10 @@ StartupEvents.registry('item', event => {
                 .addAttribute("minecraft:generic.attack_speed", "power_glove", 0.1, "multiply_total")
         )
 })
+ */
 
 //火焰动力手套
+/*
 StartupEvents.registry('item', event => {
     event.create("rainbow:fire_gauntlet")
             .rarity("epic")
@@ -1881,9 +1883,9 @@ StartupEvents.registry('item', event => {
                 .addAttribute("minecraft:generic.attack_speed", "fire_gauntlet", 0.1, "multiply_total")
         )
 })
+ */
 
-
-//末影手套
+//末影之握
 StartupEvents.registry('item', event => {
     event.create("rainbow:ender_glove")
             .rarity("epic")
@@ -1905,7 +1907,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//生灵手套
+//生灵之触
 StartupEvents.registry('item', event => {
     event.create("rainbow:living_gauntlet")
             .rarity("epic")

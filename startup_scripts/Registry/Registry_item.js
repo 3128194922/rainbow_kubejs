@@ -115,7 +115,7 @@ StartupEvents.registry("item", event => {
     // 群系之刃：高攻击力剑
     //event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
 
-    // 决斗剑：对同类型生物伤害增加
+    // 决斗细剑：对同类型生物伤害增加
     event.create("rainbow:duel", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
         .tooltip("§6对同一类型生物伤害增加1.5")
 
@@ -169,13 +169,13 @@ StartupEvents.registry("item", event => {
     /*event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })
         .tooltip("食用关闭游戏(吃晕了")*/
 
-    // 七彩石
+    // 幻彩石
     event.create("rainbow:rainbow_stone", "basic")
     // 奇迹物质
     event.create("rainbow:miracle", "basic")
     // 货币
-    event.create("rainbow:coin_1", "basic")
-    event.create("rainbow:coin_2", "basic")
+    //event.create("rainbow:coin_1", "basic")
+    //event.create("rainbow:coin_2", "basic")
 
     // 动力剑系列
     event.create("rainbow:baseball_bat", "sword").attackDamageBonus(7.0).attackDamageBaseline(0.0)

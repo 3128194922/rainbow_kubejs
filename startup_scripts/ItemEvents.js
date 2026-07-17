@@ -90,7 +90,7 @@ ItemEvents.modification(event => {
                .addAttribute(
                    "minecraft:generic.armor_toughness",
                    "tinplate",
-                   2,
+                   3,
                    'addition'
                )
        )
@@ -104,7 +104,7 @@ ItemEvents.modification(event => {
                .addAttribute(
                    "minecraft:generic.armor_toughness",
                    "saddled_egg",
-                   5,
+                   6,
                    'addition'
                )
        )
@@ -118,7 +118,7 @@ ItemEvents.modification(event => {
                .addAttribute(
                    "attributeslib:dodge_chance",
                    "wicked_swapper",
-                   0.1,
+                   0.15,
                    'multiply_base'
                )
        )
@@ -139,7 +139,7 @@ ItemEvents.modification(event => {
                     let stack = ev.stack;
                     let moving = stack.getOrCreateTag().getBoolean("Moving");
                     if (!moving) {
-                        ev.modify("minecraft:generic.armor", "sprite", 30, "addition");
+                        ev.modify("minecraft:generic.armor", "sprite", 10, "addition");
                     }
                 })
                 .curioTick((slotContext, stack) => {
@@ -257,7 +257,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                     new AttributeModifier(
                         uuids[i],
                         'electrum_kinetic',
-                        2,
+                        1,
                         "addition"
                     )
                 )
@@ -281,7 +281,7 @@ ItemEvents.modification(event => {
    ]
    items.forEach(item => {
       event.modify(item, event => {
-         event.addAttribute("caverns_and_chasms:magic_damage", uuids[items.indexOf(item)], item, 2, "addition")
+         event.addAttribute("caverns_and_chasms:magic_damage", uuids[items.indexOf(item)], item, 0.5, "addition")
       })
    })
 })

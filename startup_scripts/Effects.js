@@ -21,7 +21,7 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial() // 标记为有益效果
         .color(0xEAF044)
     // 嘲讽效果：有害，每20tick嘲讽周围生物攻击自己
-    event.create('rainbow:taunt_effect')
+        /*event.create('rainbow:taunt_effect')
         .harmful()
         .effectTick((mob, lvl) => {
             if (!mob || mob.level.isClientSide()) return
@@ -52,9 +52,9 @@ StartupEvents.registry("mob_effect", event => {
                 }
             })
         })
-
+*/
     // 服从命令：有益，使生物攻击被标记（tag）的目标
-    event.create('rainbow:obey_command')
+        /*event.create('rainbow:obey_command')
         .beneficial()
     
     // 杀戮欲望：有益，使生物攻击被标记（tag）的目标
@@ -93,7 +93,7 @@ StartupEvents.registry("mob_effect", event => {
                 mob.persistentData.lastRageTick = now
             }
         })
-
+*/
     // 下班时间：有益
     event.create("rainbow:off_work_time")
     .beneficial() // 标记为有益效果

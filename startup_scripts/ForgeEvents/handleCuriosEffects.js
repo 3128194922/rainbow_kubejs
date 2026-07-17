@@ -47,9 +47,9 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         lightning.setFromEntityID(attacker.getId());
         lightning.setToEntityID(victim.getId());
         if (attacker.level.isRaining()) {
-            lightning.setChainsLeft(10);
-        } else {
             lightning.setChainsLeft(5);
+        } else {
+            lightning.setChainsLeft(3);
         }
         victim.level.addFreshEntity(lightning);
         //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);

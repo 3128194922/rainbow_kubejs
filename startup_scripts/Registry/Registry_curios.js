@@ -1443,6 +1443,10 @@ StartupEvents.registry('item', event => {
                         {
                             player.persistentData.isGravityCore = false;
                         }
+                    if(player.persistentData.gravityStompCooldown == null)
+                        {
+                            player.persistentData.gravityStompCooldown = 0;
+                        }
 
                     if(player.isShiftKeyDown() && !player.onGround() && player.persistentData.isGravityCore == false)
                         {
@@ -1453,8 +1457,13 @@ StartupEvents.registry('item', event => {
 
                     if(player.onGround() && player.persistentData.isGravityCore == true)
                         {
+                            // 践踏冷却 5s
+                            if (player.age < player.persistentData.gravityStompCooldown) return;
+
                             player.removeAttribute("forge:entity_gravity","gravity_core")
                             player.persistentData.isGravityCore = false;
+
+                            player.persistentData.gravityStompCooldown = player.age + 100;
 
                             // 践踏音效与粒子
                             player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.generic.explode", "players", 2.0, 1.0);

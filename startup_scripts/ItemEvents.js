@@ -197,22 +197,72 @@ ItemEvents.modification(event => {
        )
    })
 })*/
-//铜 套装 宠物流派
-ItemEvents.modification(event => {
-   let items = ['caverns_and_chasms:copper_helmet', 'caverns_and_chasms:copper_chestplate', 'caverns_and_chasms:copper_leggings','caverns_and_chasms:copper_boots']
-   let uuids = [
-      "62808577-5866-484f-a397-7b9340fd7c0b",
-      "72808577-5866-484f-a397-7b9340fd7c0b",
-      "82808577-5866-484f-a397-7b9340fd7c0b",
-      "92808577-5866-484f-a397-7b9340fd7c0b"
-   ]
-   items.forEach(item => {
-      event.modify(item, event => {
-         event.addAttribute("rainbow:generic.pet_damage", uuids[items.indexOf(item)], item, 0.1, "multiply_base")
-      })
-   })
-})
+//铜 套装 宠物流派 - 根据氧化状态提供不同加成
+// 打蜡变体锁定对应阶段的加成值（不继续氧化）
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
 
+    try {
+        let armorTypes = ["helmet", "chestplate", "leggings", "boots"]
+        let armorSlots = ["head", "chest", "legs", "feet"]
+
+        let id = item.id
+
+        // 氧化状态 → 宠物伤害加成（multiply_base）
+        let bonusMap = {
+            "copper": 0.2,
+            "exposed_copper": 0.15,
+            "weathered_copper": 0.1,
+            "oxidized_copper": 0.05
+        }
+
+        let uuids = [
+            "62808577-5866-484f-a397-7b9340fd7c0b",
+            "72808577-5866-484f-a397-7b9340fd7c0b",
+            "82808577-5866-484f-a397-7b9340fd7c0b",
+            "92808577-5866-484f-a397-7b9340fd7c0b"
+        ]
+
+        for (var i = 0; i < armorSlots.length; i++) {
+            if (slotType !== armorSlots[i]) continue
+
+            for (var prefix in bonusMap) {
+                var expectedId = "caverns_and_chasms:" + prefix + "_" + armorTypes[i]
+                if (id === expectedId) {
+                    event.addModifier(
+                        "rainbow:generic.pet_damage",
+                        new AttributeModifier(
+                            uuids[i],
+                            'copper_pet_' + prefix,
+                            bonusMap[prefix],
+                            "multiply_base"
+                        )
+                    )
+                    return
+                }
+
+                // 打蜡变体（加成值与对应氧化阶段相同，但不会继续氧化）
+                var waxedId = "caverns_and_chasms:waxed_" + prefix + "_" + armorTypes[i]
+                if (id === waxedId) {
+                    event.addModifier(
+                        "rainbow:generic.pet_damage",
+                        new AttributeModifier(
+                            uuids[i],
+                            'copper_pet_waxed_' + prefix,
+                            bonusMap[prefix],
+                            "multiply_base"
+                        )
+                    )
+                    return
+                }
+            }
+        }
+    } catch (e) {
+        console.log("铜套装宠物流派属性修改出错：")
+        console.log(e)
+    }
+})
 // 鱼骨剑
 /*ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
     let item = event.getItemStack();

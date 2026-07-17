@@ -61,8 +61,9 @@ EntityEvents.hurt(event => {
         let isInfernium = randomBool(Math.abs(luck) / 100);
         let Health = entity.getAttribute("generic.max_health").getValue();
 
-        if (1 && !entity.persistentData.getBoolean("isMiniBoss") && !entity.persistentData.getBoolean("_mb_reinforce_spawned")) {
-            entity.server.runCommandSilent(`/dyeing paint add static mini_boss ${uuid} 80FF0000`)
+        if (entity.isAlive() && !entity.isPlayer() && !entity.persistentData.getBoolean("isMiniBoss") && !entity.persistentData.getBoolean("_mb_reinforce_spawned")) {
+            //entity.server.runCommandSilent(`/dyeing paint add static mini_boss ${uuid} 80FF0000`)
+            entity.server.runCommandSilent(`/dyeing uv add scroll creeper_armor ${uuid} minecraft:textures/entity/creeper/creeper_armor.png 0.01 0.01 1`)
             entity.persistentData.putBoolean("isMiniBoss", true);
             let powers = rollPowers();
             entity.persistentData.putString("POWER", JSON.stringify(powers));

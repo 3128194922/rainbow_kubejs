@@ -2,7 +2,6 @@
 // 迷你boss AI - 遍历所有已注册实体类型，尝试注册5种power Goal
 // 非Mob类型会被EntityJS自动跳过（try-catch忽略）
 
-
 function hasPower(entity, power) {
   if (!entity || !entity.isAlive()) return false
   let pd = entity.persistentData
@@ -57,8 +56,8 @@ $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           if (!hasPower(e, 'Reinforce')) return false
           if (e.persistentData.getBoolean('_mb_reinforce_called')) return false
           if (e.persistentData.getBoolean('_mb_reinforce_spawned')) return false
-        let target = getTarget(e)
-        return target != null && target.isAlive()
+          let target = getTarget(e)
+          return target != null && target.isAlive()
         },
         e => false,
         false,
@@ -70,7 +69,6 @@ $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           let rawType = e.getType()
 
           for (let i = 0; i < 3; i++) {
-
             let spawn = level.createEntity(rawType)
             if (!spawn) { console.log(`Reinforce: createEntity returned null for ${rawType}`); continue }
             spawn.persistentData.putBoolean('_mb_reinforce_spawned', true)
@@ -106,10 +104,10 @@ $ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
               if (!other || !other.isAlive()) return
               if (other == e) return
               if (other.getType() != e.getType()) return
-              try { other.potionEffects.add('quark:resilience', 100, 0, false, true);
-              other.potionEffects.add('minecraft:speed', 100, 0, false, true)
-
-               } catch(er) { console.log(er) }
+              try {
+                other.potionEffects.add('quark:resilience', 100, 0, false, true);
+                other.potionEffects.add('minecraft:speed', 100, 0, false, true)
+              } catch(er) { console.log(er) }
             })
             t = 0
           }

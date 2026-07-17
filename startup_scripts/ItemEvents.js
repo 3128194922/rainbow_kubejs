@@ -182,18 +182,20 @@ ItemEvents.modification(event => {
        )
    })
 })
-//末影手套
+//猎鹰手套
 /*ItemEvents.modification(event => {
-   event.modify('royalvariations:spectral_gauntlet', item => {
+   event.modify('alexsmobs:falconry_glove', item => {
        item.attachCuriosCapability(
            CuriosJSCapabilityBuilder.create()
                .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
-                    if (hasCurios(entity, 'royalvariations:spectral_gauntlet')) return false;
+                    if (hasCurios(entity, 'alexsmobs:falconry_glove')) return false;
                     if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
+                .addAttribute("minecraft:generic.attack_damage", "power_glove", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "power_glove", 0.1, "multiply_total")
        )
    })
 })*/
@@ -219,16 +221,17 @@ ItemEvents.modification(event => {
     let slotType = event.getSlotType();
 
     try {
-      //event.addAttribute("minecraft:generic.attack_speed", "", "skelewag_sword", -1.0, "addition")
-         event.addModifier(
-            "alexsmobs:skelewag_sword",
+    if (item.id === "alexsmobs:falconry_glove" && slotType === "charm") {
+        event.addModifier(
+            "generic.attack_damage",
             new AttributeModifier(
-               "df799a56-f54d-4e1a-bf64-699943718318",
-               'skelewag_sword',
-               -1.0,
-               "addition"
+                'e93f7408-d7f1-4df1-a28f-43c2e16b004e',
+                'falconry_glove',
+                1,
+                "addition"
             )
-         )
+        );
+    }
     } catch (e) {
         console.log("鱼骨剑属性修改出错：")
         console.log(e)

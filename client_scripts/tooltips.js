@@ -103,6 +103,14 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:berserk_emblem', (item, advanced, text) => {
             text.add(1, Text.aqua("攻击半血以下的实体伤害翻倍"));
     })
+    event.addAdvanced('rainbow:sharpshooter_charm', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("远程攻击时，距离目标每格提升10%伤害"));
+            text.add(2, Text.aqua("最高提升200%伤害（20格）"));
+        }
+    })
     /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -126,7 +134,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("击杀生物概率刷新主手和副手物品冷却"));
             text.add(2, Text.aqua(`触发概率根据幸运值判断`));
         }
-        text.add(3, Text.darkGray("美术资源：Demi's Enigmatic Dice"));
+        text.add(Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {
         text.add(1, Text.aqua("每10s标记周围实体,被标记实体受到远程伤害翻倍"));
@@ -201,8 +209,8 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
           text.remove(1)
-          text.add(1, Text.aqua("佩戴后放置方块将受限制"));
-          text.add(2, Text.aqua("最大生命值锁定为2"));
+          text.add(1, Text.aqua("攻击伤害 +100"));
+          text.add(2, Text.red("受到任意大于1的伤害立即死亡"));
           }
     })
     event.addAdvanced('rainbow:gluttony_charm', (item, advanced, text) => {
@@ -286,7 +294,8 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua(`快速消耗饥饿(非全部) 恢复生命值`));
     })
     event.addAdvanced('rainbow:eye_of_satori', (item, advanced, text) => {
-        text.add(1, Text.gold("读心: ").append(Text.aqua("准心标记怪物，增强友军")));
+        text.add(1, Text.gold("开眼: ").append(Text.aqua("蹲下时相机跟随准心实体")));
+        text.add(2, Text.gold("闭眼: ").append(Text.aqua("降低被怪物发现的概率")));
     })
     /*event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
         text.add(1, Text.gold("记录: ").append(Text.gray("拿在副手吹响号角进行记录，如果形成完整乐谱可以右键释放对应魔法")));
@@ -323,11 +332,11 @@ ItemEvents.tooltip((event) => {
     })*/
     event.addAdvanced('rainbow:oceantooth_necklace', (item, advanced, text) => {
         text.add(1, Text.gray("与狱牙吊坠互斥"));
-        let nbt = item.getNbt();
-        if (!nbt) return;
-        let dmg = item.getDamage();
-        let maxDmg = item.getMaxDamage();
-        text.add(Text.aqua("耐久：").append(Text.yellow(`${maxDmg - dmg} / ${maxDmg}`)));
+        if (item.getMaxDamage && item.getDamage) {
+            let dmg = item.getDamage();
+            let maxDmg = item.getMaxDamage();
+            text.add(Text.aqua("耐久：").append(Text.yellow(`${maxDmg - dmg} / ${maxDmg}`)));
+        }
     })
     event.addAdvanced('rainbow:infernotooth_necklace', (item, advanced, text) => {
         text.add(1, Text.gray("与海牙吊坠互斥"));
@@ -551,7 +560,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("碰撞体积变大 1.5 倍"));
             text.add(2, Text.aqua("冲刺时对比自己小的生物造成踩踏伤害"));
         }
-        text.add(3, Text.darkGray("美术资源：Demi's Enigmatic Dice"));
+        text.add(Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('rainbow:moai_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("生物碰撞箱对你无影响"));
@@ -575,6 +584,14 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("空手右键捕获上方3×3×3结构"));
             text.add(2, Text.aqua("破坏后保留结构到物品"));
             text.add(3, Text.aqua("放置时自动还原结构，含方块实体"));
+        }
+    })
+    event.addAdvanced('rainbow:libra', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("攻击时交换双方所有药水效果"));
+            text.add(2, Text.aqua("你的效果复制给目标，目标的效果复制给你"));
         }
     })
     event.addAdvanced('rainbow:ender_air', (item, advanced, text) => {
@@ -604,5 +621,8 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("站立不动时提供 +30 盔甲值"));
             text.add(2, Text.aqua("移动时盔甲加成消失"));
         }
+    })
+    event.addAdvanced('rainbow:cloud_boots', (item, advanced, text) => {
+        text.add(1, Text.aqua("免疫摔落伤害"));
     })
 })

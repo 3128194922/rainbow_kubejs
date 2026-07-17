@@ -18,4 +18,8 @@ function onBeforePlayerHurt(event, attacker, victim, source, range_damage, throw
             event.setCanceled(true);
         }
 
+    if(hasCurios(victim, 'rainbow:cloud_boots') && source.getType() == "fall")
+    {
+        event.setCanceled(true);
+    }
 }

@@ -32,9 +32,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     if(victim.level.isClientSide()) return;
     try
     {    
-    // 绝望徽记：佩戴时受到>1伤害直接死亡
-    handleDespairInsigniaDeath(event, victim, source);
-
     // 武器特效
     handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
@@ -147,5 +144,3 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
         console.log(e)
     }
 })
-
-

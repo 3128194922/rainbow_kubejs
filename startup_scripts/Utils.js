@@ -308,18 +308,18 @@ function hasCurios(entity, stack) {
 * @param {Internal.Item} stack 饰品
 * @param {Internal.LivingEntity_} entity 实体
 */
-function hasCurios(entity, id) {
-    if (entity == null) return false;
-    let curios;
-    try {
-        curios = entity.curiosInventory;
-    } catch (e) {
-        return false;
-    }
+function hasCurios(player, id) {
+    // 检查玩家对象是否为空
+    if (player == null) return false;
+    // 获取饰品库存
+    let curios = player.curiosInventory;
     if (curios == null) return false;
 
+    // 遍历所有饰品槽位
     for (let slot of curios.curios.values()) {
+        // 遍历槽位中的所有物品
         for (let stack of slot.getStacks().getAllItems()) {
+            // 检查物品ID是否匹配
             if (stack.getId().toString() === id) {
                 return true;
             }

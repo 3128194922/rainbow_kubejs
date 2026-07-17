@@ -5,7 +5,6 @@
 
 let $Button = Java.loadClass("net.minecraft.client.gui.components.Button");
 let $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen");
-let HeraclesClient = Java.loadClass('earth.terrarium.heracles.client.HeraclesClient');
 
 let buttons = []; // 存储按钮实例
 let lastScreen = null;
@@ -46,11 +45,11 @@ ClientEvents.tick((event) => {
 
             // ======== 帮助按钮 ========
             // 点击发送 "trashcan" 菜单请求 (注：显示文本为"帮助"，但实际功能可能是打开垃圾桶或菜单)
-            let taskButton = $Button.builder(Text.of("任务引导"), (button) => {
-                HeraclesClient.openQuestScreen();
+            /*let helpButton = $Button.builder(Text.of("帮助"), (button) => {
+                player.sendData("server", { open_menu: "trashcan" });
             }).bounds(0, 0, 60, 20).build();
-
-            buttons.push(taskButton);
+*/
+            //buttons.push(helpButton);
             buttons.push(helpTitle);
             //buttons.push(enderButton);
 

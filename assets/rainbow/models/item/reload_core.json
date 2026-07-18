@@ -1,0 +1,20 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/reload_core"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "kubejs:energy": 0.0
+        },
+        "model": "rainbow:item/reload_core_off"
+      },
+      {
+        "predicate": {
+          "kubejs:energy": 1.0
+        },
+        "model": "rainbow:item/reload_core_on"
+      }
+    ]
+}

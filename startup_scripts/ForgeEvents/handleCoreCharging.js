@@ -8,7 +8,7 @@
 function handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     if (!attacker || !attacker.isAlive()) return;
 
-    const MAX_ENERGY = 200;
+    const MAX_ENERGY = 100;
     // 获取直接造成伤害的实体 (如箭、三叉戟、或玩家本身)
     const directEntity = source.immediate;
 

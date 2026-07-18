@@ -17,10 +17,16 @@ ItemEvents.modelProperties(event => {
         return itemStack.nbt.getDouble("poweroff") == 1.0 ? 1.0 : 0.0;
     });
 
-    // 短核心：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
+    // 小嘀嗒：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
     event.register("rainbow:short_core", "energy", (itemStack, level, entity, seed) => {
         return (itemStack.nbt ? itemStack.nbt.getFloat("Energy") : 0.0) / 100.0;
     });
+
+    // 装填核心：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
+    event.register("rainbow:reload_core", "energy", (itemStack, level, entity, seed) => {
+        return itemStack.nbt && itemStack.nbt.getFloat("Energy") == 100.0 ? 1.0 : 0.0;
+    });
+
     //觉之瞳
     event.register("rainbow:eye_of_satori", "is_open", (itemStack, level, entity, seed) => {
         if(!itemStack.nbt)

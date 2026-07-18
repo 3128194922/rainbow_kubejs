@@ -42,18 +42,21 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
 
     // 链式闪电饰品：攻击时触发链式闪电，下雨天增强
     if (hasCurios(attacker, "rainbow:bottled_lightning")) {
+        if(!attacker.cooldowns.isOnCooldown("rainbow:bottled_lightning")) {
         let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');
         lightning.setCreatorEntityID(attacker.getId());
         lightning.setFromEntityID(attacker.getId());
         lightning.setToEntityID(victim.getId());
         if (attacker.level.isRaining()) {
-            lightning.setChainsLeft(5);
+            lightning.setChainsLeft(10);
         } else {
-            lightning.setChainsLeft(3);
+            lightning.setChainsLeft(5);
         }
         victim.level.addFreshEntity(lightning);
         //attacker.server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${attacker.x} ${attacker.y} ${attacker.z}`);
         attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "domesticationinnovation:chain_lightning", "voice", 1, 1)
+        attacker.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(0.25));
+        }
     }
 
     // 被标记目标（tag）受到远程攻击双倍伤害

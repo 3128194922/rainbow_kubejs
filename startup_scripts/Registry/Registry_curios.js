@@ -391,25 +391,8 @@ StartupEvents.registry('item', event => {
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
-                    // 只有最大生命值大于 2 时才生效，避免重复修改
 
-                    ev.modify("generic.attack_damage", "despair_insignia", 4.0, "addition");
-                    ev.modify("generic.movement_speed", "despair_insignia", 0.05, "multiply_total");
-                    ev.modify("generic.attack_speed", "despair_insignia", 0.16, "multiply_total");
-                    ev.modify("minecraft:generic.knockback_resistance", "despair_insignia", 0.05, "multiply_total");
-                    if (player.getMaxHealth() <= 2) return;
-                    ev.modify("minecraft:generic.max_health", "despair_insignia", -(player.getMaxHealth() - 2), "addition");
-                })
-                .curioTick((slotContext, stack) => {
-                    if (!stack.nbt) stack.nbt = {};
-                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
-
-                    let player = slotContext.entity();
-                    if (player == null) return;
-                    //if (player.getMaxHealth() > 2) return;
-
-                    if (player.age % 20 !== 0) return;
-                    player.potionEffects.add("runiclib:creative_shock", 60, 9, false, false);
+                    ev.modify("generic.attack_damage", "despair_insignia", 100.0, "addition");
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -423,6 +406,7 @@ StartupEvents.registry('item', event => {
                 })
         )
 })
+
 
 // 装填核心
 StartupEvents.registry('item', event => {
@@ -838,8 +822,58 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
 })
 
-// 觉妖怪之瞳
+// 觉之瞳
 StartupEvents.registry('item', event => {
+    event.create('rainbow:eye_of_satori')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+
+                    // 限制同一玩家不能装备多个
+                    if (hasCurios(entity, 'rainbow:eye_of_satori')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    let stack = ev.stack;
+
+                    if (!stack.nbt) {
+                        stack.nbt = {};
+                        stack.nbt.putBoolean("is_open", true);
+                    }
+
+                    if (stack.nbt.getBoolean("is_open"))
+                        return;
+
+                    ev.modify("minecraft:generic.follow_range", "eye_of_satori", -10.0, "addition");
+                    ev.modify("forge:nametag_distance", "eye_of_satori", -1.0, "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (!stack.nbt) {
+                        stack.nbt = {};
+                        stack.nbt.putBoolean("is_open", true);
+                    }
+
+                    // 仅用于触发属性刷新（闭眼时的 hide 属性需要重新计算）
+                    if (stack.nbt.getBoolean("is_open")) return;
+
+                    if (!player || player.server == null) return;
+
+                    if (player.age % 10 !== 0) return;
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+        )
+})
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:eye_of_satori')
         .rarity("epic")
         .maxStackSize(1)
@@ -995,7 +1029,7 @@ StartupEvents.registry('item', event => {
                     }
                 })
         )
-})
+})*/
 
 
 // 莉莉丝之拥
@@ -1436,6 +1470,9 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
 
+                    // 践踏冷却 5s（原版物品冷却）
+                    if (player.cooldowns.isOnCooldown('rainbow:gravity_core')) return;
+
                     if(player.level.isClientSide()) return;
                     if(!player || !player.isPlayer() || !player.isAlive()) return;
 
@@ -1443,11 +1480,6 @@ StartupEvents.registry('item', event => {
                         {
                             player.persistentData.isGravityCore = false;
                         }
-                    if(player.persistentData.gravityStompCooldown == null)
-                        {
-                            player.persistentData.gravityStompCooldown = 0;
-                        }
-
                     if(player.isShiftKeyDown() && !player.onGround() && player.persistentData.isGravityCore == false)
                         {
                             player.removeAttribute("forge:entity_gravity","gravity_core")
@@ -1457,13 +1489,8 @@ StartupEvents.registry('item', event => {
 
                     if(player.onGround() && player.persistentData.isGravityCore == true)
                         {
-                            // 践踏冷却 5s
-                            if (player.age < player.persistentData.gravityStompCooldown) return;
-
                             player.removeAttribute("forge:entity_gravity","gravity_core")
                             player.persistentData.isGravityCore = false;
-
-                            player.persistentData.gravityStompCooldown = player.age + 100;
 
                             // 践踏音效与粒子
                             player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.generic.explode", "players", 2.0, 1.0);
@@ -1486,6 +1513,7 @@ StartupEvents.registry('item', event => {
                                 entity.attack(player.damageSources().playerAttack(player),DAMAGE);
                                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.0, 2.0, 0.0)); 
                             })
+                            player.cooldowns.addCooldown('rainbow:gravity_core', 100);
                         }
                     
                     
@@ -1790,6 +1818,29 @@ StartupEvents.registry('item', event => {
         )
 })
 
+//快速箭袋
+StartupEvents.registry('item', event => {
+    event.create("rainbow:fast_quiver")
+            .rarity("epic")
+            .maxStackSize(1)
+            .tag("curios:charm")
+            .tooltip(Text.gold("[箭袋]"))
+            .tag("rainbow:quivers")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:fast_quiver')) return false;
+                    if(hasCuriosTag(entity, "rainbow:quivers")) return false;
+                    return true;
+                })
+                .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
+                .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
+                .addAttribute("attributeslib:draw_speed", "quiver", 0.1, "multiply_total")
+        )
+})
+
 //诅咒王冠 — 根据主副手+盔甲栏诅咒附魔数量增加暴击率与暴击伤害
 StartupEvents.registry('item', event => {
     event.create("rainbow:curse_crown")
@@ -1900,7 +1951,7 @@ StartupEvents.registry('item', event => {
             .rarity("epic")
             .maxStackSize(1)
             //.tooltip(Text.gold("[手套]"))
-            //.tag("rainbow:glove")
+            .tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1922,7 +1973,7 @@ StartupEvents.registry('item', event => {
             .rarity("epic")
             .maxStackSize(1)
             //.tooltip(Text.gold("[手套]"))
-            //.tag("rainbow:glove")
+            .tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1937,6 +1988,30 @@ StartupEvents.registry('item', event => {
                 .addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
         )
 })
+
+
+//点金手套
+StartupEvents.registry('item', event => {
+    event.create("rainbow:gold_glove")
+            .rarity("epic")
+            .maxStackSize(1)
+            //.tooltip(Text.gold("[手套]"))
+            .tag("rainbow:glove")
+            .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:living_gauntlet')) return false;
+                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
+                    return true;
+                })
+                .addAttribute("minecraft:generic.attack_damage", "living_gauntlet", 1, "addition")
+                .addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
+        )
+})
+
 
 //被诅咒的骨头
 StartupEvents.registry('item', event => {
@@ -1965,7 +2040,7 @@ StartupEvents.registry('item', event => {
 StartupEvents.registry('item', event => {
     event.create('rainbow:clawofhorus')
         //.tooltip(Text.gold("[手套]"))
-        //.tag("rainbow:glove")
+        .tag("rainbow:glove")
         .displayName("荷鲁斯之爪")
         .rarity("epic")
         .maxStackSize(1)
@@ -2008,7 +2083,6 @@ StartupEvents.registry('item', event => {
 // 末地空气
 StartupEvents.registry('item', event => {
     event.create('rainbow:ender_air')
-        .maxDamage(300)
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -2019,8 +2093,8 @@ StartupEvents.registry('item', event => {
                     if (!stack) return;
 
                     // 从物品 NBT 读取隐匿状态和护甲数量（由 curioTick 每 tick 同步）
-                    let isStealth = stack.nbt.getBoolean("isStealth") ? 1 : 0;
-                    let armorCount = stack.nbt ? stack.nbt.getInt("armorCount") : 0;
+                    let isStealth = stack.getOrCreateTag().getBoolean("isStealth") ? 1 : 0;
+                    let armorCount = stack.getOrCreateTag().getInt("armorCount");
 
                     // 有任意护甲且不被索敌时，加 4% 伤害
                     e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * isStealth, "multiply_total");
@@ -2053,5 +2127,70 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
+        )
+})
+
+
+// 神射手
+StartupEvents.registry('item', event => {
+    event.create('rainbow:sharpshooter_charm')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:sharpshooter_charm')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
+})
+
+// 天枰座
+StartupEvents.registry('item', event => {
+    event.create('rainbow:libra')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:libra')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
+})
+
+// 云靴
+StartupEvents.registry('item', event => {
+    event.create('rainbow:cloud_boots')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:cloud_boots')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .addAttribute("minecraft:generic.movement_speed", "cloud_boots", 0.2, "multiply_total")
         )
 })

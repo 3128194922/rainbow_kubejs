@@ -311,6 +311,8 @@ function hasCurios(entity, stack) {
 function hasCurios(player, id) {
     // 检查玩家对象是否为空
     if (player == null) return false;
+    // 非玩家实体没有 curios inventory
+    if (!player.isPlayer()) return false;
     // 获取饰品库存
     let curios = player.curiosInventory;
     if (curios == null) return false;
@@ -354,6 +356,8 @@ function getSlotAttribute(str) {
  */
 function getCuriosItem(player, id) {
     if (player == null) return null;
+    // 非玩家实体没有 curios inventory
+    if (!player.isPlayer()) return null;
     let curios = player.curiosInventory;
     if (curios == null) return null;
 

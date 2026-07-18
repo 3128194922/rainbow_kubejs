@@ -14,7 +14,7 @@
 global._VERSION_CHECKS = [
     {
         modId: 'entityjs',
-        expectedVersion: '0.6.6',
+        expectedVersion: '0.6.6-1.20.1',
         warningText: '依赖 EntityJS 版本不匹配: 当前 §e{current}§r，期望 §a{expected}§r。精英怪系统将无法正常工作！'
     }
 ]

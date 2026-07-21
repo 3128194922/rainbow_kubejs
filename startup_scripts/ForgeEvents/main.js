@@ -34,6 +34,10 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     {    
     //极限证
     handleDespairInsigniaDeath(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+    
+    //冻结代码
+    handleFreezeEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
     // 武器特效
     handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 

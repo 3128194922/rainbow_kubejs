@@ -73,6 +73,10 @@ global.biomelist = [];
 global.SUPER_MECHAISM = Math.random().toFixed(2);
 console.log(`超构建概率：${global.SUPER_MECHAISM}`)
 
+// Dyeing mod
+const $DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
+const $PaintData = Java.loadClass('com.example.dyeing.data.PaintData')
+
 global.COLORS = {
     白: [1.00, 1.00, 1.00],
     红: [1.00, 0.25, 0.25],

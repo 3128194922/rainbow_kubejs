@@ -34,10 +34,32 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
                     }
                 } catch (err) {
                     console.log("UUID 解析失败: " + err);
-                }
             }
         }
     }
+
+    // --- 巫毒女巫锅 ---
+    // 佩戴时，攻击者每有一个负面药水效果，对玩家的伤害减少4%，最高100%
+    if (hasCurios(victim, "mysticartifacts:witch_pot")) {
+        try {
+            if (attacker != null && attacker.isAlive()) {
+                let effects = attacker.getActiveEffects();
+                if (effects != null && effects.size() > 0) {
+                    let negativeCount = 0;
+                    for (let effect of effects) {
+                        if (!effect.getEffect().isBeneficial()) {
+                            negativeCount++;
+                        }
+                    }
+                    let reduction = Math.min(1.0, negativeCount * 0.04);
+                    event.setAmount(event.getAmount() * (1.0 - reduction));
+                }
+            }
+        } catch (e) {
+            console.log("巫毒女巫锅出错：" + e);
+        }
+    }
+}
 
     // --- 圣饼 ---
     // 10%伤害减免 + 60tick无敌帧

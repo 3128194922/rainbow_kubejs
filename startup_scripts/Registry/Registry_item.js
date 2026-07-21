@@ -200,4 +200,8 @@ StartupEvents.registry("item", event => {
     Numbers.forEach(id => {
         event.create(`rainbow:${id}`, "basic").displayName(`逻辑 ${ItemToNumberF(id)}`)
     })
+
+    // 索敌棒：选择两个实体，让它们互相索敌攻击
+    event.create("rainbow:aggro_stick").unstackable().glow(true)
+        .tooltip("§6右键点击两个实体，让它们互相索敌攻击")
 })

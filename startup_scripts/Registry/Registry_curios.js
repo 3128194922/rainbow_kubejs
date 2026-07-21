@@ -1825,6 +1825,7 @@ StartupEvents.registry('item', event => {
             .maxStackSize(1)
             .tag("curios:charm")
             .tooltip(Text.gold("[箭袋]"))
+            .tooltip(Text.gray("右键拉弓时抵消减速，恢复至 §b100% §7正常移速"))
             .tag("rainbow:quivers")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
@@ -1838,6 +1839,46 @@ StartupEvents.registry('item', event => {
                 .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
                 .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
                 .addAttribute("attributeslib:draw_speed", "quiver", 0.1, "multiply_total")
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null) return;
+                    if (player.level.isClientSide()) return;
+
+                    if (!stack.nbt) stack.nbt = {};
+                    let tag = stack.nbt;
+
+                    // 弓类白名单
+                    let bowWhitelist = [
+                        "minecraft:bow",
+                        "minecraft:crossbow",
+                        "species:crankbow"
+                    ];
+
+                    // 检测玩家是否在右键使用弓类物品
+                    let usingItem = player.getUseItem();
+                    let inWhitelist = usingItem != null && !usingItem.isEmpty() && bowWhitelist.indexOf(usingItem.id) !== -1;
+
+                    if (player.isUsingItem() && inWhitelist) {
+                        if (!tag.getBoolean("speedBoost")) {
+                            tag.putBoolean("speedBoost", true);
+                        }
+                    } else {
+                        if (tag.getBoolean("speedBoost")) {
+                            tag.putBoolean("speedBoost", false);
+                        }
+                    }
+
+                    // 触发属性刷新（使modifyAttribute重新计算）
+                    tag.putBoolean("update", !tag.getBoolean("update"));
+                })
+                .modifyAttribute(ev => {
+                    let stack = ev.stack;
+                    if (stack == null) return;
+                    if (!stack.nbt) return;
+                    if (stack.nbt.getBoolean("speedBoost")) {
+                        ev.modify("generic.movement_speed", "fast_quiver_speed", 4.0, "multiply_total");
+                    }
+                })
         )
 })
 
@@ -2193,4 +2234,12 @@ StartupEvents.registry('item', event => {
                 })
                 .addAttribute("minecraft:generic.movement_speed", "cloud_boots", 0.2, "multiply_total")
         )
+})
+
+// 吐根酊
+StartupEvents.registry('item', event => {
+    event.create('rainbow:lpecac')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
 })

@@ -10,7 +10,7 @@ function handleDespairInsigniaDeath(event, attacker, victim, source, range_damag
     // 未佩戴绝望徽记则跳过
     if (!hasCurios(victim, 'rainbow:despair_insignia')) return;
     // 伤害≤1时放过（避免虚空/指令等强制伤害误杀）
-    if (event.getAmount() < 1) return;
+    if (event.getAmount() <= 1) return;
     // 设置巨量伤害让玩家自然死亡，避免 victim.kill() 递归触发 LivingHurtEvent
     event.setAmount(1e10);
     }catch(e){

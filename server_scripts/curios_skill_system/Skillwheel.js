@@ -948,6 +948,106 @@ registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu,
 
     player.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(30));
 });
+
+// --- 女巫坩埚 ---
+registerSkillSound('mysticartifacts:witch_pot', 'rainbow:voice.null');
+registerSkill('mysticartifacts:witch_pot', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('mysticartifacts:witch_pot')) return;
+    if (player.level.clientSide) return;
+
+    // 获取玩家末影箱
+    let enderChest = player.enderChestInventory;
+    if (!enderChest) return;
+
+    // 获取玩家准心方向向量
+    let look = player.getLookAngle();
+    if (!look) return;
+    let lx = look.x();
+    let ly = look.y();
+    let lz = look.z();
+
+    let speed = 1.5;
+    let INTERVAL_TICKS = 5; // 0.25s
+
+    // 第一步：收集每格药水数据（按格存储剩余数量），清空末影箱
+    let slots = [];
+    for (let i = 0; i < 27; i++) {
+        let stack = enderChest.getItem(i);
+        if (!stack || stack.isEmpty()) continue;
+
+        let id = stack.getId();
+        if (id !== 'minecraft:splash_potion' && id !== 'minecraft:lingering_potion') continue;
+
+        let count = stack.getCount();
+        let potionNbt = stack.getNbt();
+
+        slots.push({ id: id, nbt: potionNbt, remaining: count });
+        enderChest.setItem(i, ItemStack.EMPTY);
+    }
+
+    if (slots.length <= 0) {
+        player.tell(Text.gray('末影箱中没有喷溅型或滞留型药水。'));
+        return;
+    }
+
+    let total = slots.reduce(function(sum, s) { return sum + s.remaining; }, 0);
+    let thrownCount = 0;
+    let slotIndex = 0;
+
+    // 第二步：每 5 tick 轮询各格，每格每次只丢 1 瓶
+    let throwNext = function() {
+        if (!player || !player.isAlive()) return;
+
+        // 找下一个还有剩余药水的格子
+        let tries = 0;
+        while (tries < slots.length) {
+            let s = slots[slotIndex];
+            if (s.remaining > 0) break;
+            slotIndex = (slotIndex + 1) % slots.length;
+            tries++;
+        }
+
+        if (tries >= slots.length) {
+            player.tell(Text.aqua('女巫坩埚从末影箱中投掷了 ' + thrownCount + ' 瓶药水！'));
+            return;
+        }
+
+        let data = slots[slotIndex];
+        data.remaining--;
+        thrownCount++;
+
+        try {
+            let thrownPotion = player.level.createEntity('minecraft:potion');
+            if (thrownPotion) {
+                thrownPotion.setPos(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
+
+                let itemData = { id: data.id, Count: 1 };
+                if (data.nbt) {
+                    itemData.tag = data.nbt;
+                }
+                thrownPotion.mergeNbt({ Item: itemData });
+
+                let spread = 0.05;
+                let dx = lx + (Math.random() - 0.5) * spread;
+                let dy = ly + (Math.random() - 0.5) * spread;
+                let dz = lz + (Math.random() - 0.5) * spread;
+                thrownPotion.setDeltaMovement(new Vec3d(dx * speed, dy * speed, dz * speed));
+
+                thrownPotion.spawn();
+            }
+        } catch (e) {
+            console.error('女巫坩埚投掷药水失败: ' + e);
+        }
+
+        // 移到下一格，继续调度
+        slotIndex = (slotIndex + 1) % slots.length;
+        event.server.scheduleInTicks(INTERVAL_TICKS, throwNext);
+    };
+
+    event.server.scheduleInTicks(1, throwNext);
+
+    player.cooldowns.addCooldown('mysticartifacts:witch_pot', SecoundToTick(30));
+});
 // ==========================================
 // 主入口逻辑
 // ==========================================

@@ -617,6 +617,16 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
         text.add(Text.darkGray("美术资源：Embers Rekindled"))
     })
+    //巫毒女巫锅
+    event.addAdvanced('mysticartifacts:witch_pot', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("攻击者每有一个负面药水效果"));
+            text.add(2, Text.aqua("减少对该攻击者所受伤害的 4%"));
+            text.add(3, Text.gold("最高减免 100%"));
+        }
+    })
     //滴水兽
     event.addAdvanced('oreganized:gargoyle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -625,5 +635,10 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("站立不动时提供 +30 盔甲值"));
             text.add(2, Text.aqua("移动时盔甲加成消失"));
         }
+    })
+    // 吐根酊
+    event.addAdvanced('rainbow:lpecac', (item, advanced, text) => {
+        text.add(1, Text.aqua("攻击时在目标位置产生爆炸"));
+        text.add(2, Text.aqua("爆炸不破坏方块，强度由 boom_damage 决定"));
     })
 })

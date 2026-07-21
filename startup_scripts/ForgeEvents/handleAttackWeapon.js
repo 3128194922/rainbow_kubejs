@@ -41,4 +41,21 @@ function handleAttackWeapon(event, entity, target) {
             entity.getItemInHand("main_hand").nbt.type = none;
         }
     }
+    // lpecac：攻击时在目标位置生成源于玩家的不破坏方块爆炸，爆炸大小由 boom_damage 属性决定，0.15秒冷却
+    if (hasCurios(entity, 'rainbow:lpecac')) {
+        if (entity.cooldowns.isOnCooldown('rainbow:lpecac')) return;
+        try {
+            let boomValue = entity.getAttributeValue("rainbow:generic.boom_damage");
+            entity.level.createExplosion(target.x, target.y, target.z)
+                .causesFire(false)
+                .exploder(entity)
+                .explosionMode("none")
+                .strength(boomValue/10)
+                .explode();
+            entity.cooldowns.addCooldown("rainbow:lpecac", SecoundToTick(0.15));
+        } catch (e) {
+            console.log('lpecac爆炸报错:');
+            console.log(e);
+        }
+    }
 }

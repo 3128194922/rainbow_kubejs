@@ -31,7 +31,10 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     let source = event.source;
     if(victim.level.isClientSide()) return;
     try
-    {    
+{
+    //背刺判定（最高优先级：隐匿状态下从目标背后攻击，伤害×2）
+    handleBackstabDamage(event, attacker, victim);
+    
     //极限证
     handleDespairInsigniaDeath(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
     

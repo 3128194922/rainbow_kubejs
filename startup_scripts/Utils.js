@@ -292,6 +292,17 @@ function randomBool(probability) {
     return Math.random() < probability;
 }
 
+/**
+ * 返回指定范围内的随机数
+ * @param {number} min - 最小值（含）
+ * @param {number} max - 最大值（含）
+ * @returns {number} 随机数
+ */
+function randomInRange(min, max) {
+    let value = Math.random() * (max - min) + min;
+    return value;
+}
+
 
 /**
 * 监听饰品栏添加效果
@@ -328,6 +339,35 @@ function hasCurios(player, id) {
         }
     }
     return false;
+}
+
+/**
+* 在实体饰品栏中寻找饰品并返回物品栈（用于读写饰品 NBT）
+* 遍历所有饰品栏槽位和其中的物品
+* @param {Internal.Player} player 玩家
+* @param {String} id 饰品物品ID
+* @returns {Internal.ItemStack|null} 饰品物品栈，未找到返回 null
+*/
+function getCuriosStackOnPlayer(player, id) {
+    // 检查玩家对象是否为空
+    if (player == null) return null;
+    // 非玩家实体没有 curios inventory
+    if (!player.isPlayer()) return null;
+    // 获取饰品库存
+    let curios = player.curiosInventory;
+    if (curios == null) return null;
+
+    // 遍历所有饰品槽位
+    for (let slot of curios.curios.values()) {
+        // 遍历槽位中的所有物品
+        for (let stack of slot.getStacks().getAllItems()) {
+            // 检查物品ID是否匹配
+            if (!stack.isEmpty() && stack.getId().toString() === id) {
+                return stack;
+            }
+        }
+    }
+    return null;
 }
 
 /**
@@ -468,4 +508,4 @@ global.getKeysByMod = (modid) => {
   });
   return result;
 };
-//DamageSorce()
+DamageSorce()

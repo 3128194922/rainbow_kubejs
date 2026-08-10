@@ -437,6 +437,77 @@ registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmen
     }
 });
 
+// --- 烟雾弹 ---
+// 参考 Species SmokeBombItem 源码：use() 仅开始蓄力，releaseUsing() 才有烟雾/隐身/加速效果。
+// 饰品格右键无法让玩家真的按住0.5秒，故模拟"强制蓄力成功"，点击即触发全部效果。
+registerSkillSound('species:smoke_bomb', 'species:item.smoke_bomb.charge');
+registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    try{
+            if (!itemStack || itemStack.isEmpty()) return;
+    if (player.cooldowns.isOnCooldown("species:smoke_bomb")) return;
+
+    // 1. 模拟右键：临时将该物品装备到主/副手，调用物品 use()（内部播放蓄力音效并启动使用流程）
+    let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
+    let hand = InteractionHand.MAIN_HAND;
+    let src = event.data ? event.data.getString("sourceType") : "";
+    if (src === "vanilla_offhand") {
+        hand = InteractionHand.OFF_HAND;
+    }
+    let slotName = hand === InteractionHand.OFF_HAND ? "offhand" : "mainhand";
+    let prev = player.getItemBySlot(slotName);
+    let needTempEquip = (!prev || prev.isEmpty() || prev.id !== itemStack.id);
+    if (needTempEquip) {
+        let temp = Item.of(itemStack.id, itemStack.count, itemStack.nbt);
+        player.setItemSlot(slotName, temp);
+    }
+    try {
+        let result = itemStack.use(player.level, player, hand);
+    } finally {
+        // 立即停止蓄力使用状态，避免玩家残留"正在使用"状态
+        player.stopUsingItem();
+        if (needTempEquip) {
+            player.setItemSlot(slotName, prev);
+        }
+    }
+
+    // 2. 判定蓄力成功（原版要求 >= 10 tick），播放释放音效并执行整套烟雾弹效果
+    let x = player.getX();
+    let y = player.getY();
+    let z = player.getZ();
+    player.level.playSound(null, x, y, z, "species:item.smoke_bomb.use", "players", 1.0, 1.0);
+
+    // 3. 粒子：species 专属 poof（身体下沿）+ 原版 poof 大团烟雾（头上方）
+    event.server.runCommandSilent(`/particle species:poof ${x} ${y + 0.01} ${z} 0 0 0 0.5 1`);
+    event.server.runCommandSilent(`/particle minecraft:poof ${x} ${y + 1} ${z} 0 0 0 0.15 100`);
+
+    // 4. 效果加成：隐身 15 秒（300 tick）+ 移速 III 2 秒（40 tick），与 SmokeBombItem 的一致
+    player.potionEffects.add("minecraft:invisibility", 20 * 15, 0, true, true);
+    player.potionEffects.add("minecraft:speed", 20 * 2, 2, true, true);
+
+    // 5. 烟雾笼罩：清除 36 格范围内所有实体的索敌目标（setTarget(null)），使其迷失目标（排除非活实体与玩家）
+    let smokeAABB = player.boundingBox.inflate(36);
+    player.level.getEntitiesWithin(smokeAABB).forEach(targetEntity => {
+        if (!targetEntity) return;
+        if (!targetEntity.isLiving() || !targetEntity.isAlive()) return;
+        if (targetEntity.isPlayer()) return;
+        try { targetEntity.setTarget(null);
+            targetEntity.setNoAI(true); // 禁用 AI，避免被玩家攻击后立刻重新锁定目标
+            targetEntity.setNoAI(false);
+         } catch (e) { console.log("烟雾弹清索敌失败:", e); }
+    });
+
+    // 6. 非创造模式消耗 1 个烟雾弹
+    if (!player.isCreative()) {
+        itemStack.shrink(1);
+    }
+
+    // 7. 冷却 2 秒（40 tick），与原版 releaseUsing 一致
+    player.cooldowns.addCooldown("species:smoke_bomb", 40);
+    }catch(e){
+        console.error("烟雾弹技能执行异常:", e);
+    }
+});
+
 // --- 觉之瞳 ---
 registerSkillSound('rainbow:eye_of_satori', 'rainbow:voice.eye_of_satori');
 registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
@@ -449,7 +520,7 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
     }
 });
 
-// --- 恐惧王冠 ---
+// --- 鸦羽骨哨 ---
 registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
 registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
@@ -546,7 +617,7 @@ registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, subm
 // --- 迷你月球 ---
 registerSkillSound('rainbow:mini_moon', 'rainbow:voice.tenshi');
 registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (itemStack) 
+    if (itemStack && !player.cooldowns.isOnCooldown("rainbow:mini_moon"))
     {
         if(player.isClientSide) return;
 
@@ -588,6 +659,8 @@ registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenu
             }
             entity.hurtMarked = true;
         })
+
+        player.cooldowns.addCooldown("rainbow:mini_moon", SecoundToTick(15));
     }
 });
 

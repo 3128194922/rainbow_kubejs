@@ -45,6 +45,11 @@ StartupEvents.registry("item", event => {
 
     // 远程标靶信号器
     event.create("rainbow:controller").texture('rainbow:item/beacon_ball')
+        .tooltip("§7潜行右键标靶方块：绑定目标坐标")
+        .tooltip("§7右键：远程向目标标靶发出红石信号")
+        .tooltip("§e信号强度与持续时间由命名决定：")
+        .tooltip("§e命名「数字」= 信号强度(0-15)，持续3秒")
+        .tooltip("§e命名「强度:时间」= 强度(0-15):持续秒数")
 
     // 乐谱
     //event.create("rainbow:musical_score")

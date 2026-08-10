@@ -100,6 +100,7 @@
 	"item.rainbow.gritty_heart": "沙蚀腐心",
 	"item.rainbow.gunk_heart": "污粘腐心",
 	"item.rainbow.rotten_heart": "腐烂心脏",
+	"item.rainbow.crow_heart": "乌鸦之心",
 	"item.rainbow.golden_piggy_charm": "金猪吊坠",
 	"item.rainbow.reload_core": "装填核心",
 	"item.rainbow.oceantooth_necklace": "海牙项链",
@@ -156,8 +157,13 @@
 	"item.rainbow.cloud_boots": "云靴",
 	"item.rainbow.gold_glove": "点金手套",
 	"item.rainbow.lpecac": "吐根酊",
+	"item.rainbow.aggro_stick": "索敌工具",
+	"item.rainbow.the_field_guide": "图鉴",
+	"item.rainbow.field_guide_plant": "图鉴·植物篇",
+	"item.rainbow.field_guide_animal": "图鉴·动物篇",
+	"item.rainbow.field_guide_monster": "图鉴·怪物篇",
+	"item.rainbow.field_guide_boss": "图鉴·BOSS篇",
 	
-
 	"attribute.name.generic.extra_summoning": "额外召唤",
 	"attribute.name.generic.boom_damage": "爆炸伤害",
 	"attribute.name.generic.magic_damage": "魔法伤害",

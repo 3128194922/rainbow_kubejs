@@ -26,6 +26,6 @@ function handleNonPlayerDamage(event, attacker, victim, source, range_damage, th
 
     if (owner && owner.isPlayer()) {
         let attributeValue = owner.getAttributeValue("rainbow:generic.pet_damage");
-        event.setAmount(attributeValue * event.getAmount());
+        event.setAmount(attributeValue + event.getAmount());
     }
 }

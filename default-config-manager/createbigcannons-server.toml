@@ -1,0 +1,303 @@
+#.
+#这些值影响火炮故障的程度。
+[failure]
+    #.
+    #.
+    #若为 true，火炮将完全不会发生故障。等效于将下方所有概率设置为零。
+    disableAllCannonFailure = true
+    #.
+    #发射的抛射物在超过哑火比例后卡在炮管内的概率。0 为 0%，1 为 100%。
+    #范围: 0.0 ~ 1.0
+    squibChance = 0.25
+    #.
+    #若火药装药在"炮管"类火炮方块中被点燃，火炮发生故障的概率。0 为 0%，1 为 100%。
+    #该概率会受到更强或更弱装药方块的影响。
+    #范围: 0.0 ~ 1.0
+    barrelChargeBurstChance = 0.20000000298023224
+    #.
+    #灾难性故障爆炸的威力。按此次射击中使用的装药数量进行缩放。
+    #范围: 0.0 ~ 3.4028234663852886E38
+    failureExplosionPower = 2.0
+    #.
+    #火炮装填的火药装药超过其承受能力时发生故障的概率。0 为 0%，1 为 100%。
+    #范围: 0.0 ~ 1.0
+    overloadBurstChance = 0.5
+    #.
+    #装药之间存在间隙时，装药无法完全燃烧的概率。0 为 0%，1 为 100%。
+    #范围: 0.0 ~ 1.0
+    interruptedIgnitionChance = 0.33000001311302185
+
+#.
+#这些值影响火炮弹药的性质。
+[munitions]
+    #.
+    #.
+    #抛射物是否可以弹跳、跳弹和偏转。
+    projectilesCanBounce = false
+    #.
+    #范围: 0.0 ~ 1.0
+    baseProjectileBounceChance = 0.33000001311302185
+    #.
+    #范围: 0.0 ~ 1.0
+    baseProjectileFluidBounceChance = 0.8999999761581421
+    #.
+    #[单位: 米/游戏刻]
+    #激活穿透加成的所需最低速度。
+    #范围: 0.0 ~ 3.4028234663852886E38
+    minimumVelocityForPenetrationBonus = 1.0
+    #.
+    #范围: 0.0 ~ 3.4028234663852886E38
+    penetrationBonusScale = 0.10000000149011612
+    #.
+    #火炮抛射物对周围方块造成破坏的程度。
+    #全部破坏 - 抛射物将摧毁其击中的任何东西（如适用）。爆炸性抛射物在引爆时会摧毁方块。
+    #无爆炸破坏 - 抛射物将摧毁其击中的任何东西（如适用）。爆炸性抛射物在引爆时仅伤害实体。
+    #无破坏 - 抛射物不会摧毁其击中的任何东西，仅对实体造成伤害。爆炸性抛射物在引爆时仅伤害实体。
+    #允许的值: ALL_DAMAGE, NO_EXPLOSIVE_DAMAGE, NO_DAMAGE
+    damageRestriction = "ALL_DAMAGE"
+    #.
+    projectilesChangeSurroundings = true
+    #.
+    munitionBlocksCanExplode = true
+
+    #.
+    #大型火炮钝化推进剂
+    [munitions.dampBigCannonPropellant]
+        #.
+        dampPropellantBlocksStartingIgnition = true
+        #.
+        dampPropellantWeakensPropellant = true
+
+    #.
+    #区块加载
+    [munitions.chunkloading]
+        #.
+        projectilesCanChunkload = true
+        #.
+        smokeCloudsCanChunkload = true
+
+    #.
+    #大型火炮弹药
+    [munitions.bigCannonMunitions]
+        #.
+        #允许的值: NONE, LONG, SHORT
+        trailType = "SHORT"
+        #.
+        #使所有发射的大型火炮抛射物都带有曳光效果，无论其物品是否应用了曳光弹头。
+        allBigCannonProjectilesAreTracers = false
+        #.
+        #[单位: 游戏刻]
+        #范围: 0 ~ 100
+        quickFiringBreechItemPickupDelay = 20
+        #.
+        quickFiringBreechItemGoesToInventory = false
+
+    #.
+    #抛射物引信
+    [munitions.fuzes]
+        #.
+        #撞击引信/延迟撞击引信在击中物体时引爆的概率。0 为 0%（从不），1 为 100%（总是）。
+        #范围: 0.0 ~ 1.0
+        impactFuzeDetonationChance = 1.0
+        #.
+        #撞击引信/延迟撞击引信在损坏前可以击中的方块数量。设置为 -1 表示永不损坏。
+        #范围: > -1
+        impactFuzeDurability = 3
+        #.
+        #惯性引信/延迟惯性引信在击中物体时引爆的概率。0 为 0%（从不），1 为 100%（总是）。
+        #范围: 0.0 ~ 1.0
+        inertiaFuzeDetonationChance = 1.0
+        #.
+        #惯性引信/延迟惯性引信在损坏前可以击中的方块数量。设置为 -1 表示永不损坏。
+        #范围: > -1
+        inertiaFuzeDurability = 3
+        #.
+        #[单位: 游戏刻]
+        #近炸引信解除保险所需的时间。
+        #引信在空中经过指定的解除保险时间后，当它足够接近方块或实体时将会引爆。
+        #范围: > 0
+        proximityFuzeArmingTime = 5
+        #.
+        #近炸引信覆盖区域的缩放比例。数值越大，覆盖区域越广。
+        #范围: 1 ~ 10
+        proximityFuzeScale = 5
+        #.
+        #[单位: 方块]
+        #近炸引信检测点之间的间距。
+        #范围: 0.5 ~ 2.0
+        proximityFuzeSpacing = 1.5
+
+    #.
+    #分组弹药
+    [munitions.groupedMunitions]
+        #.
+        #流体团块影响其效果区域（AOE）内方块的概率。0 为 0%（从不），1 为 100%（总是）。
+        #范围: 0.0 ~ 1.0
+        fluidBlobBlockEffectChance = 1.0
+
+    #.
+    #自动炮弹药
+    [munitions.autocannonMunitions]
+        #.
+        #允许的值: NONE, LONG, SHORT
+        trailType = "SHORT"
+        #.
+        #使所有发射的自动炮抛射物都带有曳光效果，无论其物品是否应用了曳光弹头。模拟旧版行为。
+        allAutocannonProjectilesAreTracers = false
+        #.
+        #自动炮弹药容器可以存储的自动炮炮弹数量。
+        #范围: 1 ~ 128
+        autocannonAmmoContainerAutocannonRoundCapacity = 64
+        #.
+        #自动炮弹药容器可以存储的机枪子弹数量。
+        #范围: 1 ~ 128
+        autocannonAmmoContainerMachineGunRoundCapacity = 128
+
+#.
+#这些值影响火炮材料及火炮结构的特性。
+[cannons]
+    #.
+    #.
+    #可建造火炮的最大长度。
+    #范围: > 3
+    maxCannonLength = 64
+    #.
+    #速射炮尾无法被机械臂装填的时间。
+    #范围: > 0
+    quickfiringBreechLoadingCooldown = 40
+    #.
+    #速射炮尾完全打开/关闭所需的时间，在此期间无法装填。
+    #范围: > 0
+    quickfiringBreechOpeningCooldown = 5
+    #.
+    #范围: 0.0 ~ 3.4028234663852886E38
+    bigCannonRecoilScale = 1.0
+    #.
+    #范围: 0.0 ~ 3.4028234663852886E38
+    autocannonRecoilScale = 0.5
+
+    #.
+    #迫击炮
+    [cannons.dropMortar]
+        #.
+        #从将弹药插入迫击炮到迫击炮将其发射之间的延迟（单位：游戏刻）。1 秒有 20 游戏刻。
+        #范围: > 0
+        dropMortarDelay = 5
+        #.
+        #玩家在再次向迫击炮插入同类型弹药之前必须等待的时间（单位：游戏刻）。1 秒有 20 游戏刻。
+        #范围: > 0
+        dropMortarItemCooldown = 40
+
+    #.
+    #装填工具
+    [cannons.loadingTools]
+        #.
+        #机械臂是否可以使用装填工具。
+        deployersCanUseLoadingTools = true
+        #.
+        #推弹杆在火炮内部可以达到的方块距离。
+        #范围: > 1
+        ramRodReach = 5
+        #.
+        #推弹杆可以推动的弹药方块的最大数量。
+        #范围: > 1
+        ramRodStrength = 3
+        #.
+        #清膛杆在火炮内部可以达到的方块距离。
+        #范围: > 1
+        wormReach = 5
+        #.
+        #使用装填工具移动一个弹药方块移动一格距离所消耗的饥饿度/饱和度点数。
+        #范围: 0.0 ~ 3.4028234663852886E38
+        loadingToolHungerConsumption = 2.5
+        #.
+        #玩家再次使用手动装填工具之前需要等待的时间（单位：游戏刻）。1 秒有 20 游戏刻。
+        #范围: > 0
+        loadingToolCooldown = 20
+
+    #.
+    #火炮炮架
+    [cannons.carriage]
+        #.
+        #炮架的移动速度，单位：方块/游戏刻。
+        #范围: 0.03999999910593033 ~ 1.0
+        carriageSpeed = 0.03999999910593033
+        #.
+        #炮架的转向速度，单位：度/游戏刻。
+        #范围: 0.10000000149011612 ~ 10.0
+        carriageTurnRate = 1.0
+        #.
+        cannonWeightAffectsCarriageSpeed = true
+
+    #.
+    #显示链接信息
+    [cannons.displayLink]
+        #.
+        shouldDisplayCannonRotation = true
+        #.
+        shouldDisplayContainedMunitions = true
+
+    #.
+    #大型火炮屏幕震动
+    [cannons.bigCannonScreenShake]
+        #.
+        #范围: 0.0 ~ 3.4028234663852886E38
+        blastDistanceMultiplier = 8.0
+
+#.
+#这些值影响各种杂项机械。
+[kinetics]
+    #.
+    #.
+    #可建造的火炮装填器最大长度。
+    #范围: > 3
+    maxLoaderLength = 64
+    #.
+    #启用后，火炮装填器在放置其他机械结构于其上时不会损坏。启用旧版行为。
+    enableIntersectionLoading = false
+
+    [kinetics.stressValues]
+
+        #.
+        #这些值影响 Create Big Cannons 机械方块的应力值。
+        [kinetics.stressValues.v2]
+
+            #.
+            #.
+            #[单位: 应力]
+            #配置机械方块单独的应力影响。注意，其速度每提升一级，该消耗会加倍。
+            [kinetics.stressValues.v2.impact]
+                steel_sliding_breech = 32.0
+                cannon_drill = 8.0
+                nethersteel_screw_breech = 40.0
+                steel_screw_breech = 16.0
+                bronze_sliding_breech = 12.0
+                cannon_loader = 4.0
+                cannon_builder = 8.0
+                cast_iron_sliding_breech = 16.0
+
+#.
+#这些值影响火炮的合成属性。
+[crafting]
+    #.
+    #.
+    #可建造的单次火炮铸造的最大高度。
+    #范围: > 1
+    maxCannonCastHeight = 32
+    #.
+    #可建造的火炮钻头的最大长度。
+    #范围: > 1
+    maxCannonDrillLength = 32
+    #.
+    #可建造的火炮建造机的最大长度。
+    #范围: > 1
+    maxCannonBuilderLength = 32
+    #.
+    #火炮建造机的最大触及范围。
+    #范围: > 2
+    maxCannonBuilderRange = 32
+    #.
+    #[单位: 游戏刻]
+    #已建造的火炮方块需要被加热的时间，直到其转变为成品形态。
+    #范围: > 0
+    builtUpCannonHeatingTime = 6000

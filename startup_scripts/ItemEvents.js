@@ -182,6 +182,138 @@ ItemEvents.modification(event => {
        )
    })
 })
+
+// 延迟加载 Tide 类（运行时首次使用时才加载，避免 startup 阶段提前加载 Tide 类破坏 mod 注册流程）
+function getTideClass(name) {
+    try {
+        if (global._tideClasses == null) global._tideClasses = {};
+        if (global._tideClasses[name] != null) return global._tideClasses[name];
+        let cls = Java.tryLoadClass(name);
+        global._tideClasses[name] = cls; // 加载失败缓存 null，避免重复尝试
+        if (cls == null) console.log("getTideClass 未加载到类: " + name); // 帮助排查 classfilter/类名问题
+        return cls;
+    } catch (e) {
+        console.log("getTideClass 加载失败(" + name + "): " + e);
+        return null;
+    }
+}
+
+// 读取玩家 Tide 图鉴数据 NBT（服务端优先读 Forge 持久化数据，客户端走 CLIENT_DATA 兜底）
+// ⚠️ 切记：KubeJS 6 (1.20.1) 的 entity.persistentData 是 KubeJS 自己的数据（实体NBT键 KubeJSPersistentData），
+//          Tide 写入的是 Forge 的 Entity.getPersistentData()（实体NBT键 ForgeData），两者完全不同，
+//          必须通过 entity.nbt（实体完整 NBT）读 ForgeData 才能拿到 Tide 的玩家图鉴数据
+function getTideJournalTag(entity) {
+    // ① 服务端/权威数据：Forge 持久化数据（Tide 通过 LoaderPlatform.getPlayerData → Forge 机制）
+    try {
+        if (entity && entity.nbt) {
+            let forgeData = entity.nbt.getCompound("ForgeData");
+            if (forgeData != null && forgeData.contains("TidePlayerData")) {
+                return forgeData.getCompound("TidePlayerData");
+            }
+        }
+    } catch (e) {
+        console.log("getTideJournalTag ForgeData 读取失败: " + e);
+    }
+    // ② 客户端兜底：Tide 网络同步的 CLIENT_DATA（结构相同）
+    try {
+        let TidePlayerDataCls = getTideClass('com.li64.tide.data.player.TidePlayerData');
+        if (TidePlayerDataCls) {
+            let tag = TidePlayerDataCls.CLIENT_DATA.getAsTag();
+            if (tag && tag.contains("fish_data")) return tag;
+        }
+    } catch (e) {
+        console.log("getTideJournalTag CLIENT_DATA 读取失败: " + e);
+    }
+    return null;
+}
+
+// 计算鱼类图鉴解锁数量（已解锁条目数）
+function getTideFishUnlockCount(tag) {
+    let unlocked = 0;
+    try {
+        if (!tag || !tag.contains("fish_data")) return 0;
+        let list = tag.getList("fish_data", 10);
+        for (let i = 0; i < list.size(); i++) {
+            let entry = list.getCompound(i);
+            if (entry.getCompound("data").getBoolean("is_unlocked")) unlocked++;
+        }
+    } catch (e) {
+        console.log("getTideFishUnlockCount 解析失败: " + e);
+    }
+    return unlocked;
+}
+
+// 返回鱼类图鉴总条目数（Tide 数据加载器），失败时兜底为 1 防除零
+function getTideFishTotalCount() {
+    try {
+        let TideDataCls = getTideClass('com.li64.tide.data.TideData');
+        if (TideDataCls && TideDataCls.FISH) {
+            let total = TideDataCls.FISH.journalEntryCount();
+            if (total > 0) return total;
+        }
+    } catch (e) {
+        console.log("getTideFishTotalCount 获取总数失败: " + e);
+    }
+    return 1;
+}
+
+//百鱼全书：鱼类图鉴解锁进度 → 幸运加成（1% 解锁度 +1 幸运）
+// 数据来源（参考 Tide-2 源码）：
+//   服务端：ForgeData."TidePlayerData".fish_data 列表，每项 data.is_unlocked 为已解锁
+//           （⚠️ KubeJS 6 的 persistentData 是 KubeJS 私有数据，读不到 Tide；必须读实体NBT的 ForgeData）
+//   客户端：TidePlayerData.CLIENT_DATA（Tide 网络同步后的图鉴数据，结构相同）
+//   总数：TideData.FISH.journalEntryCount()（Tide mod 数据加载器中的图鉴条目数）
+ItemEvents.modification(event => {
+   event.modify('tide:fishing_journal', item => {
+       item.attachCuriosCapability(
+           CuriosJSCapabilityBuilder.create()
+               .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'tide:fishing_journal')) return false;
+                    return true;
+                })
+               // ================================
+               // ❤️ 核心机制：根据玩家鱼类解锁进度等比例加成幸运
+               //（已解锁数 / 总数 → 解锁比例(0~1) → ×25 取整，100% 解锁 = 25 幸运）
+               // ================================
+               .modifyAttribute(ev => {
+                    let entity = ev.slotContext.entity();
+                    if (entity == null) return;
+
+                    // 已解锁数 / 总数 → 解锁比例 → ×25 取整
+                    let tag = getTideJournalTag(entity);
+                    let unlocked = getTideFishUnlockCount(tag);
+                    let total = getTideFishTotalCount();
+                    let luck = Math.floor(unlocked / total * 25);
+                    if (luck <= 0) return;
+
+                    ev.modify("minecraft:generic.luck", "fishing_journal_luck", luck, "addition");
+               })
+               // ================================
+               // ❤️ 属性重算触发：只有解锁进度变化时才翻转 update 通知 CuriosJS 重算属性
+               // (每 5 秒检查一次，解锁数存入 NBT 做对比，避免无效重算/频繁序列化实体NBT)
+               // ================================
+               .curioTick((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (entity.age % 100 != 0) return;
+
+                    let tag = getTideJournalTag(entity);
+                    let unlocked = getTideFishUnlockCount(tag);
+                    let total = getTideFishTotalCount();
+                    let luck = Math.floor(unlocked / total * 25);
+
+                    // 进度未变化则不重算
+                    if (stack.getOrCreateTag().getInt("journal_luck") == luck) return;
+                    stack.getOrCreateTag().putInt("journal_luck", luck);
+                    stack.getOrCreateTag().putBoolean("update", !stack.getOrCreateTag().getBoolean("update"));
+                    console.log("百鱼全书 幸运更新: 解锁 " + unlocked + "/" + total + " → 幸运 +" + luck); 
+            })
+        )
+   })
+})
+
 //末影手套
 /*ItemEvents.modification(event => {
    event.modify('royalvariations:spectral_gauntlet', item => {
@@ -211,10 +343,10 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
 
         // 氧化状态 → 宠物伤害加成（multiply_base）
         let bonusMap = {
-            "copper": 0.2,
-            "exposed_copper": 0.15,
-            "weathered_copper": 0.1,
-            "oxidized_copper": 0.05
+            "copper": 1,
+            "exposed_copper": 1,
+            "weathered_copper": 1,
+            "oxidized_copper": 1
         }
 
         let uuids = [
@@ -236,7 +368,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                             uuids[i],
                             'copper_pet_' + prefix,
                             bonusMap[prefix],
-                            "multiply_base"
+                            "addition"
                         )
                     )
                     return
@@ -251,7 +383,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
                             uuids[i],
                             'copper_pet_waxed_' + prefix,
                             bonusMap[prefix],
-                            "multiply_base"
+                            "addition"
                         )
                     )
                     return
@@ -284,6 +416,41 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
         console.log(e)
     }
 });*/
+
+// 骑士 套装 宠物流派
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
+
+    try {
+        let items = ['royalvariations:royal_knight_helmet','royalvariations:royal_knight_cuirass','royalvariations:royal_knight_leggings','royalvariations:royal_knight_boots']
+        let uuids = [
+            "61808577-4399-484f-a397-7b9340fd7c0b",
+            "71808577-4399-484f-a397-7b9340fd7c0b",
+            "81808577-4399-484f-a397-7b9340fd7c0b",
+            "91808577-4399-484f-a397-7b9340fd7c0b"
+        ]
+        let armorSlots = ["head", "chest", "legs", "feet"]
+
+        for (let i = 0; i < items.length; i++) {
+            if (item.id === items[i] && slotType === armorSlots[i]) {
+                event.addModifier(
+                    "rainbow:generic.pet_damage",
+                    new AttributeModifier(
+                        uuids[i],
+                        'royal_knight',
+                        3,
+                        "addition"
+                    )
+                )
+                break
+            }
+        }
+    } catch (e) {
+        console.log("骑士套装属性修改出错：")
+        console.log(e)
+    }
+});
 
 // 铂金 套装 动能流派
 ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {

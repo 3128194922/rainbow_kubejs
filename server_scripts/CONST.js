@@ -16,6 +16,7 @@ const Registries = Java.loadClass("net.minecraft.core.registries.Registries");
 const Mob = Java.loadClass('net.minecraft.world.entity.Mob')
 const $ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
 const $Mob = Java.loadClass('net.minecraft.world.entity.Mob')
+const $AABB = Java.loadClass('net.minecraft.world.phys.AABB')
 const $Effects = Java.loadClass('net.minecraft.world.effect.MobEffects')
 const $InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
 const TamableAnimal = Java.loadClass('net.minecraft.world.entity.TamableAnimal');
@@ -46,6 +47,15 @@ const DEFAULT_IGNORE_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLoc
 
 const $Spectre = Java.loadClass('com.ninni.species.server.entity.mob.update_3.Spectre');
 const $BlockPosSp = Java.loadClass('net.minecraft.core.BlockPos');
+const $DArg = Java.loadClass('com.mojang.brigadier.arguments.DoubleArgumentType')
+const $Component = Java.loadClass('net.minecraft.network.chat.Component')
+const $CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
+const $ListTag = Java.loadClass('net.minecraft.nbt.ListTag')
+const $Direction = Java.loadClass('net.minecraft.core.Direction')
+const $DirectionAxisDirection = Java.loadClass('net.minecraft.core.Direction$AxisDirection')
+const $DirectionAxis = Java.loadClass('net.minecraft.core.Direction$Axis')
+// CBC 瞄准: 炮塔基座方块状态属性 (VERTICAL_DIRECTION: down=正立/up=倒置)
+const $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
 
 
 global.foodlist = []; //食物列表初始化

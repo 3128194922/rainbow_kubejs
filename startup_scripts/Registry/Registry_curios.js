@@ -137,6 +137,15 @@ StartupEvents.registry('item', event => {
 });
 
 
+// ==========================================
+// 🍖 大胃袋（想吃就吃机制）
+// 每 2 游戏日（48000 tick）发布一个进食任务：
+// 吃到指定食物 → 大胃袋生效（基础加成 + 击退抗性 min(0.1*连击, 1.0)）
+// 周期结束未吃 → 大胃袋全部失效（属性+受伤抵消），连击清零
+// ⚠️ 任务源数据在 player.persistentData，由 server_scripts/big_stomach/PlayerTick.js 轮询推进：
+//    多个大胃袋共享同一任务；卸下饰品周期也照常轮换；佩戴时同步任务到饰品NBT供本文件读取
+// ==========================================
+
 // 大胃袋
 StartupEvents.registry('item', event => {
     event.create('rainbow:big_stomach')
@@ -145,9 +154,54 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .addAttribute("moreattribute:eat_speed", "big_stomach", -0.5, "addition")
-                .addAttribute("moreattribute:drink_speed", "big_stomach", -0.5, "addition")
-                .addAttribute("moreattribute:can_always_eat", "big_stomach", 1, "addition")
+                // ================================
+                // 🍖 核心机制：动态属性（任务未完成 bs_done=false 时大胃袋全部失效）
+                // ================================
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+                    let stack = ev.stack;
+                    if (stack == null) return;
+
+                    let done = false;
+                    if (stack.nbt != null && stack.nbt.contains("bs_done")) {
+                        done = stack.nbt.getBoolean("bs_done");
+                    }
+
+                    // 任务未完成/未初始化：三加成全部为 0（大胃袋不生效）
+                    if (!done) {
+                        ev.modify("moreattribute:eat_speed", "big_stomach", 0, "addition");
+                        ev.modify("moreattribute:drink_speed", "big_stomach", 0, "addition");
+                        ev.modify("moreattribute:can_always_eat", "big_stomach", 0, "addition");
+                        return;
+                    }
+
+                    // 任务完成：基础加成生效
+                    ev.modify("moreattribute:eat_speed", "big_stomach", -0.5, "addition");
+                    ev.modify("moreattribute:drink_speed", "big_stomach", -0.5, "addition");
+                    ev.modify("moreattribute:can_always_eat", "big_stomach", 1, "addition");
+
+                    // 连续满足进食任务 → 击退抗性加成（0.1×连击，上限 1.0）
+                    let streak = 0;
+                    if (stack.nbt != null && stack.nbt.contains("bs_streak")) {
+                        streak = stack.nbt.getInt("bs_streak");
+                    }
+                    if (streak > 0) {
+                        let kbr = Math.min(0.1 * streak, 1.0);
+                        ev.modify("minecraft:generic.knockback_resistance", "big_stomach", kbr, "multiply_total");
+                    }
+                })
+                // ================================
+                // 🍖 属性重算触发：翻转 update 通知 CuriosJS 重新计算属性
+                // 任务轮换/进度统一在 server_scripts/big_stomach/PlayerTick.js 维护
+                // ================================
+                .curioTick((slotContext, stack) => {
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -1157,16 +1211,149 @@ StartupEvents.registry('item', event => {
 })*/
 
 
-const hearts = ['drowned_heart', 'frozen_heart', 'gritty_heart', 'gunk_heart', 'rotten_heart'];
+// 注册僵尸之心系列物品（分别注册）
 
-// 注册僵尸之心系列物品
+// 溺尸之心
 StartupEvents.registry('item', event => {
-    hearts.forEach(heartId => { // 遍历 hearts 数组中的每个 ID
-        event.create('rainbow:' + heartId) // 使用拼接后的字符串作为物品 ID
-            .rarity("epic")
-            .maxStackSize(1)
-            .tag("curios:charm");
-    });
+    event.create('rainbow:drowned_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+
+                })
+                .curioTick((slotContext, stack) => {
+
+                })
+        )
+})
+
+// 冰冻之心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:frozen_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+
+                })
+                .curioTick((slotContext, stack) => {
+
+                })
+        )
+})
+
+// 坚韧之心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:gritty_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+
+                })
+                .curioTick((slotContext, stack) => {
+
+                })
+        )
+})
+
+// 黏液之心
+StartupEvents.registry('item', event => {
+    event.create('rainbow:gunk_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+
+                })
+                .curioTick((slotContext, stack) => {
+
+                })
+        )
+})
+
+// 腐烂之心
+// 机制：血量 <= 20 时，每少 1 点血量增加 1 点血量上限；血量 > 20 时失效
+StartupEvents.registry('item', event => {
+    event.create('rainbow:rotten_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+
+                    let health = player.getHealth();
+                    // 血量 <= 20 时，每少 1 点血量增加 1 点血量上限；血量 > 20 时加成归零
+                    let bonus = (health <= 20) ? (20 - health) : 0;
+
+                    ev.modify("generic.max_health", "rotten_heart", bonus, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 通过翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+        )
+})
+
+// 乌鸦之心
+// 机制：空的心之容器越多（空容器数 = 血量上限 - 当前血量，半颗心算 1 个容器），
+//       每 1 个空容器提供 +0.8 攻击力、+1.5 护甲，血量越少加成越高
+StartupEvents.registry('item', event => {
+    event.create('rainbow:crow_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    let health = player.getHealth();
+                    let maxHealth = player.getMaxHealth();
+
+                    // 空容器数 = 血量上限 - 当前血量（向下取整，半颗心计为整数容器）
+                    let missing = Math.floor(maxHealth - health);
+                    if (missing < 0) missing = 0;
+
+                    ev.modify("generic.attack_damage", "crow_heart", 0.8 * missing, "addition");
+                    ev.modify("generic.armor", "crow_heart", 1.5 * missing, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:crow_heart')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
 })
 
 // ==========================================
@@ -1726,12 +1913,39 @@ StartupEvents.registry('item', event => {
 })
 
 // 玩家小人
+// 机制：根据服务器在线玩家数量，每人提供 0.1 的 multiply_total 挖掘速度加成
 StartupEvents.registry('item', event => {
     event.create('rainbow:player_doll')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (player.server == null) return;
+
+                    let onlineCount = player.server.players.size();
+                    if (onlineCount <= 0) return;
+
+                    ev.modify("attributeslib:mining_speed", "player_doll", 0.1 * onlineCount, "multiply_total");
+                })
+                .curioTick((slotContext, stack) => {
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return false;
+                    if (hasCurios(entity, 'rainbow:player_doll')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
 })
 
 // 混沌核心
@@ -2096,26 +2310,22 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .modifyAttribute(e => {
-                    let stack = e.stack;
-                    if (!stack)
-                        {
-                            stack = {};
-                        }
+                    let player = e.slotContext.entity();
+                    if (player === null || player === undefined) return;
 
-                    // 从物品 NBT 读取隐匿状态（curioTick 每 tick 同步），NBT 为 null 时默认非隐匿，确保首次查询也能返回修饰符
-                    let isStealth = stack.nbt ? stack.nbt.getBoolean("isStealth") : false;
-                    let bonus = isStealth ? 1 : 0;
+                    // 隐匿状态读取纯 KubeJS 维护的 isStealth NBT（缺失 key 默认 true，与 getStealthState 语义一致）
+                    let isStealth = global.getStealthState(player) ? 1 : 0;
 
-                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", bonus, "addition");
-                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.5 * bonus, "multiply_total");
+                    e.modify("attributeslib:crit_chance", "clawofhorus_crit_chance", isStealth, "addition");
+                    e.modify("attributeslib:crit_damage", "clawofhorus_crit_damage", 0.5 * isStealth, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
 
                     let player = slotContext.entity();
                     if (!player) return;
-                    // 将隐匿状态同步到物品 NBT，随网络同步至客户端供 tooltip 渲染
-                    let isStealth = player.persistentData.getBoolean("isStealth");
+                    // 将隐匿状态同步到物品 NBT，随网络同步至客户端供 tooltip 渲染（同样基于 KubeJS 的 isStealth）
+                    let isStealth = global.getStealthState(player);
                     stack.getOrCreateTag().putBoolean("isStealth", isStealth);
                 })
         );
@@ -2131,13 +2341,16 @@ StartupEvents.registry('item', event => {
             CuriosJSCapabilityBuilder.create()
                 .modifyAttribute(e => {
                     let stack = e.stack;
-                    if (!stack) return;
+                    let player = e.slotContext.entity();
+                    if (stack === null || stack === undefined) return;
+                    if (player === null || player === undefined) return;
 
-                    // 从物品 NBT 读取隐匿状态和护甲数量（由 curioTick 每 tick 同步）
-                    let isStealth = stack.getOrCreateTag().getBoolean("isStealth") ? 1 : 0;
+                    // isStealth 读取纯 KubeJS 维护的 isStealth NBT（缺失 key 默认 true，与 getStealthState 语义一致）
+                    let isStealth = global.getStealthState(player) ? 1 : 0;
+                    // 护甲数量由 curioTick 每 tick 同步
                     let armorCount = stack.getOrCreateTag().getInt("armorCount");
 
-                    // 有任意护甲且不被索敌时，加 4% 伤害
+                    // 隐匿时根据护甲数量提供伤害加成
                     e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * isStealth, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
@@ -2146,8 +2359,8 @@ StartupEvents.registry('item', event => {
                     let player = slotContext.entity();
                     if (!player) return;
 
-                    // 同步隐匿状态（参考荷鲁斯之爪）
-                    let isStealth = player.persistentData.getBoolean("isStealth");
+                    // 同步隐匿状态（同样基于 KubeJS 的 isStealth，缺失 key 默认 true）
+                    let isStealth = global.getStealthState(player);
                     stack.getOrCreateTag().putBoolean("isStealth", isStealth);
 
                     // 统计穿戴的护甲数量
@@ -2242,4 +2455,322 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    if (hasCurios(entity, 'rainbow:lpecac')) {
+                        return false;
+                    }
+                    return true;
+                })
+                .addAttribute("rainbow:generic.boom_damage", "lpecac", 5, "addition")
+        )
+})
+
+// 图鉴百科
+// 机制：同时拥有植物/动物/怪物/BOSS 四篇图鉴的全部加成
+//       加成 = 对应分类收集百分比 × 系数（读取 server_scripts/fieldguide_reader.js 导出的 global.FieldGuideReader）
+// 佩戴限制：与四篇图鉴饰品互斥（不能与其他篇同时佩戴）
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_field_guide')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture("fieldguide:item/field_guide")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    try {
+                        // 植物篇：0.5 × 植物收集百分比 → overheal
+                        let plantStats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:plants');
+                        if (plantStats != null) {
+                            ev.modify("attributeslib:overheal", "field_guide_plant", 0.5 * plantStats.percentage, "multiply_total");
+                        }
+
+                        // 动物篇：动物篇解锁百分比 → pet_damage
+                        let animalStats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:animals');
+                        if (animalStats != null) {
+                            ev.modify("rainbow:generic.pet_damage", "field_guide_animal", 20 * animalStats.percentage, "addition");
+                        }
+
+                        // 怪物篇：10 × 怪物篇百分比 → current_hp_damage
+                        let monsterStats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:monsters');
+                        if (monsterStats != null) {
+                            ev.modify("attributeslib:current_hp_damage", "field_guide_monster", 0.1 * monsterStats.percentage, "multiply_total");
+                        }
+
+                        // BOSS篇：80 × BOSS篇百分比 → dodge_chance
+                        let bossStats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:bosses');
+                        if (bossStats != null) {
+                            ev.modify("attributeslib:dodge_chance", "field_guide_boss", 0.8 * bossStats.percentage, "multiply_total");
+                        }
+                    } catch (e) {
+                        console.error("[the_field_guide] 读取图鉴进度失败: " + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:the_field_guide')) {
+                        return false;
+                    }
+
+                    // 百科与四篇图鉴互斥
+                    if (hasCurios(entity, 'rainbow:field_guide_plant')) return false;
+                    if (hasCurios(entity, 'rainbow:field_guide_animal')) return false;
+                    if (hasCurios(entity, 'rainbow:field_guide_monster')) return false;
+                    if (hasCurios(entity, 'rainbow:field_guide_boss')) return false;
+
+                    return true;
+                })
+        )
+})
+
+// 图鉴-植物篇
+// 机制：0.5 × 植物收集百分比 → attributeslib:overheal
+// 佩戴限制：与百科互斥，与动物/怪物/BOSS篇不互斥
+// 图标：对 field_guide 贴图整体染绿色，与其它篇区分
+StartupEvents.registry('item', event => {
+    event.create('rainbow:field_guide_plant')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture("fieldguide:item/field_guide")
+        .color(0x3FA94F)
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    try {
+                        // 读取植物分类收集进度（fieldguide_reader.js 导出函数）
+                        let stats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:plants');
+                        if (stats == null) return;
+
+                        let percentage = stats.percentage;
+                        if (percentage == null) percentage = 0;
+
+                        // 属性加成算法：0.5 × 植物收集百分比
+                        let bonus = 0.5 * percentage;
+                        ev.modify("attributeslib:overheal", "field_guide_plant", bonus, "multiply_total");
+                    } catch (e) {
+                        console.error("[field_guide_plant] 读取植物图鉴进度失败: " + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:field_guide_plant')) {
+                        return false;
+                    }
+
+                    // 植物篇与百科互斥
+                    if (hasCurios(entity, 'rainbow:the_field_guide')) return false;
+
+                    return true;
+                })
+        )
+})
+
+// 图鉴-动物篇
+// 机制：动物篇解锁百分比 → rainbow:generic.pet_damage
+// 佩戴限制：与百科互斥，与植物/怪物/BOSS篇不互斥
+// 图标：对 field_guide 贴图整体染橙色，与其它篇区分
+StartupEvents.registry('item', event => {
+    event.create('rainbow:field_guide_animal')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture("fieldguide:item/field_guide")
+        .color(0xE08A2A)
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    try {
+                        // 读取动物分类收集进度（fieldguide_reader.js 导出函数）
+                        let stats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:animals');
+                        if (stats == null) return;
+
+                        let percentage = stats.percentage;
+                        if (percentage == null) percentage = 0;
+
+                        // 属性加成算法：动物篇解锁百分比
+                        ev.modify("rainbow:generic.pet_damage", "field_guide_animal", 20 *percentage, "addition");
+                    } catch (e) {
+                        console.error("[field_guide_animal] 读取动物图鉴进度失败: " + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:field_guide_animal')) {
+                        return false;
+                    }
+
+                    // 动物篇与百科互斥
+                    if (hasCurios(entity, 'rainbow:the_field_guide')) return false;
+
+                    return true;
+                })
+        )
+})
+
+// 图鉴-怪物篇
+// 机制：10 × 怪物篇百分比 → attributeslib:current_hp_damage
+// 佩戴限制：与百科互斥，与植物/动物/BOSS篇不互斥
+// 图标：对 field_guide 贴图整体染红色，与其它篇区分
+StartupEvents.registry('item', event => {
+    event.create('rainbow:field_guide_monster')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture("fieldguide:item/field_guide")
+        .color(0xC03333)
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    try {
+                        // 读取怪物分类收集进度（fieldguide_reader.js 导出函数）
+                        let stats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:monsters');
+                        if (stats == null) return;
+
+                        let percentage = stats.percentage;
+                        if (percentage == null) percentage = 0;
+
+                        // 属性加成算法：0.1 × 怪物篇百分比
+                        let bonus = 0.1 * percentage;
+                        ev.modify("attributeslib:current_hp_damage", "field_guide_monster", bonus, "multiply_total");
+                    } catch (e) {
+                        console.error("[field_guide_monster] 读取怪物图鉴进度失败: " + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:field_guide_monster')) {
+                        return false;
+                    }
+
+                    // 怪物篇与百科互斥
+                    if (hasCurios(entity, 'rainbow:the_field_guide')) return false;
+
+                    return true;
+                })
+        )
+})
+
+// 图鉴-BOSS篇
+// 机制：80 × BOSS篇百分比 → attributeslib:dodge_chance
+// 佩戴限制：与百科互斥，与植物/动物/怪物篇不互斥
+// 图标：对 field_guide 贴图整体染紫色，与其它篇区分
+StartupEvents.registry('item', event => {
+    event.create('rainbow:field_guide_boss')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .texture("fieldguide:item/field_guide")
+        .color(0xA84FD0)
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    try {
+                        // 读取 BOSS 分类收集进度（fieldguide_reader.js 导出函数）
+                        let stats = global.FieldGuideReader.getCategoryCompletionStats(player, 'fieldguide:bosses');
+                        if (stats == null) return;
+
+                        let percentage = stats.percentage;
+                        if (percentage == null) percentage = 0;
+
+                        // 属性加成算法：80 × BOSS篇百分比
+                        let bonus = 0.8 * percentage;
+                        ev.modify("attributeslib:dodge_chance", "field_guide_boss", bonus, "multiply_total");
+                    } catch (e) {
+                        console.error("[field_guide_boss] 读取BOSS图鉴进度失败: " + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:field_guide_boss')) {
+                        return false;
+                    }
+
+                    // BOSS篇与百科互斥
+                    if (hasCurios(entity, 'rainbow:the_field_guide')) return false;
+
+                    return true;
+                })
+        )
 })

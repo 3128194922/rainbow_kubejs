@@ -163,11 +163,12 @@ EntityEvents.death(event => {
 
     // 赌徒骰子：击杀时概率重置主副手物品冷却
     if (hasCurios(attacker, "rainbow:dice") && !attacker.cooldowns.isOnCooldown("rainbow:dice")) {
-        const lucky = attacker.getAttribute("minecraft:generic.luck").getValue();
+        let luckAttr = attacker.getAttribute("minecraft:generic.luck");
+        const lucky = luckAttr ? luckAttr.getValue() : 0;
         const mainHandItem = attacker.getItemInHand("main_hand").getId();
         const offHandItem = attacker.getItemInHand("off_hand").getId();
-        // 幸运值越高，触发概率越高
-        if (randomBool(lucky / 10.0)) {
+        // 触发概率 = 幸运值/25（幸运值需要 >= 0，否则不触发）
+        if (lucky >= 0 && randomBool(lucky / 25.0)) {
             attacker.cooldowns.removeCooldown(mainHandItem);
             attacker.cooldowns.removeCooldown(offHandItem);
             attacker.cooldowns.addCooldown("rainbow:dice",SecoundToTick(6))

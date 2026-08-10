@@ -46,12 +46,12 @@ ClientEvents.tick((event) => {
 
             // ======== 帮助按钮 ========
             // 点击发送 "trashcan" 菜单请求 (注：显示文本为"帮助"，但实际功能可能是打开垃圾桶或菜单)
-            let taskButton = $Button.builder(Text.of("任务引导"), (button) => {
+ /*           let taskButton = $Button.builder(Text.of("任务引导"), (button) => {
                 HeraclesClient.openQuestScreen();
             }).bounds(0, 0, 60, 20).build();
-
+*/
             buttons.push(taskButton);
-            buttons.push(helpTitle);
+            //buttons.push(helpTitle);
             //buttons.push(enderButton);
 
             // 添加到界面渲染列表

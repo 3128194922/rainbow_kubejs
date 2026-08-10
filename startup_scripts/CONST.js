@@ -73,6 +73,9 @@ global.biomelist = [];
 global.SUPER_MECHAISM = Math.random().toFixed(2);
 console.log(`超构建概率：${global.SUPER_MECHAISM}`)
 
+// FarmersDelight 背刺附魔判定类（静态方法 isLookingBehindTarget 判断攻击者是否在目标背后）
+const BackstabbingEnchantment = Java.tryLoadClass('vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment')
+
 // Dyeing mod
 const $DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
 const $PaintData = Java.loadClass('com.example.dyeing.data.PaintData')

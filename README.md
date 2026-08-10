@@ -87,7 +87,7 @@
 | `rainbow:berserk_emblem` | 血战沙场之证，根据损失血量增加属性，联动暴食之符 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L128-L131](client_scripts/tooltips.js#L128-L131) |
 | `rainbow:gluttony_charm` | 暴食之符，根据损失饥饿值提供加成，免疫饥饿伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L211-L219](client_scripts/tooltips.js#L211-L219) |
 | `rainbow:cruncher_charm` | 贪咀护符，消耗饥饿值自动恢复生命值（饥饿值低于 6 时停止） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L297-L299](client_scripts/tooltips.js#L297-L299) |
-| `rainbow:big_stomach` | 大胃袋，食用/饮用速度 +50%，饱食度满时仍可进食 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L181-L188](client_scripts/tooltips.js#L181-L188) |
+| `rainbow:big_stomach` | 大胃袋，每2个游戏日想吃一种食物：吃下指定食物后生效（食用/饮用速度+50%、饱食度满仍可进食、击退抗性随连击递增），未完成则全部失效且连击清零；任务源数据在玩家 persistentData，多个大胃袋共享同一任务，卸下饰品周期也照常轮换 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，任务轮询：[server_scripts/big_stomach/PlayerTick.js](server_scripts/big_stomach/PlayerTick.js)，任务完成检测：[server_scripts/big_stomach/ItemEvents.js](server_scripts/big_stomach/ItemEvents.js)，tooltip：[client_scripts/tooltips.js#L170-L235](client_scripts/tooltips.js#L170-L235) |
 | `rainbow:hero_charm` | 武器大师勋章，根据手持武器攻速提供不同加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L166-L168](client_scripts/tooltips.js#L166-L168) |
 | `rainbow:lucky_charm` | 幸运符文，获得幸运 III 效果，时运 +3 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:mining_charm` | 猎宝者护符，时运 +1，触手距离 +2.15，高亮显示附近 Lootr 战利品箱子 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L159-L162](client_scripts/tooltips.js#L159-L162) |
@@ -408,6 +408,17 @@
 - **拉弓进度条：** 服务端每 2 tick 发送拉弓进度，客户端在准心下方渲染渐变色进度条（红→黄→绿）
 - **满弓音效：** 满弓时播放 UI 音效
 
+### 潜行系统 (StealthAPI)
+
+> 启动端（统一读取）：[startup_scripts/stealth_system/main.js](startup_scripts/stealth_system/main.js)
+> 服务端（网络同步）：[server_scripts/stealth_system/main.js](server_scripts/stealth_system/main.js)
+> 客户端（黑边视角）：[client_scripts/stealth_system/main.js](client_scripts/stealth_system/main.js)
+
+- **状态源：** StealthAPI 在玩家 persistentData 维护 `isStealth`（StealthTargetHandler 监听 LivingChangeTargetEvent 被索敌时立即置 false，StealthTracker 每 20 tick 扫描无目标时恢复 true，缺失默认 true）
+- **统一读取：** `global.getStealthState(entity)` 供 `rainbow:clawofhorus`（隐匿时暴击加成）与 `rainbow:ender_air`（隐匿时按护甲数加伤）使用，缺失 key 时默认 true 与 StealthData 语义一致
+- **网络同步：** 服务端每 5 tick 检测状态变化，变化时通过 `stealth_sync` 通道推送给客户端（≤0.25s 感知延迟）
+- **潜行视角：** 客户端 `isStealth=true` **且按住潜行键(Shift)** 时在屏幕四周叠加黑色渐变黑边（Painter gradient，边缘不透明度 59%、厚度 16%），被索敌或松开潜行时平滑淡出
+
 ### 伤害系统
 
 一套完整的伤害处理管线（大部分集中在 [startup_scripts/ForgeEvents.js](startup_scripts/ForgeEvents.js)），包含以下子模块：
@@ -675,6 +686,46 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 |------|------|
 | `/tpa <玩家名>` | 传送到指定玩家（禁止传送到后室） |
 | `/back` | 返回死亡地点 |
+
+### CBC 火炮瞄准计算工具
+
+> 实现：[server_scripts/cbc_aim.js](server_scripts/cbc_aim.js)
+
+自动计算 CBC 火炮的瞄准角度与最小装药量，支持自动识别主手持有的弹种。
+
+#### 命令格式
+
+| 形式 | 说明 |
+|------|------|
+| `/cbc_aim_to <k> <cyaw> <cpitch> <tx> <ty> <tz>` | 将瞄准参数写入副手剪切板（主手自动检测弹种） |
+
+#### 参数说明
+
+| 参数 | 含义 | 范围 |
+|------|------|------|
+| `k` | 炮管长（含炮尾到出膛口距离） | 1 ~ 100 |
+| `cyaw` | 当前方位角（南=0°） | 0 ~ 360 |
+| `cpitch` | 当前仰角（水平=0°） | -89 ~ 89 |
+| `t` | 目标坐标 | ±3e7 |
+
+#### 使用流程
+
+1. **主手手持 CBC 炮弹**（自动识别弹种，无需手动输入），支持的弹药：
+   - 常规炮弹：`solid_shot` 实心弹、`he_shell` 高爆弹、`ap_shell` 穿甲弹、`ap_shot` AP实心弹、`shrapnel_shell` 榴霰弹、`bag_of_grapeshot` 葡萄弹、`smoke_shell` 烟雾弹、`fluid_shell` 流体弹、`drop_mortar_shell` 迫击炮弹、`mortar_stone` 迫击石、`traffic_cone` 交通锥
+   - 机炮弹药（重力减半，弹道平直）：`ap_autocannon_round`、`flak_autocannon_round`、`machine_gun_round`
+2. **副手持有剪切板** (`create:clipboard`)，执行 `/cbc_aim_to` 写入目标坐标 / 炮管长 / 当前角度 / 弹种
+3. **右键基座自动瞄准**：手持该剪切板右键 `createbigcannons:cannon_mount` / `createbigcannons:fixed_cannon_mount`：
+   - 自动获取基座坐标（方块底部中心）
+   - 计算最小装药量（1~50）、目标方位角与仰角，并写入基座实体：`cannon_mount` 用 `setYaw/setPitch`；`fixed_cannon_mount` 用 Create 剪贴板接口（角度截断到 ±45°）
+   - 输出齿轮箱调整量（8:1 传动比）与命中精度提示
+   - 注意：`cannon_mount` 需已组装且转速为 0，否则会被 tick 覆盖
+
+#### 计算逻辑说明
+
+- 弹道模型采用 Python 解析算法，按 `gravity` / `drag` 区分每种弹种的飞行特性
+- 仰角解采用扫描 + 二分法求解，限制在 -30° ~ 60°；自动曲射/直射优先：高度差 > 5 或距离 > 150 时优先曲射
+- 装药量从 1 递增，自动寻找首个能命中目标的最小装药（最高 50），输出"无法命中"提示说明超射程
+- 仰角误差 ≥5 时结果以黄色（非绿色）提示，表示命中精度欠佳
 
 ---
 

@@ -124,9 +124,17 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("击杀生物概率刷新主手和副手物品冷却"));
-            text.add(2, Text.aqua(`触发概率根据幸运值判断`));
+            text.add(2, Text.aqua(`触发概率 = 幸运值/25（幸运值需≥0，25幸运=100%）`));
         }
         text.add(Text.darkGray("美术资源：Demi's Enigmatic Dice"));
+    })
+    event.addAdvanced('tide:fishing_journal', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("鱼类图鉴解锁进度 → 幸运加成"));
+            text.add(2, Text.aqua(`幸运 = 解锁比例×25（100%解锁 = +25幸运）`));
+        }
     })
     event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {
         text.add(1, Text.aqua("每10s标记周围实体,被标记实体受到远程伤害翻倍"));
@@ -168,12 +176,70 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("每30s恢复1饥饿值"));
     })
     event.addAdvanced('rainbow:big_stomach', (item, advanced, text) => {
-	  text.add(1, Text.gray("按[SHIFT]查看详细"));
+      // 读取大胃袋的进食任务数据（服务器同步的饰品 NBT，PlayerTick 每秒刷新）
+      let foodId = null;
+      let taskDone = false;
+      let streak = 0;
+      let remaining = -1;
+      if (item.nbt != null && item.nbt.contains("bs_epoch")) {
+        foodId = item.nbt.getString("bs_food");
+        taskDone = item.nbt.getBoolean("bs_done");
+        streak = item.nbt.getInt("bs_streak");
+        if (item.nbt.contains("bs_remaining")) {
+          remaining = item.nbt.getInt("bs_remaining");
+        }
+      }
+      // 非SHIFT：显示当期想吃食物；按 SHIFT 时隐藏「想吃」行
+      text.add(1, Text.gray("按[SHIFT]查看详细"));
+      if (!event.shift && foodId != null && foodId != "") {
+        text.add(2, Text.gold("想吃：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
+      }
       if (event.shift) {
 		text.remove(1)
-        text.add(1, Text.aqua("消耗饱和度抵消部分伤害"));
-        text.add(2, Text.aqua("伤害计算包含护甲和抗性"));
-    }
+        text.remove(2)
+        text.add(1, Text.aqua("▸ 每2个游戏日想吃一种食物"));
+        text.add(2, Text.aqua("▸ 吃下指定食物后大胃袋生效"));
+        text.add(3, Text.aqua("▸ 连续完成获得击退抗性"));
+        text.add(4, Text.aqua("▸ 任务完成时以饱食度抵消伤害"));
+        let line = 5;
+        if (foodId != null && foodId != "") {
+          text.add(line, Text.gold("目标食物：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
+          line++;
+          text.add(line, Text.gray(foodId));
+          line++;
+          if (taskDone) {
+            text.add(line, Text.green("状态：已完成本轮进食"));
+          } else {
+            text.add(line, Text.yellow("状态：尚未吃到指定食物"));
+          }
+          line++;
+        } else {
+          text.add(line, Text.gray("还未开启进食任务"));
+          line++;
+        }
+        // 距下次换食的剩余时间（bs_remaining 由服务器 PlayerTick 写入）
+        if (remaining >= 0) {
+          if (remaining <= 0) {
+            text.add(line, Text.aqua("即将换食"));
+          } else {
+            let days = Math.floor(remaining / 24000);
+            let hours = Math.floor((remaining % 24000) / 1000);
+            text.add(line, Text.aqua("距下次换食：约 " + days + " 游戏日 " + hours + " 小时"));
+          }
+          line++;
+        }
+        if (streak > 0) {
+          let kbr = Math.min(0.1 * streak, 1.0) * 100;
+          text.add(line, Text.aqua("连击 ×").append(Text.gold("" + streak)).append(Text.aqua("（击退抗性 +" + Math.round(kbr) + "%）")));
+        } else {
+          text.add(line, Text.aqua("连击：无"));
+        }
+        line++;
+        // 基础加成说明（秒食：食用/饮用加速）
+        text.add(line, Text.aqua("加成：食用/饮用速度 +50%，饱食度满仍可进食"));
+        line++;
+        text.add(line, Text.red("未完成目标时大胃袋全部失效"));
+      }
     })
     event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("生物碰撞箱对你无影响"));
@@ -640,5 +706,291 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:lpecac', (item, advanced, text) => {
         text.add(1, Text.aqua("攻击时在目标位置产生爆炸"));
         text.add(2, Text.aqua("爆炸不破坏方块，强度由 boom_damage 决定"));
+    })
+    // 腐烂之心
+    event.addAdvanced('rainbow:rotten_heart', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("血量≤20时，每少1点血量"));
+            text.add(2, Text.aqua("提升 1 点血量上限"));
+            text.add(3, Text.aqua("血量>20时加成失效"));
+        }
+    })
+    // 乌鸦之心
+    event.addAdvanced('rainbow:crow_heart', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("消耗的心之容器越多，加成越高"));
+            text.add(2, Text.aqua("每个空容器(半颗心)："));
+            text.add(3, Text.aqua("+0.8 攻击伤害 / +1.5 护甲"));
+        }
+    })
+    // ==========================================
+    // ✨ MysticArtifacts 奇器玄兵 物品介绍
+    // ==========================================
+    // 超薄橡胶
+    event.addAdvanced('mysticartifacts:rubber', (item, advanced, text) => {
+        text.add(1, Text.aqua("超薄橡胶，用于合成民主(绝地潜兵)防具"));
+    })
+    // 幽匿箭
+    event.addAdvanced('mysticartifacts:sculk_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("追猎 6 格内移动中的生物并自动转向命中"));
+        text.add(2, Text.gray("无法回收"));
+    })
+    // 虚空箭
+    event.addAdvanced('mysticartifacts:void_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("无重力恒定高速飞行，贯穿所有生物(穿刺127)"));
+        text.add(2, Text.gray("5秒后消散，命中的箭可回收"));
+    })
+    // 占卜者之石
+    event.addAdvanced('mysticartifacts:tracking_arrow', (item, advanced, text) => {
+        text.add(1, Text.red("右键消耗自身2点生命(≤2血直接死亡)"));
+        text.add(2, Text.aqua("环绕身边旋转，自动索敌并撞击最近目标"));
+        text.add(3, Text.aqua("每次撞击造成 8 点伤害"));
+    })
+    // 绝密(Helldiver)防具套装
+    event.addAdvanced(['mysticartifacts:democracy_helmet', 'mysticartifacts:democracy_chestplate', 'mysticartifacts:democracy_leggings', 'mysticartifacts:democracy_boots'], (item, advanced, text) => {
+        text.add(1, Text.aqua("绝地潜兵战术护甲(防御 6/11/9/6)"));
+        text.add(2, Text.aqua("韧性 +4，使用超薄橡胶修复"));
+    })
+    // 下界之音
+    event.addAdvanced('mysticartifacts:nether_of_voice', (item, advanced, text) => {
+        text.add(1, Text.aqua("右键释放：飞行中持续转向准星方向"));
+        text.add(2, Text.aqua("命中造成 10 点伤害，命中后停止追踪"));
+    })
+    // 空爆箭
+    event.addAdvanced('mysticartifacts:airburst_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("接近敌人3米内自动引爆"));
+        text.add(2, Text.aqua("散射 12(±8) 枚空爆I小型箭"));
+    })
+    // 空爆I
+    event.addAdvanced('mysticartifacts:exploding_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("命中时产生 2 格爆炸"));
+        text.add(2, Text.aqua("再散射 3~6 枚空爆II"));
+    })
+    // 空爆II
+    event.addAdvanced('mysticartifacts:final_exploding_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("命中时产生 2 格爆炸(不破坏方块)"));
+    })
+    // 末影苦无
+    event.addAdvanced('mysticartifacts:ender_kunai', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("右键投掷(可叠加16)，落地后发光"));
+            text.add(2, Text.aqua("遭受攻击瞬间传送回苦无处"));
+            text.add(3, Text.aqua("取消该次伤害并消耗苦无"));
+            text.add(4, Text.aqua("苦无 60 秒后消失"));
+        }
+    })
+    // 二龙戏珠
+    event.addAdvanced('mysticartifacts:two_dragons_play_ball', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("右键召唤火/冰双龙珠环绕转动(直径5格,40秒)"));
+            text.add(2, Text.aqua("龙珠碰撞造成 5 点伤害"));
+            text.add(3, Text.aqua("长按攻击键抛飞龙扇：自动索敌弹射6次后返回"));
+            text.add(4, Text.aqua("返回后龙珠恢复，每次释放消耗3耐久"));
+            text.add(5, Text.aqua("冷却 2 秒"));
+        }
+    })
+    // 武士刀
+    event.addAdvanced('mysticartifacts:katana', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.gold("▸ 长按右键防御(消耗2血量)"));
+            text.add(2, Text.aqua("  开头0.5秒内为完美格挡窗口"));
+            text.add(3, Text.aqua("  完美格挡：弹反弹道并反弹近战伤害"));
+            text.add(4, Text.aqua("  普通格挡：抵消伤害"));
+            text.add(5, Text.gold("▸ 潜行右键居合斩"));
+            text.add(6, Text.aqua("  消耗6血量向前冲刺，斩击路径上所有敌人"));
+            text.add(7, Text.aqua("  冲刺伤害 = 攻击力×10，斩后10秒强化姿态"));
+            text.add(8, Text.aqua("  使用后短暂冷却"));
+        }
+    })
+    // 击杀牌叠
+    event.addAdvanced('mysticartifacts:poker_card', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("左键投掷扑克牌（伤害4，冷却0.65秒）"));
+            text.add(2, Text.aqua("飞牌贯穿敌人，落地后发光标记"));
+            text.add(3, Text.aqua("右键回收20格内的落地牌"));
+            text.add(4, Text.aqua("回收途中切割路径上的敌人(伤害6)"));
+        }
+    })
+    // 扑克牌(投掷物)
+    event.addAdvanced('mysticartifacts:poker_card_projectile', (item, advanced, text) => {
+        text.add(1, Text.darkGray("扑克牌投掷物的物品形态，仅供渲染展示"));
+    })
+    // 死亡之眼
+    event.addAdvanced('mysticartifacts:death_eye', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("饰品。佩戴后36格内的生物"));
+            text.add(2, Text.aqua("会显示摇曳的死亡切割线"));
+            text.add(3, Text.aqua("近战攻击与切割线重合时"));
+            text.add(4, Text.gold("伤害×2(处决)"));
+        }
+    })
+    // 王之宝库
+    event.addAdvanced('mysticartifacts:sword_swarm_charm', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            let count = (item.nbt != null && item.nbt.contains("EatenSwords")) ? item.nbt.getList("EatenSwords", 8).size() : 0
+            text.add(1, Text.aqua(`已吞噬剑种：${count}`))
+            text.add(2, Text.aqua("在背包中用剑右键点击首饰吞入(每种剑仅一次)"));
+            text.add(3, Text.aqua("长按攻击键自动发射幻影剑(每2tick一把)"));
+            text.add(4, Text.aqua("幻影剑伤害 = 已吞噬剑种数量"));
+            text.add(5, Text.aqua("吞噬过的剑会环绕浮现在饰品周围"));
+        }
+    })
+    // 量子密钥
+    event.addAdvanced('mysticartifacts:quantum_key', (item, advanced, text) => {
+        text.add(1, Text.aqua("量子加密的解锁密钥"));
+        text.add(2, Text.red("生成后60秒未使用即失效"));
+        text.add(3, Text.aqua("用于解锁曼德尔砖"));
+    })
+    // 曼德尔砖
+    event.addAdvanced('mysticartifacts:mandel_brick', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("将未过期的量子密钥右键到它进行解锁"));
+            text.add(2, Text.aqua("解锁后再次右键开启，获得随机奖励"));
+        }
+    })
+    // 器灵
+    event.addAdvanced('mysticartifacts:artifact_spirit', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("可吞噬：弓/弩/喷溅药水/滞留药水/土豆炮/灼烧器"));
+            text.add(2, Text.aqua("佩戴后召唤器灵跟随战斗"));
+            text.add(3, Text.aqua("自动攻击你正在攻击的目标"));
+            text.add(4, Text.aqua("弹药从你的末影箱消耗"));
+            text.add(5, Text.aqua("箭/烟花/药水/煤炭对应不同武器"));
+        }
+    })
+    // 钻石长矛
+    event.addAdvanced('mysticartifacts:spear', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("攻击范围1.5~4.5格(+2格交互距离)"));
+            text.add(2, Text.aqua("蓄力穿刺：直线刺穿路径上的敌人"));
+            text.add(3, Text.aqua("近战切换类长武器，无法破坏方块"));
+        }
+    })
+    // 破坏者刺雷
+    event.addAdvanced('mysticartifacts:griefer_spear', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("蓄力穿刺攻击"));
+            text.add(2, Text.aqua("命中敌人时产生 2 格刺雷爆炸"));
+            text.add(3, Text.aqua("爆炸不破坏方块"));
+        }
+    })
+    // 伪抄
+    event.addAdvanced('mysticartifacts:codex', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("铁砧中与古代书合成：录刻附魔"));
+            text.add(2, Text.aqua("刻录等级 = 该附魔上限+2级"));
+            text.add(3, Text.aqua("再将伪抄与武器/装备铁砧合成"));
+            text.add(4, Text.aqua("可将该附魔提升1级(等级需正好差1级)"));
+            text.add(5, Text.red("合成消耗30~50级经验"));
+        }
+    })
+    // 全视之眼
+    event.addAdvanced('mysticartifacts:all_seeing_eye', (item, advanced, text) => {
+        text.add(1, Text.aqua("右键打开在线玩家列表"));
+        text.add(2, Text.aqua("选择目标后进入观战视角跟随"));
+        text.add(3, Text.aqua("再次右键退出观战"));
+    })
+    // 求生玉
+    event.addAdvanced('mysticartifacts:survival_jade', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("所受伤害转化为[残影]暂存(上限=最大生命)"));
+            text.add(2, Text.aqua("残影每3秒衰减1点"));
+            text.add(3, Text.aqua("造成伤害时50%转化为治疗(消耗残影)"));
+            text.add(4, Text.aqua("取下饰品后残影清空"));
+        }
+    })
+    // ==========================================
+    // 📖 图鉴系列饰品（fieldguide 收集进度加成）
+    // 加成基于 Field-Guide 对应分类的解锁百分比，与图鉴百科互斥
+    // ==========================================
+    // 图鉴·植物篇
+    event.addAdvanced('rainbow:field_guide_plant', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 植物收集进度 → 治疗溢出"));
+            text.add(2, Text.aqua("▸ 100%收集 = +50% 治疗溢出"));
+            text.add(3, Text.red("▸ 与图鉴百科互斥"));
+        }
+    })
+    // 图鉴·动物篇
+    event.addAdvanced('rainbow:field_guide_animal', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 动物收集进度 → 宠物伤害"));
+            text.add(2, Text.aqua("▸ 100%收集 = +20 宠物伤害"));
+            text.add(3, Text.red("▸ 与图鉴百科互斥"));
+        }
+    })
+    // 图鉴·怪物篇
+    event.addAdvanced('rainbow:field_guide_monster', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 怪物收集进度 → 当前生命伤害"));
+            text.add(2, Text.aqua("▸ 100%收集 = +10% 当前生命伤害"));
+            text.add(3, Text.red("▸ 与图鉴百科互斥"));
+        }
+    })
+    // 图鉴·BOSS篇
+    event.addAdvanced('rainbow:field_guide_boss', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ BOSS收集进度 → 闪避几率"));
+            text.add(2, Text.aqua("▸ 100%收集 = +80% 闪避几率"));
+            text.add(3, Text.red("▸ 与图鉴百科互斥"));
+        }
+    })
+    // 玩家小人
+    event.addAdvanced('rainbow:player_doll', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 根据服务器在线玩家数量提供挖掘速度加成"));
+            text.add(2, Text.aqua("▸ 每人在线：+10% 挖掘速度（乘算）"));
+        }
+    })
+    // 图鉴百科
+    event.addAdvanced('rainbow:the_field_guide', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 同时拥有四篇图鉴的全部加成"));
+            text.add(2, Text.aqua("▸ 植物收集 → 治疗溢出"));
+            text.add(3, Text.aqua("▸ 动物收集 → 宠物伤害"));
+            text.add(4, Text.aqua("▸ 怪物收集 → 当前生命伤害"));
+            text.add(5, Text.aqua("▸ BOSS收集 → 闪避几率"));
+            text.add(6, Text.red("▸ 与四篇图鉴饰品互斥"));
+        }
     })
 })

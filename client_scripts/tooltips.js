@@ -126,7 +126,6 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("击杀生物概率刷新主手和副手物品冷却"));
             text.add(2, Text.aqua(`触发概率 = 幸运值/25（幸运值需≥0，25幸运=100%）`));
         }
-        text.add(Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
     event.addAdvanced('tide:fishing_journal', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));

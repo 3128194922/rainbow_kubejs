@@ -32,6 +32,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     if(victim.level.isClientSide()) return;
     try
 {
+    //抛射体无敌帧重置（最高优先级：抛射体命中后立即清零 invulnerableTime，修复多重射击）
+    handleProjectileIFrame(event, victim, source);
+
     //背刺判定（最高优先级：隐匿状态下从目标背后攻击，伤害×2）
     handleBackstabDamage(event, attacker, victim);
     

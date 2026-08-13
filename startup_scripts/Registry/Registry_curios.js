@@ -1219,15 +1219,6 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .canEquip((slotContext, stack) => {
-
-                })
-                .curioTick((slotContext, stack) => {
-
-                })
-        )
 })
 
 // 冰冻之心
@@ -1236,15 +1227,6 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .canEquip((slotContext, stack) => {
-
-                })
-                .curioTick((slotContext, stack) => {
-
-                })
-        )
 })
 
 // 坚韧之心
@@ -1253,15 +1235,6 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .canEquip((slotContext, stack) => {
-
-                })
-                .curioTick((slotContext, stack) => {
-
-                })
-        )
 })
 
 // 黏液之心
@@ -1270,15 +1243,6 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                .canEquip((slotContext, stack) => {
-
-                })
-                .curioTick((slotContext, stack) => {
-
-                })
-        )
 })
 
 // 腐烂之心
@@ -2003,11 +1967,74 @@ StartupEvents.registry('item', event => {
 })
 
 //鸦羽骨哨
+// ==========================================
+// 🎺 主动技能增益机制
+// 技能开启时（Skillwheel.js）向饰品 NBT 写入 endtick = 当前游戏时间 + 20秒
+// curioTick 检测 endtick 是否过期：未过期时 modifyAttribute 为玩家增加伤害+防御
+// 过期后自动清理 endtick，属性加成归零
+// ==========================================
 StartupEvents.registry('item', event => {
     event.create("rainbow:whistle")
             .rarity("epic")
             .maxStackSize(1)
             .tag("curios:charm")
+            .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                // ================================
+                // 💪 属性加成：endtick 未过期 → 攻击+5、护甲+5
+                // ================================
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    let stack = ev.stack;
+                    if (stack == null) return;
+
+                    let tag = stack.getOrCreateTag();
+                    let endtick = tag.getLong("endtick");
+                    // 未写入过 / 已过期 → 不加成
+                    if (endtick <= 0) return;
+                    if (player.level.gameTime >= endtick) return;
+
+                    ev.modify("minecraft:generic.attack_damage", "whistle_active_buff_damage", 5.0, "addition");
+                    ev.modify("minecraft:generic.armor", "whistle_active_buff_armor", 5.0, "addition");
+                })
+                // ================================
+                // ⏱️ curioTick：检测 endtick 是否过期，过期清 NBT；状态变化时翻转 update 通知重算属性
+                // ================================
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null) return;
+                    if (player.level.isClientSide()) return;
+
+                    let tag = stack.getOrCreateTag();
+                    let endtick = tag.getLong("endtick");
+                    let expired = endtick <= 0 || player.level.gameTime >= endtick;
+
+                    if (expired) {
+                        if (endtick > 0) {
+                            tag.remove("endtick");
+                        }
+                        // 已过期状态 → 确保 update 为 false（不触发重算）
+                        if (tag.getBoolean("update")) {
+                            tag.putBoolean("update", false);
+                        }
+                        return;
+                    }
+
+                    // 未过期（激活中）→ 翻转 update 触发 Curios 属性重算
+                    if (!tag.getBoolean("update")) {
+                        tag.putBoolean("update", true);
+                    }
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return false;
+                    if (hasCurios(entity, 'rainbow:whistle')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
 })
 
 //箭袋

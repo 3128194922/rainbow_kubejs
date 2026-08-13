@@ -63,7 +63,8 @@ EntityEvents.hurt(event => {
 
         if (entity.isAlive() && !entity.isPlayer() && !entity.persistentData.getBoolean("isMiniBoss") && !entity.persistentData.getBoolean("_mb_reinforce_spawned")) {
             //entity.server.runCommandSilent(`/dyeing paint add static mini_boss ${uuid} 80FF0000`)
-            entity.server.runCommandSilent(`/dyeing uv add scroll creeper_armor ${uuid} minecraft:textures/entity/creeper/creeper_armor.png 0.01 0.01 1`)
+            // 特效 id 使用 mini_boss_ 专属前缀，dyeing/main.js 清理时据此永久保留该特效（不依赖实体是否已加载）
+            entity.server.runCommandSilent(`/dyeing uv add scroll mini_boss_creeper_armor ${uuid} minecraft:textures/entity/creeper/creeper_armor.png 0.01 0.01 1`)
             entity.persistentData.putBoolean("isMiniBoss", true);
             let powers = rollPowers();
             entity.persistentData.putString("POWER", JSON.stringify(powers));

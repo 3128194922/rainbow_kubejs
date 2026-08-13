@@ -33,28 +33,30 @@ function handleAttackCurios(event, entity, target) {
             console.log("[天秤座] 错误: " + err);
         }
     }
-    //点金手套：概率点金对方，概率受玩家幸运值影响。点金效果：金色油漆层+冻结3秒后解冻移除
+    //点金手套：概率点金对方，概率受玩家幸运值影响。点金效果：附着金块材质+冻结3秒后解冻移除
     if(hasCurios(entity, 'rainbow:gold_glove'))
     {
         try {
             let luck = entity.getAttribute("minecraft:generic.luck").getValue();
-            let chance = 0.1 + (luck * 0.01);
+            if(luck < 0) return; // 幸运值为负时不触发点金效果
+            let chance = luck/25; // 幸运值越高，点金概率越高，最大幸运值25时为100%
             if (Math.random() < chance) {
                 let uuid = target.uuid.toString();
                 let paintId = "gold_glove_effect";
-                // 附着金色不透明油漆层（金色ARGB: FFFFD700，scale 1.2突出效果）
-                entity.server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " FFFFD700 1");
+                // 附着金块材质（静态UV）
+                entity.server.runCommandSilent("/dyeing uv add static " + paintId + " " + uuid + " minecraft:textures/block/raw_gold_block.png 1.0 false false 8.0 8.0");
+
                 // 冻结生物
                 if (global.freezeEntity) {
                     global.freezeEntity(target);
                 }
-                // 3秒（60tick）后解冻并移除油漆层
+                // 3秒（60tick）后解冻并移除UV
                 entity.server.scheduleInTicks(60, function() {
                     try {
                         if (global.unfreezeEntity) {
                             global.unfreezeEntity(target);
                         }
-                        entity.server.runCommandSilent("/dyeing paint remove " + uuid + " " + paintId);
+                        entity.server.runCommandSilent("/dyeing uv remove " + uuid + " " + paintId);
                     } catch (err) {
                         console.log("[点金手套] 解冻/移除错误: " + err);
                     }

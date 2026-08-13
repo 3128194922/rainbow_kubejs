@@ -34,7 +34,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpe
 
         //if (entity.level.clientSide) return; // 有bug，暂时注释
 
-        // 检测黑曜石和特定镐子（霜冻金属镐加速挖掘）
         if (event.originalSpeed >= 8.0 && entity.getItemInHand("main_hand").id == "rainbow:frostium_pickaxe") {
             // 修改破坏速度（原始值×16）
             event.newSpeed = 16 * event.originalSpeed;

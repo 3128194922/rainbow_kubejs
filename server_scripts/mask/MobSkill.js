@@ -21,6 +21,15 @@ global.MobMaskAttributeConfig = {
             OPERATION: "multiply_total"
         },
     ],
+    "cataclysm:the_harbinger": [
+        {
+            attribute: "attributeslib:creative_flight", // 创造模式飞行
+            UUID: "aba249fe-82bd-45f4-ab00-8452d027e00f",
+            ID: "mask_bat",
+            NUMBER: 1,
+            OPERATION: "addition"
+        },
+    ],
     "minecraft:iron_golem": [
         {
             attribute: "minecraft:generic.max_health", // 生命上限提升

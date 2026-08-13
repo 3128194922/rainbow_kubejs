@@ -49,6 +49,8 @@ const Enchantments = Java.loadClass('net.minecraft.world.item.enchantment.Enchan
 
 const $SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
 const $SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+// 伤害类型标签（用于判定抛射体伤害 IS_PROJECTILE 等）
+const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
 
 
 

@@ -58,7 +58,7 @@ no_projectile_immunity = true
 	#Range: > 0
 	hold_attack_button_delay = 0.5
 	#Attack cooldown is unaffected by switching hotbar items.
-	fast_switching = true
+	fast_switching = false
 	#Melee attacks that don't hit a target won't trigger the attack cooldown.
 	retain_energy_on_miss = true
 

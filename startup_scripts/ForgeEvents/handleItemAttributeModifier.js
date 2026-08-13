@@ -8,7 +8,7 @@ function handleItemAttributeModifier(event) {
     let slotType = event.getSlotType();
 
     // 邪恶面具：根据 maskId 动态添加属性
-    if (item.id === "species:wicked_mask" && slotType === "head") {
+    /*if (item.id === "species:wicked_mask" && slotType === "head") {
         let maskId = item.getNbt().getString("id")
         let attrs = global.MobMaskAttributeConfig[maskId]
 
@@ -27,7 +27,7 @@ function handleItemAttributeModifier(event) {
                 )
             )
         })
-    }
+    }*/
 
     // 饕餮之锅：食物数量影响攻击力
     let foodnum = item.getNbt().getInt("foodnumber") || 0;

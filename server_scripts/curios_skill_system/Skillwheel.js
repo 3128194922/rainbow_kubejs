@@ -523,29 +523,32 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
 // --- 鸦羽骨哨 ---
 registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
 registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (itemStack) {
-        
-        if(player.isClientSide) return;
-    
-        // 否则重新找目标
-        let AABB = player.boundingBox.inflate(16)
-        player.level.getEntitiesWithin(AABB).forEach(entity => {
-            if (!entity) return;
-            if (!entity.isLiving() || !entity.isAlive()) return;
-            if (entity == player) return;
-        
-            let OwnerName = entity.persistentData.OwnerName;
-            let Owner = entity.owner;
-        
-            if ((OwnerName && OwnerName == player.getUuid().toString()) || (entity.owner && entity.owner == player))
-                {
-                    entity.potionEffects.add("rainbow:killing_desire", 20*10, 0, false, true)
-                }
-            else
-            {
-                entity.potionEffects.add("minecraft:glowing", 20*10, 0, false, true)
+    if (player.isClientSide) return;
+    if (!itemStack) return;
+    try {
+        // 主动技能开启：为饰品写入 endtick（当前游戏时间 + 20秒/400 tick）
+        // 由 Registry_curios.js 的 curioTick 检测是否过期，未过期则增加伤害与防御
+        if (itemStack.nbt == null) {
+            itemStack.nbt = {};
+        }
+        let now = player.level.gameTime;
+        itemStack.nbt.putLong("endtick", now + 20 * 20);
+        player.tell(Text.gray("鸦羽骨哨生效：20 秒内攻击力与护甲 +5"));
+
+        // 玩家身上召唤缩放4的半透明黑色油漆层（ARGB=0x80000000，50%透明度），10s后移除
+        let server = player.server;
+        let uuid = player.uuid.toString();
+        let paintId = "whistle_effect";
+        server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80000000 4.0");
+        server.scheduleInTicks(20*10, function() {
+            try {
+                server.runCommandSilent("/dyeing paint remove " + uuid + " " + paintId);
+            } catch (err) {
+                console.log("[鸦羽骨哨] 移除油漆层错误: " + err);
             }
-        })
+        });
+    } catch (err) {
+        console.log("[鸦羽骨哨] 错误: " + err);
     }
 });
 
@@ -1167,4 +1170,489 @@ NetworkEvents.dataReceived('skillwheel', event => {
         console.error(`Error executing skill for ${itemId}: ${error}`);
         player.tell(Text.red(`技能执行出错: ${error}`));
     }
+});
+
+// --- 烛心面具 ---
+// 伪装 id → 技能处理函数映射表（参考心脏系列 heartEntityMap 结构）
+// 每个处理函数签名：(ctx) => void，ctx 包含 event/player/itemStack/isSubmenu/submenuIndex/shiftDown
+let wickedMaskSkillMap = {
+    'cataclysm:the_harbinger': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        // 加载 Cataclysm 抛射体类（构造函数均为 public，可直接 new）
+        let $Wither_Homing_Missile_Entity = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Homing_Missile_Entity');
+        let $Wither_Missile_Entity = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Missile_Entity');
+        let $LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity');
+
+        let HOMING_MISSILE_DAMAGE = 12.0;
+        let MISSILE_DAMAGE = 10.0;
+        let DURATION_TICKS = SecoundToTick(5); // 持续 5 秒火力输出
+        let INTERVAL_TICKS = 4;                // 每 0.2 秒发射一次
+        let elapsed = 0;
+        let homingCount = 0;                   // 追踪导弹已发射次数（决定 eyeX 偏移交替）
+        let missileCount = 0;                  // 导弹已发射次数（决定 eyeX 偏移交替）
+
+        // 递归计时：每次发射后调度下一帧，直到持续时长耗尽
+        let fireShot = () => {
+            if (!player || !player.isAlive()) return;
+            if (elapsed >= DURATION_TICKS) return;
+
+            // 每次重新读取视角方向，允许玩家在火力输出期间转动视角
+            let dir = player.getLookAngle();
+            if (dir) {
+                let baseX = player.getX();
+                let baseY = player.getEyeY() + 1;
+                let baseZ = player.getZ();
+                let dx = dir.x(), dy = dir.y(), dz = dir.z();
+                let horizDist = Math.sqrt(dx * dx + dz * dz);
+                // cataclysm 抛射体的渲染朝向约定与原版 shoot() 不同：
+                // rotateTowardsMovement 用 yRot=atan2(z,x)+90, xRot=atan2(horizDist,y)-90
+                // 而原版 shoot() 用 yRot=atan2(x,z), xRot=atan2(y,horizDist)，两者数值不同
+                // 必须手动用 cataclysm 的公式设置朝向，否则第一帧渲染朝向错误
+                let yRot = Math.atan2(dz, dx) * (180 / Math.PI) + 90;
+                let xRot = Math.atan2(horizDist, dy) * (180 / Math.PI) - 90;
+                try {
+                    // 追踪导弹与普通导弹交替发射
+                    let isHomingTurn = (homingCount + missileCount) % 2 === 0;
+                    if (isHomingTurn) {
+                        // 追踪导弹：必须有 LivingEntity 目标，否则会立即自爆
+                        // 优先用准心射线找目标，找不到则用视线方向 AABB 搜索最近敌对生物
+                        let target = null;
+                        let rayHit = player.rayTrace(64, false);
+                        if (rayHit && rayHit.entity && rayHit.entity.isLiving() && rayHit.entity.isAlive() && rayHit.entity != player) {
+                            target = rayHit.entity;
+                        } else {
+                            // AABB 搜索视线方向上的最近 LivingEntity
+                            let eyePos = player.getEyePosition();
+                            let searchBox = player.boundingBox.inflate(64);
+                            let nearestDist = Double.MAX_VALUE;
+                            player.level.getEntitiesWithin(searchBox).forEach(e => {
+                                if (!e || !e.isLiving() || !e.isAlive()) return;
+                                if (e == player) return;
+                                try {
+                                    if (!(e instanceof $LivingEntity)) return;
+                                } catch (err) { return; }
+                                // 判断实体是否在视线方向附近（投影到视线上的距离 + 垂直距离）
+                                let toEntity = e.position().subtract(eyePos);
+                                let projDist = toEntity.dot(dir);
+                                if (projDist <= 0 || projDist > 64) return;
+                                let perpendicular = toEntity.subtract(dir.scale(projDist));
+                                let perpDist = perpendicular.length();
+                                if (perpDist > 3) return;
+                                let dist = Math.sqrt(projDist * projDist + perpDist * perpDist);
+                                if (dist < nearestDist) {
+                                    nearestDist = dist;
+                                    target = e;
+                                }
+                            });
+                        }
+
+                        if (target) {
+                            // 追踪导弹：基础点 (getX, getEyeY+1, getZ)，eyeX ±1，首次 +1，之后交替
+                            let offsetX = (homingCount % 2 === 0) ? 1.5 : -1.5;
+                            let homing = new $Wither_Homing_Missile_Entity(player, dir, player.level, HOMING_MISSILE_DAMAGE, target);
+                            homing.setPositionAndRotation(baseX, baseY, baseZ + offsetX, yRot, xRot);
+                            player.level.addFreshEntity(homing);
+                            player.level.playSound(null, baseX + offsetX, baseY, baseZ, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
+                            homingCount++;
+                        }
+                        // 无目标时跳过本次发射，不消耗计数
+                    } else {
+                        // 导弹：基础点 (getX, getEyeY+1, getZ+1)，eyeX ±1，首次 -1，之后交替
+                        let offsetX = (missileCount % 2 === 0) ? -1 : 1;
+                        let missile = new $Wither_Missile_Entity(player, dir, player.level, MISSILE_DAMAGE);
+                        missile.setPositionAndRotation(baseX + 1, baseY, baseZ + offsetX, yRot, xRot);
+                        player.level.addFreshEntity(missile);
+                        player.level.playSound(null, baseX + offsetX, baseY + 1, baseZ + 1, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
+                        missileCount++;
+                    }
+                } catch (e) {
+                    console.error("[烛心面具] 发射抛射体失败: " + e);
+                }
+            }
+
+            elapsed += INTERVAL_TICKS;
+            if (elapsed < DURATION_TICKS) {
+                event.server.scheduleInTicks(INTERVAL_TICKS, fireShot);
+            }
+        };
+
+        fireShot();
+        player.cooldowns.addCooldown("species:wicked_mask", SecoundToTick(10));
+    },
+    // 皇家僵尸：召唤 2 名僵尸（参考心脏系列 heartEntityMap 的 minecraft:zombie 召唤方法）
+    'royalvariations:royal_zombie': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let COOLDOWN = SecoundToTick(60);
+        // 循环召唤 2 名僵尸
+        for (let i = 0; i < 2; i++) {
+            let entity = player.level.createEntity("minecraft:zombie");
+            if (entity) {
+                //entity.setNbt('{IsBaby:1b}');
+                entity.persistentData.OwnerName = player.getUuid().toString();
+                //entity.persistentData.putBoolean("CanTake", false);
+
+                let pos = player.getBlock().pos;
+                // 第二只错开 1 格，避免重叠
+                let offsetX = (i === 1) ? 1 : 0;
+                entity.setPos(pos.x + 0.5 + offsetX, pos.y, pos.z + 0.5);
+
+                let sword = Item.of("minecraft:iron_sword").enchant("minecraft:vanishing_curse", 1);
+                // 皇家骑士头盔护甲
+                let helmet = Item.of("royalvariations:royal_knight_helmet").enchant("minecraft:vanishing_curse", 1);
+
+                entity.setItemSlot("mainhand", sword);
+                entity.setItemSlot("head", helmet);
+
+                entity.spawn();
+                // 下线时间：字符串ID调用KubeJS add()不可靠，改为解析MobEffect对象后添加
+                let offWorkEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("rainbow", "off_work_time"));
+                if (offWorkEffect) {
+                    entity.potionEffects.add(offWorkEffect, COOLDOWN / 2, 0, false, false);
+                }
+            }
+        }
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+
+        // 额外效果：为 16 格范围内敌方实体（Monster 类别）添加 chosen_victim 药水效果
+        let RANGE = 16;                   // 影响范围 16 格
+        let DURATION = SecoundToTick(10); // 持续 10 秒
+        let playerUuid = player.getUuid().toString();
+        let affectedCount = 0;
+        let area = player.boundingBox.inflate(RANGE);
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof $Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let chosenVictimEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "chosen_victim"));
+                if (chosenVictimEffect) {
+                    entity.potionEffects.add(chosenVictimEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家僵尸 chosen_victim 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家僵尸召唤技能执行异常: " + e);
+        }
+    },
+    // 皇家苦力怕：为 16 格范围内敌方实体（MONSTER 类别）添加 time_bomb 药水效果，并在玩家位置生成来源玩家的不破坏方块爆炸
+    'royalvariations:royal_creeper': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let RADIUS = 4.0;                  // 爆炸强度（半径）
+        let playerUuid = player.getUuid().toString();
+
+        // 1. 为范围内敌方实体添加 time_bomb 药水效果
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof $Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let timeBombEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "time_bomb"));
+                if (timeBombEffect) {
+                    entity.potionEffects.add(timeBombEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家苦力怕 time_bomb 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家苦力怕药水效果执行异常: " + e);
+        }
+
+        // 2. 玩家位置生成来源玩家的不破坏方块爆炸
+        try {
+            player.level.createExplosion(player.getX(), player.getY(), player.getZ())
+                .strength(RADIUS)
+                .causesFire(false)
+                .exploder(player)
+                .explosionMode("none")
+                .explode();
+        } catch (e) {
+            console.error("[烛心面具] 皇家苦力怕爆炸执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 皇家末影人：为 16 格范围内敌方实体（MONSTER 类别）添加 pressing_gaze 与 heaviness_of_the_end 药水效果
+    'royalvariations:royal_enderman': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let playerUuid = player.getUuid().toString();
+
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof $Monster)) return;
+                } catch (err) { return; }
+
+                // 同时施加 凝视压制 与 末地沉重 两种药水效果（解析 MobEffect 对象后添加）
+                let gazeEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "pressing_gaze"));
+                let heavinessEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "heaviness_of_the_end"));
+                if (gazeEffect) {
+                    entity.potionEffects.add(gazeEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+                if (heavinessEffect) {
+                    entity.potionEffects.add(heavinessEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家末影人 药水效果影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家末影人技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 皇家骷髅：为 16 格范围内敌方实体（MONSTER 类别）添加 trapped 陷阱药水效果
+    'royalvariations:royal_skeleton': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 陷阱持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let playerUuid = player.getUuid().toString();
+
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof $Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let trappedEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "trapped"));
+                if (trappedEffect) {
+                    entity.potionEffects.add(trappedEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家骷髅 trapped 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家骷髅技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 灾难潜伏者（cataclysm:the_prowler）：从玩家视角发射同款死亡激光（Death_Laser_Beam_Entity），并播放激光音效
+    'cataclysm:the_prowler': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        // Math.PI 在 KubeJS Rhino 中返回 undefined，需硬编码
+        let PI = 3.141592653589793;
+        let DURATION = 28;      // 激光持续 tick（与 Prowler 同款 28，发射后约 0.4 秒开始结算伤害、共约 2.4 秒）
+        let DAMAGE = 5.0;       // 激光基础伤害（与 Prowler 默认配置一致，可按需调整）
+        let HP_DAMAGE = 0.05;   // 激光最大生命百分比伤害（同款默认 5%，可按需调整）
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+
+        try {
+            // 1. 解析激光实体类型（cataclysm:death_laser_beam，mod 已注册客户端渲染器，可直接渲染）
+            let laserType = $ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "death_laser_beam"));
+            if (!laserType) {
+                console.error("[烛心面具] 死亡激光实体类型不存在: cataclysm:death_laser_beam");
+                return;
+            }
+
+            // 2. 从玩家视角计算激光朝向（注意：KubeJS 环境下 player.getXRot()/getYHeadRot() 不可用，
+            //    改用 getLookAngle() 换算，与 Prowler 源码 yaw=(yHeadRot+90)*PI/180、pitch=-xRot*PI/180 严格等价：
+            //    yaw = atan2(lookZ, lookX) + 90°，pitch = asin(lookY)）
+            let dir = player.getLookAngle();
+            let yaw = Math.atan2(dir.z(), dir.x()) + PI / 2;
+            let pitch = Math.asin(dir.y());
+
+            // 3. 构造死亡激光实体（完整构造函数，caster 为玩家），从玩家眼睛高度向视角方向发射
+            let beam = new $DeathLaserBeam(laserType, player.level, player,
+                player.getX(), player.getEyeY(), player.getZ(),
+                yaw, pitch, DURATION, DAMAGE, HP_DAMAGE);
+            player.level.addFreshEntity(beam);
+
+            // 4. 播放激光音效（与 Prowler 发射同款 cataclysm:death_laser）
+            player.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                $ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("cataclysm", "death_laser")),
+                SoundSource.PLAYERS, 1.0, 1.0);
+        } catch (e) {
+            console.error("[烛心面具] 潜伏者激光技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 灾难巨兽（cataclysm:netherite_monstrosity）：在玩家位置召唤巨兽并释放原版 OverPower 扇形冲击波技能，
+    // 期间玩家切观察者模式并从巨兽第三人称视角观战；技能结束（约 4 秒）后巨兽消失、玩家恢复原模式
+    'cataclysm:netherite_monstrosity': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let COOLDOWN = SecoundToTick(60);  // 冷却 60 秒（Boss 级大招，可按需调整）
+
+        let oldGameMode = 'survival';
+        let monstrosity = null;
+        try {
+            // 0. 记录玩家当前游戏模式（技能结束后恢复；读取失败默认 survival）
+            try {
+                oldGameMode = player.gameMode.getGameModeForPlayer().getName();
+            } catch (e) {
+                oldGameMode = 'survival';
+            }
+
+            // 1. 解析巨兽实体类型
+            let type = $ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "netherite_monstrosity"));
+            if (!type) {
+                console.error("[烛心面具] 巨兽实体类型不存在: cataclysm:netherite_monstrosity");
+                return;
+            }
+
+            // 2. 玩家先切观察者模式（避免被巨兽生成时碰撞挤开，也免疫巨兽技能自身伤害）
+            try {
+                player.server.runCommandSilent("gamemode spectator " + player.username);
+            } catch (e) {
+                console.error("[烛心面具] 切换观察者模式失败: " + e);
+            }
+
+            // 3. 在玩家位置召唤巨兽，朝向玩家视线方向
+            //    （createEntity 仅创建不加入世界，需 spawn() 加入；参考心脏系列 entity.spawn() 用法）
+            //    注意：KubeJS Rhino 对 Entity 的 setYRot()/getXRot() 等方法查找失败（受 KubeJS mixin 影响），
+            //    改用 public 字段直接赋值（yRot/yBodyRot 均为 public 字段，字段访问不受影响）
+            monstrosity = player.level.createEntity(type);
+            monstrosity.setPos(player.getX(), player.getY(), player.getZ());
+            monstrosity.yRot = player.yRot;
+            monstrosity.yBodyRot = player.yRot;  // 扇形冲击波朝玩家视线方向（原版 StompDamage 用 yBodyRot 计算朝向）
+            monstrosity.setIsAwaken(true);       // 标记已唤醒：防止睡眠 AI（NMDoNothingGoal）打断技能（唤醒动画由 setAttackState 触发，此处仅置标志）
+            monstrosity.spawn();
+
+            // 4. 直接触发原版 OverPower 技能（攻击状态 9）：
+            //    attackTicks 由基类 tick() 自动每 tick 推进，aiStep() 会在 31~41 tick 自动释放 6 波
+            //    扇形冲击波（StompDamage：108° 扇形、逐层扩散、击退+破地形+音效粒子全由原版处理）
+            monstrosity.setAttackState(9);
+
+            // 5. 玩家观战巨兽（第三人称视角由客户端脚本 mask/monstrosity_camera.js 强制切换）
+            try {
+                player.setCamera(monstrosity);
+            } catch (e) {
+                console.error("[烛心面具] 观战巨兽失败（不影响技能释放）: " + e);
+            }
+
+            // 6. 递归计时：技能持续 5 秒（100 tick），每 tick 推进一次；5 秒到点后取消巨兽并恢复玩家
+            let MONSTROSITY_DURATION_TICKS = SecoundToTick(4);
+            let elapsedTicks = 0;
+            let finishSkill = () => {
+                if (elapsedTicks >= MONSTROSITY_DURATION_TICKS) {
+                    // 5 秒到点：移除巨兽（先清 BossBar 观众避免残留）并恢复玩家模式/视角
+                    try {
+                        if (monstrosity != null) {
+                            // 逐个移除 BossBar 观众（实体移除不会自动清理 BossBar）
+                            try {
+                                let viewers = player.server.getPlayerList().getPlayers();
+                                for (let p of viewers) {
+                                    try { monstrosity.stopSeenByPlayer(p); } catch (e) { }
+                                }
+                            } catch (e) { }
+                            try { monstrosity.setAttackState(0); } catch (e) { }
+                            try { monstrosity.discard(); } catch (e) { }
+                        }
+                        if (player.isAlive()) {
+                            try { player.setCamera(player); } catch (e) { }
+                            try { player.server.runCommandSilent("gamemode " + oldGameMode + " " + player.username); } catch (e) { }
+                        }
+                    } catch (e) {
+                        console.error("[烛心面具] 巨兽技能收尾异常: " + e);
+                    }
+                    return;
+                }
+                // 玩家中途死亡/掉线：提前取消巨兽（玩家恢复逻辑交给服务端玩家管理）
+                if (!player.isAlive() && monstrosity != null && monstrosity.isAlive()) {
+                    try { monstrosity.discard(); } catch (e) { }
+                    return;
+                }
+                elapsedTicks++;
+                event.server.scheduleInTicks(1, finishSkill);
+            };
+            event.server.scheduleInTicks(1, finishSkill);
+        } catch (e) {
+            // 执行异常：立即清理巨兽并恢复玩家模式/视角
+            try {
+                if (monstrosity != null && monstrosity.isAlive()) {
+                    monstrosity.discard();
+                }
+            } catch (e2) { }
+            try {
+                if (player != null && player.isAlive()) {
+                    player.setCamera(player);
+                    player.server.runCommandSilent("gamemode " + oldGameMode + " " + player.username);
+                }
+            } catch (e2) { }
+            console.error("[烛心面具] 巨兽技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    }
+    // 未来新增伪装类型在此追加，例如：
+    // 'minecraft:zombie': (ctx) => { ... },
+};
+
+registerSkillSound('species:wicked_mask', 'rainbow:voice.eye_of_satori');
+registerSkill('species:wicked_mask', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (!itemStack) return;
+    let Nbt = itemStack.nbt;
+    if (!Nbt) return;
+    if (player.level.clientSide) return;
+
+    // 主进程统一检测面具全局冷却
+    if (player.cooldowns.isOnCooldown("species:wicked_mask")) return;
+
+    // 根据伪装生物 id 分发到对应技能处理函数
+    let disguiseId = Nbt.getString("id");
+    if (!disguiseId) return;
+
+    let handler = wickedMaskSkillMap[disguiseId];
+    if (!handler) return;
+
+    handler({ event: event, player: player, itemStack: itemStack, isSubmenu: isSubmenu, submenuIndex: submenuIndex, shiftDown: shiftDown });
 });

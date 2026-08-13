@@ -106,6 +106,9 @@ ServerEvents.tags("item", event => {
     // 后室可放置方块
     event.add('rainbow:docker', ['rainbow:docker', 'rainbow:luban_lock'])
 
+    // 自动武器
+    event.add('shiledattack:auto_swing', ['cataclysm:ancient_spear','cataclysm:tidal_claws','alexsmobs:tendon_whip'])
+
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])
 /*

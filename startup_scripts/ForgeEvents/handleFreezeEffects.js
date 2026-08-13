@@ -1,7 +1,8 @@
 // priority: 5000
 /**
  * 冻结效果：当受伤实体的冻结时间超过其碰撞箱体积时，
- * 为其添加冰蓝不透明油漆层，并冻结生物指定时间（时间与油漆层持续时间相同）
+ * 为其附着蓝冰（blue_ice）UV 贴图层，并冻结生物指定时间（时间与 UV 贴图持续时间相同）
+ * 仿照点金手套（handleAttackCurios.js）使用 /dyeing uv add static 命令实现
  */
 function handleFreezeEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     try {
@@ -26,20 +27,21 @@ function handleFreezeEffects(event, attacker, victim, source, range_damage, thro
         // 触发冻结后立即清零实体的原版冻结效果
         victim.setTicksFrozen(0);
 
-        // 添加冰蓝不透明油漆层（ARGB = 0xFFB4E6FF = -4921601，冰蓝色）
+        // 附着蓝冰 UV 贴图层（静态UV）：scale=1.05 additive=false fullbright=false uv_scale_u=8.0 uv_scale_v=8.0
         let server = victim.level.server;
-        let savedData = $DyeingMod.getPaintData(server);
-        let uuid = victim.uuid;
-        let paintData = $PaintData.staticPaint(-4921601, 1.0, 0.0, 0.0, 0.0);
-        savedData.put(uuid, 'freeze_ice', paintData);
-        $DyeingMod.broadcastUpdate(uuid, 'freeze_ice', paintData);
+        let uuid = victim.uuid.toString();
+        let paintId = "freeze_ice";
+        server.runCommandSilent("/dyeing uv add static " + paintId + " " + uuid + " minecraft:textures/block/blue_ice.png 1.0 false false 8.0 8.0");
 
-        // 冻结实体，durationTicks后同时解冻并移除油漆层（单位统一为tick）
+        // 冻结实体，durationTicks后同时解冻并移除UV贴图层（单位统一为tick）
         if (global.freezeEntity(victim)) {
             server.scheduleInTicks(durationTicks/6, function() {
-                global.unfreezeEntity(victim);
-                savedData.remove(uuid, 'freeze_ice');
-                $DyeingMod.broadcastRemove(uuid, 'freeze_ice');
+                try {
+                    global.unfreezeEntity(victim);
+                    server.runCommandSilent("/dyeing uv remove " + uuid + " " + paintId);
+                } catch (err) {
+                    console.log("[冻结] 解冻/移除UV错误: " + err);
+                }
             });
         }
     } catch(e) {

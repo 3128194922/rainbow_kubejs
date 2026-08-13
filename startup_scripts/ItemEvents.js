@@ -514,7 +514,7 @@ ItemEvents.modification(event => {
    ]
    items.forEach(item => {
       event.modify(item, event => {
-         event.addAttribute("rainbow:generic.boom_damage", uuids[items.indexOf(item)], item, 0.1, "multiply_base")
+         event.addAttribute("rainbow:generic.boom_damage", uuids[items.indexOf(item)], item, 1, "addition")
       })
    })
 })

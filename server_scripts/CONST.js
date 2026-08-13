@@ -6,8 +6,8 @@
 const Integer = Java.loadClass("java.lang.Integer");
 const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
 const Vec3 = Java.loadClass("net.minecraft.world.phys.Vec3");
-const FlameProjectileEntity = Java.loadClass("dev.hexnowloading.dungeonnowloading.entity.projectile.FlameProjectileEntity");
-const DNLEntityTypes = Java.loadClass("dev.hexnowloading.dungeonnowloading.registry.DNLEntityTypes");
+//const FlameProjectileEntity = Java.loadClass("dev.hexnowloading.dungeonnowloading.entity.projectile.FlameProjectileEntity");
+//const DNLEntityTypes = Java.loadClass("dev.hexnowloading.dungeonnowloading.registry.DNLEntityTypes");
 const BackpackHelper = Java.loadClass('com.mrcrayfish.backpacked.BackpackHelper')
 const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
 const ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
@@ -43,6 +43,9 @@ const SpeciesDamageTypes = Java.loadClass('com.ninni.species.registry.SpeciesDam
 const SpeciesParticles = Java.loadClass('com.ninni.species.registry.SpeciesParticles')
 const SpeciesSoundEvents = Java.loadClass('com.ninni.species.registry.SpeciesSoundEvents')
 const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+const $Monster = Java.loadClass('net.minecraft.world.entity.monster.Monster')
+const $DeathLaserBeam = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Death_Laser_Beam_Entity')
+const $RemovalReason = Java.loadClass('net.minecraft.world.entity.Entity$RemovalReason')
 const DEFAULT_IGNORE_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("species", "cant_be_damaged_by_dummy"))
 
 const $Spectre = Java.loadClass('com.ninni.species.server.entity.mob.update_3.Spectre');
@@ -56,6 +59,9 @@ const $DirectionAxisDirection = Java.loadClass('net.minecraft.core.Direction$Axi
 const $DirectionAxis = Java.loadClass('net.minecraft.core.Direction$Axis')
 // CBC 瞄准: 炮塔基座方块状态属性 (VERTICAL_DIRECTION: down=正立/up=倒置)
 const $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
+
+// Dyeing mod: UV/油漆/公告板/屏幕覆盖层等实体染色数据入口（服务端）
+const $DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
 
 
 global.foodlist = []; //食物列表初始化

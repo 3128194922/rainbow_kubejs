@@ -342,6 +342,21 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
     }
 });
 
+// 兽性面具：击杀敌人治疗自己
+ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
+    try {
+        let player = event.getSource().getPlayer();
+        if (event.getEntity().getLevel().isClientSide()) return;
+        if (!player || !player.isPlayer()) return;
+
+        if (hasCurios(player, "rainbow:beast_mask")) {
+            player.heal(4);
+        }
+    } catch (e) {
+        console.log("[兽性面具] 击杀治疗出错: " + e);
+    }
+});
+
 //DamageSorce()
 //怪物看到玩家事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVisibilityEvent', event => {

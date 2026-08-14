@@ -3,7 +3,7 @@
 // 强制第三人称后背视角，从巨兽身后观战扇形冲击波技能（服务端由 Skillwheel.js 的
 // cataclysm:netherite_monstrosity 分支负责召唤/观战/恢复逻辑）
 
-const $ForgeRegistriesC = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")
+const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")
 
 ClientEvents.tick(event => {
     try {
@@ -26,7 +26,7 @@ ClientEvents.tick(event => {
             isMonstrosity = (tid === 'cataclysm:netherite_monstrosity')
         } else {
             try {
-                let key = $ForgeRegistriesC.ENTITY_TYPES.getKey(tid)
+                let key = ForgeRegistries.ENTITY_TYPES.getKey(tid)
                 isMonstrosity = (key != null && key.toString() === 'cataclysm:netherite_monstrosity')
             } catch (e) { }
         }

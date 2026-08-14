@@ -28,7 +28,7 @@ ServerEvents.recipes(event => {
     event.remove({ id: "createutilities:mixing/void_steel_ingot" })
 
     // --- 音乐播放器相关配方修改 ---
-    event.remove({ output: 'netmusic:music_player' })
+    /*event.remove({ output: 'netmusic:music_player' })
     event.shaped('netmusic:music_player', [
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
@@ -47,7 +47,7 @@ ServerEvents.recipes(event => {
         ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks'],
         ['#minecraft:planks', '#forge:ingots/gold', '#minecraft:planks'],
         ['#minecraft:planks', 'create:precision_mechanism', '#minecraft:planks'],
-        ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks']])
+        ['#minecraft:planks', '#minecraft:planks', '#minecraft:planks']])*/
     
     // 召唤祭坛 (已注释)
     /*    event.shaped('summoningrituals:altar',[

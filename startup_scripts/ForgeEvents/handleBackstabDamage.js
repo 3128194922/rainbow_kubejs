@@ -39,7 +39,13 @@ function handleBackstabDamage(event, attacker, victim) {
         // 满足条件：伤害 ×2
         let originalAmount = event.getAmount();
         event.setAmount(originalAmount * 2);
-        console.log(`[背刺判定] ${String(attacker.getName())} 隐匿背刺 ${String(victim.getName())}，伤害 ${originalAmount} -> ${event.getAmount()}`);
+
+        // 泣血之刃：背刺时恢复背刺伤害50%的血量
+        if (hasCurios(attacker, 'rainbow:bloody_blade')) {
+            let healAmount = event.getAmount() * 0.5;
+            attacker.heal(healAmount);
+        }
+        //console.log(`[背刺判定] ${String(attacker.getName())} 隐匿背刺 ${String(victim.getName())}，伤害 ${originalAmount} -> ${event.getAmount()}`);
     } catch (err) {
         console.log(`[背刺判定] 执行失败: ${err}`);
     }

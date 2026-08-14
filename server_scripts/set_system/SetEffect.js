@@ -72,11 +72,14 @@ function collectEquipped(player) {
     let inv = getCuriosInventorySafe(player)
     if (inv) {
         try {
-            let it = inv.getCurios().entrySet().iterator()
+            // 注意: entrySet().iterator() 在 Rhino 下会触发 IllegalAccessException
+            // (UnmodifiableEntrySet 不可访问)，改用 keySet().iterator() + map.get(key)
+            let map = inv.getCurios()
+            let it = map.keySet().iterator()
             while (it.hasNext()) {
-                let entry = it.next()
-                let slotType = String(entry.getKey())
-                let handler = entry.getValue()
+                let slotType = String(it.next())
+                let handler = map.get(slotType)
+                if (!handler) continue
                 let stacks = handler.getStacks()
                 let size = stacks.getSlots()
                 for (let i = 0; i < size; i++) {
@@ -468,6 +471,60 @@ registerSet('iron_armor_example', {
             effects: [
                 { type: 'attribute', attribute: 'minecraft:generic.armor', amount: 4, operation: 'ADDITION' },
                 { type: 'potion', effect: 'minecraft:strength', amplifier: 0, duration: -1, target: 'SELF', particles: false },
+            ]
+        }
+    ]
+})
+
+// ✅ 琥珀金套装：2件+1动能伤害，4件额外+3动能伤害
+registerSet('oreganized:electrum', {
+    name: '琥珀金套装',
+    slots: [
+        { slot: 'HEAD', item: 'oreganized:electrum_helmet' },
+        { slot: 'CHEST', item: 'oreganized:electrum_chestplate' },
+        { slot: 'LEGS', item: 'oreganized:electrum_leggings' },
+        { slot: 'FEET', item: 'oreganized:electrum_boots' },
+    ],
+    phases: [
+        {
+            requiredCount: 2,
+            name: '2件套',
+            effects: [
+                { type: 'attribute', attribute: 'oreganized:kinetic_damage', amount: 1, operation: 'ADDITION' },
+            ]
+        },
+        {
+            requiredCount: 4,
+            name: '4件套',
+            effects: [
+                { type: 'attribute', attribute: 'oreganized:kinetic_damage', amount: 2, operation: 'ADDITION' },
+            ]
+        }
+    ]
+})
+
+// ✅ 骑士套装：2件+1宠物伤害，4件额外+3宠物伤害
+registerSet('royalvariations:royal_knight', {
+    name: '骑士套装',
+    slots: [
+        { slot: 'HEAD', item: 'royalvariations:royal_knight_helmet' },
+        { slot: 'CHEST', item: 'royalvariations:royal_knight_cuirass' },
+        { slot: 'LEGS', item: 'royalvariations:royal_knight_leggings' },
+        { slot: 'FEET', item: 'royalvariations:royal_knight_boots' },
+    ],
+    phases: [
+        {
+            requiredCount: 2,
+            name: '2件套',
+            effects: [
+                { type: 'attribute', attribute: 'rainbow:generic.pet_damage', amount: 1, operation: 'ADDITION' },
+            ]
+        },
+        {
+            requiredCount: 4,
+            name: '4件套',
+            effects: [
+                { type: 'attribute', attribute: 'rainbow:generic.pet_damage', amount: 2, operation: 'ADDITION' },
             ]
         }
     ]

@@ -119,9 +119,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityJoinLevelEvent", even
     if (!getGenePool(entityId)) return;
 
     let result = loadOrInitGene(entity, entityId);
-    if (result.isNew) {
+    /*if (result.isNew) {
         console.log(`[GeneSystem] ${entityId} 获得基因: ${result.geneId}`);
-    }
+    }*/
 });
 
 ForgeEvents.onEvent("net.minecraftforge.event.entity.living.BabyEntitySpawnEvent", event => {
@@ -142,5 +142,5 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.BabyEntitySpawnEvent
     child.getPersistentData().putString(GENE_KEY, childGene);
     applyGeneEffect(child, childGene);
 
-    console.log(`[GeneSystem] ${childId} 子嗣${geneA || geneB ? '继承' : '获得'}基因: ${childGene}`);
+    //console.log(`[GeneSystem] ${childId} 子嗣${geneA || geneB ? '继承' : '获得'}基因: ${childGene}`);
 });

@@ -6,14 +6,8 @@
 // 注册新的药水类型（普通和延长版）以及自定义酿造配方
 // Registers new potion types (normal and long) and custom brewing recipes
 
-const $PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilder")
-const $ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")
-const $DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.DeferredRegister")[
-    "create(net.minecraftforge.registries.IForgeRegistry,java.lang.String)"
-]
-
 /** @type {Internal.DeferredRegister} */
-const rainbow_POTIONS = $DeferredRegisterCreate($ForgeRegistries.POTIONS, "rainbow")
+const rainbow_POTIONS = $DeferredRegisterCreate(ForgeRegistries.POTIONS, "rainbow")
 rainbow_POTIONS.register(ForgeModEvents.eventBus())
 
 /**

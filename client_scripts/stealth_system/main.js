@@ -42,7 +42,7 @@ NetworkEvents.dataReceived(STEALTH_SYNC_CHANNEL, event => {
     if (lastReceivedState !== state) {
         lastReceivedState = state;
         stealthTargetAlpha = state;
-        console.log(`[stealth_system] 收到 isStealth=${data.isStealth}`);
+        //console.log(`[stealth_system] 收到 isStealth=${data.isStealth}`);
     }
 });
 

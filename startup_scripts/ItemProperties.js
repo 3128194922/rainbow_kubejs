@@ -35,4 +35,9 @@ ItemEvents.modelProperties(event => {
             }
         return itemStack.nbt.getBoolean("is_open") ? 1.0 : 0.0;
     });
+
+    // 寻友护符：在线玩家 > 1 时进入激活状态，切换为已激活图标
+    event.register("rainbow:player_doll", "active", (itemStack, level, entity, seed) => {
+        return itemStack.nbt && itemStack.nbt.getBoolean("active") ? 1.0 : 0.0;
+    });
 });

@@ -6,7 +6,7 @@
 	keepBackpackOnDeath = true
 	# The amount of slot columns in the backpack inventory.
 	# Valid range: 1 to 13 (inclusive)
-	backpackInventorySizeColumns =12
+	backpackInventorySizeColumns =10
 	# The amount of slot rows in the backpack inventory.
 	# Valid range: 1 to 7 (inclusive)
 	backpackInventorySize = 6

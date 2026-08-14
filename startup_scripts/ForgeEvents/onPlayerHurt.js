@@ -34,6 +34,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
                     }
                 } catch (err) {
                     console.log("UUID 解析失败: " + err);
+                }
             }
         }
     }
@@ -59,7 +60,22 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
             console.log("巫毒女巫锅出错：" + e);
         }
     }
-}
+
+    // --- 兽性面具 ---
+    // 受伤时概率获得伤害吸收（5秒，4点吸收心），幸运值8时最大25%
+    if (hasCurios(victim, "rainbow:beast_mask")) {
+        try {
+            let luck = victim.getAttribute("minecraft:generic.luck").getValue();
+            if (luck > 0) {
+                let chance = Math.min(luck / 8, 1.0) * 0.25;
+                if (Math.random() < chance) {
+                    victim.potionEffects.add("minecraft:absorption", 100, 0, false, false);
+                }
+            }
+        } catch (e) {
+            console.log("[兽性面具] 受伤吸收出错: " + e);
+        }
+    }
 
     // --- 圣饼 ---
     // 10%伤害减免 + 60tick无敌帧

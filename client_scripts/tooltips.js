@@ -139,7 +139,7 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("每10s标记周围实体,被标记实体受到远程伤害翻倍"));
     })
     event.addAdvanced('rainbow:mining_charm', (item, advanced, text) => {
-        text.add(1, Text.aqua("+1时运"));
+        text.add(1, Text.aqua("+3时运"));
         text.add(2, Text.aqua("高亮显示附近的战利品箱子"));
     })
     event.addAdvanced('rainbow:wind', (item, advanced, text) => {
@@ -587,12 +587,7 @@ ItemEvents.tooltip((event) => {
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:lucky_charm', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("获得幸运效果"));
-            text.add(2, Text.aqua("时运 +3"));
-        }
+        text.add(1, Text.aqua("获得幸运值加成"));
     })
     event.addAdvanced('rainbow:hero_charm', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -970,13 +965,16 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.red("▸ 与图鉴百科互斥"));
         }
     })
-    // 玩家小人
+    // 寻友护符
     event.addAdvanced('rainbow:player_doll', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("▸ 根据服务器在线玩家数量提供挖掘速度加成"));
+            text.add(1, Text.aqua("▸ 根据服务器在线玩家数量提供加成"));
             text.add(2, Text.aqua("▸ 每人在线：+10% 挖掘速度（乘算）"));
+            text.add(3, Text.aqua("▸ 每人在线：+10% 造成伤害（乘算）"));
+            text.add(4, Text.aqua("▸ 每人在线：+10% 自然恢复速度（乘算）"));
+            text.add(5, Text.gold("▸ 在线玩家 > 1 时激活，图标变化"));
         }
     })
     // 图鉴百科
@@ -990,6 +988,26 @@ ItemEvents.tooltip((event) => {
             text.add(4, Text.aqua("▸ 怪物收集 → 当前生命伤害"));
             text.add(5, Text.aqua("▸ BOSS收集 → 闪避几率"));
             text.add(6, Text.red("▸ 与四篇图鉴饰品互斥"));
+        }
+    })
+    // 流浪软糖包
+    event.addAdvanced('rainbow:wandering_gummy_pack', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 攻击概率触发随机软糖的食用效果"));
+            text.add(2, Text.aqua("▸ 一次触发只触发其中一种软糖的效果"));
+            text.add(3, Text.aqua("▸ 触发冷却 2 秒"));
+            text.add(4, Text.gold("▸ 幸运值 8 时概率最大（25%）"));
+        }
+    })
+    // 兽性面具
+    event.addAdvanced('rainbow:beast_mask', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 击杀敌人治疗自己"));
+            text.add(2, Text.aqua("▸ 受伤概率获得伤害吸收"));
         }
     })
 })

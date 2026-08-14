@@ -5,6 +5,31 @@
  * @param {Internal.Player} entity
  * @param {Internal.Entity} target
  */
+
+// 流浪软糖包：Java 类与软糖列表缓存
+/*let gummyListCache = null
+
+function getGummyList() {
+    if (gummyListCache != null) return gummyListCache
+    try {
+        let tagKey = $ItemTags.create(new $ResourceLocation('collectorsreap', 'gummies'))
+        let tag = ForgeRegistries.ITEMS.tags().getTag(tagKey)
+        if (tag == null) return null
+        let list = []
+        let iterator = tag.iterator()
+        while (iterator.hasNext()) {
+            let item = iterator.next()
+            if (item != null) list.push(item)
+        }
+        if (list.length === 0) return null
+        gummyListCache = list
+        return gummyListCache
+    } catch (e) {
+        console.log('[流浪软糖包] 获取软糖列表失败: ' + e)
+        return null
+    }
+}*/
+
 function handleAttackCurios(event, entity, target) {
     // 末影手套：攻击时为目标附着末影火 3秒
     if (hasCurios(entity, 'rainbow:ender_glove')) {
@@ -64,6 +89,51 @@ function handleAttackCurios(event, entity, target) {
             }
         } catch (err) {
             console.log("[点金手套] 错误: " + err);
+        }
+    }
+
+    // 流浪软糖包：攻击概率触发随机软糖食用效果，2s冷却，幸运8时最大25%
+    if (hasCurios(entity, 'rainbow:wandering_gummy_pack')) {
+        try {
+            // 冷却检查（原版 cooldown 机制，2s）
+            if (entity.cooldowns.isOnCooldown('rainbow:wandering_gummy_pack')) return
+
+            // 幸运值影响概率：幸运8时最大25%，线性缩放
+            let luck = entity.getAttribute("minecraft:generic.luck").getValue()
+            if (luck <= 0) return
+            let chance = 0.05 + Math.min(luck / 8, 1.0) * 0.20
+
+            if (Math.random() < chance) {
+                // 随机选取一种软糖
+                //let gummyList = getGummyList()
+                let gummyList = ['collectorsreap:glow_berry_gummy', 'collectorsreap:wild_berry_gummy', 'collectorsreap:pink_dragon_fruit_gummy', 'collectorsreap:bullet_pepper_gummy', 'collectorsreap:melon_gummy', 'collectorsreap:lime_gummy', 'collectorsreap:pomegranate_gummy', 'collectorsreap:yucca_gummy', 'collectorsreap:carrot_gummy', 'collectorsreap:passion_fruit_gummy', 'collectorsreap:apple_gummy', 'collectorsreap:aloe_gummy', 'collectorsreap:lucuma_gummy']
+                if (gummyList == null) return
+
+                let gummyItem = gummyList[Math.floor(Math.random() * gummyList.length)]
+                let gummyStack = new $ItemStack(gummyItem, 1)
+                let foodProps = gummyStack.getFoodProperties(entity)
+
+                if (foodProps != null) {
+                    let effects = foodProps.getEffects()
+                    for (let i = 0; i < effects.size(); i++) {
+                        let pair = effects.get(i)
+                        let effectInstance = pair.getFirst()
+                        let probability = pair.getSecond()
+                        if (Math.random() < probability) {
+                            entity.potionEffects.add(
+                                effectInstance.getEffect(),
+                                effectInstance.getDuration(),
+                                effectInstance.getAmplifier()
+                            )
+                        }
+                    }
+                }
+
+                // 设置冷却（2s）
+                entity.cooldowns.addCooldown('rainbow:wandering_gummy_pack', SecoundToTick(2))
+            }
+        } catch (err) {
+            console.log("[流浪软糖包] 错误: " + err)
         }
     }
 

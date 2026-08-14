@@ -9,12 +9,35 @@
 
 const BIG_STOMACH_CYCLE = 48000; // 2个游戏日的tick数
 
+// 大胃袋想吃食物黑名单：随机到这些 id 时自动重选（直到不是黑名单）
+const BIG_STOMACH_BLACKLIST = [
+    /*"minecraft:rotten_flesh",
+    "minecraft:spider_eye",
+    "minecraft:poisonous_potato",
+    "minecraft:pufferfish"*/
+];
+
 // 随机一个想吃食物（来自 global.foodlist，server端CONST.js初始化）
+// 命中黑名单时自动重选，直到选出非黑名单食物（含最大尝试次数保护）
 function pickBigStomachFood() {
     if (global.foodlist == null || global.foodlist.length == 0) return null;
-    let food = Item.of(global.foodlist[Math.floor(randomInRange(0, global.foodlist.length - 1))]);
-    if (food == null || food.isEmpty()) return null;
-    return food.getId().toString();
+    let maxTries = global.foodlist.length;
+    for (let i = 0; i < maxTries; i++) {
+        let food = Item.of(global.foodlist[Math.floor(randomInRange(0, global.foodlist.length - 1))]);
+        if (food == null || food.isEmpty()) continue;
+        let id = food.getId().toString();
+        if (BIG_STOMACH_BLACKLIST.indexOf(id) !== -1) continue; // 命中黑名单，重选
+        return id;
+    }
+    // 全部命中黑名单的兜底：返回列表第一个非黑名单食物
+    for (let i = 0; i < global.foodlist.length; i++) {
+        let food = Item.of(global.foodlist[i]);
+        if (food == null || food.isEmpty()) continue;
+        let id = food.getId().toString();
+        if (BIG_STOMACH_BLACKLIST.indexOf(id) !== -1) continue;
+        return id;
+    }
+    return null;
 }
 
 // 通知玩家想吃食物（显示名 + ID）

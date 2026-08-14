@@ -52,7 +52,13 @@ const $SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
 // 伤害类型标签（用于判定抛射体伤害 IS_PROJECTILE 等）
 const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
 
-
+let $ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+let $ItemTags = Java.loadClass('net.minecraft.tags.ItemTags')
+let $ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
+const $PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilder")
+const $DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.DeferredRegister")[
+    "create(net.minecraftforge.registries.IForgeRegistry,java.lang.String)"
+]
 
 global.CURIONUMBER = 4
 global.CURSES = [

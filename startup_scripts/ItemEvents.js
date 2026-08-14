@@ -418,7 +418,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
 });*/
 
 // 骑士 套装 宠物流派
-ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+/*ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
     let item = event.getItemStack();
     let slotType = event.getSlotType();
 
@@ -450,10 +450,10 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
         console.log("骑士套装属性修改出错：")
         console.log(e)
     }
-});
+});*/
 
 // 铂金 套装 动能流派
-ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+/*ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
     let item = event.getItemStack();
     let slotType = event.getSlotType();
 
@@ -485,7 +485,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
         console.log("铂金套装属性修改出错：")
         console.log(e)
     }
-});
+});*/
 
 // 银 套装 魔法流派
 ItemEvents.modification(event => {

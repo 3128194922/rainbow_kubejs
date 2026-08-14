@@ -1307,7 +1307,7 @@ let wickedMaskSkillMap = {
 
                 entity.spawn();
                 // 下线时间：字符串ID调用KubeJS add()不可靠，改为解析MobEffect对象后添加
-                let offWorkEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("rainbow", "off_work_time"));
+                let offWorkEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("rainbow", "off_work_time"));
                 if (offWorkEffect) {
                     entity.potionEffects.add(offWorkEffect, COOLDOWN / 2, 0, false, false);
                 }
@@ -1336,7 +1336,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let chosenVictimEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "chosen_victim"));
+                let chosenVictimEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "chosen_victim"));
                 if (chosenVictimEffect) {
                     entity.potionEffects.add(chosenVictimEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1375,7 +1375,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let timeBombEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "time_bomb"));
+                let timeBombEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "time_bomb"));
                 if (timeBombEffect) {
                     entity.potionEffects.add(timeBombEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1426,8 +1426,8 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 同时施加 凝视压制 与 末地沉重 两种药水效果（解析 MobEffect 对象后添加）
-                let gazeEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "pressing_gaze"));
-                let heavinessEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "heaviness_of_the_end"));
+                let gazeEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "pressing_gaze"));
+                let heavinessEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "heaviness_of_the_end"));
                 if (gazeEffect) {
                     entity.potionEffects.add(gazeEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1470,7 +1470,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let trappedEffect = $ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "trapped"));
+                let trappedEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "trapped"));
                 if (trappedEffect) {
                     entity.potionEffects.add(trappedEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1496,7 +1496,7 @@ let wickedMaskSkillMap = {
 
         try {
             // 1. 解析激光实体类型（cataclysm:death_laser_beam，mod 已注册客户端渲染器，可直接渲染）
-            let laserType = $ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "death_laser_beam"));
+            let laserType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "death_laser_beam"));
             if (!laserType) {
                 console.error("[烛心面具] 死亡激光实体类型不存在: cataclysm:death_laser_beam");
                 return;
@@ -1517,7 +1517,7 @@ let wickedMaskSkillMap = {
 
             // 4. 播放激光音效（与 Prowler 发射同款 cataclysm:death_laser）
             player.level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                $ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("cataclysm", "death_laser")),
+                ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("cataclysm", "death_laser")),
                 SoundSource.PLAYERS, 1.0, 1.0);
         } catch (e) {
             console.error("[烛心面具] 潜伏者激光技能执行异常: " + e);
@@ -1543,7 +1543,7 @@ let wickedMaskSkillMap = {
             }
 
             // 1. 解析巨兽实体类型
-            let type = $ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "netherite_monstrosity"));
+            let type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "netherite_monstrosity"));
             if (!type) {
                 console.error("[烛心面具] 巨兽实体类型不存在: cataclysm:netherite_monstrosity");
                 return;

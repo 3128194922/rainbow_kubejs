@@ -1,0 +1,20 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/player_doll"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "kubejs:active": 0.0
+        },
+        "model": "rainbow:item/player_doll_off"
+      },
+      {
+        "predicate": {
+          "kubejs:active": 1.0
+        },
+        "model": "rainbow:item/player_doll_on"
+      }
+    ]
+}

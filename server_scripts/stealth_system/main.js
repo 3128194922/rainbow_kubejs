@@ -50,7 +50,7 @@ PlayerEvents.loggedIn(event => {
     global.setStealthState(player, true);
     lastSentState[uuid] = true;
     sendStealthState(player);
-    console.log(`[stealth_system] 玩家登录，初始化 isStealth=true`);
+    //console.log(`[stealth_system] 玩家登录，初始化 isStealth=true`);
 });
 
 // 玩家登出：清理缓存
@@ -76,6 +76,6 @@ PlayerEvents.tick(event => {
     if (lastSentState[uuid] !== current) {
         lastSentState[uuid] = current;
         sendStealthState(player);
-        console.log(`[stealth_system] 玩家状态变化 -> isStealth=${current}`);
+        //console.log(`[stealth_system] 玩家状态变化 -> isStealth=${current}`);
     }
 });

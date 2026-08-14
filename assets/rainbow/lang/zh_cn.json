@@ -103,6 +103,7 @@
 	"item.rainbow.crow_heart": "乌鸦之心",
 	"item.rainbow.golden_piggy_charm": "金猪吊坠",
 	"item.rainbow.reload_core": "装填核心",
+	"item.rainbow.player_doll": "寻友护符",
 	"item.rainbow.oceantooth_necklace": "海牙项链",
 	"item.rainbow.infernotooth_necklace": "狱牙项链",
 	"item.rainbow.the_bible": "圣经",
@@ -163,6 +164,9 @@
 	"item.rainbow.field_guide_animal": "图鉴·动物篇",
 	"item.rainbow.field_guide_monster": "图鉴·怪物篇",
 	"item.rainbow.field_guide_boss": "图鉴·BOSS篇",
+	"item.rainbow.wandering_gummy_pack": "流浪软糖包",
+	"item.rainbow.beast_mask": "兽性面具",
+	"item.rainbow.bloody_blade": "泣血之刃",
 	
 	"attribute.name.generic.extra_summoning": "额外召唤",
 	"attribute.name.generic.boom_damage": "爆炸伤害",

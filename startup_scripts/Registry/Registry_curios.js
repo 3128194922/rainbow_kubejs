@@ -272,19 +272,18 @@ StartupEvents.registry('item', event => {
 // 幸运符文
 StartupEvents.registry('item', event => {
     event.create('rainbow:lucky_charm')
-        .tooltip("获得幸运，时运3")
         .displayName("幸运符文")
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
-                .curioTick((slotContext) => {
+                //.modifyFortuneLevel((slotContext, lootContext, stack) => 3)
+                /*.curioTick((slotContext) => {
                     let player = slotContext.entity();
                     if (player.age % 20) return;
                     player.potionEffects.add("minecraft:luck", 60, 1, false, false)
-                })
+                })*/
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -295,6 +294,7 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
+                .addAttribute('minecraft:generic.luck', 'mining_charm', 5, 'addition')
         )
 })
 
@@ -334,11 +334,9 @@ StartupEvents.registry('item', event => {
     .tag('curios:charm')
     .attachCuriosCapability(
       CuriosJSCapabilityBuilder.create()
-        .modifyFortuneLevel((slotContext, lootContext, stack) => 1)
-        .modifyAttribute(event => {
-          event.modify('forge:entity_reach', 'mining_charm', 2.15, 'addition')
-          event.modify('minecraft:generic.luck', 'mining_charm', 1, 'addition')
-        })
+        .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
+        .addAttribute('forge:entity_reach', 'mining_charm', 2.15, 'addition')
+        .addAttribute('attributeslib:mining_speed', 'mining_charm', 0.1, 'multiply_base')
         .canEquip((slotContext, stack) => {
           const entity = slotContext.entity()
           if (entity == null) return false
@@ -1876,8 +1874,9 @@ StartupEvents.registry('item', event => {
         )
 })
 
-// 玩家小人
-// 机制：根据服务器在线玩家数量，每人提供 0.1 的 multiply_total 挖掘速度加成
+// 寻友护符
+// 机制：根据服务器在线玩家数量，每人提供 0.1 的 multiply_total 挖掘速度/攻击伤害/自然恢复加成
+// 在线玩家 > 1 时进入激活状态，切换为已激活图标
 StartupEvents.registry('item', event => {
     event.create('rainbow:player_doll')
         .rarity("epic")
@@ -1891,15 +1890,26 @@ StartupEvents.registry('item', event => {
                     if (player.server == null) return;
 
                     let onlineCount = player.server.players.size();
-                    if (onlineCount <= 0) return;
-
-                    ev.modify("attributeslib:mining_speed", "player_doll", 0.1 * onlineCount, "multiply_total");
+                    if (onlineCount > 0)
+                    {
+                        ev.modify("attributeslib:mining_speed", "player_doll", 0.1 * onlineCount, "multiply_total");
+                        ev.modify("minecraft:generic.attack_damage", "player_doll", 0.1 * onlineCount, "multiply_total");
+                        ev.modify("cataclysm:nature_heal", "player_doll", 10 * onlineCount, "addition");
+                    }
                 })
                 .curioTick((slotContext, stack) => {
                     if (stack.nbt == null) {
                         stack.nbt = {};
                     }
                     stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+
+                    let player = slotContext.entity();
+                    if (player == null || player.server == null) return;
+                    let onlineCount = player.server.players.size();
+                    let active = onlineCount > 1;
+                    if (stack.nbt.getBoolean("active") !== active) {
+                        stack.nbt.putBoolean("active", active);
+                    }
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -2797,6 +2807,62 @@ StartupEvents.registry('item', event => {
                     // BOSS篇与百科互斥
                     if (hasCurios(entity, 'rainbow:the_field_guide')) return false;
 
+                    return true;
+                })
+        )
+})
+
+// 流浪软糖包
+// 机制：攻击时概率触发随机软糖的食用效果（来自 collectorsreap:gummies 标签）
+//       一次触发只触发一种软糖效果，2s 冷却
+//       幸运值8时概率最大（25%），线性缩放
+StartupEvents.registry('item', event => {
+    event.create('rainbow:wandering_gummy_pack')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:wandering_gummy_pack')) return false;
+                    return true;
+                })
+        )
+})
+
+// 兽性面具
+// 机制：1) 击杀敌人治疗自己 2) 受伤概率获得伤害吸收
+StartupEvents.registry('item', event => {
+    event.create('rainbow:beast_mask')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:beast_mask')) return false;
+                    return true;
+                })
+        )
+})
+
+// 泣血之刃
+// 机制：触发背刺时，恢复背刺伤害50%的血量（背刺判定复用 handleBackstabDamage.js）
+StartupEvents.registry('item', event => {
+    event.create('rainbow:bloody_blade')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:bloody_blade')) return false;
                     return true;
                 })
         )

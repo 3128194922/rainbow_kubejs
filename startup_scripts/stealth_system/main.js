@@ -116,7 +116,7 @@ function scheduleStealthRecovery(entity) {
                 if (global.getStealthState(entity) === true) return;
 
                 global.setStealthState(entity, true);
-                console.log(`[stealth_system] ${String(entity.getName())} 5s 未再被索敌，isStealth -> true`);
+                //console.log(`[stealth_system] ${String(entity.getName())} 5s 未再被索敌，isStealth -> true`);
             } catch (err) {
                 console.log(`[stealth_system] 隐匿定时恢复失败: ${err}`);
             }
@@ -140,7 +140,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingChangeTargetEv
 
         // 只要被索敌（无论当前是否已暴露）都写 false 并重置 5s 计时
         global.setStealthState(target, false);
-        console.log(`[stealth_system] ${String(target.getName())} 被怪物索敌，isStealth -> false（5s 后自动恢复）`);
+        //console.log(`[stealth_system] ${String(target.getName())} 被怪物索敌，isStealth -> false（5s 后自动恢复）`);
         scheduleStealthRecovery(target);
     } catch (err) {
         console.log(`[stealth_system] 处理索敌事件失败: ${err}`);

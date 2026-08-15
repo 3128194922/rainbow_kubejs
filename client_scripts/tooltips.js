@@ -71,6 +71,21 @@ ItemEvents.tooltip(event => {
     event.addAdvanced('#rainbow:glove', (item, advanced, text) => {
         text.add(1, Text.gold("[手套]"))
     })
+    // 末影之握：攻击时为目标附着末影火3秒
+    event.addAdvanced('rainbow:ender_glove', (item, advanced, text) => {
+        text.add(2, Text.aqua("▸ 攻击时为目标附着末影火 3秒"))
+        text.add(3, Text.aqua("▸ +1 攻击伤害 / +10% 攻击速度"))
+    })
+    // 生灵之触：攻击时为目标附着生灵火3秒
+    event.addAdvanced('rainbow:living_gauntlet', (item, advanced, text) => {
+        text.add(2, Text.aqua("▸ 攻击时为目标附着生灵火 3秒"))
+        text.add(3, Text.aqua("▸ +1 攻击伤害 / +10% 攻击速度"))
+    })
+    // 点金手套：攻击概率点金并冻结目标3秒
+    event.addAdvanced('rainbow:gold_glove', (item, advanced, text) => {
+        text.add(2, Text.aqua("▸ 攻击时概率将目标点金并冻结 3秒"))
+        text.add(3, Text.aqua("▸ 概率 = 幸运值/25（幸运值需≥0，25幸运=100%）"))
+    })
 })
 
 //物品介绍实例
@@ -1008,6 +1023,16 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("▸ 击杀敌人治疗自己"));
             text.add(2, Text.aqua("▸ 受伤概率获得伤害吸收"));
+        }
+    })
+    // 泣血之刃
+    event.addAdvanced('rainbow:bloody_blade', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 触发背刺时，恢复背刺伤害 50% 的血量"));
+            text.add(2, Text.aqua("▸ 背刺判定需处于隐匿状态且从目标背后攻击"));
+            text.add(3, Text.gold("▸ 回血量基于背刺最终伤害（伤害×2后）"));
         }
     })
 })

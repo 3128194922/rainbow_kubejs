@@ -79,7 +79,7 @@ EntityEvents.spawned(event => {
         }
     */
     // --- 核弹侦测 ---
-    if(id.toString() === "alexscaves:nuclear_bomb")
+    /*if(id.toString() === "alexscaves:nuclear_bomb")
         {
             let pos = entity.getBlock().pos;
 
@@ -87,7 +87,7 @@ EntityEvents.spawned(event => {
 
             console.log(`警告：侦测到核弹打击！坐标：${pos.x} ${pos.y} ${pos.z}`)
         }
-
+*/
     // --- 禁止特定实体生成 ---
     if (inControl.indexOf(id.toString()) != -1) 
         {
@@ -97,13 +97,17 @@ EntityEvents.spawned(event => {
 
     // --- 飞鱼替换 ---
     // 将 shifted_lens:flying_fish 替换为 alexsmobs:flying_fish
-    if(id.toString() == "shifted_lens:flying_fish")
+    /*if(id.toString() == "shifted_lens:flying_fish")
         {
             let newEntity = level.createEntity("alexsmobs:flying_fish")
             newEntity.setPosition(entity.x,entity.y,entity.z)
             newEntity.spawn()
             event.cancel()
-        }
+        }*/
+    /*if(id.toString() == "minecraft:zombie")
+        {
+            entity.setItemSlot("offhand", "piglinproliferation:buckler")
+        }*/
 });
 
 // 大师球 + 莉莉丝拥抱：灵魂替死

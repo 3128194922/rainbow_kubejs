@@ -18,8 +18,11 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
     // 牢大饮料/曼巴效果：速度加成伤害倍率
     if (hasCurios(attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
         event.setAmount(event.getAmount() * attacker.getSpeed().toFixed(2) * 10);
-        //attacker.server.runCommandSilent(`/playsound rainbow:voice.man voice @p ${victim.x} ${victim.y} ${victim.z}`);
-        attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "rainbow:voice.man", "voice", 1, 1)
+        // 音效降低音量并通过原生冷却系统限制短时间触发次数
+        if (!attacker.cooldowns.isOnCooldown("rainbow:ice_tea")) {
+            attacker.level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), "rainbow:voice.man", "voice", 0.3, 1)
+            attacker.cooldowns.addCooldown("rainbow:ice_tea", SecoundToTick(1));
+        }
     }
 
     // 屠夫之钉：远程攻击暴击引发爆炸

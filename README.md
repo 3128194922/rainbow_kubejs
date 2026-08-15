@@ -36,6 +36,7 @@
   - [怪物化系统](#怪物化系统)
   - [MBD 机器事件系统](#mbd-机器事件系统)
   - [信标光束能量注入系统](#信标光束能量注入系统)
+  - [套装效果系统](#套装效果系统)
 - [饰品图鉴](#饰品图鉴)
 - [Curios 自定义渲染](#curios-自定义渲染)
 - [盔甲纹饰祝福系统 (圣经)](#盔甲纹饰祝福系统-圣经)
@@ -87,7 +88,7 @@
 | `rainbow:berserk_emblem` | 血战沙场之证，根据损失血量增加属性，联动暴食之符 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L128-L131](client_scripts/tooltips.js#L128-L131) |
 | `rainbow:gluttony_charm` | 暴食之符，根据损失饥饿值提供加成，免疫饥饿伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L211-L219](client_scripts/tooltips.js#L211-L219) |
 | `rainbow:cruncher_charm` | 贪咀护符，消耗饥饿值自动恢复生命值（饥饿值低于 6 时停止） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L297-L299](client_scripts/tooltips.js#L297-L299) |
-| `rainbow:big_stomach` | 大胃袋，每2个游戏日想吃一种食物：吃下指定食物后生效（食用/饮用速度+50%、饱食度满仍可进食、击退抗性随连击递增），未完成则全部失效且连击清零；任务源数据在玩家 persistentData，多个大胃袋共享同一任务，卸下饰品周期也照常轮换 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，任务轮询：[server_scripts/big_stomach/PlayerTick.js](server_scripts/big_stomach/PlayerTick.js)，任务完成检测：[server_scripts/big_stomach/ItemEvents.js](server_scripts/big_stomach/ItemEvents.js)，tooltip：[client_scripts/tooltips.js#L170-L235](client_scripts/tooltips.js#L170-L235) |
+| `rainbow:big_stomach` | 大胃袋，每2个游戏日想吃一种食物：吃下指定食物后生效（食用/饮用速度+50%、饱食度满仍可进食、击退抗性随连击递增），未完成则全部失效且连击清零；任务源数据在玩家 persistentData，多个大胃袋共享同一任务，卸下饰品周期也照常轮换；`PlayerTick.js` 顶部 `BIG_STOMACH_BLACKLIST` 数组可配置想吃食物黑名单（随机命中时自动重选，预置腐肉/蜘蛛眼/毒马铃薯/河豚） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，任务轮询：[server_scripts/big_stomach/PlayerTick.js](server_scripts/big_stomach/PlayerTick.js)，任务完成检测：[server_scripts/big_stomach/ItemEvents.js](server_scripts/big_stomach/ItemEvents.js)，tooltip：[client_scripts/tooltips.js#L170-L235](client_scripts/tooltips.js#L170-L235) |
 | `rainbow:hero_charm` | 武器大师勋章，根据手持武器攻速提供不同加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L166-L168](client_scripts/tooltips.js#L166-L168) |
 | `rainbow:lucky_charm` | 幸运符文，获得幸运 III 效果，时运 +3 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:mining_charm` | 猎宝者护符，时运 +1，触手距离 +2.15，高亮显示附近 Lootr 战利品箱子 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L159-L162](client_scripts/tooltips.js#L159-L162) |
@@ -125,6 +126,7 @@
 | `rainbow:gritty_heart` | 沙蚀之心，技能：召唤幼年尸壳佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:gunk_heart` | 粘液之心，技能：召唤幼年腐烂僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:rotten_heart` | 腐烂之心，技能：召唤幼年僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
+| `rainbow:bloody_blade` | 泣血之刃，触发背刺时恢复背刺伤害 50% 的血量（需隐匿状态+背面攻击） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，治疗逻辑：[startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js)，tooltip：[client_scripts/tooltips.js#L1013-L1019](client_scripts/tooltips.js#L1013-L1019) |
 
 ### 食物
 
@@ -429,6 +431,7 @@
 | 文件 | 功能 | 实现位置 |
 |------|------|----------|
 | `customAttributeDamage.js` | 自定义属性伤害计算 | [startup_scripts/ForgeEvents/customAttributeDamage.js](startup_scripts/ForgeEvents/customAttributeDamage.js) |
+| `handleBackstabDamage.js` | 背刺判定（最高优先级）：隐匿状态+背面攻击伤害×2，联动泣血之刃回血 | [startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js) |
 | `handleCuriosEffects.js` | 饰品效果处理 + Bible 纹饰祝福 | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
@@ -446,6 +449,7 @@
 | 机制 | 说明 |
 |------|------|
 | 霜冻镐加速 | 挖掘硬度 > 5 的方块时挖掘速度 x16 |
+| 背刺判定 | 玩家隐匿状态（`global.getStealthState`）+ 复用 FarmersDelight `BackstabbingEnchantment.isLookingBehindTarget`（背面±60°锥形）时伤害×2；装备泣血之刃额外恢复背刺伤害 50% 血量 |
 | 棒球棍能量 | 每次攻击消耗能量，归零变回普通棒球棍 |
 | 决斗剑类型 | 初始化已攻击类型计数 NBT |
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
@@ -482,12 +486,56 @@
 - 扫描光束经过的实体，根据光束颜色给予着火效果（RGB 亮度 → 强度映射）
 - 检测光束路径上的刚玉簇 (`rainbow:corundum_cluster`)，激活其反方向的靶子方块（60 tick 后复位）
 
+### 套装效果系统
+
+注册表模式的套装效果框架（参考 `curios_skill_system/Skillwheel.js` 注册风格），支持槽位条件匹配 / 多阶段递进 / 属性+药水+命令三种效果类型。
+
+> 实现：[server_scripts/set_system/SetEffect.js](server_scripts/set_system/SetEffect.js)
+
+**注册 API：** `registerSet(id, config)`
+
+| config 字段 | 说明 |
+|------------|------|
+| `name` | 套装显示名 |
+| `slots` | 槽位条件数组，每项可含 `slot`(原版六槽 / `curios:xxx`) + `item` / `tag`，省略槽位则匹配任意槽 |
+| `phases` | 阶段数组，每项含 `requiredCount`（达成件数）+ `effects` |
+
+**效果类型：**
+
+| type | 字段 | 说明 |
+|------|------|------|
+| `attribute` | `attribute` / `amount` / `operation` | 属性修饰符（ADDITION / MULTIPLY_BASE / MULTIPLY_TOTAL），激活时 add、失效时 remove |
+| `potion` | `effect` / `amplifier` / `duration` / `target` / `particles` | `target`: `SELF`(永久,duration=-1) / `ATTACK_TARGET`(攻击命中附加,5s=100t) / `IMMUNE`(免疫该效果) |
+| `command` | `activate` / `deactivate` / `repeat` / `repeatCommands` | 激活/失效时执行命令（以玩家为 @s）；`repeat`(秒) 激活期间循环执行 |
+
+**评估机制：**
+
+| 触发时机 | 行为 |
+|----------|------|
+| `inventoryChanged` | 即时强制重新评估（原版背包/盔甲变更） |
+| tick 每 5 tick | 装备快照哈希轮询（捕获 curios 变更），哈希变化才重算 |
+| tick 每 20 tick | 维护已激活效果（刷新永久药水/属性） |
+| 登录 | 延迟 5 tick 强制评估（curios 就绪） |
+| 死亡 / 下线 | 清除属性/永久药水，清空追踪状态 |
+
+> 状态存内存 `ActiveSetTracker`（uuid → 激活阶段列表），重启后由登录/tick 自动重算
+
+**已注册套装：**
+
+| 套装 ID | 件套 | 效果 |
+|---------|------|------|
+| `iron_armor_example` | 2件 / 4件 | +4 最大生命 / +4 护甲 + 力量 I（永久） |
+| `oreganized:electrum` | 2件 / 4件 | +1 动能伤害 / 额外 +2 动能伤害 |
+| `royalvariations:royal_knight` | 2件 / 4件 | +1 宠物伤害 / 额外 +2 宠物伤害 |
+
+> 新增套装在 [server_scripts/set_system/SetEffect.js](server_scripts/set_system/SetEffect.js) 的「套装定义区域」调用 `registerSet()` 即可
+
 ---
 
 ## 饰品图鉴
 
 ### 护符槽 (Charm)
-荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限之证、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶、心灵宝石、脑控回收器、共生徽章、战壕哨、净化绢布、心脏系列 x5、黏液棒
+荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限之证、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶、心灵宝石、脑控回收器、共生徽章、战壕哨、净化绢布、心脏系列 x5、黏液棒、泣血之刃
 
 ### 背部 (Back)
 TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mysticartifacts:artifact_spirit`）、皇家法杖、所有旗帜（16 种）、create 背罐（铜/下界合金）

@@ -531,20 +531,43 @@ registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIn
         if (itemStack.nbt == null) {
             itemStack.nbt = {};
         }
-        let now = player.level.gameTime;
+        let now = player.level.getTime();
         itemStack.nbt.putLong("endtick", now + 20 * 20);
-        player.tell(Text.gray("鸦羽骨哨生效：20 秒内攻击力与护甲 +5"));
+        player.tell(Text.gray("鸦羽骨哨生效：20 秒内攻击力与护甲 +5，区域时缓 80%"));
 
         // 玩家身上召唤缩放4的半透明黑色油漆层（ARGB=0x80000000，50%透明度），10s后移除
         let server = player.server;
         let uuid = player.uuid.toString();
         let paintId = "whistle_effect";
+
+        // 使用 TimeController 模组实现区域时缓 80%（sphere_follow 跟随玩家移动，持续20秒/400tick，半径32）
+        let slowRadius = 32;
+        server.runCommandSilent("/timecontroller sphere_follow " + player.username + " 80 " + (20 * 20) + " " + slowRadius);
+
+        // 使用 Dyeing 的 area 渲染半透明黑色长方体显示时缓影响范围（以玩家为中心，半径=时缓半径，跟随玩家移动）
+        // from/to 为相对玩家位置的偏移；AreaPaintRenderer 每帧以实体位置为原点重算盒子顶点，自动跟随
+        let rangeId = "whistle_range";
+        server.runCommandSilent(
+            "/dyeing area add static " + rangeId + " " + uuid + " " +
+            (-slowRadius) + " " + (-slowRadius) + " " + (-slowRadius) + " " +
+            slowRadius + " " + slowRadius + " " + slowRadius + " " +
+            "80000000"
+        );
+
         server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80000000 4.0");
         server.scheduleInTicks(20*10, function() {
             try {
                 server.runCommandSilent("/dyeing paint remove " + uuid + " " + paintId);
             } catch (err) {
                 console.log("[鸦羽骨哨] 移除油漆层错误: " + err);
+            }
+        });
+        // 时缓范围矩形持续 20s（与时缓同步），到期后移除
+        server.scheduleInTicks(20*20, function() {
+            try {
+                server.runCommandSilent("/dyeing area remove " + uuid + " " + rangeId);
+            } catch (err) {
+                console.log("[鸦羽骨哨] 移除时缓范围矩形错误: " + err);
             }
         });
     } catch (err) {
@@ -577,25 +600,25 @@ registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex
                 if(!entity.potionEffects) return;
                 entity.potionEffects.add("minecraft:resistance",20*10,0,false,false);
                 nbt.putInt("the_end",nbt.getInt("the_end")+1);
-                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.inspiration", "voice", 1, 1)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.inspiration", "voice", 0.3, 1)
             },
             2:(player,entity,nbt)=>{
                 if(!entity.potionEffects) return;
                 entity.potionEffects.add("runiclib:lesser_strength",20*10,0,false,false);
                 nbt.putInt("the_end",nbt.getInt("the_end")+1);
-                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.improvement", "voice", 1, 1)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.improvement", "voice", 0.3, 1)
             },
             3:(player,entity,nbt)=>{
                 if(!entity.potionEffects) return;
                 entity.potionEffects.add("minecraft:instant_health",1,0,false,false);
                 nbt.putInt("the_end",nbt.getInt("the_end")+1);
-                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.sonatina", "voice", 1, 1)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.sonatina", "voice", 0.3, 1)
             },
             4:(player,entity,nbt)=>{
                 if(!entity.isAlive()) return;
                 if(entity == player) return;
                 entity.attack(player.damageSources().playerAttack(player),(nbt.getInt("the_end")+1)*10)
-                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.the_end", "voice", 1, 1)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.the_end", "voice", 0.3, 1)
             }
         };
         let AABB = player.boundingBox.inflate(16)
@@ -623,6 +646,13 @@ registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenu
     if (itemStack && !player.cooldowns.isOnCooldown("rainbow:mini_moon"))
     {
         if(player.isClientSide) return;
+
+        // 释放技能时播放玩家动画 (server_scripts/player_animator/main.js 封装):
+        // 按下shift = 吸引模式 → 播放 assets/rainbow/player_animation/attract.json (rainbow:attract)
+        // 未按下shift = 排斥模式 → 播放 assets/rainbow/player_animation/repel.json (rainbow:repel)
+        let animId = shiftDown ? "rainbow:attract" : "rainbow:repel";
+        let animOk = global.playPlayerAnim(player, animId);
+        console.log(`[Skillwheel] mini_moon 释放: 播放动画 ${animId} 结果=${animOk} (shiftDown=${shiftDown}, player=${player.username || "?"})`);
 
         let radius = 5;
         let centerX = player.getX();

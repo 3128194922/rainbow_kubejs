@@ -710,4 +710,41 @@ CuriosJSEvents.registerRenderer(event => {
             }
         )
     })
+
+    // ==========================================
+    // 🏹 箭袋(rainbow:quiver) - 采用人体模型渲染，渲染全部部位
+    // 素材：assets/rainbow/textures/models/armor/sk1.png
+    // 说明：renderLayerParent.getModel() 返回实体主模型(动画已由主渲染设置)，
+    //       蹲下姿态由模型自身处理，无需 translateIfSneaking（避免双重下移）
+    // ==========================================
+    event.register(
+        'rainbow:quiver',
+        context => {
+            let {
+                stack,
+                slotContext,
+                matrixStack,
+                renderLayerParent,
+                renderTypeBuffer,
+                light
+            } = context
+
+            try {
+                // 实体当前人体模型（HumanoidModel，动画已由主渲染设置），渲染全部部位
+                let model = renderLayerParent.getModel()
+
+                matrixStack.pushPose()
+                try {
+                    // 使用全身纹理渲染
+                    let texture = new ResourceLocation('rainbow', 'textures/models/armor/sk1.png')
+                    let vertexConsumer = renderTypeBuffer.getBuffer($RenderType.entityCutoutNoCull(texture))
+                    model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0, 1.0, 1.0, 1.0)
+                } finally {
+                    matrixStack.popPose()
+                }
+            } catch (e) {
+                console.error('[rainbow:quiver] curios渲染失败: ' + e)
+            }
+        }
+    )
 })

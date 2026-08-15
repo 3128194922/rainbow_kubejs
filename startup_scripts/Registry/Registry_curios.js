@@ -447,7 +447,7 @@ StartupEvents.registry('item', event => {
                     ev.modify("generic.attack_damage", "despair_insignia", 100.0, "addition");
                 })
                 .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
+                    let entity = slotContext.entity();w
 
                     if (entity == null) return;
 
@@ -1990,52 +1990,6 @@ StartupEvents.registry('item', event => {
             .tag("curios:charm")
             .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                // ================================
-                // 💪 属性加成：endtick 未过期 → 攻击+5、护甲+5
-                // ================================
-                .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-                    let stack = ev.stack;
-                    if (stack == null) return;
-
-                    let tag = stack.getOrCreateTag();
-                    let endtick = tag.getLong("endtick");
-                    // 未写入过 / 已过期 → 不加成
-                    if (endtick <= 0) return;
-                    if (player.level.gameTime >= endtick) return;
-
-                    ev.modify("minecraft:generic.attack_damage", "whistle_active_buff_damage", 5.0, "addition");
-                    ev.modify("minecraft:generic.armor", "whistle_active_buff_armor", 5.0, "addition");
-                })
-                // ================================
-                // ⏱️ curioTick：检测 endtick 是否过期，过期清 NBT；状态变化时翻转 update 通知重算属性
-                // ================================
-                .curioTick((slotContext, stack) => {
-                    let player = slotContext.entity();
-                    if (player == null) return;
-                    if (player.level.isClientSide()) return;
-
-                    let tag = stack.getOrCreateTag();
-                    let endtick = tag.getLong("endtick");
-                    let expired = endtick <= 0 || player.level.gameTime >= endtick;
-
-                    if (expired) {
-                        if (endtick > 0) {
-                            tag.remove("endtick");
-                        }
-                        // 已过期状态 → 确保 update 为 false（不触发重算）
-                        if (tag.getBoolean("update")) {
-                            tag.putBoolean("update", false);
-                        }
-                        return;
-                    }
-
-                    // 未过期（激活中）→ 翻转 update 触发 Curios 属性重算
-                    if (!tag.getBoolean("update")) {
-                        tag.putBoolean("update", true);
-                    }
-                })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return false;

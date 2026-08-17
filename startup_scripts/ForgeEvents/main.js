@@ -65,7 +65,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     //  自定义属性流派
     customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
-    // 核心充能逻辑
+    // 核心充能逻辑 (含狂怒面具：每累计100点伤害获得冷却缩减效果)
     handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
     }
     catch(e)
@@ -106,6 +106,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
 
     try
     {
+
     // 玩家受伤后
     onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
@@ -114,6 +115,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
 
     // 实体受伤后
     onEntityDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
+
+    // 圣经伤害抵消（纹饰盔甲每件 -1 伤害，最多 -4，最低为 0）
+    handleTheBible(event, attacker, victim, source);
     }
     catch(e)
     {

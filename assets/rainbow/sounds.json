@@ -97,5 +97,11 @@
 	"sounds": [
 	  "rainbow:prayer"
 	]
+  },
+	"voice.super_hormone": {
+	"subtitle": "sounds.rainbow.super_hormone",
+	"sounds": [
+	  "rainbow:super_hormone"
+	]
   }
 }

@@ -1,0 +1,14 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+      "layer0": "rainbow:item/fury_mask_off"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "kubejs:energy": 1.0
+            },
+            "model": "rainbow:item/fury_mask_on"
+        }
+    ]
+}

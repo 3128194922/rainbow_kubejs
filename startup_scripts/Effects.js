@@ -13,9 +13,9 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial() // 标记为有益效果
         .color(0xFFFF00) // 设置颜色为黄色
     // 标记：有害，红色
-    event.create("rainbow:tag")
+    /*event.create("rainbow:tag")
         .harmful()
-        .color(0xFF0000)
+        .color(0xFF0000)*/
     // 曼巴：有益，淡黄色
     event.create("rainbow:manba")
         .beneficial() // 标记为有益效果
@@ -169,4 +169,10 @@ StartupEvents.registry("mob_effect", event => {
     .beneficial()
     .color(0x556B2F)
     .modifyAttribute("moreattribute:no_collision", "void", 1, "addition")
+    
+    //冷却缩减
+    event.create("rainbow:cooldowns_reduction")
+    .beneficial()
+    .color(0x556B2F)
+    .modifyAttribute("moreattribute:cooldown_reduction", "cooldowns_reduction", 0.1, "multiply_total")
 });

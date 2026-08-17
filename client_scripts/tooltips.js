@@ -116,7 +116,14 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.red("已吞噬剑数:").append(Text.yellow(`${count}`)));
     })*/
     event.addAdvanced('rainbow:berserk_emblem', (item, advanced, text) => {
-            text.add(1, Text.aqua("攻击半血以下的实体伤害翻倍"));
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("消耗的心之容器越多，加成越高"));
+            text.add(2, Text.aqua("每个空容器(半颗心)："));
+            text.add(3, Text.aqua("+0.8 攻击伤害 / +1.5 护甲"));
+            text.add(4, Text.aqua("攻击半血以下的实体伤害翻倍"));
+        }
     })
     /*event.addAdvanced('rainbow:resilience_syringe', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -150,9 +157,9 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua(`幸运 = 解锁比例×25（100%解锁 = +25幸运）`));
         }
     })
-    event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {
         text.add(1, Text.aqua("每10s标记周围实体,被标记实体受到远程伤害翻倍"));
-    })
+    })*/
     event.addAdvanced('rainbow:mining_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("+3时运"));
         text.add(2, Text.aqua("高亮显示附近的战利品箱子"));
@@ -294,14 +301,14 @@ ItemEvents.tooltip((event) => {
             //text.add(3, Text.red("联动血战沙场之证"));
         }
     })
-    event.addAdvanced('rainbow:golden_piggy_charm', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:golden_piggy_charm', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("猪灵不会攻击你"));
             text.add(2, Text.aqua("无敌帧延长到2s"));
         }
-    })
+    })*/
     event.addAdvanced('rainbow:monster_meat', (item, advanced, text) => {
         text.remove(0)
         if (Client.player && Client.player.hasEffect('rainbow:monster')) {
@@ -353,6 +360,14 @@ ItemEvents.tooltip((event) => {
         let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
         let color = energy >= 100 ? "§a" : "§e";
         text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
+    })
+
+    // 狂怒面具
+    event.addAdvanced('rainbow:fury_mask', (item, advanced, text) => {
+        let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
+        let color = energy >= 100 ? "§a" : "§e";
+        text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
+        text.add(2, Text.aqua(`造成伤害充能，每满100点伤害获得冷却缩减 (等级2，5秒)`));
     })
 
     const machine_name ={
@@ -549,12 +564,13 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("根据穿戴的盔甲纹饰提供属性加成"));
-            text.add(2, Text.aqua("加成效果受魔法伤害属性影响"));
-            text.add(3, Text.gold("技能：释放圣经之力"));
-            text.add(4, Text.aqua("向外扩散金色冲击波"));
-            text.add(5, Text.aqua("推开周围实体"));
-            text.add(6, Text.aqua("每次脉冲恢复 100 血量"));
+            text.add(1, Text.aqua("根据穿戴的纹饰盔甲数量提供伤害抵消"));
+            text.add(2, Text.aqua("每件纹饰盔甲抵消 1 点伤害（最多 4 件）"));
+            text.add(3, Text.aqua("受到伤害最低为 0"));
+            text.add(4, Text.gold("技能：释放圣经之力"));
+            text.add(5, Text.aqua("向外扩散金色冲击波"));
+            text.add(6, Text.aqua("推开周围实体"));
+            text.add(7, Text.aqua("每次脉冲恢复 100 血量"));
         }
     })
     event.addAdvanced('rainbow:mini_moon', (item, advanced, text) => {
@@ -579,13 +595,7 @@ ItemEvents.tooltip((event) => {
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     event.addAdvanced('rainbow:clawofhorus', (item, advanced, text) => {
-        text.add(1, Text.gray("按[SHIFT]查看详细"));
-        if (event.shift) {
-            text.remove(1)
-            text.add(1, Text.aqua("隐匿时获得暴击率与暴击伤害加成"));
-            text.add(2, Text.aqua("潜行/隐身/少穿盔甲可扩大隐匿范围"));
-            text.add(3, Text.aqua("被索敌发现时加成暂时失效"));
-        }
+        text.add(1, Text.aqua("隐匿时获得暴击率与暴击伤害加成"));
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
         text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));
@@ -727,7 +737,7 @@ ItemEvents.tooltip((event) => {
         }
     })
     // 乌鸦之心
-    event.addAdvanced('rainbow:crow_heart', (item, advanced, text) => {
+    /*event.addAdvanced('rainbow:crow_heart', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -735,7 +745,7 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("每个空容器(半颗心)："));
             text.add(3, Text.aqua("+0.8 攻击伤害 / +1.5 护甲"));
         }
-    })
+    })*/
     // ==========================================
     // ✨ MysticArtifacts 奇器玄兵 物品介绍
     // ==========================================
@@ -1017,16 +1027,30 @@ ItemEvents.tooltip((event) => {
         }
     })
     // 兽性面具
+    // 机制：1) 击杀敌人治疗自己(4点) 2) 受伤概率获得伤害吸收(5秒4点吸收心，幸运8时最大25%)
     event.addAdvanced('rainbow:beast_mask', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("▸ 击杀敌人治疗自己"));
-            text.add(2, Text.aqua("▸ 受伤概率获得伤害吸收"));
+            text.add(1, Text.aqua("▸ 击杀敌人治疗自己 4 点生命"));
+            text.add(2, Text.aqua("▸ 受伤时概率获得伤害吸收(5秒)"));
+            text.add(3, Text.aqua("  触发极限闪避恢复10血量"));
+            text.add(4, Text.gold("  幸运值 8 时概率最大(25%)"));
         }
     })
-    // 泣血之刃
-    event.addAdvanced('rainbow:bloody_blade', (item, advanced, text) => {
+    // 多心经
+    // 机制：佩戴获得 +10% 冷却缩减（乘算）
+    event.addAdvanced('rainbow:the_heart_sutra', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 佩戴后获得 +10% 冷却缩减"));
+            text.add(2, Text.aqua("▸ 所有技能冷却时间缩短"));
+            text.add(3, Text.aqua("  效果为乘算，可与其他减CD叠加"));
+        }
+    })
+    // 抽血袋
+    event.addAdvanced('rainbow:blood_collection_bag', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
@@ -1034,5 +1058,14 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("▸ 背刺判定需处于隐匿状态且从目标背后攻击"));
             text.add(3, Text.gold("▸ 回血量基于背刺最终伤害（伤害×2后）"));
         }
+    })
+    // 先祖之信
+    // 机制：免疫一次致死伤害后进行判定
+    event.addAdvanced('mysticartifacts:ancestors_letter', (item, advanced, text) => {
+        text.add(1, Text.gray("先祖的低语仍在信纸间流转……"));
+        text.add(2, Text.gray("正常：免疫一次致死伤害并进行判定——"));
+        text.add(3, Text.gold("50%【美德】受伤-25%，致死时75%拒绝死亡并回满血，持续一个游戏日"));
+        text.add(4, Text.darkRed("50%【折磨】受伤+15%，受伤时25%直接死亡，且无法取下"));
+        text.add(5, Text.gray("死亡或睡觉后回归平静。"));
     })
 })

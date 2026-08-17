@@ -63,7 +63,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
     }
 
     // 被标记目标（tag）受到远程攻击双倍伤害
-    if (victim.hasEffect("rainbow:tag") && range_damage.indexOf(source.getType().toString()) != -1) {
+    /*if (victim.hasEffect("rainbow:tag") && range_damage.indexOf(source.getType().toString()) != -1) {
         event.setAmount(event.getAmount() * 2);
-    }
+    }*/
 }

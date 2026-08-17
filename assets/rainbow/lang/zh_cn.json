@@ -166,7 +166,10 @@
 	"item.rainbow.field_guide_boss": "图鉴·BOSS篇",
 	"item.rainbow.wandering_gummy_pack": "流浪软糖包",
 	"item.rainbow.beast_mask": "兽性面具",
-	"item.rainbow.bloody_blade": "泣血之刃",
+	"item.rainbow.blood_collection_bag": "抽血袋",
+	"item.rainbow.super_hormone": "超级激素",
+	"item.rainbow.the_heart_sutra": "摩诃般若波罗蜜多心经",
+	"item.rainbow.fury_mask": "狂怒面具",
 	
 	"attribute.name.generic.extra_summoning": "额外召唤",
 	"attribute.name.generic.boom_damage": "爆炸伤害",
@@ -178,5 +181,8 @@
 	"effect.rainbow.off_work_time": "召唤物存在时间",
 	"effect.rainbow.bitter.off_work_time": "召唤物存在时间",
 	"effect.rainbow.void": "虚化",
-	"effect.rainbow.bitter.void": "免疫伤害"
+	"effect.rainbow.bitter.void": "免疫伤害",
+	"rainbow.zombie_horde": "最后的大队-极恶中队",
+	"rainbow.zombie_horde.assault": "亡灵突击队",
+	"rainbow.zombie_horde.wicked": "极恶者"
 }

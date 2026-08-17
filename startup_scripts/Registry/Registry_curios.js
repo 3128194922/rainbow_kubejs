@@ -304,6 +304,42 @@ StartupEvents.registry("item", (event) => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .modifyAttribute(ev => {
+                    let player = ev.slotContext.entity();
+                    if (player == null) return;
+                    if (!player.isPlayer()) return;
+
+                    let health = player.getHealth();
+                    let maxHealth = player.getMaxHealth();
+
+                    // 空容器数 = 血量上限 - 当前血量（向下取整，半颗心计为整数容器）
+                    let missing = Math.floor(maxHealth - health);
+                    if (missing < 0) missing = 0;
+
+                    ev.modify("generic.attack_damage", "berserk_emblem", 0.8 * missing, "addition");
+                    ev.modify("generic.armor", "berserk_emblem", 1.5 * missing, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 翻转 update 通知 CuriosJS 重新计算属性（配合 modifyAttribute 实时刷新）
+                    if (stack.nbt == null) {
+                        stack.nbt = {};
+                    }
+                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:berserk_emblem')) {
+                        return false;
+                    }
+                    return true;
+                })
+        )
 });
 
 
@@ -394,7 +430,7 @@ StartupEvents.registry('item', event => {
 })
 
 // 曙旼始灵
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:daawnlight_spirit_origin')
         .rarity("epic")
         .maxStackSize(1)
@@ -429,7 +465,7 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
         );
-});
+});*/
 
 
 // 极限之证
@@ -543,161 +579,14 @@ StartupEvents.registry('item', event => {
         )
 })
 
-// ==========================================
-// 纹饰属性配置
-// ==========================================
-const BIBLE_TRIM_ATTRIBUTES = {
-    "caverns_and_chasms:rim": [
-        { id: "rim_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.1 },
-        { id: "rim_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.3, scale: 0.05 },
-        { id: "rim_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.02, scale: 0.005 }
-    ],
-    "minecraft:vex": [
-        { id: "vex_attack", attribute: "minecraft:generic.attack_damage", base: 0.25, scale: 0.05 },
-        { id: "vex_crit_rate", attribute: "attributeslib:crit_chance", base: 0.005, scale: 0.001 },
-        { id: "vex_crit_dmg", attribute: "attributeslib:crit_damage", base: 0.02, scale: 0.005 }
-    ],
-    "minecraft:raiser": [
-        { id: "raiser_health", attribute: "minecraft:generic.max_health", base: 1.0, scale: 0.2 },
-        { id: "raiser_heal", attribute: "attributeslib:healing_received", base: 0.01, scale: 0.005 },
-        { id: "raiser_ghost", attribute: "attributeslib:ghost_health", base: 0.5, scale: 0.1 }
-    ],
-    "minecraft:sentry": [
-        { id: "sentry_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.15 },
-        { id: "sentry_prot_shred", attribute: "attributeslib:prot_shred", base: 0.01, scale: 0.003 },
-        { id: "sentry_step", attribute: "forge:step_height_addition", base: 0.05, scale: 0.01 }
-    ],
-    "minecraft:shaper": [
-        { id: "shaper_reach", attribute: "forge:block_reach", base: 0.3, scale: 0.05 },
-        { id: "shaper_mining", attribute: "attributeslib:mining_speed", base: 0.02, scale: 0.005 },
-        { id: "shaper_exp", attribute: "attributeslib:experience_gained", base: 0.02, scale: 0.005 }
-    ],
-    "minecraft:host": [
-        { id: "host_lifesteal", attribute: "attributeslib:life_steal", base: 0.005, scale: 0.001 },
-        { id: "host_overheal", attribute: "attributeslib:overheal", base: 0.01, scale: 0.003 },
-        { id: "host_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.005, scale: 0.001 }
-    ],
-    "minecraft:silence": [
-        { id: "silence_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.001 },
-        { id: "silence_stealth", attribute: "environmental:stealth", base: 0.2, scale: 0.05 },
-        { id: "silence_speed", attribute: "minecraft:generic.movement_speed", base: 0.002, scale: 0.0005 }
-    ],
-    "atmospheric:petrified": [
-        { id: "petri_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.5, scale: 0.1 },
-        { id: "petri_armor", attribute: "minecraft:generic.armor", base: 0.5, scale: 0.08 },
-        { id: "petri_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.03, scale: 0.005 }
-    ],
-    "caverns_and_chasms:forger": [
-        { id: "forger_mining", attribute: "attributeslib:mining_speed", base: 0.05, scale: 0.01 },
-        { id: "forger_exp", attribute: "attributeslib:experience_gained", base: 0.02, scale: 0.005 },
-        { id: "forger_luck", attribute: "minecraft:generic.luck", base: 0.1, scale: 0.02 }
-    ],
-    "caverns_and_chasms:plate": [
-        { id: "plate_armor", attribute: "minecraft:generic.armor", base: 1.0, scale: 0.15 },
-        { id: "plate_knockback", attribute: "minecraft:generic.knockback_resistance", base: 0.05, scale: 0.01 },
-        { id: "plate_prot_pierce", attribute: "attributeslib:prot_pierce", base: 0.01, scale: 0.002 }
-    ],
-    "netherexp:spirit": [
-        { id: "spirit_magic_dmg", attribute: "caverns_and_chasms:magic_damage", base: 0.2, scale: 0.05 },
-        { id: "spirit_magic_prot", attribute: "caverns_and_chasms:magic_protection", base: 0.1, scale: 0.03 },
-        { id: "spirit_fire_dmg", attribute: "attributeslib:fire_damage", base: 0.1, scale: 0.03 }
-    ],
-    "minecraft:tide": [
-        { id: "tide_swim", attribute: "forge:swim_speed", base: 0.02, scale: 0.005 },
-        { id: "tide_gravity", attribute: "forge:entity_gravity", base: -0.01, scale: -0.002 },
-        { id: "tide_speed", attribute: "minecraft:generic.movement_speed", base: 0.002, scale: 0.0005 }
-    ],
-    "minecraft:rib": [
-        { id: "rib_attack", attribute: "minecraft:generic.attack_damage", base: 0.3, scale: 0.06 },
-        { id: "rib_lifesteal", attribute: "attributeslib:life_steal", base: 0.008, scale: 0.002 },
-        { id: "rib_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.008, scale: 0.002 }
-    ],
-    "minecraft:spire": [
-        { id: "spire_fly_speed", attribute: "minecraft:generic.flying_speed", base: 0.01, scale: 0.003 },
-        { id: "spire_reach", attribute: "forge:entity_reach", base: 0.3, scale: 0.05 },
-        { id: "spire_follow", attribute: "minecraft:generic.follow_range", base: 0.5, scale: 0.1 }
-    ],
-    "atmospheric:druid": [
-        { id: "druid_heal", attribute: "attributeslib:healing_received", base: 0.02, scale: 0.005 },
-        { id: "druid_magic", attribute: "caverns_and_chasms:magic_damage", base: 0.15, scale: 0.04 },
-        { id: "druid_fragrance", attribute: "windswept:fragrance", base: 0.5, scale: 0.1 }
-    ],
-    "atmospheric:apostle": [
-        { id: "apostle_ghost", attribute: "attributeslib:ghost_health", base: 0.8, scale: 0.15 },
-        { id: "apostle_overheal", attribute: "attributeslib:overheal", base: 0.02, scale: 0.005 },
-        { id: "apostle_exp", attribute: "attributeslib:experience_gained", base: 0.03, scale: 0.008 }
-    ],
-    "caverns_and_chasms:core": [
-        { id: "core_attack", attribute: "minecraft:generic.attack_damage", base: 0.3, scale: 0.05 },
-        { id: "core_armor", attribute: "minecraft:generic.armor", base: 0.3, scale: 0.05 },
-        { id: "core_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0008 }
-    ],
-    "caverns_and_chasms:exile": [
-        { id: "exile_arrow_dmg", attribute: "attributeslib:arrow_damage", base: 0.1, scale: 0.03 },
-        { id: "exile_arrow_vel", attribute: "attributeslib:arrow_velocity", base: 0.02, scale: 0.005 },
-        { id: "exile_draw_speed", attribute: "attributeslib:draw_speed", base: 0.01, scale: 0.003 }
-    ],
-    "netherexp:valor": [
-        { id: "valor_attack", attribute: "minecraft:generic.attack_damage", base: 0.35, scale: 0.06 },
-        { id: "valor_crit_rate", attribute: "attributeslib:crit_chance", base: 0.008, scale: 0.002 },
-        { id: "valor_crit_dmg", attribute: "attributeslib:crit_damage", base: 0.03, scale: 0.008 }
-    ],
-    "minecraft:ward": [
-        { id: "ward_toughness", attribute: "minecraft:generic.armor_toughness", base: 0.5, scale: 0.12 },
-        { id: "ward_armor", attribute: "minecraft:generic.armor", base: 0.3, scale: 0.08 },
-        { id: "ward_prot_shred", attribute: "attributeslib:prot_shred", base: 0.015, scale: 0.004 }
-    ],
-    "minecraft:eye": [
-        { id: "eye_reach", attribute: "forge:entity_reach", base: 0.5, scale: 0.08 },
-        { id: "eye_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.0015 },
-        { id: "eye_luck", attribute: "minecraft:generic.luck", base: 0.15, scale: 0.03 }
-    ],
-    "caverns_and_chasms:trim_modifier": [
-        { id: "trim_luck", attribute: "minecraft:generic.luck", base: 0.2, scale: 0.04 },
-        { id: "trim_mining", attribute: "attributeslib:mining_speed", base: 0.03, scale: 0.008 },
-        { id: "trim_step", attribute: "forge:step_height_addition", base: 0.08, scale: 0.015 }
-    ],
-    "caverns_and_chasms:immolate": [
-        { id: "immolate_fire", attribute: "attributeslib:fire_damage", base: 0.2, scale: 0.05 },
-        { id: "immolate_lifesteal", attribute: "attributeslib:life_steal", base: 0.01, scale: 0.003 },
-        { id: "immolate_ca_lifesteal", attribute: "caverns_and_chasms:lifesteal", base: 0.01, scale: 0.003 }
-    ],
-    "minecraft:dune": [
-        { id: "dune_armor", attribute: "minecraft:generic.armor", base: 0.4, scale: 0.1 },
-        { id: "dune_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0005 },
-        { id: "dune_step", attribute: "forge:step_height_addition", base: 0.05, scale: 0.01 }
-    ],
-    "minecraft:coast": [
-        { id: "coast_swim", attribute: "forge:swim_speed", base: 0.03, scale: 0.008 },
-        { id: "coast_gravity", attribute: "forge:entity_gravity", base: -0.015, scale: -0.003 },
-        { id: "coast_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0005 }
-    ],
-    "minecraft:wild": [
-        { id: "wild_speed", attribute: "minecraft:generic.movement_speed", base: 0.004, scale: 0.001 },
-        { id: "wild_attack", attribute: "minecraft:generic.attack_damage", base: 0.2, scale: 0.04 },
-        { id: "wild_dodge", attribute: "attributeslib:dodge_chance", base: 0.005, scale: 0.001 }
-    ],
-    "netherexp:rift": [
-        { id: "rift_reach", attribute: "forge:entity_reach", base: 0.4, scale: 0.08 },
-        { id: "rift_block_reach", attribute: "forge:block_reach", base: 0.4, scale: 0.08 },
-        { id: "rift_knockback", attribute: "minecraft:generic.attack_knockback", base: 0.05, scale: 0.01 }
-    ],
-    "minecraft:snout": [
-        { id: "snout_fire", attribute: "attributeslib:fire_damage", base: 0.15, scale: 0.04 },
-        { id: "snout_armor", attribute: "minecraft:generic.armor", base: 0.4, scale: 0.08 },
-        { id: "snout_attack", attribute: "minecraft:generic.attack_damage", base: 0.2, scale: 0.04 }
-    ],
-    "minecraft:wayfinder": [
-        { id: "wayfinder_speed", attribute: "minecraft:generic.movement_speed", base: 0.003, scale: 0.0008 },
-        { id: "wayfinder_luck", attribute: "minecraft:generic.luck", base: 0.2, scale: 0.04 },
-        { id: "wayfinder_exp", attribute: "attributeslib:experience_gained", base: 0.03, scale: 0.008 }
-    ]
-};
+// 纹饰属性配置已废弃：圣经改为按纹饰盔甲数量提供伤害抵消
+// 伤害抵消逻辑在 startup_scripts/ForgeEvents/handleTheBible.js
 
 // ==========================================
 // 圣经 - 盔甲纹饰祝福
 // ==========================================
-// 根据玩家穿戴的盔甲纹饰和魔法伤害属性动态加成
+// 根据玩家穿戴的纹饰盔甲数量提供伤害抵消（每件 -1，最多 -4，受伤最低为 0）
+// 伤害抵消逻辑在 startup_scripts/ForgeEvents/handleTheBible.js
 StartupEvents.registry('item', event => {
     event.create('rainbow:the_bible')
         .maxDamage(300)
@@ -706,49 +595,6 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
-                .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-
-                    let magicDamage = 0;
-                    try {
-                        magicDamage = player.getAttributeValue("caverns_and_chasms:magic_damage");
-                    } catch (e) {}
-                    if (magicDamage == null) magicDamage = 0;
-
-                    let armorSlots = [
-                        { key: "head", slot: $BIBLE_EQUIP_SLOT.HEAD },
-                        { key: "chest", slot: $BIBLE_EQUIP_SLOT.CHEST },
-                        { key: "legs", slot: $BIBLE_EQUIP_SLOT.LEGS },
-                        { key: "feet", slot: $BIBLE_EQUIP_SLOT.FEET }
-                    ];
-
-                    armorSlots.forEach(slotInfo => {
-                        if (!slotInfo || !slotInfo.slot) return;
-                        let armorItem = player.getItemBySlot(slotInfo.slot);
-                        if (!armorItem || armorItem.isEmpty()) return;
-                        let nbt = armorItem.getNbt();
-                        if (!nbt || !nbt.contains("Trim", 10)) return;
-
-                        let trim = nbt.getCompound("Trim");
-                        if (!trim) return;
-                        let pattern = trim.getString("pattern");
-                        if (!pattern || pattern == "") return;
-
-                        let config = BIBLE_TRIM_ATTRIBUTES[pattern];
-                        if (!config) return;
-
-                        config.forEach(attr => {
-                            if (!attr || !attr.attribute || attr.base == null || attr.scale == null) return;
-                            let amount = attr.base + magicDamage * attr.scale;
-                            if (amount <= 0) return;
-
-                            let uuid = $BIBLE_UUID.nameUUIDFromBytes(new $STRING("bible_trim:" + pattern + ":" + attr.id + ":" + slotInfo.key).getBytes());
-
-                            ev.modify(attr.attribute, uuid, "bible_" + attr.id, amount, "addition");
-                        });
-                    });
-                })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
                     stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
@@ -1275,7 +1121,7 @@ StartupEvents.registry('item', event => {
 // 乌鸦之心
 // 机制：空的心之容器越多（空容器数 = 血量上限 - 当前血量，半颗心算 1 个容器），
 //       每 1 个空容器提供 +0.8 攻击力、+1.5 护甲，血量越少加成越高
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:crow_heart')
         .rarity("epic")
         .maxStackSize(1)
@@ -1317,7 +1163,7 @@ StartupEvents.registry('item', event => {
                 })
         )
 })
-
+*/
 // ==========================================
 // 🦾 赛博义体系统 (Cyberware)
 // ==========================================
@@ -2804,10 +2650,10 @@ StartupEvents.registry('item', event => {
         )
 })
 
-// 泣血之刃
+// 采血袋
 // 机制：触发背刺时，恢复背刺伤害50%的血量（背刺判定复用 handleBackstabDamage.js）
 StartupEvents.registry('item', event => {
-    event.create('rainbow:bloody_blade')
+    event.create('rainbow:blood_collection_bag')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -2816,7 +2662,63 @@ StartupEvents.registry('item', event => {
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
-                    if (hasCurios(entity, 'rainbow:bloody_blade')) return false;
+                    if (hasCurios(entity, 'rainbow:blood_collection_bag')) return false;
+                    return true;
+                })
+        )
+})
+
+//超级激素
+StartupEvents.registry('item', event => {
+    event.create('rainbow:super_hormone')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:super_hormone')) return false;
+                    return true;
+                })
+        )
+})
+
+//多心经
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_heart_sutra')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .addAttribute('moreattribute:cooldown_reduction', 'the_heart_sutra', 0.1, 'multiply_total')
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:the_heart_sutra')) return false;
+                    return true;
+                })
+        )
+})
+
+//狂怒面具
+// 机制：造成伤害可累计充能 (每满100点伤害)，满100点获得冷却缩减效果 (rainbow:cooldowns_reduction 等级2，持续5秒)
+// 伤害累计逻辑在 startup_scripts/ForgeEvents/handleCoreCharging.js 的 handleCoreCharging() 内
+StartupEvents.registry('item', event => {
+    event.create('rainbow:fury_mask')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .tooltip("§7造成伤害可充能 (每100点伤害)")
+        .tooltip("§7满100点伤害时获得冷却缩减 (等级2，持续5秒)")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:fury_mask')) return false;
                     return true;
                 })
         )

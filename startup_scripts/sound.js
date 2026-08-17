@@ -32,6 +32,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.tenshi")
 
     event.create("rainbow:voice.prayer")
+
+    event.create("rainbow:voice.super_hormone")
 })
 
 // 注册物品

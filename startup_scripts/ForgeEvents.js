@@ -371,3 +371,117 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVi
         console.log(e);
     }
 });
+
+//极限闪避事件
+ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent", event => {
+    let player = event.getPlayer();
+    if (!player || !player.isPlayer()) return;
+    if(hasCurios(player,"rainbow:beast_mask"))
+    {
+        player.heal(10);
+    }
+});
+
+// 盾反判定：举盾时间不超过10tick即判定为盾反
+/*getDamageSource()	DamageSource	这次攻击的伤害来源
+getOriginalBlockedDamage()	float	原始格挡伤害值（等于原始攻击伤害）
+getBlockedDamage()	float	当前实际格挡的伤害值（可被 setter 修改）
+shieldTakesDamage()	boolean	盾牌是否受耐久损耗
+setBlockedDamage(float)	void	修改格挡伤害量（不可低于 0 或超过原始值）
+setShieldTakesDamage(boolean)	void	控制盾牌是否掉耐久*/
+// 无法格挡的伤害类型列表（msgId，模组伤害类型可能带"."，如 "alexscaves.irradiated"）
+const UNBLOCKABLE_DAMAGE_TYPES = [
+    "magic",              // 魔法伤害（喷溅药水等）
+    "indirect_magic",     // 间接魔法伤害（唤魔者尖刺等）
+    "sonic_boom",         // 监守者音波
+]
+
+// 获取伤害类型ID：参考 Utils.js 的 DamageSorce()（source.getType()），失败时从 toString() 解析
+function getDamageTypeId(ds) {
+    try {
+        let t = ds.getType()
+        if (t) return String(t)
+    } catch (ignored) {}
+    try {
+        let m = ds.getMsgId()
+        if (m) return String(m)
+    } catch (ignored) {}
+    // 回退：toString() 格式为 "DamageSource (arrow)"，括号内即伤害类型
+    let s = String(ds)
+    return s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf(")"))
+}
+
+ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', event => {
+    try {
+        let player = event.getEntity();
+        if (!player.isPlayer()) return;
+        if (player.level.clientSide) return;
+
+        // 列表内的伤害类型无法被盾牌格挡
+        let damageType = getDamageTypeId(event.getDamageSource());
+        if (UNBLOCKABLE_DAMAGE_TYPES.indexOf(damageType) >= 0) {
+            event.setBlockedDamage(0);
+            event.setShieldTakesDamage(false);
+            return;
+        }
+
+        // 举盾不超过10tick → 盾反
+        if (player.getTicksUsingItem() <= 10) {
+            //player.tell("盾反成功！");
+            event.setShieldTakesDamage(false);
+
+            let px = player.getX();
+            let py = player.getY();
+            let pz = player.getZ();
+            let server = player.server;
+
+            // ===== 打击感反馈 =====
+            // 音效三连：高频金属瞬态(铁砧) + 盾牌格挡 + 重击闷响，音高随机微调让每次盾反有变化
+            let clangPitch = 1.7 + Math.random() * 0.3;
+            server.runCommandSilent(`/playsound minecraft:block.anvil.land player @a ${px} ${py} ${pz} 0.35 ${clangPitch}`);
+            server.runCommandSilent(`/playsound minecraft:item.shield.block player @a ${px} ${py} ${pz} 1.0 1.2`);
+            server.runCommandSilent(`/playsound minecraft:entity.player.attack.knockback player @a ${px} ${py} ${pz} 0.5 0.9`);
+
+            // 粒子三连：中心爆闪 + 暴击火花 + 环形冲击波（低扩散速度形成扩散环）
+            server.runCommandSilent(`particle minecraft:explosion ${px} ${py + 1.2} ${pz} 0.3 0.3 0.3 0.1 3`);
+            server.runCommandSilent(`particle minecraft:crit ${px} ${py + 1} ${pz} 0.6 0.6 0.6 0.6 40`);
+            server.runCommandSilent(`particle minecraft:cloud ${px} ${py + 0.8} ${pz} 1.3 0.1 1.3 0.25 25`);
+
+            // 白色快速扩散光环（dyeing，同迷你月球用法）
+            //server.runCommandSilent(`/dyeing area add scale shield_parry ${player.getUuid().toString()} -2 0 -2 2 2 2 90FFFFFF 0.4 2.0 1.0 1.0 4 1 remove`);
+
+            // 击退范围内敌人（参考 Skillwheel.js 迷你月球）
+            let radius = 4;
+            let centerX = px;
+            let centerY = py + 0.5;
+            let centerZ = pz;
+            let area = player.boundingBox.inflate(radius);
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (!isEnemy(player, entity)) return;
+
+                let dx = entity.getX() - centerX;
+                let dy = entity.getY() - centerY;
+                let dz = entity.getZ() - centerZ;
+                let distanceSq = dx * dx + dy * dy + dz * dz;
+                if (distanceSq <= 0 || distanceSq > radius * radius) return;
+
+                let distance = Math.sqrt(distanceSq);
+                let motionX = dx / distance;
+                let motionZ = dz / distance;
+                // 水平推开 + 轻微上抛
+                entity.setDeltaMovement(new Vec3d(motionX * 1.4, 0.35, motionZ * 1.4));
+                entity.hurtMarked = true;
+                // 反伤：受击红闪 + 受击音，强化命中反馈
+                entity.attack(player.damageSources().playerAttack(player), 3);
+                // 短暂硬直：1秒缓慢IV，敌人被盾反后明显顿住
+                server.runCommandSilent(`effect give ${entity.getUuid()} minecraft:slowness 1 3 true`);
+            })
+        }
+    } catch (e) {
+        console.log("盾反判定出现问题：");
+        console.log(e);
+    }
+});

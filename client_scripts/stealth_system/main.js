@@ -59,6 +59,13 @@ ClientEvents.tick(event => {
     try {
         // 目标透明度：仅当 isStealth 为 true 且按住潜行键(Shift)时才显示黑边
         let effectiveTarget = (lastReceivedState === 1 && player.isShiftKeyDown()) ? 1 : 0;
+
+        // 兼容超级激素：当其激活时（global.superHormoneActive），超级激素优先级更高，
+        // 强制潜行黑边淡出，避免两种边框同时叠加显示
+        if (global.superHormoneActive) {
+            effectiveTarget = 0;
+        }
+
         if (stealthTargetAlpha !== effectiveTarget) {
             stealthTargetAlpha = effectiveTarget;
         }

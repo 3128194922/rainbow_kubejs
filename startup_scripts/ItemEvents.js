@@ -487,6 +487,24 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
     }
 });*/
 
+// 单片眼镜
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    let item = event.getItemStack();
+    let slotType = event.getSlotType();
+
+    if (item.id === 'caverns_and_chasms:monocle' && slotType === 'head') {
+        event.addModifier(
+            "attributeslib:crit_chance",
+            new AttributeModifier(
+                '608a0e60-8e1a-4878-9832-9e737079e301',
+                'monocle',
+                0.5,
+                "multiply_base"
+            )
+        )
+    }
+});
+
 // 银 套装 魔法流派
 ItemEvents.modification(event => {
    let items = ['caverns_and_chasms:silver_helmet','caverns_and_chasms:silver_chestplate','caverns_and_chasms:silver_leggings', 'caverns_and_chasms:silver_boots']

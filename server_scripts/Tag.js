@@ -10,7 +10,7 @@ ServerEvents.tags("item", event => {
     })
 
     // 饰品相关标签
-    event.add("curios:charm",['tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
+    event.add("curios:charm",['mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
     ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket','caverns_and_chasms:tinplate','caverns_and_chasms:saddled_egg','species:wicked_swapper',
     'oreganized:gargoyle','species:kinetic_core','windswept:dream_catcher','mysticartifacts:witch_pot','species:smoke_bomb'])
     //event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
@@ -19,13 +19,13 @@ ServerEvents.tags("item", event => {
     //event.add('offhandattack:can_hands_use',[''])
 
     // 技能饰品
-    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori',
+    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
     'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb'])
 
-    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori',
+    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',

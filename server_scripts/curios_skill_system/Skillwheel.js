@@ -358,6 +358,19 @@ registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submen
     }
 });
 
+// --- 狂怒面具 ---
+// 伤害累计满 100 (NBT "Energy") 后触发：冷却缩减等级2 (amplifier=1)，持续5秒
+registerSkill('rainbow:fury_mask', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    let furyDamage = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
+    if (furyDamage >= 100 && !player.cooldowns.isOnCooldown("rainbow:fury_mask")) {
+        player.potionEffects.add("rainbow:cooldowns_reduction", SecoundToTick(5), 2, false, false);
+        if (!itemStack.nbt) itemStack.nbt = {};
+        itemStack.nbt.putDouble("Energy", 0);
+        player.cooldowns.addCooldown("rainbow:fury_mask", 200);
+        event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
+    }
+});
+
 // --- 幻影之躯 ---
 /*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let headItem = player.getItemBySlot("head");
@@ -1154,6 +1167,30 @@ registerSkill('mysticartifacts:witch_pot', (event, player, itemStack, isSubmenu,
 
     player.cooldowns.addCooldown('mysticartifacts:witch_pot', SecoundToTick(30));
 });
+
+// --- 超级激素 ---
+registerSkillSound('rainbow:super_hormone', 'rainbow:voice.super_hormone');
+registerSkill('rainbow:super_hormone', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.isClientSide) return;
+    try {
+        // 恢复 1000 血量
+        player.heal(1000);
+
+        // 全局时缓 50%（参考鸦羽骨哨，使用 TimeController 的 global 模式，持续 20 秒/400 tick）
+        let server = player.server;
+        let durationTicks = 20 * 20 / 2;
+        server.runCommandSilent("/timecontroller global " + player.username + " 100 " + durationTicks);
+
+        // 迅捷效果（与时缓同步持续 20 秒，等级 2，环境粒子，无粒子显示）
+        player.potionEffects.add("minecraft:speed", durationTicks, 2, true, false);
+
+        // 通知客户端渲染黄色视角边框（与潜行黑边互斥，超级激素优先）
+        player.sendData("super_hormone_sync", { duration: durationTicks });
+    } catch (err) {
+        console.log("[超级激素] 错误: " + err);
+    }
+});
+
 // ==========================================
 // 主入口逻辑
 // ==========================================

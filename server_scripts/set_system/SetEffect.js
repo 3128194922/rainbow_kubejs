@@ -449,7 +449,7 @@ function registerSet(id, config) {
 // ==========================================
 
 // ✅ 示例套装：铁甲套装（可修改或删除）
-registerSet('iron_armor_example', {
+/*registerSet('iron_armor_example', {
     name: '铁甲套装',
     slots: [
         { slot: 'HEAD', item: 'minecraft:iron_helmet' },
@@ -474,7 +474,7 @@ registerSet('iron_armor_example', {
             ]
         }
     ]
-})
+})*/
 
 // ✅ 琥珀金套装：2件+1动能伤害，4件额外+3动能伤害
 registerSet('oreganized:electrum', {

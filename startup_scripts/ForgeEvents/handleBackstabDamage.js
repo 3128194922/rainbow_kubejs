@@ -41,7 +41,7 @@ function handleBackstabDamage(event, attacker, victim) {
         event.setAmount(originalAmount * 2);
 
         // 泣血之刃：背刺时恢复背刺伤害50%的血量
-        if (hasCurios(attacker, 'rainbow:bloody_blade')) {
+        if (hasCurios(attacker, 'rainbow:blood_collection_bag')) {
             let healAmount = event.getAmount() * 0.5;
             attacker.heal(healAmount);
         }

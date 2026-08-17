@@ -112,7 +112,7 @@
 | `rainbow:infernotooth_necklace` | 狱牙吊坠，穿甲 +8，击杀储存灵魂，手持 spectralibur 时每秒转移灵魂 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L350-L352](client_scripts/tooltips.js#L350-L352) |
 | `rainbow:treasure_necklace` | 宝箱吊坠，击杀积累能量，满 100 消耗耐久产出战利品 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L439-L444](client_scripts/tooltips.js#L439-L444) |
 | `rainbow:the_wafer` | 圣饼，减免 10% 所受伤害，延长无敌帧至 3s | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L202-L209](client_scripts/tooltips.js#L202-L209) |
-| `rainbow:the_bible` | 圣经，根据穿戴的盔甲纹饰和魔法伤害属性动态提供属性加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L437-L444](client_scripts/tooltips.js#L437-L444) |
+| `rainbow:the_bible` | 圣经，根据穿戴的纹饰盔甲数量提供伤害抵消（每件 -1，最多 -4，受伤最低为 0） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害抵消：[startup_scripts/ForgeEvents/handleTheBible.js](startup_scripts/ForgeEvents/handleTheBible.js)，tooltip：[client_scripts/tooltips.js#L563-L574](client_scripts/tooltips.js#L563-L574) |
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
 | `rainbow:bottled_lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
 | `rainbow:soul_diamond` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
@@ -126,7 +126,7 @@
 | `rainbow:gritty_heart` | 沙蚀之心，技能：召唤幼年尸壳佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:gunk_heart` | 粘液之心，技能：召唤幼年腐烂僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:rotten_heart` | 腐烂之心，技能：召唤幼年僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
-| `rainbow:bloody_blade` | 泣血之刃，触发背刺时恢复背刺伤害 50% 的血量（需隐匿状态+背面攻击） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，治疗逻辑：[startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js)，tooltip：[client_scripts/tooltips.js#L1013-L1019](client_scripts/tooltips.js#L1013-L1019) |
+| `rainbow:blood_collection_bag` | 泣血之刃，触发背刺时恢复背刺伤害 50% 的血量（需隐匿状态+背面攻击） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，治疗逻辑：[startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js)，tooltip：[client_scripts/tooltips.js#L1013-L1019](client_scripts/tooltips.js#L1013-L1019) |
 
 ### 食物
 
@@ -578,41 +578,14 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 ## 盔甲纹饰祝福系统 (圣经)
 
-> 实现：[startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) 中 `handleBibleEffects()` 函数
+> 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)
+> 伤害抵消：[startup_scripts/ForgeEvents/handleTheBible.js](startup_scripts/ForgeEvents/handleTheBible.js)
 
-`rainbow:the_bible` 根据玩家穿戴的盔甲纹饰和魔法伤害属性提供加成，共支持 25+ 种纹饰：
+`rainbow:the_bible` 根据玩家穿戴的纹饰盔甲数量（复杂度，最大 4）提供伤害抵消：
 
-| 纹饰 | 加成属性 |
-|------|----------|
-| rim | 护甲 + 韧性 + 击退抗性 |
-| vex | 攻击力 + 暴击率 + 暴击伤害 |
-| raiser | 生命值 + 治疗加成 + 幽灵生命 |
-| sentry | 护甲 + 保护穿透 + 步高 |
-| shaper | 触及距离 + 挖掘速度 + 经验加成 |
-| host | 生命偷取 + 过量治疗 + C&C 生命偷取 |
-| silence | 闪避 + 潜行 + 移速 |
-| petrified | 韧性 + 护甲 + 击退抗性 |
-| forger | 挖掘速度 + 经验 + 幸运 |
-| plate | 护甲 + 击退抗性 + 保护穿透 |
-| spirit | 魔法伤害 + 魔法保护 + 火焰伤害 |
-| tide | 游泳速度 + 重力减免 + 移速 |
-| rib | 攻击力 + 生命偷取 |
-| spire | 飞行速度 + 触及距离 + 跟随范围 |
-| druid | 治疗加成 + 魔法伤害 + 芬芳 |
-| apostle | 幽灵生命 + 过量治疗 + 经验 |
-| core | 攻击力 + 护甲 + 移速 |
-| exile | 箭矢伤害 + 箭矢速度 + 拉弓速度 |
-| valor | 攻击力 + 暴击率 + 暴击伤害 |
-| ward | 韧性 + 护甲 + 保护穿透 |
-| eye | 触及距离 + 闪避 + 幸运 |
-| trim_modifier | 幸运 + 挖掘速度 + 步高 |
-| immolate | 火焰伤害 + 生命偷取 |
-| dune | 护甲 + 移速 + 步高 |
-| coast | 游泳速度 + 重力减免 + 移速 |
-| wild | 移速 + 攻击力 + 闪避 |
-| rift | 触及距离 + 攻击击退 |
-| snout | 火焰伤害 + 护甲 + 攻击力 |
-| wayfinder | 移速 + 幸运 + 经验 |
+- 每穿戴 1 件带纹饰 (Trim) 的盔甲，受到的伤害 -1
+- 4 件全带纹饰时，受到的所有伤害 -4
+- 抵消后伤害最低为 0
 
 ---
 

@@ -34,9 +34,15 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.PlayerEvent$BreakSpe
 
         //if (entity.level.clientSide) return; // 有bug，暂时注释
 
-        if (event.originalSpeed >= 8.0 && entity.getItemInHand("main_hand").id == "rainbow:frostium_pickaxe") {
-            // 修改破坏速度（原始值×16）
-            event.newSpeed = 16 * event.originalSpeed;
+        if (entity.getItemInHand("main_hand").id == "rainbow:frostium_pickaxe") {
+            // 按方块硬度判断（originalSpeed 只与工具相关，与方块无关，不能用它判断慢方块）
+            // 注意：1.20.1 的 BreakSpeed 事件没有 getPos()，只有 getPosition() 返回 Optional
+            // 硬度≥5 的方块（黑曜石50、远古残骸30、钻石/铁/绿宝石块5）挖掘更快：原始值×16
+            let pos = event.getPosition().orElse(entity.block);
+            let hardness = event.state.getDestroySpeed(entity.level, pos);
+            if (hardness >= 5.0) {
+                event.newSpeed = 16 * event.originalSpeed;
+            }
         }
         
     } catch (e) {
@@ -380,6 +386,13 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     {
         player.heal(10);
     }
+    if(hasCurios(player,"rainbow:sharingan"))
+    {
+        let mainHandItem = attacker.getItemInHand("main_hand").getId();
+        //let offHandItem = attacker.getItemInHand("off_hand").getId();
+        attacker.cooldowns.removeCooldown(mainHandItem);
+        //attacker.cooldowns.removeCooldown(offHandItem);
+    }
 });
 
 // 盾反判定：举盾时间不超过10tick即判定为盾反
@@ -479,6 +492,14 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', e
                 // 短暂硬直：1秒缓慢IV，敌人被盾反后明显顿住
                 server.runCommandSilent(`effect give ${entity.getUuid()} minecraft:slowness 1 3 true`);
             })
+
+        if(hasCurios(player,"rainbow:sharingan"))
+        {
+            let mainHandItem = attacker.getItemInHand("main_hand").getId();
+            //let offHandItem = attacker.getItemInHand("off_hand").getId();
+            attacker.cooldowns.removeCooldown(mainHandItem);
+            //attacker.cooldowns.removeCooldown(offHandItem);
+        }
         }
     } catch (e) {
         console.log("盾反判定出现问题：");

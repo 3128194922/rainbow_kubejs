@@ -37,6 +37,7 @@
   - [MBD 机器事件系统](#mbd-机器事件系统)
   - [信标光束能量注入系统](#信标光束能量注入系统)
   - [套装效果系统](#套装效果系统)
+  - [Player 动画系统](#player-动画系统-playeranimator)
 - [饰品图鉴](#饰品图鉴)
 - [Curios 自定义渲染](#curios-自定义渲染)
 - [盔甲纹饰祝福系统 (圣经)](#盔甲纹饰祝福系统-圣经)
@@ -67,14 +68,14 @@
 
 | 物品ID | 类型 | 说明 | 实现位置 |
 |--------|------|------|----------|
-| `rainbow:biome_of_sword` | 剑 | 群系之刃，右键收集当前群系力量，已收集群系越多越强 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| ~~`rainbow:biome_of_sword`~~ | 剑 | 群系之刃，右键收集当前群系力量，已收集群系越多越强（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L121](startup_scripts/Registry/Registry_item.js#L121) |
 | `rainbow:duel` | 剑 | 决斗剑，对同一类型生物伤害增加 1.5 倍 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:tyrfing` | 剑 | 提尔锋，对有护甲敌人造成额外伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:heavy_axe` | 斧 | 重锤，根据下落加速度造成伤害。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) 配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
 | `rainbow:eldritch_pan` | 锅(头部) | 饕餮之锅，攻速极慢但伤害高。右键收集副手食物记录食用种类 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L81-L94](client_scripts/tooltips.js#L81-L94)，渲染：[client_scripts/curios_render.js#L134-L171](client_scripts/curios_render.js#L134-L171) |
 | `rainbow:baseball_bat` | 剑 | 棒球棍，右键充能变身 `rainbow:baseball_power` | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L350-L366](client_scripts/tooltips.js#L350-L366) |
 | `rainbow:baseball_power` | 剑 | 强力棒球棍，NBT 存储能量值 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L354-L366](client_scripts/tooltips.js#L354-L366) |
-| `rainbow:terasword` | 剑 | 泰拉刃，消耗能量发射 TNT 弹射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，网络：[server_scripts/NetworkEvents.js](server_scripts/NetworkEvents.js) |
+| ~~`rainbow:terasword`~~ | 剑 | 泰拉刃，消耗能量发射 TNT 弹射物（**注册已注释**，ItemProperties 模型与攻击逻辑残留，无效引用） | 注册：[startup_scripts/Registry/Registry_item.js#L192](startup_scripts/Registry/Registry_item.js#L192) |
 | `rainbow:slime_rod` | 剑 | 黏液棒，右键生成粘液块平台，潜行右键生成救生罩，左键脱下实体装备 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体事件：[server_scripts/EntityEvents.js#L12-L25](server_scripts/EntityEvents.js#L12-L25) |
 | `rainbow:frostium_pickaxe` | 镐 | 霜冻金属镐，耐久 1500，加速挖掘 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L258-L261](server_scripts/Recipes.js#L258-L261) |
 
@@ -84,7 +85,7 @@
 
 | 物品ID | 说明 | 实现位置 |
 |--------|------|----------|
-| `rainbow:clawofhorus` | 荷鲁斯之爪（手套槽），被生物盯上时提供暴击率/暴击伤害加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| `rainbow:clawofhorus` | 荷鲁斯之爪（手套槽），被生物盯上时提供暴击率/暴击伤害加成 | 注册：[startup_scripts/Registry/Registry_curios.js#L2133](startup_scripts/Registry/Registry_curios.js#L2133) |
 | `rainbow:berserk_emblem` | 血战沙场之证，根据损失血量增加属性，联动暴食之符 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L128-L131](client_scripts/tooltips.js#L128-L131) |
 | `rainbow:gluttony_charm` | 暴食之符，根据损失饥饿值提供加成，免疫饥饿伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L211-L219](client_scripts/tooltips.js#L211-L219) |
 | `rainbow:cruncher_charm` | 贪咀护符，消耗饥饿值自动恢复生命值（饥饿值低于 6 时停止） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L297-L299](client_scripts/tooltips.js#L297-L299) |
@@ -114,12 +115,12 @@
 | `rainbow:the_wafer` | 圣饼，减免 10% 所受伤害，延长无敌帧至 3s | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L202-L209](client_scripts/tooltips.js#L202-L209) |
 | `rainbow:the_bible` | 圣经，根据穿戴的纹饰盔甲数量提供伤害抵消（每件 -1，最多 -4，受伤最低为 0） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害抵消：[startup_scripts/ForgeEvents/handleTheBible.js](startup_scripts/ForgeEvents/handleTheBible.js)，tooltip：[client_scripts/tooltips.js#L563-L574](client_scripts/tooltips.js#L563-L574) |
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
-| `rainbow:bottled_lightning` | 闪电瓶，攻击生物触发连锁闪电（最大连锁 5） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
+| `rainbow:bottled_lightning` | 闪电瓶，主动技能：天气转雨 + 红色矩形警示范围 + 5 秒周期脉冲召唤闪电（半径 10） | 注册：[startup_scripts/Registry/Registry_curios.js#L9](startup_scripts/Registry/Registry_curios.js#L9)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L996-L1067](server_scripts/curios_skill_system/Skillwheel.js#L996-L1067)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
 | `rainbow:soul_diamond` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
 | `rainbow:dead_river` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
 | `rainbow:fire_magic` | 火遁·豪火灭却（技能腰带槽），持续 40 tick 发射 Scorcher 火焰投射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Helldivers.js#L108-L121](server_scripts/curios_skill_system/Helldivers.js#L108-L121) |
 | `rainbow:ccb` | 共生徽章（踩踩背），右键生物骑乘并控制移动 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L434-L471](server_scripts/curios_skill_system/Skillwheel.js#L434-L471)，服务器：[server_scripts/SymbiosisBadge_Server.js](server_scripts/SymbiosisBadge_Server.js)，启动：[startup_scripts/SymbiosisBadge_Startup.js](startup_scripts/SymbiosisBadge_Startup.js)，tooltip：[client_scripts/tooltips.js#L428-L436](client_scripts/tooltips.js#L428-L436) |
-| `rainbow:whistle` | 战壕哨，给主人召唤物施加杀戮欲望，其他生物发光 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L511-L538](server_scripts/curios_skill_system/Skillwheel.js#L511-L538) |
+| `rainbow:whistle` | 鸦羽骨哨，主动技能：开启后 20 秒内以自身为中心半径 32 格区域时缓 80%（跟随玩家移动，半透明黑雾显示范围） | 注册：[startup_scripts/Registry/Registry_curios.js#L1833](startup_scripts/Registry/Registry_curios.js#L1833)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L698-L706](client_scripts/tooltips.js#L698-L706) |
 | `rainbow:purified_cloth` | 净化绢布，长按右键擦除副手物品的诅咒附魔和修复代价 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L309-L311](client_scripts/tooltips.js#L309-L311) |
 | `rainbow:drowned_heart` | 溺尸之心，技能：召唤幼年溺尸佣兵（铁剑+皮革头盔） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:frozen_heart` | 霜冻之心，技能：召唤幼年 chilled 佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
@@ -127,6 +128,32 @@
 | `rainbow:gunk_heart` | 粘液之心，技能：召唤幼年腐烂僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:rotten_heart` | 腐烂之心，技能：召唤幼年僵尸佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:blood_collection_bag` | 泣血之刃，触发背刺时恢复背刺伤害 50% 的血量（需隐匿状态+背面攻击） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，治疗逻辑：[startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js)，tooltip：[client_scripts/tooltips.js#L1013-L1019](client_scripts/tooltips.js#L1013-L1019) |
+| `rainbow:player_doll` | 寻友护符，每人在线 +10% 挖掘速度/攻击伤害（乘算）+10 自然恢复，在线玩家 > 1 时激活并切换图标 | 注册：[startup_scripts/Registry/Registry_curios.js#L1727](startup_scripts/Registry/Registry_curios.js#L1727)，tooltip：[client_scripts/tooltips.js#L998-L1009](client_scripts/tooltips.js#L998-L1009) |
+| `rainbow:chaos_core` | 混沌核心，受伤倍率 ×[0.0~2.0]，概率反弹伤害，均受幸运值影响 | 注册：[startup_scripts/Registry/Registry_curios.js#L1773](startup_scripts/Registry/Registry_curios.js#L1773)，tooltip：[client_scripts/tooltips.js#L670-L679](client_scripts/tooltips.js#L670-L679) |
+| `rainbow:dark_sun_ring` | 七阳之戒 | 注册：[startup_scripts/Registry/Registry_curios.js#L1781](startup_scripts/Registry/Registry_curios.js#L1781) |
+| `rainbow:shiny_stone` | 日曜石，站立不动时每秒恢复 2 点生命 | 注册：[startup_scripts/Registry/Registry_curios.js#L1789](startup_scripts/Registry/Registry_curios.js#L1789) |
+| `rainbow:quiver` / `rainbow:fast_quiver` | 箭袋 / 快速箭袋 | 注册：[startup_scripts/Registry/Registry_curios.js#L1852](startup_scripts/Registry/Registry_curios.js#L1852) / [#L1874](startup_scripts/Registry/Registry_curios.js#L1874) |
+| `rainbow:curse_crown` | 诅咒王冠，统计装备上诅咒附魔数量：每个 +4% 暴击率 / +8% 暴击伤害 / -1 幸运（与荷鲁斯之爪互斥） | 注册：[startup_scripts/Registry/Registry_curios.js#L1938](startup_scripts/Registry/Registry_curios.js#L1938) |
+| `rainbow:ender_glove` | 末影之握，攻击附加末影火 3 秒 | 注册：[startup_scripts/Registry/Registry_curios.js#L2042](startup_scripts/Registry/Registry_curios.js#L2042)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `rainbow:living_gauntlet` | 生灵之触，攻击附加生灵火 3 秒，+1 攻击 / +0.1 攻速 | 注册：[startup_scripts/Registry/Registry_curios.js#L2064](startup_scripts/Registry/Registry_curios.js#L2064)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `rainbow:gold_glove` | 点金手套 | 注册：[startup_scripts/Registry/Registry_curios.js#L2087](startup_scripts/Registry/Registry_curios.js#L2087) |
+| `rainbow:cursed_bones` | 被诅咒的骨头 | 注册：[startup_scripts/Registry/Registry_curios.js#L2110](startup_scripts/Registry/Registry_curios.js#L2110) |
+| `rainbow:ender_air` | 末地空气，隐匿时每件盔甲 +4% 伤害加成 | 注册：[startup_scripts/Registry/Registry_curios.js#L2173](startup_scripts/Registry/Registry_curios.js#L2173)，tooltip：[client_scripts/tooltips.js#L689-L696](client_scripts/tooltips.js#L689-L696) |
+| `rainbow:sharpshooter_charm` | 神射手 | 注册：[startup_scripts/Registry/Registry_curios.js#L2227](startup_scripts/Registry/Registry_curios.js#L2227) |
+| `rainbow:libra` | 天秤座，攻击时交换双方药水效果 | 注册：[startup_scripts/Registry/Registry_curios.js#L2248](startup_scripts/Registry/Registry_curios.js#L2248)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `rainbow:cloud_boots` | 云靴，免疫摔落伤害 | 注册：[startup_scripts/Registry/Registry_curios.js#L2269](startup_scripts/Registry/Registry_curios.js#L2269) |
+| `rainbow:lpecac` | 吐根酊，攻击时在目标位置产生不破坏方块的爆炸（强度由 boom_damage 决定） | 注册：[startup_scripts/Registry/Registry_curios.js#L2291](startup_scripts/Registry/Registry_curios.js#L2291)，tooltip：[client_scripts/tooltips.js#L730-L733](client_scripts/tooltips.js#L730-L733) |
+| `rainbow:the_field_guide` | 图鉴百科，同时拥有四篇图鉴的全部加成（与四篇图鉴饰品互斥） | 注册：[startup_scripts/Registry/Registry_curios.js#L2316](startup_scripts/Registry/Registry_curios.js#L2316)，tooltip：[client_scripts/tooltips.js#L1011-L1022](client_scripts/tooltips.js#L1011-L1022) |
+| `rainbow:field_guide_plant` / `animal` / `monster` / `boss` | 图鉴四篇：植物→治疗溢出 / 动物→宠物伤害 / 怪物→当前生命伤害 / BOSS→闪避几率（100% 收集分别为 +50% / +20 / +10% / +80%，互相及与图鉴百科互斥） | 注册：[startup_scripts/Registry/Registry_curios.js#L2389-L2619](startup_scripts/Registry/Registry_curios.js#L2389-L2619)，tooltip：[client_scripts/tooltips.js#L958-L997](client_scripts/tooltips.js#L958-L997) |
+| `rainbow:wandering_gummy_pack` | 流浪软糖包，攻击概率触发随机软糖食用效果（冷却 2 秒，幸运 8 时最大 25%） | 注册：[startup_scripts/Registry/Registry_curios.js#L2620](startup_scripts/Registry/Registry_curios.js#L2620)，tooltip：[client_scripts/tooltips.js#L1024-L1033](client_scripts/tooltips.js#L1024-L1033) |
+| `rainbow:beast_mask` | 兽性面具，击杀敌人治疗 4 点；受伤概率获得 5 秒伤害吸收；触发极限闪避恢复 10 血量 | 注册：[startup_scripts/Registry/Registry_curios.js#L2638](startup_scripts/Registry/Registry_curios.js#L2638)，tooltip：[client_scripts/tooltips.js#L1036-L1045](client_scripts/tooltips.js#L1036-L1045) |
+| `rainbow:super_hormone` | 超级激素，主动技能：恢复 1000 血量 + 全局时缓 50%（20 秒）+ 迅捷 II + 客户端金黄视角边框 | 注册：[startup_scripts/Registry/Registry_curios.js#L2673](startup_scripts/Registry/Registry_curios.js#L2673)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L1171-L1192](server_scripts/curios_skill_system/Skillwheel.js#L1171-L1192)，客户端渲染：[client_scripts/super_hormone/main.js](client_scripts/super_hormone/main.js) |
+| `rainbow:the_heart_sutra` | 多心经，佩戴 +10% 冷却缩减（乘算，可叠加） | 注册：[startup_scripts/Registry/Registry_curios.js#L2690](startup_scripts/Registry/Registry_curios.js#L2690)，tooltip：[client_scripts/tooltips.js#L1048-L1056](client_scripts/tooltips.js#L1048-L1056) |
+| `rainbow:fury_mask` | 狂怒面具，主动技能爆发，充能逻辑：每 100 点伤害充能 → 冷却缩减效果 | 注册：[startup_scripts/Registry/Registry_curios.js#L2710](startup_scripts/Registry/Registry_curios.js#L2710)，充能：[startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js) |
+| `rainbow:fist_of_seven_wounds` | 七伤拳，+0.07 当前生命伤害（attributeslib），-70% 治疗量 | 注册：[startup_scripts/Registry/Registry_curios.js#L2729](startup_scripts/Registry/Registry_curios.js#L2729) |
+| `rainbow:sharingan` | 血轮珠 | 注册：[startup_scripts/Registry/Registry_curios.js#L2748](startup_scripts/Registry/Registry_curios.js#L2748) |
+
+**已注释（不再注册）：** `rainbow:beacon_ball`（L1009）、`rainbow:phantom_body`（L1030）、`rainbow:crow_heart`（L1125）、义体系列 `sandevistan` / `cyber_nerve_cpu` / `subcutaneous_armor` / `biological_monitoring` / `365_exe` / `second_heart` / `german_orthopedics`（L1171-L1444）、`rainbow:power_glove` / `rainbow:fire_gauntlet`（L1995-L2019）
 
 ### 食物
 
@@ -144,16 +171,17 @@
 | `rainbow:super_mechanism` | 超精密构件，合成材料 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L346-L355](server_scripts/Recipes.js#L346-L355) |
 | `rainbow:rainbow_stone` | 七彩石 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L447](server_scripts/Recipes.js#L447) |
 | `rainbow:miracle` | 奇迹物质 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L361](server_scripts/Recipes.js#L361) |
-| `rainbow:coin_1` / `rainbow:coin_2` | 货币 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| ~~`rainbow:coin_1` / `rainbow:coin_2`~~ | 货币（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L182-L183](startup_scripts/Registry/Registry_item.js#L182-L183) |
 | `rainbow:amber_bee` | 秘封琥珀，基因提取器，右键生物提取 FruitfulFun 基因 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L279](server_scripts/Recipes.js#L279)，tooltip：[client_scripts/tooltips.js#L367-L398](client_scripts/tooltips.js#L367-L398) |
 | `rainbow:cleaver_upgrade` | 斩切刀升级模板 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L513-L517](server_scripts/Recipes.js#L513-L517) |
 | `rainbow:raw_voidore` | 虚空粗矿 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L303](server_scripts/Recipes.js#L303) |
-| `rainbow:brain` | 村民脑子，耐久 300 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
-| `rainbow:living_metal` | 活体金属 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| ~~`rainbow:brain`~~ | 村民脑子，耐久 300（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L195](startup_scripts/Registry/Registry_item.js#L195) |
+| ~~`rainbow:living_metal`~~ | 活体金属（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L201](startup_scripts/Registry/Registry_item.js#L201) |
 | `rainbow:controller` | 远程标靶信号器，潜行右键靶子绑定坐标，普通右键靶子远程发出红石信号 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，方块右键：[server_scripts/BlockEvents.js#L254-L284](server_scripts/BlockEvents.js#L254-L284)，配方：[server_scripts/Recipes.js#L212-L215](server_scripts/Recipes.js#L212-L215) |
 | `rainbow:mini_ender_chest` | 便携末影箱 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:nbt_util` | NBT 工具，右键实体输出 NBT 到日志 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:golden_finger` | 金手指，让两个生物互相骑乘（大象骑村民触发成就） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| `rainbow:aggro_stick` | 索敌棒，右键点击两个实体，让它们互相索敌攻击 | 注册：[startup_scripts/Registry/Registry_item.js#L210](startup_scripts/Registry/Registry_item.js#L210)，交互：[server_scripts/aggro_link/ItemEvents.js](server_scripts/aggro_link/ItemEvents.js) |
 
 ### 逻辑数字
 
@@ -177,6 +205,9 @@
 | `rainbow:origin_ice_ore` | 始冰矿，铁级镐挖掘，掉落 `legendary_monsters:primal_ice_shard` | 注册：[startup_scripts/Registry/Registry_block.js](startup_scripts/Registry/Registry_block.js)，战利品：[server_scripts/Loot.js#L275-L279](server_scripts/Loot.js#L275-L279) |
 | `rainbow:void_ore` | 虚空矿，铁级镐挖掘，掉落 `rainbow:raw_voidore`，80% 概率挖掘时传送到附近末地石 | 注册：[startup_scripts/Registry/Registry_block.js](startup_scripts/Registry/Registry_block.js)，战利品：[server_scripts/Loot.js#L282-L287](server_scripts/Loot.js#L282-L287)，传送：[server_scripts/discord.js#L200-L241](server_scripts/discord.js#L200-L241) |
 | `rainbow:soul_hex_block` | 灵脂蜡块，每 20 tick 标记周围 5 格内非玩家实体 | 注册：[startup_scripts/Registry/Registry_block.js](startup_scripts/Registry/Registry_block.js)，tooltip：[client_scripts/tooltips.js#L408-L410](client_scripts/tooltips.js#L408-L410) |
+| `rainbow:number_computer` | 逻辑计算机 | 注册：[startup_scripts/Registry/Registry_block.js#L98](startup_scripts/Registry/Registry_block.js#L98) |
+| `rainbow:luban_lock` | 鲁班锁，空手右键捕获上方 3×3×3 结构（含方块状态与方块实体），破坏保留结构到物品，放置时自动还原 | 注册：[startup_scripts/Registry/Registry_docker.js#L574](startup_scripts/Registry/Registry_docker.js#L574)，交互：[server_scripts/luban_lock/luban_lock.js](server_scripts/luban_lock/luban_lock.js)，tooltip：[client_scripts/tooltips.js#L680-L688](client_scripts/tooltips.js#L680-L688) |
+| `rainbow:docker_nether_on` | 下界反应堆，收集附近唱片机音乐产生下界之音 | 注册：[startup_scripts/Registry/Registry_docker.js#L460](startup_scripts/Registry/Registry_docker.js#L460) |
 
 > Docker 通用型方块注册：[startup_scripts/docker/main.js](startup_scripts/docker/main.js)
 
@@ -192,32 +223,37 @@
 
 ## 自定义附魔
 
+> ⚠️ **注意：`startup_scripts/Registry/Registry_enchantment.js` 整个文件被 `/* */` 注释（L5-L24），以下附魔当前均未注册。**
+
 | 附魔ID | 说明 | 实现位置 |
 |--------|------|----------|
-| `rainbow:last_stand` | 屹立不倒，适用护甲，最高 2 级 | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
-| `rainbow:living_fire_aspect` | 生灵火·火焰附加，适用武器，最高 2 级 | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
-| `rainbow:ender_fire_aspect` | 末影火·火焰附加，适用武器，最高 2 级 | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
+| ~~`rainbow:last_stand`~~ | 屹立不倒，适用护甲，最高 2 级（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
+| ~~`rainbow:living_fire_aspect`~~ | 生灵火·火焰附加，适用武器，最高 2 级（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
+| ~~`rainbow:ender_fire_aspect`~~ | 末影火·火焰附加，适用武器，最高 2 级（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_enchantment.js](startup_scripts/Registry/Registry_enchantment.js) |
 
 ---
 
 ## 自定义效果/药水
 
-> 注册入口：[startup_scripts/Effects.js](startup_scripts/Effects.js)、[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)、[startup_scripts/kjs6_registering_effects_&_potions.js](startup_scripts/kjs6_registering_effects_&_potions.js)
+> 注册入口：[startup_scripts/Effects.js](startup_scripts/Effects.js)、[startup_scripts/MonsterEffects.js](startup_scripts/MonsterEffects.js)、[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)、[startup_scripts/kjs6_registering_effects_&_potions.js](startup_scripts/kjs6_registering_effects_&_potions.js)
 
 | 效果ID | 类型 | 说明 |
 |--------|------|------|
-| `rainbow:tag` | 有害 | 标记，使远程伤害翻倍 |
-| `rainbow:obey_command` | 有益 | 服从命令，使生物攻击被标记目标 |
+| ~~`rainbow:tag`~~ | 有害 | 标记，使远程伤害翻倍（**注册已注释**） |
+| ~~`rainbow:obey_command`~~ | 有益 | 服从命令，使生物攻击被标记目标（**注册已注释**） |
 | `rainbow:killing_desire` | 有益 | 杀戮欲望，使生物攻击被发光标记的目标 |
-| `rainbow:taunt_effect` | 有害 | 嘲讽，每 20 tick 嘲讽周围生物攻击自己 |
+| ~~`rainbow:taunt_effect`~~ | 有害 | 嘲讽，每 20 tick 嘲讽周围生物攻击自己（**注册已注释**） |
 | `rainbow:democratic_save` | 有益 | 民主保佑 |
 | `rainbow:manba` | 有益 | 曼巴之力，攻击带有速度伤害加成 |
 | `rainbow:off_work_time` | 有益 | 下班时间 |
+| `rainbow:damage_num` | 有益 | 伤害数字 |
+| `rainbow:knowledge_burst` | 有益 | 知识爆发 |
 | `rainbow:reload_buff` | 有益 | 装填核心 Buff，移除霰弹枪冷却 |
 | `rainbow:short_buff` | 有益 | 连射核心 Buff，大幅提升手摇弩射速 |
 | `rainbow:void` | 有益 | 虚化，免疫伤害 |
-| `rainbow:monster` | - | 怪物化 |
-| `rainbow:monstering` | - | 半怪物化 |
+| `rainbow:cooldowns_reduction` | 有益 | 冷却缩减（狂怒面具充能触发） |
+| `rainbow:monster` | - | 怪物化，+30% 移速 / +50% 攻击 / +20 最大生命，饥饿归零解除 |
+| `rainbow:monstering` | - | 半怪物化（食物数值 x2，累计 5 分钟转怪物化） |
 
 ---
 
@@ -259,18 +295,30 @@
 |----------|------|------|--------|
 | 心脏系列 x5 | 召唤对应幼年佣兵（铁剑+皮革头盔+消失诅咒） | 20s | L44-L80 |
 | 心灵宝石 | 在玩家朝向方向召唤念力墙 | 30s | L83-L117 |
-| 怪物护符 | 召唤 EasyNPC 人形佣兵（复制玩家皮肤+AI 目标） | - | L157-L213 |
 | 发条怀表 | 5 秒时间回溯 + 重置最近结构 | - | L216-L344 |
 | 装填核心 | 消耗 100 能量获得装填 Buff | 10s | L397-L406 |
 | 连射核心 | 消耗 100 能量获得连射 Buff | 10s | L409-L418 |
 | 共生徽章 | 5 格射线检测生物并骑乘 | - | L434-L471 |
+| 烟雾弹 `species:smoke_bomb` | 释放烟雾弹 | - | L456 附近 |
 | 皇家法杖 | 触发原版皇家法杖右键效果 | - | L474-L497 |
 | 觉之瞳 | 开关 NBT `is_open` 状态 | - | L500-L509 |
-| 战壕哨 | 16 格范围内友军获得杀戮欲望 / 敌军发光 | - | L511-L538 |
+| 鸦羽骨哨 | 开启 20 秒区域时缓 80%（半径 32 格跟随玩家） | - | L537-L599 |
 | 虚空蠕虫之眼 | 获得虚化效果（免疫伤害） | - | L540-L548 |
 | 天琴座 | 子菜单：鼓舞(抗性)/战曲(力量)/小奏(治疗)/终曲(伤害) | 1s | L551-L592 |
 | 重力核心 | 向上弹射 10 格 | - | L595-L603 |
 | 迷你月球 | 引力场：牵引(右键) / 推开(潜行右键)，附加 6 点伤害 | - | L606-L651 |
+| 韧性注射 `rainbow:resilience_syringe` | 韧性增益注射 | - | 文件内 |
+| 狂怒注射 `rainbow:rage_syringe` | 狂怒增益注射 | - | 文件内 |
+| 圣经 `rainbow:the_bible` | 圣经祈祷 | 90s | L780-L825 |
+| 烟花拳套 `minecraft:firework_rocket` | 烟花拳套冲刺：按 Fireworks Flight 等级冲撞击退，撞墙二次伤害 | - | 冲刺：L843-L925，二次伤害：[startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
+| 死河 `rainbow:dead_river` | 消耗全部灵魂按优先级召唤幽灵（巨硕 3 灵魂 / 骑枪 2 / 普通 1） | 10s | L928-L975 |
+| 捕梦网 `windswept:dream_catcher` | 切换观察者模式 3 秒后返回生存 | 10s | L977-L993 |
+| 闪电瓶 `rainbow:bottled_lightning` | 天气转雨 + 矩形警示范围 + 漂浮 2 秒 + 5 秒脉冲召唤闪电（半径 10） | - | L996-L1067 |
+| 女巫坩埚 `mysticartifacts:witch_pot` | 清空末影箱中的喷溅/滞留药水，每 5 tick 朝准星投掷 1 瓶 | 30s | L1071-L1169 |
+| 超级激素 `rainbow:super_hormone` | 恢复 1000 血量 + 全局时缓 50% + 迅捷 II + 金黄视角边框（20 秒） | - | L1171-L1192 |
+| 邪恶面具 `species:wicked_mask` | 按伪装生物 id 分发技能：灾厄使者(5s 追踪/普通导弹交替)、皇家僵尸(召唤 2 僵尸+chosen_victim)、皇家苦力怕(time_bomb+爆炸)、皇家末影人(凝视压制+末地沉重)、皇家骷髅(trapped)、潜伏者(死亡激光)、巨兽(召唤巨兽释放 OverPower 并观战 4s) | 10-60s | L1242-L1725 |
+
+> 已注册但技能已注释：`rainbow:phantom_body`（`/* */` 包裹）。技能轮盘标签见 [server_scripts/Tag.js](server_scripts/Tag.js) 的 `skillwheel:skills` / `skillwheel:skills_ui`（28 项）。
 
 ### 绝地潜兵 (Helldivers) 系统
 
@@ -435,7 +483,17 @@
 | `handleCuriosEffects.js` | 饰品效果处理 + Bible 纹饰祝福 | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
-| `handleCoreCharging.js` | 核心充能处理 | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
+| `handleCoreCharging.js` | 核心充能处理（装填/连射核心 + 狂怒面具 FuryDamage 充能） | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
+| `handleAttackCurios.js` | 攻击饰品效果：末影之握（末影火 3s）/ 生灵之触（生灵火 3s）/ 天秤座（交换双方药水效果） | [startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `handleAttackWeapon.js` | 攻击武器效果：泰拉刃（power 1-4）/ 动力剑（Power 递减至 0 变棒球棍 40s 冷却）/ 决斗剑（type 计数） | [startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js) |
+| `handleBigStomach.js` | 大胃袋：任务完成（bs_done）后消耗饱和度抵消伤害 | [startup_scripts/ForgeEvents/handleBigStomach.js](startup_scripts/ForgeEvents/handleBigStomach.js) |
+| `handleDespairInsigniaDeath.js` | 极限之证：伤害 > 1 时强制置为 1e10（致死） | [startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js](startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js) |
+| `handleFireworkDash.js` | 烟花拳套冲刺：击退 + 撞墙二次伤害（`FireworkDashImpact*` NBT） | [startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
+| `handleFreezeEffects.js` | 冻结机制：冻结超阈值 → `/dyeing uv add static freeze_ice` 蓝冰视觉 + `global.freezeEntity`（durationTicks/6） | [startup_scripts/ForgeEvents/handleFreezeEffects.js](startup_scripts/ForgeEvents/handleFreezeEffects.js) |
+| `handleItemAttributeModifier.js` | 饕餮之锅：已食用食物数（foodnumber）→ 攻击伤害 | [startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
+| `handleProjectileIFrame.js` | 弹射物无敌帧重置（EXCLUDE_PLAYER=true，三类黑名单） | [startup_scripts/ForgeEvents/handleProjectileIFrame.js](startup_scripts/ForgeEvents/handleProjectileIFrame.js) |
+| `onPlayerDamaged.js` | 玩家受伤：动能核心（species:kinetic_core）受伤时 AOE 半径 7 | [startup_scripts/ForgeEvents/onPlayerDamaged.js](startup_scripts/ForgeEvents/onPlayerDamaged.js) |
+| `onNonPlayerDamaged.js` | 非玩家受伤：驯服马受到的伤害传导给主人 | [startup_scripts/ForgeEvents/onNonPlayerDamaged.js](startup_scripts/ForgeEvents/onNonPlayerDamaged.js) |
 | `onPlayerHurt.js` | 玩家受伤事件 | [startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js) |
 | `onNonPlayerHurt.js` | 非玩家受伤事件 | [startup_scripts/ForgeEvents/onNonPlayerHurt.js](startup_scripts/ForgeEvents/onNonPlayerHurt.js) |
 | `onEntityHurt.js` | 实体受伤事件 | [startup_scripts/ForgeEvents/onEntityHurt.js](startup_scripts/ForgeEvents/onEntityHurt.js) |
@@ -454,7 +512,7 @@
 | 决斗剑类型 | 初始化已攻击类型计数 NBT |
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
 | 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
-| 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害 |
+| 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害（物品注册已注释，逻辑残留） |
 | 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半怪物化，累计 5 分钟转怪物化 |
 | 虚空嬗变 | `rainbow:raw_voidore` 可转化为 `createutilities:void_steel_ingot` |
 | 防化服免疫 | 穿戴全套 `alexscaves:hazmat_*` 免疫中毒/凋零/辐照 |
@@ -466,11 +524,12 @@
 
 ### 怪物化系统
 
-> 实现：[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)
+> 效果注册：[startup_scripts/MonsterEffects.js](startup_scripts/MonsterEffects.js)
+> 逻辑（旧）：[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)
 
 - **触发：** 食用 `#rainbow:monster_meat` 标签食物有 30% 概率获得半怪物化
-- **半怪物化：** 食物数值 x2，持续累计超过 5 分钟转化为怪物化
-- **怪物化：** 食物数值 x3，吃怪肉延长持续时间，怪肉在 tooltip 中显示为"人肉"
+- **半怪物化（`rainbow:monstering`）：** 食物数值 x2，持续累计超过 5 分钟转化为怪物化
+- **怪物化（`rainbow:monster`）：** 食物数值 x3，+30% 移速 / +50% 攻击 / +20 最大生命（MonsterEffects.js 属性修饰符），饥饿值归零时解除，吃怪肉延长持续时间，怪肉在 tooltip 中显示为"人肉"
 
 ### MBD 机器事件系统
 
@@ -530,12 +589,55 @@
 
 > 新增套装在 [server_scripts/set_system/SetEffect.js](server_scripts/set_system/SetEffect.js) 的「套装定义区域」调用 `registerSet()` 即可
 
+### Player 动画系统 (PlayerAnimator)
+
+基于 `playeranimator` + `kubejs_playeranim` 的玩家动画封装，服务端调用、多人同步，供各功能系统统一触发角色动画。
+
+> 全局函数封装：[server_scripts/player_animator/main.js](server_scripts/player_animator/main.js)（priority 1500）
+> 演示命令：[server_scripts/player_animator/commands.js](server_scripts/player_animator/commands.js)（priority 1400）
+
+**前置依赖 mod：** `kubejs_playeranim`（Kubejs_for_PlayerAnimator）+ `playeranimator`。
+
+**全局 API：**
+
+| 函数 | 说明 |
+|------|------|
+| `global.playPlayerAnim(player, animationId [, fadeTicks=20 [, ease="LINEAR"]])` | 为指定玩家播放动画，返回是否成功下发 |
+| `global.stopPlayerAnim(player [, fadeTicks=20 [, ease="LINEAR"]])` | 停止玩家当前动画（带淡出） |
+
+**命名空间补全规则：**
+
+| 输入 | 解析结果 |
+|------|----------|
+| `"wave"` | `kubejs_playeranim:wave`（默认命名空间） |
+| `"kubejs_playeranim:wave"` / `"mymod:wave"` | 原样返回 |
+| `"minecraft:wave"` | 视作简写（ResourceLocationArgument 会把无命名空间的短 ID 解析为 `minecraft:`），替换为 `kubejs_playeranim:wave` |
+
+**底层 API（由 KubeJSPlayerAnimPlugin 注册到 binding）：** `PlayerAnim.play(player, animationId, fadeTicks, ease)` / `PlayerAnim.stop(player, fadeTicks, ease)` / `PlayerAnimEvents.play`
+
+**动画文件位置：**
+
+| 场景 | 路径 |
+|------|------|
+| 默认命名空间（简短 ID） | `kubejs/assets/kubejs_playeranim/player_animation/<name>.json` |
+| 自定义命名空间（完整 ID） | `kubejs/assets/<namespace>/player_animation/<path>.json` |
+
+> 动画需为 playerAnimator Java emote 格式（含 `name` + `emote` 顶层字段，时间单位 tick、骨骼驼峰命名、旋转用 pitch/yaw/roll、位置单位 block）。Blockbench 导出的 Bedrock 格式需转换后方可使用。
+
+**演示命令（需权限等级 2）：**
+
+| 命令 | 说明 |
+|------|------|
+| `/playanim <animationId> [fadeTicks] [ease]` | 为自己播放动画（animationId 用 ResourceLocation 格式，支持冒号） |
+| `/stopanim [fadeTicks] [ease]` | 停止自己的动画 |
+| `/playanimwave` | 快捷播放挥手动画（= `/playanim kubejs_playeranim:wave 10 EASEINOUTQUAD`） |
+
 ---
 
 ## 饰品图鉴
 
 ### 护符槽 (Charm)
-荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限之证、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶、心灵宝石、脑控回收器、共生徽章、战壕哨、净化绢布、心脏系列 x5、黏液棒、泣血之刃
+荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限之证、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶、心灵宝石、大师球、共生徽章、鸦羽骨哨、净化绢布、心脏系列 x5、黏液棒、泣血之刃、寻友护符、混沌核心、七阳之戒、日曜石、箭袋、快速箭袋、诅咒王冠、末影之握、生灵之触、点金手套、被诅咒的骨头、末地空气、神射手、天秤座、云靴、吐根酊、图鉴百科、图鉴四篇、流浪软糖包、兽性面具、超级激素、多心经、狂怒面具、七伤拳、血轮珠
 
 ### 背部 (Back)
 TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mysticartifacts:artifact_spirit`）、皇家法杖、所有旗帜（16 种）、create 背罐（铜/下界合金）
@@ -632,6 +734,14 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 **装备套装：** 铁套、铁套+钻石武器、金套+斧、链甲+弓
 
+### GatewaysJS 动态网关
+
+> 实现：[server_scripts/Gateways.js](server_scripts/Gateways.js)（基于 gatewaysjs-1.6 `Gateway.customBuilder` API，注册于 `ServerEvents.recipes`）
+
+| 网关 ID | 说明 |
+|----------|------|
+| `rainbow:zombie_horde` | 僵尸大军：36 只僵尸（装备铁剑+链甲），显示名「最后的大队-极恶中队」，tooltip「18名亡灵突击队（PVP大佬版）」，Large 网关、绿色横幅（0x55ff55），Boss 栏 + 雾气效果，`rules(36,64,true,true,false,true,true,36,64,0.0)` |
+
 ---
 
 ## 悬赏车队系统
@@ -707,6 +817,9 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 |------|------|
 | `/tpa <玩家名>` | 传送到指定玩家（禁止传送到后室） |
 | `/back` | 返回死亡地点 |
+| `/playanim <animationId> [fadeTicks] [ease]` | 为自己播放玩家动画（需 OP2） |
+| `/stopanim [fadeTicks] [ease]` | 停止自己的玩家动画（需 OP2） |
+| `/playanimwave` | 快捷播放挥手动画（需 OP2） |
 
 ### CBC 火炮瞄准计算工具
 

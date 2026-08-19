@@ -106,7 +106,6 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
 
     try
     {
-
     // 玩家受伤后
     onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage);
 
@@ -118,6 +117,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
 
     // 圣经伤害抵消（纹饰盔甲每件 -1 伤害，最多 -4，最低为 0）
     handleTheBible(event, attacker, victim, source);
+
+    // 大胃袋（受伤时消耗饱和度抵消伤害，逻辑在 handleBigStomach.js）
+    handleBigStomach(event, victim);
     }
     catch(e)
     {

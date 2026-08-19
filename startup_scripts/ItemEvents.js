@@ -536,3 +536,49 @@ ItemEvents.modification(event => {
       })
    })
 })
+
+// Cataclysm 饰品：charm 栏位获得与原本绑定栏位相同的属性加成
+// 以下物品源码均强绑定各自栏位（Cataclysm ModItems.java 中 CuriosItem.withAttributes(...)），
+// 整合包已将其加入 curios:charm 标签（server_scripts/Tag.js 饰品栏位），可装入 charm 栏，
+// 但 CuriosItem 原属性仅在原绑定栏位生效。CuriosJSEvents.attributeModifier（KubeJS-Curios 的 common
+// 事件）只允许在 SERVER/CLIENT 脚本注册（Valid script types: [SERVER, CLIENT]），startup 脚本注册会报错，
+// 故改用 ForgeEvents.onEvent 直接监听 Curios 原生 CurioAttributeModifierEvent（startup 脚本可用，
+// 与上方铜套装/单片眼镜写法一致），在 charm 栏补上同样的属性，不影响原栏位属性
+// - cataclysm:chitin_claw 强绑定 hands：forge:entity_reach +0.25 / forge:block_reach +1.0
+// - cataclysm:berserker_soul_amulet 强绑定 necklace：minecraft:generic.attack_damage +0.1 / minecraft:generic.armor -0.25（MULTIPLY_TOTAL）
+ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEvent', (event) => {
+    try {
+        let stack = event.getItemStack();
+        let slotType = event.getSlotContext().identifier();
+        if (slotType !== 'charm') return;
+        let id = stack.id;
+
+        // 甲壳巨钳：实体交互距离 +0.25 / 方块放置距离 +1.0（与源码 ENTITY_REACH/BLOCK_REACH 一致）
+        if (id === 'cataclysm:chitin_claw') {
+            event.addModifier(
+                "forge:entity_reach",
+                new AttributeModifier("b5e7a3c1-4d2f-4a8e-9c6d-1f3b5a7c9e01", "chitin_claw_entity_reach", 0.25, "addition")
+            );
+            event.addModifier(
+                "forge:block_reach",
+                new AttributeModifier("b5e7a3c1-4d2f-4a8e-9c6d-1f3b5a7c9e02", "chitin_claw_block_reach", 1.0, "addition")
+            );
+            console.log("甲壳巨钳 charm 属性已添加");
+        }
+        // 狂战士灵魂护符：攻击伤害 +0.1 / 护甲 -0.25（乘算，与源码 ATTACK_DAMAGE/ARMOR 一致）
+        if (id === 'cataclysm:berserker_soul_amulet') {
+            event.addModifier(
+                "minecraft:generic.attack_damage",
+                new AttributeModifier("c3f8d2a4-5e1b-4c9f-8d7a-2e4b6c8d0a03", "berserker_soul_amulet_attack_damage", 0.1, "multiply_total")
+            );
+            event.addModifier(
+                "minecraft:generic.armor",
+                new AttributeModifier("c3f8d2a4-5e1b-4c9f-8d7a-2e4b6c8d0a04", "berserker_soul_amulet_armor", -0.25, "multiply_total")
+            );
+            console.log("狂战士灵魂护符 charm 属性已添加");
+        }
+    } catch (e) {
+        console.log("Cataclysm 饰品 charm 属性添加出错：");
+        console.log(e);
+    }
+});

@@ -597,6 +597,9 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:clawofhorus', (item, advanced, text) => {
         text.add(1, Text.aqua("隐匿时获得暴击率与暴击伤害加成"));
     })
+    event.addAdvanced('rainbow:sharingan', (item, advanced, text) => {
+        text.add(1, Text.aqua("玩家触发极限闪避、盾反时，刷新主手物品冷却"));
+    })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
         text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
@@ -691,12 +694,14 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("隐匿时每件盔甲提供 4% 伤害加成"));
         }
     })
+    // 鸦羽骨哨：实际效果见 server_scripts/curios_skill_system/Skillwheel.js 的 registerSkill('rainbow:whistle')（主动技能：20秒区域时缓80%，半径32格跟随玩家）
     event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("对16格范围内的主人召唤物施加杀戮欲望"));
-            text.add(2, Text.aqua("其他生物获得发光效果，持续10秒"));
+            text.add(1, Text.aqua("主动技能：开启后 20 秒内，以自身为中心"));
+            text.add(2, Text.aqua("半径 32 格区域时缓 80%（跟随玩家移动）"));
+            text.add(3, Text.aqua("半透明黑雾显示时缓影响范围"));
         }
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {

@@ -2723,3 +2723,39 @@ StartupEvents.registry('item', event => {
                 })
         )
 })
+
+//七伤拳
+StartupEvents.registry('item', event => {
+    event.create('rainbow:fist_of_seven_wounds')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .addAttribute('attributeslib:current_hp_damage', 'fist_of_seven_wounds', 0.07, 'addition')
+                .addAttribute('attributeslib:healing_received', 'fist_of_seven_wounds', -0.7, 'multiply_total')
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:fist_of_seven_wounds')) return false;
+                    return true;
+                })
+        )
+})
+
+//血轮珠
+StartupEvents.registry('item', event => {
+    event.create('rainbow:sharingan')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:sharingan')) return false;
+                    return true;
+                })
+        )
+})

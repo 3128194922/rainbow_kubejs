@@ -13,22 +13,6 @@
 function onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     if (!victim.isPlayer()) return;
 
-    // --- 大胃王饰品 ---
-    // 消耗饱和度抵消伤害（需先完成当期进食任务，否则大胃袋失效）
-    if (hasCurios(victim, "rainbow:big_stomach")) {
-        let stomachStack = getCuriosStackOnPlayer(victim, "rainbow:big_stomach");
-        let taskDone = false;
-        if (stomachStack != null && stomachStack.nbt != null && stomachStack.nbt.contains("bs_done")) {
-            taskDone = stomachStack.nbt.getBoolean("bs_done");
-        }
-        if (taskDone && victim.getFoodData().getSaturationLevel() > 0) {
-            victim.getFoodData().setSaturation(
-                Math.max(victim.getFoodData().getSaturationLevel() - event.getAmount(), 0)
-            );
-            event.setCanceled(true);
-        }
-    }
-
     // --- 动能核心（受伤时触发范围动能爆破 AOE） ---
     if(hasCurios(victim, "species:kinetic_core"))
     {

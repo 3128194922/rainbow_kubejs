@@ -1637,7 +1637,7 @@
 
 	[client.usage_ticker]
 		#Switch the armor display to the off hand side and the hand display to the main hand side
-		Invert = false
+		Invert = true
 		"Shift Left" = 0
 		"Shift Right" = 0
 		"Enable Main Hand" = true

@@ -75,7 +75,7 @@ ServerEvents.tags("item", event => {
     })*/
 
     // 背部饰品标签
-    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod','mysticartifacts:artifact_spirit'],
+    retagItem(event,['minecraft:tnt', 'oreganized:shrapnel_bomb', 'savage_and_ravage:spore_bomb', 'minecraft:end_rod','mysticartifacts:artifact_spirit','clanginghowl:energy_barrier_generator'],
         "curios:back"
     )
     
@@ -84,10 +84,10 @@ ServerEvents.tags("item", event => {
         "curios:head")
 
     // 饰品栏位
-    retagItem(event,["tide:fish_finder", "tide:weather_radio", "tide:depth_meter", "tide:climate_gauge", "tide:lunar_calendar", 
+    retagItem(event,['@calamitycurios',"tide:fish_finder", "tide:weather_radio", "tide:depth_meter", "tide:climate_gauge", "tide:lunar_calendar", 
         "functionality:fins", "functionality:obsidian_fins", "royalvariations:spectral_gauntlet", "cataclysm:sticky_gloves", "cataclysm:sturdy_boots",
          "cataclysm:unbreakable_skull", "cataclysm:vitality_ankh", "cataclysm:berserker_soul_amulet", "cataclysm:ring_of_grudged",
-          "cataclysm:chitin_claw", "cataclysm:blazing_grips", "cataclysm:belt_of_beginner", "clanginghowl:reanimator","tide:pocket_watch", 
+        "cataclysm:chitin_claw","cataclysm:blazing_grips", "cataclysm:belt_of_beginner", "clanginghowl:reanimator","tide:pocket_watch", 
         "clanginghowl:bloody_battery", "clanginghowl:jet_boots", "clanginghowl:tendon_strengthener", "clanginghowl:energy_glove"],
     "curios:charm")
     

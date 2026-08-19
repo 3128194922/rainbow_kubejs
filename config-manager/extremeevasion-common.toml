@@ -1,0 +1,58 @@
+#Minimum ticks that the extreme evasion detection window stays open after a roll starts.
+#翻滚开始后，极限闪避判定窗口至少保持开启的 tick 数。
+#Range: 0 ~ 1200
+minimumExtremeEvasionWindowTicks = 15
+#Maximum ticks that the extreme evasion detection window can stay open after a roll starts.
+#ZH: Maximum extreme evasion window duration in ticks.
+#Range: 0 ~ 1200
+maximumExtremeEvasionWindowTicks = 20
+#Ticks after a successful extreme evasion during which Extreme Counter is available.
+#极限闪避成功后，极限反击可用的持续 tick 数。
+#Range: 0 ~ 1200
+extremeCounterAttackWindowTicks = 30
+#Number of attacks empowered by Extreme Counter after one successful extreme evasion.
+#每次极限闪避成功后，极限反击可强化的攻击次数。
+#Range: 0 ~ 100
+extremeCounterAttackCharges = 0
+#Whether Extreme Counter forces empowered attacks to become critical hits.
+#极限反击是否让被强化的攻击必定暴击。
+enableExtremeCounterAttackCritical = false
+#Whether Extreme Counter makes empowered attacks ignore armor.
+#极限反击是否让被强化的攻击无视护甲。
+enableExtremeCounterAttackArmorPiercing = false
+#Whether to render the gold shader glow on the held item while Extreme Counter is active.
+#极限反击激活期间，是否给手持物品渲染金色发光着色器。
+enableExtremeCounterGoldShader = false
+#Whether successful extreme evasion triggers bullet time in singleplayer.
+#单人游玩时，极限闪避成功是否触发子弹时间。
+enableBulletTime = false
+#Whether the player cannot be attacked during bullet time.
+#子弹时间期间，玩家是否无法被攻击。
+enableBulletTimeInvulnerability = false
+#World time speed during bullet time. 0.2 means 20 percent speed.
+#子弹时间期间的世界时间流速。0.2 表示 20% 速度。
+#Range: 0.01 ~ 1.0
+bulletTimeSpeed = 0.3
+#Real-time bullet time duration in milliseconds.
+#子弹时间持续的真实时间，单位为毫秒。
+#Range: 0 ~ 60000
+bulletTimeDurationMillis = 3000
+#Real-time fade in/out duration in milliseconds for the bullet-time screen filter.
+#子弹时间屏幕滤镜淡入/淡出的真实时间，单位为毫秒。
+#Range: 0 ~ 10000
+bulletTimeVisualFadeMillis = 250
+#Whether to render the blue-gray bullet-time screen shader.
+#是否渲染子弹时间的蓝灰屏幕着色器。
+enableBulletTimeScreenShader = false
+#Whether to play the bullet-time trigger sound.
+#是否播放子弹时间触发音效。
+enableBulletTimeTriggerSound = false
+#Volume of the bullet-time trigger sound.
+#子弹时间触发音效的音量。
+#Range: 0.0 ~ 4.0
+bulletTimeTriggerSoundVolume = 0.65
+#Pitch of the bullet-time trigger sound.
+#子弹时间触发音效的音高。
+#Range: 0.1 ~ 4.0
+bulletTimeTriggerSoundPitch = 1.0
+

@@ -1,22 +1,18 @@
 // priority: 500
 // ==========================================
 // 💡 物品提示信息脚本
-// ==========================================
-
-ItemEvents.tooltip(event => {
-    // 为彩虹大便添加提示
-    //event.add('rainbow:shit', '§6这是一坨有味道的物品')
-})
-
+// ==========================================@
 // 引入原版工具类用于格式化时长
 const $MobEffectUtil = Java.loadClass('net.minecraft.world.effect.MobEffectUtil')
 
 ItemEvents.tooltip(event => {
     // 使用标签过滤器匹配目标物品
     event.addAdvanced('#rainbow:food_tooltip', (item, advanced, text) => {
+        
         const food = item.item.foodProperties
         if (!food) return
-        
+        if(item.item.hasTag('@dungeonsdelight')) return
+
         const effects = food.effects
         if (!effects || effects.isEmpty()) return
         

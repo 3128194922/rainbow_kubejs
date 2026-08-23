@@ -198,7 +198,8 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (ev
 
         // 配方列表：输入 → 输出
         let voidTransmuteRecipes = {
-            'rainbow:raw_voidore': 'createutilities:void_steel_ingot'
+            'rainbow:raw_voidore': 'createutilities:void_steel_ingot',
+            'minecraft:dragon_breath': 'rainbow:ender_air'
         };
 
         // 检查是否有对应配方

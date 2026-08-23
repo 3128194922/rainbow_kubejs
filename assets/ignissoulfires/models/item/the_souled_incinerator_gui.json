@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+	  "layer0" : "ignissoulfires:item/the_souled_incinerator_hand"
+	}
+  }

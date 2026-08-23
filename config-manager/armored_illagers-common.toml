@@ -1,0 +1,36 @@
+
+#Configuration for Pillager Variants Stats
+[pillager_variants]
+	#Health multiplier for Gold Pillager variant. Base health is multiplied by this value (min: 1.0). e.g. 1.5 = 1.5x base health.
+	#Range: 1.0 ~ 1000.0
+	goldHealthMultiplier = 1.25
+	#Armor points bonus added to Gold Pillager variant (min: 0.0).
+	#Range: 0.0 ~ 1000.0
+	goldArmorBonus = 6.0
+	#Health multiplier for Diamond Pillager variant. Base health is multiplied by this value (min: 1.0). e.g. 2.0 = 2.0x base health.
+	#Range: 1.0 ~ 1000.0
+	diamondHealthMultiplier = 1.5
+	#Armor points bonus added to Diamond Pillager variant (min: 0.0).
+	#Range: 0.0 ~ 1000.0
+	diamondArmorBonus = 12.0
+
+#Configuration for Vindicator Variants Stats
+[vindicator_variants]
+	#Health multiplier for Gold Vindicator variant. Base health is multiplied by this value (min: 1.0).
+	#Range: 1.0 ~ 1000.0
+	goldHealthMultiplier = 1.25
+	#Armor points bonus added to Gold Vindicator variant (min: 0.0).
+	#Range: 0.0 ~ 1000.0
+	goldArmorBonus = 6.0
+	#Health multiplier for Diamond Vindicator variant. Base health is multiplied by this value (min: 1.0).
+	#Range: 1.0 ~ 1000.0
+	diamondHealthMultiplier = 1.5
+	#Armor points bonus added to Diamond Vindicator variant (min: 0.0).
+	#Range: 0.0 ~ 1000.0
+	diamondArmorBonus = 12.0
+
+#Configuration for Mod Compatibility
+[compatibility]
+	#If true, ranged Illagers (Pillagers) have a chance to spawn with shields when 'mobsuseshields' is loaded.
+	rangedIllagersUseShields = true
+

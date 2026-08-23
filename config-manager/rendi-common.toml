@@ -13,10 +13,10 @@
 [threshold]
 	#How weak a player's attack can be before it gets nullified, from 0 (0%, cancels multiple attacks on the same tick) to 1 (100%, players cannot attack), or -0.1 (disables this feature)
 	#Range: -0.1 ~ 1.0
-	attackCancelThreshold = 0.7
+	attackCancelThreshold = 0.6
 	#How weak a player's attack can be before the knockback gets nullified, from 0 (0%, cancels multiple attacks on the same tick) to 1 (100%, no knockback), or -0.1 (disables this feature)
 	#Range: -0.1 ~ 1.0
-	knockbackCancelThreshold = 0.75
+	knockbackCancelThreshold = 0.9
 
 #Exclusion lists for certain features
 [exclusions]

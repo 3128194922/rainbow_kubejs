@@ -7,6 +7,7 @@
 function handleFreezeEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
     try {
         if (!victim || victim.isDeadOrDying()) return;
+        if(victim.isPlayer()) return;
 
         // 获取实体当前冻结时间（tick）
         let frozenTicks = victim.getTicksFrozen();

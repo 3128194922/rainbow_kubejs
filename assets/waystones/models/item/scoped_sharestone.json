@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench",
+"credit": "Made with Blockbench",
 	"textures": {
 		"1": "waystone_overlays/sharestone_color",
 		"texture": "waystones:item/waystone/andesite_waystone",
@@ -140,11 +140,11 @@
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"head": {
-			"rotation": [0, 180, 0],
+			"rotation": [0, -180, 0],
 			"translation": [0, 13, 7]
 		},
 		"fixed": {
-			"rotation": [0, 180, 0]
+			"rotation": [0, -180, 0]
 		}
 	},
 	"groups": [
@@ -152,27 +152,23 @@
 			"name": "bottom",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
 			"children": []
 		},
 		{
 			"name": "bottom",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
 			"children": []
 		},
 		{
 			"name": "group",
 			"origin": [11, 8, 19],
 			"color": 0,
-			"nbt": "{}",
 			"children": [
 				{
 					"name": "group",
 					"origin": [0, 0, 0],
 					"color": 0,
-					"nbt": "{}",
 					"children": [0, 1, 2, 3, 4, 5, 6, 7]
 				}
 			]

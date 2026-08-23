@@ -546,6 +546,8 @@ ItemEvents.modification(event => {
 // 与上方铜套装/单片眼镜写法一致），在 charm 栏补上同样的属性，不影响原栏位属性
 // - cataclysm:chitin_claw 强绑定 hands：forge:entity_reach +0.25 / forge:block_reach +1.0
 // - cataclysm:berserker_soul_amulet 强绑定 necklace：minecraft:generic.attack_damage +0.1 / minecraft:generic.armor -0.25（MULTIPLY_TOTAL）
+// - cataclysm:ring_of_grudged 强绑定 rings：cataclysm:additional_critical_damage +10
+// - cataclysm:vitality_ankh 强绑定 necklace：cataclysm:nature_heal +20
 ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEvent', (event) => {
     try {
         let stack = event.getItemStack();
@@ -563,7 +565,7 @@ ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEv
                 "forge:block_reach",
                 new AttributeModifier("b5e7a3c1-4d2f-4a8e-9c6d-1f3b5a7c9e02", "chitin_claw_block_reach", 1.0, "addition")
             );
-            console.log("甲壳巨钳 charm 属性已添加");
+            //console.log("甲壳巨钳 charm 属性已添加");
         }
         // 狂战士灵魂护符：攻击伤害 +0.1 / 护甲 -0.25（乘算，与源码 ATTACK_DAMAGE/ARMOR 一致）
         if (id === 'cataclysm:berserker_soul_amulet') {
@@ -575,7 +577,23 @@ ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEv
                 "minecraft:generic.armor",
                 new AttributeModifier("c3f8d2a4-5e1b-4c9f-8d7a-2e4b6c8d0a04", "berserker_soul_amulet_armor", -0.25, "multiply_total")
             );
-            console.log("狂战士灵魂护符 charm 属性已添加");
+            //console.log("狂战士灵魂护符 charm 属性已添加");
+        }
+        // 怨气指环：额外暴击伤害 +10（与源码 ADDITIONAL_CRITICAL_DAMAGE 一致）
+        if (id === 'cataclysm:ring_of_grudged') {
+            event.addModifier(
+                "cataclysm:additional_critical_damage",
+                new AttributeModifier("d1e9b3c5-6f2a-4d8e-9c1b-3f5a7d9e0b05", "ring_of_grudged_critical_damage", 10, "addition")
+            );
+            //console.log("怨气指环 charm 属性已添加");
+        }
+        // 生命之锚：自然治疗 +20（与源码 NATURE_HEAL 一致）
+        if (id === 'cataclysm:vitality_ankh') {
+            event.addModifier(
+                "cataclysm:nature_heal",
+                new AttributeModifier("e2f0c4d6-7b3a-4f9e-8d2c-4a6b8e0f1c06", "vitality_ankh_nature_heal", 20, "addition")
+            );
+            //console.log("生命之锚 charm 属性已添加");
         }
     } catch (e) {
         console.log("Cataclysm 饰品 charm 属性添加出错：");

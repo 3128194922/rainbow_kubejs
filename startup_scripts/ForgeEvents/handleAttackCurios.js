@@ -62,6 +62,7 @@ function handleAttackCurios(event, entity, target) {
     if(hasCurios(entity, 'rainbow:gold_glove'))
     {
         try {
+            if(target.isPlayer()) return; // 目标为玩家时不触发点金效果
             let luck = entity.getAttribute("minecraft:generic.luck").getValue();
             if(luck < 0) return; // 幸运值为负时不触发点金效果
             let chance = luck/25; // 幸运值越高，点金概率越高，最大幸运值25时为100%

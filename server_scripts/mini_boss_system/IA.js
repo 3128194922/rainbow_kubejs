@@ -16,10 +16,10 @@ function findSafeSpawnPos(level, x, y, z) {
   for (let dy = -3; dy <= 3; dy++) {
     let by = Math.floor(y) + dy
     if (by < 0) continue
-    let here = level.getBlock(x, by, z)
-    let above = level.getBlock(x, by + 1, z)
-    let below = level.getBlock(x, by - 1, z)
-    if (here.isAir() && above.isAir() && !below.isAir() && !below.liquid) {
+    let here = level.getBlock(x, by, z).blockState
+    let above = level.getBlock(x, by + 1, z).blockState
+    let below = level.getBlock(x, by - 1, z).blockState
+    if (here.isAir() && above.isAir() && !below.isAir() && below.getFluidState().isEmpty()) {
       return { x: x + 0.5, y: by + 0.5, z: z + 0.5 }
     }
   }
@@ -258,7 +258,7 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
         },
         e => {
           e.persistentData.putBoolean('_mb_stealth', false)
-          try { e.potionEffects.remove('minecraft:invisibility') } catch(er) { console.log(er) }
+          try { e.removeEffect('minecraft:invisibility') } catch(er) { console.log(er) }
         },
         true,
         e => {

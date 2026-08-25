@@ -1,0 +1,59 @@
+
+#!!! ATENCION !!!
+#Si tienes el mod ACLM instalado, DTM funcionara como una extension.
+#Todos los ajustes de esta configuracion (Spawn, Salud, XP, Pesos) SERAN IGNORADOS.
+#Solo la seccion de [traits] seguira funcionando para registrar los traits.
+#----------------------------------------------------------------------------------
+#Configuraciones Generales de Spawneo y Estadisticas
+[general]
+	#Probabilidad base de que cualquier monstruo hostil nazca con un Trait. (0.05 = 5%, 1.0 = 100%)
+	#Range: 0.0 ~ 1.0
+	baseSpawnChance = 0
+	#Porcentaje multiplicativo de vida extra otorgado por cada Nivel Romano. (0.30 = +30% por nivel). Un Geomancer Nivel 2 tendria +60% de vida.
+	#Range: 0.0 ~ 10.0
+	healthScalePerLevel = 0.3
+	#Multiplicador de Experiencia (XP) extra que sueltan los mobs con traits.
+	#1.0 = XP Extra Normal (Multiplicado solo por Nivel Romano)
+	#2.0 = Doble de XP Extra
+	#3.0 = Triple de XP Extra (Valor por defecto)
+	#Range: 0.0 ~ 100.0
+	xpMultiplier = 3.0
+
+#Configuracion de la Loteria de Pesos (Weighted Random) para Niveles Romanos.
+#El nivel romano de un Trait se selecciona mediante un sistema de 'Pesos'.
+#Si pones el Nivel 1 en 300 y el Nivel 10 en 1, el Nivel 1 sera 300 veces mas probable.
+#Si quieres que todos los niveles tengan la misma probabilidad, pon todos en el mismo numero (ej: 100).
+[weights]
+	#Range: > 0
+	weightLevel1 = 300
+	#Range: > 0
+	weightLevel2 = 250
+	#Range: > 0
+	weightLevel3 = 200
+	#Range: > 0
+	weightLevel4 = 100
+	#Range: > 0
+	weightLevel5 = 50
+	#Range: > 0
+	weightLevel6 = 30
+	#Range: > 0
+	weightLevel7 = 15
+	#Range: > 0
+	weightLevel8 = 10
+	#Range: > 0
+	weightLevel9 = 4
+	#Range: > 0
+	weightLevel10 = 1
+
+#Configuracion de Traits individuales
+[traits]
+	aeromancy = true
+	blaster = true
+	cryomancy = true
+	geomancy = true
+	redstone_trapper = true
+	snareling = true
+	sorcery = true
+	whisperer = true
+	wraith = true
+

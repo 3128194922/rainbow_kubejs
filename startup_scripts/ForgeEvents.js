@@ -389,14 +389,47 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     }
     if(hasCurios(player,"rainbow:sharingan"))
     {
-        let mainHandItem = attacker.getItemInHand("main_hand").getId();
+        let mainHandItem = player.getItemInHand("main_hand").getId();
         //let offHandItem = attacker.getItemInHand("off_hand").getId();
-        attacker.cooldowns.removeCooldown(mainHandItem);
-        //attacker.cooldowns.removeCooldown(offHandItem);
+        player.cooldowns.removeCooldown(mainHandItem);
+        //player.cooldowns.removeCooldown(offHandItem);
     }
 });
 
 // 盾反判定：举盾时间不超过10tick即判定为盾反
+ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
+    let player = event.player;          // ServerPlayer 盾反玩家
+    let attacker = event.attacker;      // LivingEntity 被盾反击退的攻击者（可能为 null）
+    let source = event.damageSource;    // DamageSource 被格挡的伤害来源
+    let dmg = event.blockedDamage;      // float 被盾反格挡的伤害量
+
+    let px = player.getX();
+    let py = player.getY();
+    let pz = player.getZ();
+    let server = player.server;
+
+    // ===== 打击感反馈 =====
+    // 音效三连：高频金属瞬态(铁砧) + 盾牌格挡 + 重击闷响，音高随机微调让每次盾反有变化
+    let clangPitch = 1.7 + Math.random() * 0.3;
+    server.runCommandSilent(`/playsound minecraft:block.anvil.land player @a ${px} ${py} ${pz} 0.35 ${clangPitch}`);
+    server.runCommandSilent(`/playsound minecraft:item.shield.block player @a ${px} ${py} ${pz} 1.0 1.2`);
+    server.runCommandSilent(`/playsound minecraft:entity.player.attack.knockback player @a ${px} ${py} ${pz} 0.5 0.9`);
+
+    // 粒子三连：中心爆闪 + 暴击火花 + 环形冲击波（低扩散速度形成扩散环）
+    server.runCommandSilent(`particle minecraft:explosion ${px} ${py + 1.2} ${pz} 0.3 0.3 0.3 0.1 3`);
+    server.runCommandSilent(`particle minecraft:crit ${px} ${py + 1} ${pz} 0.6 0.6 0.6 0.6 40`);
+    server.runCommandSilent(`particle minecraft:cloud ${px} ${py + 0.8} ${pz} 1.3 0.1 1.3 0.25 25`);
+
+
+    if(hasCurios(player,"rainbow:sharingan"))
+        {
+            let mainHandItem = player.getItemInHand("main_hand").getId();
+            //let offHandItem = attacker.getItemInHand("off_hand").getId();
+            player.cooldowns.removeCooldown(mainHandItem);
+            //attacker.cooldowns.removeCooldown(offHandItem);
+        }
+});
+
 /*getDamageSource()	DamageSource	这次攻击的伤害来源
 getOriginalBlockedDamage()	float	原始格挡伤害值（等于原始攻击伤害）
 getBlockedDamage()	float	当前实际格挡的伤害值（可被 setter 修改）
@@ -404,7 +437,7 @@ shieldTakesDamage()	boolean	盾牌是否受耐久损耗
 setBlockedDamage(float)	void	修改格挡伤害量（不可低于 0 或超过原始值）
 setShieldTakesDamage(boolean)	void	控制盾牌是否掉耐久*/
 // 无法格挡的伤害类型列表（msgId，模组伤害类型可能带"."，如 "alexscaves.irradiated"）
-const UNBLOCKABLE_DAMAGE_TYPES = [
+/*const UNBLOCKABLE_DAMAGE_TYPES = [
     "magic",              // 魔法伤害（喷溅药水等）
     "indirect_magic",     // 间接魔法伤害（唤魔者尖刺等）
     "sonic_boom",         // 监守者音波
@@ -423,8 +456,8 @@ function getDamageTypeId(ds) {
     // 回退：toString() 格式为 "DamageSource (arrow)"，括号内即伤害类型
     let s = String(ds)
     return s.substring(s.lastIndexOf("(") + 1, s.lastIndexOf(")"))
-}
-
+}*/
+/*
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', event => {
     try {
         let player = event.getEntity();
@@ -432,7 +465,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', e
         if (player.level.clientSide) return;
 
         // 列表内的伤害类型无法被盾牌格挡
-        let damageType = getDamageTypeId(event.getDamageSource());
+        /*let damageType = getDamageTypeId(event.getDamageSource());
         if (UNBLOCKABLE_DAMAGE_TYPES.indexOf(damageType) >= 0) {
             event.setBlockedDamage(0);
             event.setShieldTakesDamage(false);
@@ -442,7 +475,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', e
         // 举盾不超过10tick → 盾反
         if (player.getTicksUsingItem() <= 10) {
             //player.tell("盾反成功！");
-            event.setShieldTakesDamage(false);
+            /*event.setShieldTakesDamage(false);
 
             let px = player.getX();
             let py = player.getY();
@@ -496,14 +529,13 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.ShieldBlockEvent', e
 
         if(hasCurios(player,"rainbow:sharingan"))
         {
-            let mainHandItem = attacker.getItemInHand("main_hand").getId();
+            let mainHandItem = player.getItemInHand("main_hand").getId();
             //let offHandItem = attacker.getItemInHand("off_hand").getId();
-            attacker.cooldowns.removeCooldown(mainHandItem);
+            player.cooldowns.removeCooldown(mainHandItem);
             //attacker.cooldowns.removeCooldown(offHandItem);
-        }
         }
     } catch (e) {
         console.log("盾反判定出现问题：");
         console.log(e);
     }
-});
+});*/

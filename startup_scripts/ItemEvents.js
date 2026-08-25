@@ -600,3 +600,32 @@ ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEv
         console.log(e);
     }
 });
+
+// 新手腰带：取消原 +2 护符栏位加成，改为 翻滚次数 +1 / 翻滚距离 +1
+// 源码 ModItems.java：new CuriosItem(...).withSlotModifier("talisman", 2)
+// Cataclysm 的 CuriosItem.getAttributeModifiers 会给佩戴者加 curios:talisman 槽位 +2。
+// Curios 计算属性时会把本事件修改后的 modifiers 作为最终结果，
+// 因此 clearModifiers() 清掉原加成后重新添加战斗翻滚属性（对 waist/charm 栏位均生效）
+ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEvent', (event) => {
+    try {
+        let stack = event.getItemStack();
+        if (stack.id !== 'cataclysm:belt_of_beginner') return;
+
+        // 取消原有属性加成（护符栏位 +2）
+        event.clearModifiers();
+
+        // 改为：战斗翻滚 次数 +1 / 距离 +1
+        event.addModifier(
+            "combatroll:count",
+            new AttributeModifier("f3a1b2c3-4d5e-4f6a-8b7c-9d0e1f2a3b4c", "belt_of_beginner_roll_count", 1, "addition")
+        );
+        event.addModifier(
+            "combatroll:distance",
+            new AttributeModifier("f3a1b2c3-4d5e-4f6a-8b7c-9d0e1f2a3b4d", "belt_of_beginner_roll_distance", 1, "addition")
+        );
+        //console.log("新手腰带属性已替换：翻滚次数 +1 / 翻滚距离 +1");
+    } catch (e) {
+        console.log("新手腰带属性修改出错：");
+        console.log(e);
+    }
+});

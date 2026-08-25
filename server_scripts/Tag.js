@@ -10,7 +10,7 @@ ServerEvents.tags("item", event => {
     })
 
     // 饰品相关标签
-    event.add("curios:charm",['mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
+    event.add("curios:charm",['mysticartifacts:emergency_plan','mysticartifacts:demonic_gestation','mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
     ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket','caverns_and_chasms:tinplate','caverns_and_chasms:saddled_egg','species:wicked_swapper',
     'oreganized:gargoyle','species:kinetic_core','windswept:dream_catcher','mysticartifacts:witch_pot','species:smoke_bomb'])
     //event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
@@ -148,6 +148,6 @@ ServerEvents.tags("block", event => {
     event.add("rainbow:corundum_cluster",['quark:red_corundum_cluster', 'quark:orange_corundum_cluster', 'quark:yellow_corundum_cluster', 'quark:green_corundum_cluster', 'quark:blue_corundum_cluster', 'quark:indigo_corundum_cluster', 'quark:violet_corundum_cluster', 'quark:white_corundum_cluster', 'quark:black_corundum_cluster'])
 })
 
-ServerEvents.tags("worldgen/biome", event => {
+ServerEvents.tags("damage_type", event => {
 
 })

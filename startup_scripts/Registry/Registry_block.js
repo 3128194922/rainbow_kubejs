@@ -42,8 +42,9 @@ function getMinecraftToolTag(input) {
 // 🧱 注册方块
 // ==========================================
 StartupEvents.registry("block", event => {
-    // 幸运方块：使用 basic 类型，需要工具，草地音效，铲子挖掘，默认裁剪渲染
-    event.create("rainbow:luckyblock", "basic").requiresTool(true).grassSoundType().tagBlock("minecraft:mineable/shovel").defaultCutout().box(3, 0, 3, 13, 10, 13)
+    // 帕瓦椅子：cardinal 类型（水平朝向 facing 随放置方向自动旋转，blockstates 见 assets/rainbow/blockstates/food_stall_chairs.json），草地音效，默认裁剪渲染
+    // 无法破坏（硬度 -1，抗爆极高），不自然掉落物品 —— 仅供潜行右键"收回"取回物品
+    event.create("rainbow:food_stall_chairs", "cardinal").glassSoundType().defaultCutout().hardness(-1).resistance(3600000).noDrops().box(0,0,0,16,32,16)
     // 始冰矿：材质为 STONE，需要工具，镐挖掘，铁级挖掘等级，石头音效
     event.create("rainbow:origin_ice_ore", "basic").material('stone').requiresTool().tagBlock(getMinecraftToolTag("镐")).tagBlock(getMinecraftToolTag("铁")).stoneSoundType()
     // 虚空矿：材质为 STONE，需要工具，镐挖掘，铁级挖掘等级，石头音效

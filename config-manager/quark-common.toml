@@ -558,7 +558,7 @@
 		#A list of recipe names that should NOT be added in by default
 		"Ignored Recipes" = []
 		"Force Limited Crafting" = false
-		"Disable Recipe Book" = false
+		"Disable Recipe Book" = true
 		#If enabled, advancements granting recipes will be stopped from loading, potentially reducing the lagspike on first world join.
 		"Filter Recipe Advancements" = true
 		#This feature disables itself if any of the following mods are loaded:
@@ -1638,7 +1638,7 @@
 	[client.usage_ticker]
 		#Switch the armor display to the off hand side and the hand display to the main hand side
 		Invert = true
-		"Shift Left" = 0
+		"Shift Left" = -15
 		"Shift Right" = 0
 		"Enable Main Hand" = true
 		"Enable Off Hand" = true

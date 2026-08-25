@@ -1864,7 +1864,7 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:quivers")) return false;
                     return true;
                 })
-                .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
+                .addAttribute("attributeslib:arrow_damage", "quiver", 0.1, "multiply_total")
                 .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
         )
 })
@@ -1887,10 +1887,11 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:quivers")) return false;
                     return true;
                 })
-                .addAttribute("attributeslib:arrow_damage", "quiver", 1, "addition")
+                .addAttribute("attributeslib:arrow_damage", "quiver", 0.1, "multiply_total")
                 .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
                 .addAttribute("attributeslib:draw_speed", "quiver", 0.1, "multiply_total")
-                .curioTick((slotContext, stack) => {
+                .addAttribute("moreattribute:charge_speed", "quiver", 0.8, "addition")
+                /*.curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
                     if (player.level.isClientSide()) return;
@@ -1929,7 +1930,7 @@ StartupEvents.registry('item', event => {
                     if (stack.nbt.getBoolean("speedBoost")) {
                         ev.modify("generic.movement_speed", "fast_quiver_speed", 4.0, "multiply_total");
                     }
-                })
+                })*/
         )
 })
 

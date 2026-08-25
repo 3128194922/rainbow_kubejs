@@ -25,5 +25,5 @@
 	#List of entities that need to receive i-frames on receiving attacks or relies on i-frames
 	dmgReceiveExcludedEntities = []
 	#List of damage sources that need to give i-frames on doing damage (ex: lava)
-	damageSrcWhitelist = ["inFire", "delighto_flight.shock", "farmersdelight.stove", "drown", "lava", "sweetBerryBush", "cactus", "lightningBolt", "inWall", "hotFloor", "outOfWorld", "atmospheric.yuccaFlower", "atmospheric.yuccaLeaves", "dungeonsdelight.dungeon_stove_burn"]
+	damageSrcWhitelist = ["inFire", "delighto_flight.shock", "farmersdelight.stove", "drown", "lava", "sweetBerryBush", "cactus", "inWall", "hotFloor", "outOfWorld", "atmospheric.yuccaFlower", "atmospheric.yuccaLeaves", "dungeonsdelight.dungeon_stove_burn"]
 

@@ -20,7 +20,7 @@
 
 	[items.bear_venison]
 		#If false, all items related to bear venison will be disabled.
-		enabled = true
+		enabled = false
 
 	[items.chevon]
 		#If false, all items related to chevon leg will be disabled.
@@ -28,27 +28,27 @@
 
 	[items.frog_leg]
 		#If false, all items related to frog leg will be disabled.
-		enabled = true
+		enabled = false
 
 	[items.sniffon]
 		#If false, all items related to sniffon will be disabled.
-		enabled = true
+		enabled = false
 
 	[items.terrapin]
 		#If false, all items related to terrapin will be disabled.
-		enabled = true
+		enabled = false
 
 	[items.chorus_herb]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 
 	[items.crimson_herb]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 
 	[items.fins]
 		#If false, the item won't be craftable and present in tabs effectively disabling it. Only works with Curio API present.
-		enabled = true
+		enabled = false
 		#The max speed multiplier that will be applied while swimming.
 		#Range: 1.0 ~ 64.0
 		maxSpeedMultiplier = 1.5
@@ -66,7 +66,7 @@
 
 	[items.glow_herb]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 		#The duration in ticks of void corruption after taking void damage. Default: 20 seconds * 20 ticks per second = 400 ticks
 		#Range: > 0
 		voidCorruptionDuration = 400
@@ -79,7 +79,7 @@
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
 		enabled = false
 		#If false, the items won't be attracted to player after killing a mob underwater.
-		attractItems = true
+		attractItems = false
 		#The amount of air bubble ticks that will be regenerated after killing. 30 -> one bubble.
 		#Range: > 0
 		airBubblesRegenAmount = 30
@@ -130,6 +130,14 @@
 
 	[items.phantom_herb]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
+		enabled = false
+
+	[items.phantom_rocket]
+		#If false, the item won't be craftable and present in tabs effectively disabling it.
+		enabled = true
+
+	[items.phantom_treat]
+		#If false, the item won't be craftable and present in tabs effectively disabling it.
 		enabled = true
 		#The max amount of times the item can be applied on an entity.
 		#Range: > 1
@@ -138,21 +146,17 @@
 		#Range: 0.01 ~ 4.0
 		speedIncreasePerUse = 0.05
 
-	[items.phantom_rocket]
-		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
-
 	[items.pheromones]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
 		enabled = true
 
 	[items.whispering_herb]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 
 	[items.treasure_sack]
 		#If false, the item won't be acquirable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 		#Chance for dropping experience after opening the sack (0.75 = 75% chance).
 		#Range: 0.0 ~ 1.0
 		dropXPChance = 0.75
@@ -165,7 +169,7 @@
 
 	[items.infernal_sack]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = true
+		enabled = false
 		#Chance for dropping experience after opening the sack (1 = 100% chance).
 		#Range: 0.0 ~ 1.0
 		dropXPChance = 1.0
@@ -191,7 +195,7 @@
 
 	[items.disc_shards]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
-		enabled = false
+		enabled = true
 
 	[items.nautilus_bucket]
 		#If false, the item won't be craftable and present in tabs effectively disabling it.
@@ -199,9 +203,17 @@
 
 [features]
 
+	[features.tooltips]
+		#If false no item in the mod will have it's tooltip displayed.
+		enabled = true
+		#List of item IDs (namespace:path) that should not have their tooltip displayed.
+		itemBlacklist = []
+		#If true, all items in the mod will not have their tooltips unless on blacklist.
+		blacklistInverted = false
+
 	[features."illager treasure sacks"]
 		#List of entity IDs (namespace:path) that should receive the illager treasure loot.
-		illagerEntities = ["minecraft:vindicator", "minecraft:evoker", "minecraft:pillager"]
+		illagerEntities = ["minecraft:vindicator", "minecraft:evoker", "minecraft:pillager", "takesapillage:archer", "takesapillage:skirmisher", "takesapillage:legioner", "illagerinvasion:provoker", "illagerinvasion:invoker", "illagerinvasion:necromancer", "illagerinvasion:basher", "illagerinvasion:sorcerer", "illagerinvasion:archivist", "illagerinvasion:inquisitor", "illagerinvasion:marauder", "illagerinvasion:alchemist", "illagerinvasion:firecaller", "illagerinvasion:surrendered"]
 		#If true, the treasure sacks drops are limited per chunk to avoid farming them.
 		limitEnabled = true
 		#Max amount of treasure sacks a single chunk can store.
@@ -239,27 +251,27 @@
 		enabled = true
 		#The ticks duration of a single water regeneration in the infinite cauldron.
 		#Range: > 1
-		regenWaterTicks = 8
+		regenWaterTicks = 2
 		#List of block IDs (namespace:path) that should make a cauldron have infinite water if placed below it.
 		infiniteWaterBlocks = ["minecraft:prismarine", "minecraft:dark_prismarine", "minecraft:prismarine_bricks", "upgrade_aquatic:luminous_prismarine", "minecraft:sea_lantern"]
 
 	[features."throwable music discs"]
 		#If true, music discs will be throwable.
-		enabled = true
+		enabled = false
 		#The default amount of damage the disc deals to entities. Overwritten by defaultStats list.
 		#Range: 0.0 ~ 128.0
-		defaultDamage = 5.0
+		defaultDamage = 4.0
 		#The default max travel distance (range) for thrown discs. Overwritten by defaultStats list.
 		#Range: 0.0 ~ 128.0
 		defaultTravelDistance = 10.0
 		#Item or tag used to repair music discs.
-		repairItem = "minecraft:diamond"
+		repairItem = "functionality:disc_shards"
 		#Per-item stats for thrown discs. Format: 'namespace:item;damage;range'. Range optional (defaults to maxTravelDistance).
-		perItemStats = ["minecraft:music_disc_pigstep;7;6", "minecraft:music_disc_5;7;6", "minecraft:music_disc_relic;7;6", "minecraft:music_disc_otherside;6;12", "minecraft:music_disc_11;6;12", "minecraft:music_disc_wait;6;12"]
+		perItemStats = ["minecraft:music_disc_pigstep;6;6", "minecraft:music_disc_5;6;6", "minecraft:music_disc_relic;6;6", "minecraft:music_disc_otherside;5;12", "minecraft:music_disc_11;5;12", "minecraft:music_disc_wait;5;12"]
 
 	[features.better_lichens]
 		#Enable functional lichens and replace vanilla glow lichen.
-		enabled = true
+		enabled = false
 		#Chance override for vanilla glow lichen feature to attempt placement.
 		#Range: 0.0 ~ 1.0
 		featureGenChance = 0.25
@@ -281,7 +293,7 @@
 
 	[features."haste potion harvesting"]
 		#If true, right clicking on bloom lichen with empty bottle will fill up the bottle with potion effect.
-		enabled = true
+		enabled = false
 		#The amount of potion duration in ticks that will be added per lichen harvest (20 ticks per second).
 		#Range: > 1
 		ticksDurationPerHarvest = 160
@@ -292,14 +304,14 @@
 		amplificationEnabled = true
 		#Experience points required to harvest a bloom lichen.
 		#Range: > 0
-		xpCostPerHarvest = 4
+		xpCostPerHarvest = 18
 		#Experience points required to harvest an overgrown lichen.
 		#Range: > 0
-		xpCostPerHarvestOvergrown = 16
+		xpCostPerHarvestOvergrown = 44
 
 	[features."thunder ritual"]
 		#If true, the weather will turn to a thunderstorm if a configured item is dropped on a copper block surrounded by four torches.
-		enabled = false
+		enabled = true
 		#Ticks duration for thunderstorm per copper block in the ritual column. Default: 60 seconds * 20 ticks per second = 600 ticks
 		#Range: > 1
 		weatherDurationPerCopperBlock = 1200

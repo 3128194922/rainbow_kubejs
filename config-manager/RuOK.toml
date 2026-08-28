@@ -8,15 +8,15 @@ whiteListedEntities = []
 BlackTagListEntity = []
 WhiteTagListEntity = []
 isAlwaysShowItemCount = true
-startTime = 158.164
-Hud = false
+startTime = 138.6
+Hud = true
 HudRXTX = false
-HudFPS = false
-HudCPU = false
-HudGPU = false
-HudRAM = false
+HudFPS = true
+HudCPU = true
+HudGPU = true
+HudRAM = true
 HudPlayerPos = false
-HudServer = false
+HudServer = true
 HudCameraTarget = false
 Mood = true
 MaxParticleDistance = 128
@@ -55,13 +55,13 @@ CullParticle = true
 key = "ruok.options.hud.fps.info"
 x = 4
 y = 4
-enabled = false
+enabled = true
 
 [[HudTextConfig]]
 key = "ruok.options.hud.system.info"
 x = 4
 y = 17
-enabled = false
+enabled = true
 
 [[HudTextConfig]]
 key = "ruok.options.hud.playerpos.info"
@@ -73,7 +73,7 @@ enabled = false
 key = "ruok.options.hud.server.info"
 x = 4
 y = 43
-enabled = false
+enabled = true
 
 [[HudTextConfig]]
 key = "ruok.options.hud.cameratarget.info"

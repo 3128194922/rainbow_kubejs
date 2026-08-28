@@ -297,7 +297,7 @@ ItemEvents.modification(event => {
                .curioTick((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
-                    if (entity.age % 100 != 0) return;
+                    if (!everyTicks(entity, 100)) return;
 
                     let tag = getTideJournalTag(entity);
                     let unlocked = getTideFishUnlockCount(tag);

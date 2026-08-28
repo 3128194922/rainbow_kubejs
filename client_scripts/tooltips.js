@@ -353,7 +353,7 @@ ItemEvents.tooltip((event) => {
       if (event.shift) {
         text.remove(1)
         text.remove(2)
-        text.add(1, Text.aqua("▸ 快速消耗饥饿恢复生命值"));
+        text.add(1, Text.aqua("▸ 每2秒消耗2饥饿回复2生命（需生命未满且饥饿过半）"));
         text.add(2, Text.aqua("▸ 每2个游戏日想吃一种食物"));
         text.add(3, Text.aqua("▸ 连续完成10个任务进化为大胃袋"));
         let line = 4;

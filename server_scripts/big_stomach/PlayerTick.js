@@ -86,7 +86,7 @@ PlayerEvents.tick(event => {
 
     try {
         // 每隔 20 tick（1秒）轮询一次
-        if (player.age % 20 != 0) return;
+        if (!everyTicks(player, 20)) return;
 
         let data = player.persistentData;
         let now = player.level.dayTime();

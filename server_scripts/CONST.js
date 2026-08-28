@@ -69,6 +69,8 @@ const $AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.Abs
 const $Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Projectile')
 
 
+
+
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
 

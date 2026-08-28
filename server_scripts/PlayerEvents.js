@@ -11,7 +11,7 @@ PlayerEvents.tick((event) => {
     if (player.level.isClientSide()) return;
 
     // 每秒执行一次 (20 ticks)
-    if (player.age % 20) return;
+    if (!everyTicks(player, 20)) return;
 /*
     // --- 韧性恢复机制 ---
     // 韧性 (resilience) 会随时间自动恢复，受伤会减少韧性
@@ -39,7 +39,7 @@ PlayerEvents.tick((event) => {
         curios: listCuriosStack(player)
       })*/
       
-    if (player.age % 200) return;
+    if (!everyTicks(player, 200)) return;
 });
 
 // 玩家物品栏变更事件
@@ -226,7 +226,7 @@ PlayerEvents.tick(event => {
   let player = event.player;
   if (!player) return;
 
-  if (player.age % 10 !== 0) return; // 控制频率
+  if (!everyTicks(player, 10)) return; // 控制频率
 
   let RANGE = 6;
 

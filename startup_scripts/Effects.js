@@ -25,7 +25,7 @@ StartupEvents.registry("mob_effect", event => {
         .harmful()
         .effectTick((mob, lvl) => {
             if (!mob || mob.level.isClientSide()) return
-            if (mob.age % 20 != 0) return
+            if (!everyTicks(mob, 20)) return
 
             let mobAABB = mob.boundingBox.inflate(16)
 
@@ -62,7 +62,7 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial()
         .effectTick((mob, lvl) => {
             if (!mob || mob.level.isClientSide()) return
-            if (mob.age % 20 != 0) return
+            if (!everyTicks(mob, 20)) return
 
             let now = mob.level.gameTime
             let lastRage = mob.persistentData.lastRageTick || 0
@@ -141,7 +141,7 @@ StartupEvents.registry("mob_effect", event => {
         .modifyAttribute("attributeslib:arrow_damage", "short_buff", 0.1, "multiply_total")
         .effectTick((entity, amplifier) => {
             if (!entity || entity.level.isClientSide()) return;
-            if (entity.age % 20 != 0) return;
+            if (!everyTicks(entity, 20)) return;
             let item = entity.getItemInHand("main_hand");
             if (item.id == 'species:crankbow') {
                 if (item.nbt.getBoolean("IsUsing") == true) {

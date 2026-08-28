@@ -150,7 +150,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
     if(hasCurios(victim, "rainbow:pauldron"))
     {
         try{
-            if (event.getAmount() >= 6 && !victim.cooldowns.isOnCooldown("rainbow:pauldron")) {
+            if (event.getAmount() >= 12 && !victim.cooldowns.isOnCooldown("rainbow:pauldron")) {
                 event.setAmount(0);
                 ParticleTextAPI.sendInFront(victim, "肩甲抵消！", 0xFFFFFF);
                 victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "minecraft:block.anvil.place", "players", 1.0, 1.0);

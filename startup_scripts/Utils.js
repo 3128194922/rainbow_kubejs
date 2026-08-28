@@ -7,6 +7,17 @@
 // Contains various generic helper functions, such as material retrieval, time conversion, key mapping, etc.
 
 /**
+ * tick 间隔判定：实体年龄是否为 interval 的整数倍（即每 interval tick 触发一次）
+ * 用法：if (!everyTicks(player, 20)) return; 或 if (everyTicks(player, 5)) { ... }
+ * @param {Entity} entity - 任意实体（player / mob / entity）
+ * @param {number} interval - 间隔 tick 数（20 = 1秒）
+ * @returns {boolean} 本 tick 是否为触发点
+ */
+function everyTicks(entity, interval) {
+    return entity.age % interval === 0;
+}
+
+/**
  * 返回 Minecraft 1.19.4 中 MaterialJS 支持的材质
  * @param {string} materialName - 材质名称
  * @returns {string} 对应的材质值

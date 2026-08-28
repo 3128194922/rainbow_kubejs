@@ -25,7 +25,7 @@ registerMaskTick("minecraft:bat", (event, player) => {
 PlayerEvents.tick(event => {
     let player = event.player
     if (player.level.isClientSide()) return
-    if (player.age % 20 != 0) return;
+    if (!everyTicks(player, 20)) return;
     
     let helmet = player.getItemBySlot("head")
     if (helmet.isEmpty()) return

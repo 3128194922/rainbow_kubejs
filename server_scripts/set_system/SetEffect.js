@@ -599,8 +599,8 @@ PlayerEvents.tick(event => {
     let p = event.player
     if (!p || p.level.isClientSide()) return
     try {
-        if (p.age % 5 === 0) pollAndReevaluate(p)
-        if (p.age % 20 === 0) maintainActiveEffects(p)
+        if (everyTicks(p, 5)) pollAndReevaluate(p)
+        if (everyTicks(p, 20)) maintainActiveEffects(p)
     } catch (e) {
         console.error('[套装系统] tick 异常: ' + e)
     }

@@ -108,36 +108,16 @@ StartupEvents.registry('item', event => {
                     if (!entity || !entity.isPlayer()) return;
 
                     let player = entity;
-                    if (player.age % 20) return;
+                    if (!everyTicks(player, 40)) return; // 每 2 秒触发一次
+
+                    // 仅在生命未满且饥饿值超过一半（>10）时触发
+                    if (player.getHealth() >= player.getMaxHealth()) return;
                     let foodData = player.getFoodData();
-                    let foodLevel = foodData.foodLevel;
-                    let saturation = foodData.getSaturationlevel;
-                    let health = player.getHealth();
-                    let maxHealth = player.getMaxHealth();
+                    if (foodData.foodLevel <= 10) return;
 
-                    // 仅在血量未满时触发
-                    if (health < maxHealth) {
-
-                        // 若饥饿值低于 6，则不再继续转换
-                        if (foodLevel <= 6) return;
-
-                        // 恢复
-                        player.heal(1);
-
-                        // 消耗饥饿和饱和度：转化比 1:1
-                        let cost = 1; // 每tick消耗量，可以调整
-                        let newFood = foodLevel - cost;
-                        let newSaturation = Math.max(0, saturation - cost);
-
-                        // 防止饥饿值降到 3 以下
-                        if (newFood < 6) {
-                            cost -= (6 - newFood);
-                            newFood = 6;
-                        }
-
-                        foodData.setFoodLevel(newFood);
-                        foodData.setSaturation(newSaturation);
-                    }
+                    // 消耗 2 饥饿，回复 2 生命
+                    player.heal(2);
+                    foodData.setFoodLevel(foodData.foodLevel - 2);
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -252,7 +232,7 @@ StartupEvents.registry('item', event => {
                 //.modifyFortuneLevel((slotContext, lootContext, stack) => 3)
                 /*.curioTick((slotContext) => {
                     let player = slotContext.entity();
-                    if (player.age % 20) return;
+                    if (!everyTicks(player, 20)) return;
                     player.potionEffects.add("minecraft:luck", 60, 1, false, false)
                 })*/
                 .canEquip((slotContext, stack) => {
@@ -360,7 +340,7 @@ StartupEvents.registry('item', event => {
           if (player.level.isClientSide()) return
 
           // 5s 冷却
-          if (player.age % 100 != 0) return
+          if (!everyTicks(player, 100)) return
 
           let level = player.level;
           if (level.isClientSide()) return
@@ -520,7 +500,7 @@ StartupEvents.registry('item', event => {
                 /*.curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
-                    if (player.age % 10) return;
+                    if (!everyTicks(player, 10)) return;
 
                     if (player.cooldowns.isOnCooldown('rainbow:lyre')) {
 
@@ -671,7 +651,7 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return;
-                    if (entity.age % 20 != 0) return;
+                    if (!everyTicks(entity, 20)) return;
                     let item = entity.getItemInHand("main_hand");
                     if (item.id != 'species:spectralibur') return;
                     if (stack.nbt == null) {
@@ -743,7 +723,7 @@ StartupEvents.registry('item', event => {
 
                     if (!player || player.server == null) return;
 
-                    if (player.age % 10 !== 0) return;
+                    if (!everyTicks(player, 10)) return;
                     stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
                 })
         )
@@ -798,7 +778,7 @@ StartupEvents.registry('item', event => {
                     let RANGE = 32
 
                     // 射线检测逻辑（每 10 tick 执行一次）
-                    if (player.age % 10 === 0) {
+                    if (everyTicks(player, 10)) {
                         RANGE = RANGE / 2;
                         if (player.isUsingItem()) {
                             let using = player.getUseItem();
@@ -833,7 +813,7 @@ StartupEvents.registry('item', event => {
                     }
 
                     // 智能分兵逻辑 (每 20 tick 执行一次)
-                    if (player.age % 20 === 0) {
+                    if (everyTicks(player, 20)) {
                         let aabb = player.boundingBox.inflate(RANGE);
                         let level = player.level;
 
@@ -931,7 +911,7 @@ StartupEvents.registry('item', event => {
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
-                    if (player.age % 20 !== 0) return;
+                    if (!everyTicks(player, 20)) return;
                     player.potionEffects.add("species:bloodlust", 60, 0, false, false);
                 })
         )
@@ -1022,7 +1002,7 @@ StartupEvents.registry('item', event => {
                 })
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
-                    if (player.age % 20 !== 0) return;
+                    if (!everyTicks(player, 20)) return;
 
                     if (player.getItemBySlot("head").getNbt().get("id") == "minecraft:bat") {
                         player.potionEffects.add("minecraft:night_vision", 60, 0, false, false)
@@ -1532,7 +1512,7 @@ StartupEvents.registry('item', event => {
                     if(!player || !player.isPlayer() || !player.isAlive()) return;
                     if (!player.isSprinting() || player.isSwimming()) return;
 
-                    if(player.age % 20) return;
+                    if(!everyTicks(player, 20)) return;
 
                     let playerBox = player.getBoundingBox();
 
@@ -1805,7 +1785,7 @@ StartupEvents.registry('item', event => {
                     if (!player || player.level.isClientSide()) return;
 
                     // 每秒判定一次（与回血节奏对齐），与上一秒的位置比较
-                    if (player.age % 20 !== 0) return;
+                    if (!everyTicks(player, 20)) return;
 
                     let tag = stack.getOrCreateTag();
                     let lastX = tag.getDouble("lastX");
@@ -1822,7 +1802,7 @@ StartupEvents.registry('item', event => {
 
                     // 不移动时每秒恢复 10 血量
                     if (!moving) {
-                        player.heal(10);
+                        player.heal(5);
                     }
                 })
         )
@@ -1847,7 +1827,7 @@ StartupEvents.registry('item', event => {
                     let player = slotContext.entity();
                     if (!player || player.level.isClientSide()) return;
 
-                    if (player.age % 2*20 === 0) {
+                    if (everyTicks(player, 40)) {
                         player.heal(1);
                     }
                 })
@@ -2092,13 +2072,13 @@ StartupEvents.registry('item', event => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "ender_glove", atkSpeed > 2 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "ender_glove", atkSpeed > 2.5 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
                     let player = slotContext.entity();
                     if (!player || player.server == null) return;
-                    if (player.age % 5 !== 0) return;
+                    if (!everyTicks(player, 5)) return;
                     let tag = stack.getOrCreateTag();
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
                     if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {
@@ -2131,13 +2111,13 @@ StartupEvents.registry('item', event => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "living_gauntlet", atkSpeed > 2 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "living_gauntlet", atkSpeed > 2.5 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
                     let player = slotContext.entity();
                     if (!player || player.server == null) return;
-                    if (player.age % 5 !== 0) return;
+                    if (!everyTicks(player, 5)) return;
                     let tag = stack.getOrCreateTag();
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
                     if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {
@@ -2171,13 +2151,13 @@ StartupEvents.registry('item', event => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "gold_glove", atkSpeed > 2 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "gold_glove", atkSpeed > 2.5 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
                     let player = slotContext.entity();
                     if (!player || player.server == null) return;
-                    if (player.age % 5 !== 0) return;
+                    if (!everyTicks(player, 5)) return;
                     let tag = stack.getOrCreateTag();
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
                     if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {

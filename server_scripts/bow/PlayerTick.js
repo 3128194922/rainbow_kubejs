@@ -7,7 +7,7 @@
 PlayerEvents.tick(event => {
     let player = event.player;
     if (!player) return;
-    if (player.age % 2 != 0) return; // 每2tick发送一次，减少网络压力
+    if (!everyTicks(player, 2)) return; // 每2tick发送一次，减少网络压力
 
     if (player.isUsingItem()) {
         let stack = player.getUseItem();
@@ -35,7 +35,7 @@ PlayerEvents.tick(event => {
 /*PlayerEvents.tick(event => {
     let player = event.player;
     if (!player) return;
-    if (player.age % 2 != 0) return; // 每2tick发送一次，减少网络压力
+    if (!everyTicks(player, 2)) return; // 每2tick发送一次，减少网络压力
 
     if (player.isUsingItem()) {
         let stack = player.getUseItem();

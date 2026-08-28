@@ -154,7 +154,7 @@ EntityEvents.hurt(event => {
 PlayerEvents.tick(event => {
     let player = event.player
     if (!player || !player.level || player.level.isClientSide()) return
-    if (player.age % 10 !== 0) return
+    if (!everyTicks(player, 10)) return
 
     // 所有变量都声明在函数作用域，避免 Rhino 对 try 块内 const/let 的作用域 bug
     let seatUuid, vehicle, seat, cx, cy, cz, chairBlock

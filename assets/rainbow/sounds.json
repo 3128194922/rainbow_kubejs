@@ -103,5 +103,11 @@
 	"sounds": [
 	  "rainbow:super_hormone"
 	]
+  },
+  	"voice.kuchiyosenojutsu": {
+	"subtitle": "sounds.rainbow.kuchiyosenojutsu",
+	"sounds": [
+	  "rainbow:kuchiyosenojutsu"
+	]
   }
 }

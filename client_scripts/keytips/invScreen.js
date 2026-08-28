@@ -6,13 +6,22 @@
 // 在物品栏界面绘制指向特定槽位（饰品、属性、时装）的引导线和文本
 // Draws guide lines and text pointing to specific slots (Curios, Attributes, Fashion) in the inventory screen
 
-let $ScreenEvent$Init$Post = Java.loadClass("net.minecraftforge.client.event.ScreenEvent$Init$Post")
-let $Button = Java.loadClass("net.minecraft.client.gui.components.Button")
-let $InventoryScreen = Java.loadClass("net.minecraft.client.gui.screens.inventory.InventoryScreen")
 let $Color = Java.loadClass("java.awt.Color")
 
 function RGBA(r, g, b, a) {
   return new $Color(r / 255, g / 255, b / 255, a / 100).getRGB()
+}
+
+// 屏幕判定：Rhino 的 instanceof 对原始 Java Screen 对象不可用
+// （TypeError: Can't use 'instanceof' on a non-object），改用类名比较
+// （与 ender_chest_button/main.js 相同模式；兼容 Quark 背包界面）
+var HINT_INV_SCREEN_CLASS = "net.minecraft.client.gui.screens.inventory.InventoryScreen"
+var HINT_BACKPACK_SCREEN_CLASS = "org.violetmoon.quark.addons.oddities.client.screen.BackpackInventoryScreen"
+
+function isHintScreen(screen) {
+  if (screen == null) return false
+  var name = screen.getClass().getName()
+  return name == HINT_INV_SCREEN_CLASS || name == HINT_BACKPACK_SCREEN_CLASS
 }
 
 // =========================
@@ -51,7 +60,7 @@ var TutorialHints = {
 
   renderHint: function(event, h) {
     event.poseStack.pushPose()
-    event.poseStack.translate(event.screen.guiLeft, event.screen.guiTop, 0)
+    event.poseStack.translate(event.screen.getGuiLeft(), event.screen.getGuiTop(), 0)
 
     var color = RGBA(h.color[0], h.color[1], h.color[2], h.color[3])
 
@@ -88,11 +97,11 @@ var TutorialHints = {
   },
 
   render: function(event) {
-    if (!global.isEnabled) return  // ⭐ 全局开关判断
-    if (!(event.screen instanceof $InventoryScreen)) return
+    if (!global.isEnabled) return  // ⭐ 全局开关判断（由 keytips/tab_button.js 切换）
+    if (!isHintScreen(event.screen)) return
 
-    var GSW = Client.window.guiScaledWidth
-    var GSH = Client.window.guiScaledHeight
+    var GSW = event.screen.width
+    var GSH = event.screen.height
 
     // 半透明遮罩
     event.poseStack.translate(0, 0, -1)
@@ -107,5 +116,10 @@ var TutorialHints = {
 
 // 注册渲染
 RenderJSEvents.onScreenPostRender(event => {
-  TutorialHints.render(event)
+  try {
+    TutorialHints.render(event)
+  } catch (e) {
+    console.log("[界面引导提示] 渲染出现问题：")
+    console.log(e)
+  }
 })

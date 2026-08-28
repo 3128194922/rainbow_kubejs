@@ -10,7 +10,8 @@ ItemEvents.tooltip(event => {
     event.addAdvanced('#rainbow:food_tooltip', (item, advanced, text) => {
         
         const food = item.item.foodProperties
-        if (!food) return
+        if (!food) return;
+        if(!item.item) return;
         if(item.item.hasTag('@dungeonsdelight')) return
 
         const effects = food.effects
@@ -70,17 +71,18 @@ ItemEvents.tooltip(event => {
     // 末影之握：攻击时为目标附着末影火3秒
     event.addAdvanced('rainbow:ender_glove', (item, advanced, text) => {
         text.add(2, Text.aqua("▸ 攻击时为目标附着末影火 3秒"))
-        text.add(3, Text.aqua("▸ +1 攻击伤害 / +10% 攻击速度"))
+        text.add(3, Text.aqua("▸ 攻速>2时 +1 攻击伤害，否则 +3 攻击伤害"))
     })
     // 生灵之触：攻击时为目标附着生灵火3秒
     event.addAdvanced('rainbow:living_gauntlet', (item, advanced, text) => {
         text.add(2, Text.aqua("▸ 攻击时为目标附着生灵火 3秒"))
-        text.add(3, Text.aqua("▸ +1 攻击伤害 / +10% 攻击速度"))
+        text.add(3, Text.aqua("▸ 攻速>2时 +1 攻击伤害，否则 +3 攻击伤害"))
     })
     // 点金手套：攻击概率点金并冻结目标3秒
     event.addAdvanced('rainbow:gold_glove', (item, advanced, text) => {
         text.add(2, Text.aqua("▸ 攻击时概率将目标点金并冻结 3秒"))
         text.add(3, Text.aqua("▸ 概率 = 幸运值/25（幸运值需≥0，25幸运=100%）"))
+        text.add(4, Text.aqua("▸ 攻速>2时 +1 攻击伤害，否则 +3 攻击伤害"))
     })
 })
 
@@ -193,69 +195,12 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("每30s恢复1饥饿值"));
     })
     event.addAdvanced('rainbow:big_stomach', (item, advanced, text) => {
-      // 读取大胃袋的进食任务数据（服务器同步的饰品 NBT，PlayerTick 每秒刷新）
-      let foodId = null;
-      let taskDone = false;
-      let streak = 0;
-      let remaining = -1;
-      if (item.nbt != null && item.nbt.contains("bs_epoch")) {
-        foodId = item.nbt.getString("bs_food");
-        taskDone = item.nbt.getBoolean("bs_done");
-        streak = item.nbt.getInt("bs_streak");
-        if (item.nbt.contains("bs_remaining")) {
-          remaining = item.nbt.getInt("bs_remaining");
-        }
-      }
-      // 非SHIFT：显示当期想吃食物；按 SHIFT 时隐藏「想吃」行
       text.add(1, Text.gray("按[SHIFT]查看详细"));
-      if (!event.shift && foodId != null && foodId != "") {
-        text.add(2, Text.gold("想吃：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
-      }
       if (event.shift) {
-		text.remove(1)
-        text.remove(2)
-        text.add(1, Text.aqua("▸ 每2个游戏日想吃一种食物"));
-        text.add(2, Text.aqua("▸ 吃下指定食物后大胃袋生效"));
-        text.add(3, Text.aqua("▸ 连续完成获得击退抗性"));
-        text.add(4, Text.aqua("▸ 任务完成时以饱食度抵消伤害"));
-        let line = 5;
-        if (foodId != null && foodId != "") {
-          text.add(line, Text.gold("目标食物：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
-          line++;
-          text.add(line, Text.gray(foodId));
-          line++;
-          if (taskDone) {
-            text.add(line, Text.green("状态：已完成本轮进食"));
-          } else {
-            text.add(line, Text.yellow("状态：尚未吃到指定食物"));
-          }
-          line++;
-        } else {
-          text.add(line, Text.gray("还未开启进食任务"));
-          line++;
-        }
-        // 距下次换食的剩余时间（bs_remaining 由服务器 PlayerTick 写入）
-        if (remaining >= 0) {
-          if (remaining <= 0) {
-            text.add(line, Text.aqua("即将换食"));
-          } else {
-            let days = Math.floor(remaining / 24000);
-            let hours = Math.floor((remaining % 24000) / 1000);
-            text.add(line, Text.aqua("距下次换食：约 " + days + " 游戏日 " + hours + " 小时"));
-          }
-          line++;
-        }
-        if (streak > 0) {
-          let kbr = Math.min(0.1 * streak, 1.0) * 100;
-          text.add(line, Text.aqua("连击 ×").append(Text.gold("" + streak)).append(Text.aqua("（击退抗性 +" + Math.round(kbr) + "%）")));
-        } else {
-          text.add(line, Text.aqua("连击：无"));
-        }
-        line++;
-        // 基础加成说明（秒食：食用/饮用加速）
-        text.add(line, Text.aqua("加成：食用/饮用速度 +50%，饱食度满仍可进食"));
-        line++;
-        text.add(line, Text.red("未完成目标时大胃袋全部失效"));
+        text.remove(1)
+        text.add(1, Text.aqua("▸ 食用/饮用速度 +50%"));
+        text.add(2, Text.aqua("▸ 饱食度满仍可进食"));
+        text.add(3, Text.aqua("▸ 受伤时以饱和度抵消伤害"));
       }
     })
     event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
@@ -383,7 +328,64 @@ ItemEvents.tooltip((event) => {
         text.add(2, Text.red(`那么代价呢？`));
     })
     event.addAdvanced('rainbow:cruncher_charm', (item, advanced, text) => {
-        text.add(1, Text.aqua(`快速消耗饥饿(非全部) 恢复生命值`));
+      // 读取贪咀护符的进食任务数据（服务器同步的饰品 NBT，PlayerTick 每秒刷新）
+      let foodId = null;
+      let taskDone = false;
+      let streak = 0;
+      let remaining = -1;
+      if (item.nbt != null && item.nbt.contains("cc_epoch")) {
+        foodId = item.nbt.getString("cc_food");
+        taskDone = item.nbt.getBoolean("cc_done");
+        streak = item.nbt.getInt("cc_streak");
+        if (item.nbt.contains("cc_remaining")) {
+          remaining = item.nbt.getInt("cc_remaining");
+        }
+      }
+      // 非SHIFT：显示当期想吃食物；未初始化时提示佩戴开启任务
+      text.add(1, Text.gray("按[SHIFT]查看详细"));
+      if (!event.shift) {
+        if (foodId != null && foodId != "") {
+          text.add(2, Text.gold("想吃：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
+        } else {
+          text.add(2, Text.gray("佩戴后开启进食任务"));
+        }
+      }
+      if (event.shift) {
+        text.remove(1)
+        text.remove(2)
+        text.add(1, Text.aqua("▸ 快速消耗饥饿恢复生命值"));
+        text.add(2, Text.aqua("▸ 每2个游戏日想吃一种食物"));
+        text.add(3, Text.aqua("▸ 连续完成10个任务进化为大胃袋"));
+        let line = 4;
+        if (foodId != null && foodId != "") {
+          text.add(line, Text.gold("目标食物：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
+          line++;
+          text.add(line, Text.gray(foodId));
+          line++;
+          if (taskDone) {
+            text.add(line, Text.green("状态：已完成本轮进食"));
+          } else {
+            text.add(line, Text.yellow("状态：尚未吃到指定食物"));
+          }
+          line++;
+        } else {
+          text.add(line, Text.gray("还未开启进食任务"));
+          line++;
+        }
+        // 距下次换食的剩余时间（cc_remaining 由服务器 PlayerTick 写入）
+        if (remaining >= 0) {
+          if (remaining <= 0) {
+            text.add(line, Text.aqua("即将换食"));
+          } else {
+            let days = Math.floor(remaining / 24000);
+            let hours = Math.floor((remaining % 24000) / 1000);
+            text.add(line, Text.aqua("距下次换食：约 " + days + " 游戏日 " + hours + " 小时"));
+          }
+          line++;
+        }
+        text.add(line, Text.aqua("任务进度：").append(Text.gold("" + streak)).append(Text.aqua("/10")));
+        line++;
+      }
     })
     event.addAdvanced('rainbow:eye_of_satori', (item, advanced, text) => {
         text.add(1, Text.gold("开眼: ").append(Text.aqua("蹲下时相机跟随准心实体")));
@@ -405,8 +407,9 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("返回前5s的位置和血量"));
+            text.add(1, Text.aqua("右键：返回前5s的位置和血量"));
             text.add(2, Text.aqua("在结构内可以直接重置结构"));
+            text.add(3, Text.aqua("潜行右键：以自身为中心半径8格区域时间停止（持续5秒）"));
         }
     })
     event.addAdvanced('rainbow:ancientaegis', (item, advanced, text) => {
@@ -600,6 +603,15 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
+    // 心之项链（功能见 startup_scripts/Registry/Registry_curios.js）
+    event.addAdvanced('rainbow:necklace_of_heart', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 最大生命值 +4（2颗心）"));
+            text.add(2, Text.aqua("▸ 每2秒自动恢复 1 点生命值"));
+        }
+    })
     event.addAdvanced('rainbow:dark_sun_ring', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -690,18 +702,33 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("隐匿时每件盔甲提供 4% 伤害加成"));
         }
     })
-    // 鸦羽骨哨：实际效果见 server_scripts/curios_skill_system/Skillwheel.js 的 registerSkill('rainbow:whistle')（主动技能：20秒区域时缓80%，半径32格跟随玩家）
+    // 鸦羽骨哨：实际效果见 server_scripts/curios_skill_system/Skillwheel.js 的 registerSkill('rainbow:whistle')（主动技能：20秒范围内敌人攻击伤害降低50%，半径8格，自动排除友军）
     event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("主动技能：开启后 20 秒内，以自身为中心"));
-            text.add(2, Text.aqua("半径 32 格区域时缓 80%（跟随玩家移动）"));
-            text.add(3, Text.aqua("半透明黑雾显示时缓影响范围"));
+            text.add(1, Text.aqua("主动技能：开启后 10 秒内，以自身为中心"));
+            text.add(2, Text.aqua("半径 8 格内的敌人攻击伤害降低 50%"));
+            text.add(3, Text.aqua("领域自动排除友军（已驯服宠物/佣兵）"));
+            text.add(4, Text.aqua("半透明黑雾显示领域影响范围"));
+            text.add(5, Text.red("素材版权警告，需要验证版权问题"));
         }
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
         text.add(Text.darkGray("美术资源：Embers Rekindled"))
+    })
+    event.addAdvanced('rainbow:hand_of_scratches', (item, advanced, text) => {
+        text.add(Text.aqua("攻击额外触发最大生命值5%伤害，冷却5s"))
+    })
+    event.addAdvanced('rainbow:super_hormone', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("主动技能：全局时间减缓 80%（10秒）"));
+            text.add(2, Text.aqua("恢复 1000 点生命值 + 迅捷 II"));
+            text.add(3, Text.gold("触发时视角边缘闪耀金光"));
+            text.add(4, Text.gray("冷却 30 秒"));
+        }
     })
     //巫毒女巫锅
     event.addAdvanced('mysticartifacts:witch_pot', (item, advanced, text) => {
@@ -1068,5 +1095,39 @@ ItemEvents.tooltip((event) => {
         text.add(3, Text.gold("50%【美德】受伤-25%，致死时75%拒绝死亡并回满血，持续一个游戏日"));
         text.add(4, Text.darkRed("50%【折磨】受伤+15%，受伤时25%直接死亡，且无法取下"));
         text.add(5, Text.gray("死亡或睡觉后回归平静。"));
+    })
+    // 强盗围巾
+    event.addAdvanced('rainbow:dismas_scarf', (item, advanced, text) => {
+        text.add(1, Text.aqua("触发极限闪避时进行").append(Text.gold("反击")));
+        text.add(2, Text.gold("反击").append(Text.aqua("：对攻击者造成 12点")).append(Text.white("真实伤害")));
+        text.add(3, Text.red("素材版权警告，需要验证版权问题"));
+    })
+    // 忍具袋
+    event.addAdvanced('rainbow:ninja_tools', (item, advanced, text) => {
+        text.add(1, Text.aqua("投掷伤害 +2"));
+    })
+    // 要你命3000
+    event.addAdvanced('rainbow:the_3000_ways_to_kill', (item, advanced, text) => {
+        text.add(1, Text.aqua("爆炸伤害 +2"));
+    })
+    // 肩甲
+    event.addAdvanced('rainbow:pauldron', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("翻滚/高速移动时撞击周围敌人"));
+            text.add(2, Text.aqua("对被撞到的敌人造成 8 点伤害并击退"));
+        }
+    })
+    // 通灵卷轴（功能见 server_scripts/curios_skill_system/Skillwheel.js registerSkill('rainbow:kuchiyosenojutsu')）
+    event.addAdvanced('rainbow:kuchiyosenojutsu', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("主动：召唤通灵卷轴悬浮面前 5 秒"));
+            text.add(2, Text.aqua("自动从末影箱取出投掷物"));
+            text.add(3, Text.aqua("朝施法方向持续发射(雪球/箭/投掷药水等)"));
+            text.add(4, Text.gold("潜行：召唤偏转卷轴(偏转加速射来的抛射体)"));
+        }
     })
 })

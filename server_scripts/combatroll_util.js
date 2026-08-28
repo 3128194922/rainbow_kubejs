@@ -214,16 +214,30 @@ global.combatRollGetVelocityMagnitude = function (player) {
 };
 
 // ---------- 翻滚无敌窗口（反射读取 mixin 字段 invulnerableTicks） ----------
+// 注意：Java.loadClass(...) 返回 ClassHandle 包装，无法直接反射；
+// 必须从实体实例 entity.getClass() 拿到真正的 java.lang.Class，再沿父类链向上找字段。
 let _crInvulnField = undefined; // undefined=未查; null=不存在; object=Field
-let _crGetInvulnField = function () {
-    if (_crInvulnField !== undefined) return _crInvulnField;
-    try {
-        let f = CR_LivingEntityCls.getDeclaredField('invulnerableTicks');
-        f.setAccessible(true);
-        _crInvulnField = f;
-    } catch (e) {
-        _crInvulnField = null;
+
+// 从实体实例向上遍历父类，找到声明了 fieldName 的 Field（含 mixin 注入到父类/当前类的字段）
+let _crFindFieldUp = function (mc, fieldName) {
+    let cls;
+    try { cls = mc.getClass(); } catch (e) { return null; }
+    while (cls != null) {
+        try {
+            let f = cls.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return f;
+        } catch (e) {
+            try { cls = cls.getSuperclass(); } catch (e2) { return null; }
+        }
     }
+    return null;
+};
+
+let _crGetInvulnField = function (mc) {
+    if (_crInvulnField !== undefined && _crInvulnField !== null) return _crInvulnField;
+    let f = _crFindFieldUp(mc, 'invulnerableTicks');
+    _crInvulnField = (f || null);
     return _crInvulnField;
 };
 
@@ -232,10 +246,48 @@ let _crGetInvulnField = function () {
  * @returns {number} >0 表示处于翻滚无敌中；-1 表示无法读取（mod 未加载/字段不可达）
  */
 global.combatRollGetInvulnerableTicks = function (player) {
-    let f = _crGetInvulnField();
+    let mc;
+    try { mc = player.minecraftEntity; } catch (e) { return -1; }
+    if (mc == null) return -1;
+    let f = _crGetInvulnField(mc);
     if (!f) return -1;
-    try { return f.getInt(player.minecraftEntity); }
+    try { return f.getInt(mc); }
     catch (e) { return -1; }
+};
+
+/**
+ * 诊断：沿实例父类链向上，统计每层字段命中 invul/roll/无敌 的情况（帮助定位 Forge 版字段名）
+ * @param {object} mc 实体实例（有 getClass()）
+ * @returns {string}
+ */
+global.combatRollInvulnDebug = function (mc) {
+    let lines = [];
+    try {
+        let cls;
+        try { cls = mc.getClass(); } catch (e) { return '无法获取实例类: ' + e; }
+        let depth = 0;
+        while (cls != null && depth < 10) {
+            let clsName = String(cls.getSimpleName ? cls.getSimpleName() : cls.getName());
+            let hits = [];
+            try {
+                let fields = cls.getDeclaredFields();
+                if (fields && fields.length) {
+                    for (let i = 0; i < fields.length; i++) {
+                        let name;
+                        try { name = String(fields[i].getName()); } catch (e) { continue; }
+                        let low = name.toLowerCase();
+                        if (low.indexOf('invul') !== -1 || low.indexOf('roll') !== -1 || low.indexOf('闪') !== -1 || low.indexOf('无敌') !== -1) hits.push(name);
+                    }
+                }
+            } catch (e) { hits.push('<fields读取异常>'); }
+            lines.push(clsName + '{' + (fields ? fields.length : '?') + '字段}命中[' + hits.join(',') + ']');
+            try { cls = cls.getSuperclass(); } catch (e) { break; }
+            depth++;
+        }
+    } catch (e) {
+        return '诊断异常: ' + e;
+    }
+    return lines.join(' <- ');
 };
 
 /**

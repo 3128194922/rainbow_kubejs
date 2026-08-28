@@ -51,10 +51,14 @@ const $SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
 const $SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
 // 伤害类型标签（用于判定抛射体伤害 IS_PROJECTILE 等）
 const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
+// 自定义伤害类型（极限闪避围巾反击伤害等）：构造 DamageSource 使用
+const DamageSource = Java.loadClass('net.minecraft.world.damagesource.DamageSource')
+const Registries = Java.loadClass('net.minecraft.core.registries.Registries')
+const ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
 
-let $ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
-let $ItemTags = Java.loadClass('net.minecraft.tags.ItemTags')
-let $ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
+const $ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
+const $ItemTags = Java.loadClass('net.minecraft.tags.ItemTags')
+const $ItemStack = Java.loadClass('net.minecraft.world.item.ItemStack')
 const $PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilder")
 const $DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.DeferredRegister")[
     "create(net.minecraftforge.registries.IForgeRegistry,java.lang.String)"
@@ -87,6 +91,9 @@ const BackstabbingEnchantment = Java.tryLoadClass('vectorwing.farmersdelight.com
 // Dyeing mod
 const $DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
 const $PaintData = Java.loadClass('com.example.dyeing.data.PaintData')
+
+// MysticArtifacts 悬浮字幕粒子（武士刀/村正 同款字幕粒子）
+const ParticleTextAPI = Java.loadClass('com.uniye.mysticartifacts.util.ParticleTextAPI')
 
 global.COLORS = {
     白: [1.00, 1.00, 1.00],

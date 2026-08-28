@@ -10,6 +10,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 心灵宝石
@@ -18,6 +21,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 赌徒骰子
@@ -26,6 +32,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 暴食之符
@@ -35,7 +44,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(event => {
                     let player = event.slotContext.entity();
 
@@ -76,6 +85,13 @@ StartupEvents.registry('item', event => {
         )
 })
 
+// ==========================================
+// 🍖 贪咀护符
+// 机制1：饥饿换血（下方 curioTick，消耗饥饿恢复生命）
+// 机制2：进食任务（server_scripts/big_stomach/PlayerTick.js + ItemEvents.js）
+//   每 2 游戏日想吃一种食物，吃到 → 连击+1（无属性加成），未吃 → 连击清零
+//   连续完成 10 个任务 → 佩戴中的贪咀护符原地进化为大胃袋
+// ==========================================
 // 贪咀护符
 StartupEvents.registry('item', event => {
     event.create('rainbow:cruncher_charm')
@@ -83,7 +99,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 // ================================
                 // ❤️ 核心机制：饥饿换血
                 // ================================
@@ -138,12 +154,9 @@ StartupEvents.registry('item', event => {
 
 
 // ==========================================
-// 🍖 大胃袋（想吃就吃机制）
-// 每 2 游戏日（48000 tick）发布一个进食任务：
-// 吃到指定食物 → 大胃袋生效（基础加成 + 击退抗性 min(0.1*连击, 1.0)）
-// 周期结束未吃 → 大胃袋全部失效（属性+受伤抵消），连击清零
-// ⚠️ 任务源数据在 player.persistentData，由 server_scripts/big_stomach/PlayerTick.js 轮询推进：
-//    多个大胃袋共享同一任务；卸下饰品周期也照常轮换；佩戴时同步任务到饰品NBT供本文件读取
+// 🍖 大胃袋（进化终点饰品，无进食任务机制）
+// 三项属性常驻生效；受伤抵消常驻生效（handleBigStomach.js，消耗饱和度抵消伤害）
+// 获取途径：贪咀护符连续完成 10 个进食任务后原地进化（server_scripts/big_stomach/）
 // ==========================================
 
 // 大胃袋
@@ -153,54 +166,12 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
-                // ================================
-                // 🍖 核心机制：动态属性（任务未完成 bs_done=false 时大胃袋全部失效）
-                // ================================
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                // 常驻属性：食用/饮用速度 +50%，饱食度满仍可进食（无任务门槛）
                 .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-                    if (!player.isPlayer()) return;
-                    let stack = ev.stack;
-                    if (stack == null) return;
-
-                    let done = false;
-                    if (stack.nbt != null && stack.nbt.contains("bs_done")) {
-                        done = stack.nbt.getBoolean("bs_done");
-                    }
-
-                    // 任务未完成/未初始化：三加成全部为 0（大胃袋不生效）
-                    if (!done) {
-                        ev.modify("moreattribute:eat_speed", "big_stomach", 0, "addition");
-                        ev.modify("moreattribute:drink_speed", "big_stomach", 0, "addition");
-                        ev.modify("moreattribute:can_always_eat", "big_stomach", 0, "addition");
-                        return;
-                    }
-
-                    // 任务完成：基础加成生效
                     ev.modify("moreattribute:eat_speed", "big_stomach", -0.5, "addition");
                     ev.modify("moreattribute:drink_speed", "big_stomach", -0.5, "addition");
                     ev.modify("moreattribute:can_always_eat", "big_stomach", 1, "addition");
-
-                    // 连续满足进食任务 → 击退抗性加成（0.1×连击，上限 1.0）
-                    let streak = 0;
-                    if (stack.nbt != null && stack.nbt.contains("bs_streak")) {
-                        streak = stack.nbt.getInt("bs_streak");
-                    }
-                    if (streak > 0) {
-                        let kbr = Math.min(0.1 * streak, 1.0);
-                        ev.modify("minecraft:generic.knockback_resistance", "big_stomach", kbr, "multiply_total");
-                    }
-                })
-                // ================================
-                // 🍖 属性重算触发：翻转 update 通知 CuriosJS 重新计算属性
-                // 任务轮换/进度统一在 server_scripts/big_stomach/PlayerTick.js 维护
-                // ================================
-                .curioTick((slotContext, stack) => {
-                    if (stack.nbt == null) {
-                        stack.nbt = {};
-                    }
-                    stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
                 })
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -222,7 +193,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(event => {
                     let player = event.slotContext.entity();
 
@@ -277,7 +248,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 //.modifyFortuneLevel((slotContext, lootContext, stack) => 3)
                 /*.curioTick((slotContext) => {
                     let player = slotContext.entity();
@@ -305,7 +276,7 @@ StartupEvents.registry("item", (event) => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -369,7 +340,7 @@ StartupEvents.registry('item', event => {
     .maxStackSize(1)
     .tag('curios:charm')
     .attachCuriosCapability(
-      CuriosJSCapabilityBuilder.create()
+      CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
         .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
         .addAttribute('forge:entity_reach', 'mining_charm', 2.15, 'addition')
         .addAttribute('attributeslib:mining_speed', 'mining_charm', 0.1, 'multiply_base')
@@ -436,7 +407,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (!player || player.server == null) return;
@@ -475,7 +446,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -505,7 +476,7 @@ StartupEvents.registry('item', event => {
         .tooltip("§7造成伤害可充能 (100点)")
         .tooltip("§7能量满时右键使用，持续10秒移除霰弹枪冷却")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -526,7 +497,7 @@ StartupEvents.registry('item', event => {
         .tooltip("§7造成伤害可充能 (100点)")
         .tooltip("§7能量满时右键使用，持续10秒极大提升手摇弩射速")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -545,7 +516,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 /*.curioTick((slotContext, stack) => {
                     let player = slotContext.entity();
                     if (player == null) return;
@@ -594,7 +565,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};
                     stack.nbt.putBoolean("update", !stack.nbt.getBoolean("update"));
@@ -619,7 +590,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -641,7 +612,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .addAttribute("attributeslib:armor_pierce", "oceantooth_necklace", 4, "addition")
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -663,7 +634,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -684,6 +655,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 死河
@@ -693,7 +667,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .curioTick((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return;
@@ -718,6 +692,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 觉之瞳
@@ -727,7 +704,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -777,7 +754,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -937,7 +914,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -967,7 +944,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1011,7 +988,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1032,7 +1009,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1063,6 +1040,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 冰冻之心
@@ -1071,6 +1051,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 坚韧之心
@@ -1079,6 +1062,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 黏液之心
@@ -1087,6 +1073,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 腐烂之心
@@ -1097,7 +1086,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -1127,7 +1116,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -1175,7 +1164,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:back")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1213,7 +1202,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:head")
         .tag("rainbow:cyber_system")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1253,7 +1242,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:ring")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1286,7 +1275,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:ring")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1335,7 +1324,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:ring")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1375,7 +1364,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:ring")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1416,7 +1405,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:ring")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1450,7 +1439,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1523,7 +1512,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1586,7 +1575,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1609,7 +1598,7 @@ StartupEvents.registry('item', event => {
     .maxStackSize(1)
     .tag("curios:charm")
     .attachCuriosCapability(
-        CuriosJSCapabilityBuilder.create()
+        CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
             .canEquip((slotContext, stack) => {
                 let entity = slotContext.entity();
                 if (entity == null) return;
@@ -1676,6 +1665,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 雪碧
@@ -1685,7 +1677,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1729,7 +1721,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -1774,6 +1766,9 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
 
 // 七阳之戒
@@ -1782,7 +1777,14 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+        )
 })
+
+// 日曜石"不移动"判定宽容度（格）：每秒判定时刻与上一秒位置的位移 ≤ 该值即视为不移动
+// 用于容忍轻微漂移（被实体推动、水流、载具晃动等）；正常行走约 4.3 格/秒，仍会打断回血
+const SHINY_STONE_MOVE_TOLERANCE = 0.5;
 
 // 日曜石
 StartupEvents.registry('item', event => {
@@ -1791,7 +1793,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1802,21 +1804,51 @@ StartupEvents.registry('item', event => {
                     let player = slotContext.entity();
                     if (!player || player.level.isClientSide()) return;
 
+                    // 每秒判定一次（与回血节奏对齐），与上一秒的位置比较
+                    if (player.age % 20 !== 0) return;
+
                     let tag = stack.getOrCreateTag();
                     let lastX = tag.getDouble("lastX");
                     let lastZ = tag.getDouble("lastZ");
 
                     let dx = player.x - lastX;
                     let dz = player.z - lastZ;
-                    let moving = (dx * dx + dz * dz) > 1.0e-6;
+                    // 一秒内位移不超过宽容度 → 视为不移动（忽略轻微漂移）
+                    let moving = (dx * dx + dz * dz) > SHINY_STONE_MOVE_TOLERANCE * SHINY_STONE_MOVE_TOLERANCE;
 
                     tag.putDouble("lastX", player.x);
                     tag.putDouble("lastZ", player.z);
                     tag.putBoolean("Moving", moving);
 
-                    // 不移动时每秒恢复 1 血量
-                    if (!moving && player.age % 20 === 0) {
-                        player.heal(2);
+                    // 不移动时每秒恢复 10 血量
+                    if (!moving) {
+                        player.heal(10);
+                    }
+                })
+        )
+})
+
+// 心之项链
+StartupEvents.registry('item', event => {
+    event.create('rainbow:necklace_of_heart')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .addAttribute("minecraft:generic.max_health", "necklace_of_heart", 4, "addition")
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:necklace_of_heart')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (!player || player.level.isClientSide()) return;
+
+                    if (player.age % 2*20 === 0) {
+                        player.heal(1);
                     }
                 })
         )
@@ -1835,7 +1867,7 @@ StartupEvents.registry('item', event => {
             .maxStackSize(1)
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return false;
@@ -1856,7 +1888,7 @@ StartupEvents.registry('item', event => {
             .tooltip(Text.gold("[箭袋]"))
             .tag("rainbow:quivers")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1879,7 +1911,7 @@ StartupEvents.registry('item', event => {
             .tooltip(Text.gray("右键拉弓时抵消减速，恢复至 §b100% §7正常移速"))
             .tag("rainbow:quivers")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -1888,7 +1920,7 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .addAttribute("attributeslib:arrow_damage", "quiver", 0.1, "multiply_total")
-                .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
+                //.addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
                 .addAttribute("attributeslib:draw_speed", "quiver", 0.1, "multiply_total")
                 .addAttribute("moreattribute:charge_speed", "quiver", 0.8, "addition")
                 /*.curioTick((slotContext, stack) => {
@@ -1941,7 +1973,7 @@ StartupEvents.registry('item', event => {
             .maxStackSize(1)
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2000,7 +2032,7 @@ StartupEvents.registry('item', event => {
             //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2024,7 +2056,7 @@ StartupEvents.registry('item', event => {
             //.tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2047,7 +2079,7 @@ StartupEvents.registry('item', event => {
             .tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2055,8 +2087,25 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
-                .addAttribute("minecraft:generic.attack_damage", "ender_glove", 1, "addition")
-                .addAttribute("minecraft:generic.attack_speed", "ender_glove", 0.1, "multiply_total")
+                // 动态攻击力：攻速 > 2 时 +1，否则 +3
+                .modifyAttribute(e => {
+                    let player = e.slotContext.entity();
+                    if (player == null || player === undefined) return;
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    e.modify("minecraft:generic.attack_damage", "ender_glove", atkSpeed > 2 ? 1 : 3, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
+                    let player = slotContext.entity();
+                    if (!player || player.server == null) return;
+                    if (player.age % 5 !== 0) return;
+                    let tag = stack.getOrCreateTag();
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {
+                        tag.putDouble("atk_speed", atkSpeed);
+                    }
+                })
+                //.addAttribute("minecraft:generic.attack_speed", "ender_glove", 0.1, "multiply_total")
         )
 })
 
@@ -2069,7 +2118,7 @@ StartupEvents.registry('item', event => {
             .tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2077,8 +2126,25 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
-                .addAttribute("minecraft:generic.attack_damage", "living_gauntlet", 1, "addition")
-                .addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
+                // 动态攻击力：攻速 > 2 时 +1，否则 +3
+                .modifyAttribute(e => {
+                    let player = e.slotContext.entity();
+                    if (player == null || player === undefined) return;
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    e.modify("minecraft:generic.attack_damage", "living_gauntlet", atkSpeed > 2 ? 1 : 3, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
+                    let player = slotContext.entity();
+                    if (!player || player.server == null) return;
+                    if (player.age % 5 !== 0) return;
+                    let tag = stack.getOrCreateTag();
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {
+                        tag.putDouble("atk_speed", atkSpeed);
+                    }
+                })
+                //.addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
         )
 })
 
@@ -2092,7 +2158,7 @@ StartupEvents.registry('item', event => {
             .tag("rainbow:glove")
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2100,8 +2166,24 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
-                .addAttribute("minecraft:generic.attack_damage", "living_gauntlet", 1, "addition")
-                .addAttribute("minecraft:generic.attack_speed", "living_gauntlet", 0.1, "multiply_total")
+                // 动态攻击力：攻速 > 2 时 +1，否则 +3
+                .modifyAttribute(e => {
+                    let player = e.slotContext.entity();
+                    if (player == null || player === undefined) return;
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    e.modify("minecraft:generic.attack_damage", "gold_glove", atkSpeed > 2 ? 1 : 3, "addition");
+                })
+                .curioTick((slotContext, stack) => {
+                    // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
+                    let player = slotContext.entity();
+                    if (!player || player.server == null) return;
+                    if (player.age % 5 !== 0) return;
+                    let tag = stack.getOrCreateTag();
+                    let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
+                    if (Math.abs(tag.getDouble("atk_speed") - atkSpeed) > 1.0e-6) {
+                        tag.putDouble("atk_speed", atkSpeed);
+                    }
+                })
         )
 })
 
@@ -2113,7 +2195,7 @@ StartupEvents.registry('item', event => {
             .maxStackSize(1)
             .tag("curios:charm")
             .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canUnequip((slotContext, stack) => {
                     return false;
                 })
@@ -2139,7 +2221,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -2176,7 +2258,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(e => {
                     let stack = e.stack;
                     let player = e.slotContext.entity();
@@ -2230,7 +2312,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -2251,7 +2333,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -2272,7 +2354,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -2284,6 +2366,8 @@ StartupEvents.registry('item', event => {
                     return true;
                 })
                 .addAttribute("minecraft:generic.movement_speed", "cloud_boots", 0.2, "multiply_total")
+                .addAttribute("combatroll:air_roll", "cloud_boots", 1, "addition")
+                .addAttribute("forge:step_height_addition", "cloud_boots", 0.6, "addition")
         )
 })
 
@@ -2294,7 +2378,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
 
@@ -2320,7 +2404,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .texture("fieldguide:item/field_guide")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -2391,10 +2475,10 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .texture("fieldguide:item/field_guide")
-        .color(0x3FA94F)
+        //.texture("fieldguide:item/field_guide")
+        //.color(0x3FA94F)
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -2449,10 +2533,10 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .texture("fieldguide:item/field_guide")
-        .color(0xE08A2A)
+        //.texture("fieldguide:item/field_guide")
+        //.color(0xE08A2A)
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -2506,10 +2590,10 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .texture("fieldguide:item/field_guide")
-        .color(0xC03333)
+        //.texture("fieldguide:item/field_guide")
+        //.color(0xC03333)
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -2564,10 +2648,10 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .texture("fieldguide:item/field_guide")
-        .color(0xA84FD0)
+        //.texture("fieldguide:item/field_guide")
+        //.color(0xA84FD0)
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let player = ev.slotContext.entity();
                     if (player == null) return;
@@ -2623,7 +2707,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -2641,7 +2725,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -2659,7 +2743,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -2676,7 +2760,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -2693,7 +2777,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .addAttribute('moreattribute:cooldown_reduction', 'the_heart_sutra', 0.1, 'multiply_total')
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
@@ -2715,7 +2799,7 @@ StartupEvents.registry('item', event => {
         .tooltip("§7造成伤害可充能 (每100点伤害)")
         .tooltip("§7满100点伤害时获得冷却缩减 (等级2，持续5秒)")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
@@ -2732,7 +2816,7 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .addAttribute('attributeslib:current_hp_damage', 'fist_of_seven_wounds', 0.07, 'addition')
                 .addAttribute('attributeslib:healing_received', 'fist_of_seven_wounds', -0.7, 'multiply_total')
                 .canEquip((slotContext, stack) => {
@@ -2751,11 +2835,186 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
                     if (hasCurios(entity, 'rainbow:sharingan')) return false;
+                    return true;
+                })
+        )
+})
+
+//强盗围巾
+StartupEvents.registry('item', event => {
+    event.create('rainbow:dismas_scarf')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:dismas_scarf')) return false;
+                    return true;
+                })
+                .addAttribute('combatroll:count', 'dismas_scarf', 2, 'addition')
+                .addAttribute('combatroll:recharge', 'dismas_scarf', 0.25, 'multiply_total')
+        )
+})
+
+//忍具袋
+StartupEvents.registry('item', event => {
+    event.create('rainbow:ninja_tools')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:ninja_tools')) return false;
+                    return true;
+                })
+                .addAttribute('rainbow:generic.thrown_damage', 'ninja_tools', 2, 'addition')
+        )
+})
+
+//要你命3000
+StartupEvents.registry('item', event => {
+    event.create('rainbow:the_3000_ways_to_kill')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:the_3000_ways_to_kill')) return false;
+                    return true;
+                })
+                .addAttribute('rainbow:generic.boom_damage', 'the_3000_ways_to_kill', 2, 'addition')
+        )
+})
+
+//肩甲：翻滚无敌帧期间每 tick 用 AABB 检测，对撞到的活体造成伤害 + 击退
+StartupEvents.registry('item', event => {
+    event.create('rainbow:pauldron')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:pauldron')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+
+                    let level = entity.level;
+                    if (level == null) return;
+                    if (level.isClientSide()) return; // 服务端才结算
+
+                    //—— 触发判定：用相邻 tick 的位移距离代表速度（只调 Java 方法，绝不读原生字段，避免 Rhino 空指针）——
+                    // 翻滚 3格/8tick ≈ 0.375 方块/tick；走路≈0.13、疾跑≈0.28，均远低于阈值
+                    let SPEED_THRESHOLD = 0.33;
+                    let pd = entity.getPersistentData();
+                    let hasPrev = pd.contains('pauldron_px');
+                    let x0 = pd.getDouble('pauldron_px');
+                    let z0 = pd.getDouble('pauldron_pz');
+                    let x1 = entity.getX();
+                    let z1 = entity.getZ();
+                    pd.putDouble('pauldron_px', x1);
+                    pd.putDouble('pauldron_pz', z1);
+                    if (!hasPrev) return;
+
+                    let dx = x1 - x0;
+                    let dz = z1 - z0;
+                    let move = Math.sqrt(dx * dx + dz * dz);
+                    if (move < SPEED_THRESHOLD) return;
+
+                    // 高速分支本身只会在翻滚时出现，无需节流（避免依赖取时间的方法）
+                    let box = entity.getBoundingBox().inflate(1.0, 0.5, 1.0);
+                    let targets = level.getEntitiesWithin(box);
+                    console.log('[pauldron][高速] move=' + move.toFixed(3) + ' 目标数=' + targets.length);
+
+                    let idx, target;
+                    for (idx = 0; idx < targets.length; idx++) {
+                        target = targets[idx];
+                        if (target == null) continue;
+                        if (target.getId() === entity.getId()) continue; // 排除穿戴者自身
+                        if (!target.isAlive()) continue;
+
+                        console.log('[pauldron][命中] 目标=' + target + ' 类型=' + (typeof target.getType === "function" ? target.getType() : 'n/a'));
+
+                        // 造成伤害（来源记为穿戴者玩家）
+                        try { target.attack(entity.damageSources().playerAttack(entity), 8); console.log('[pauldron][造成伤害] 成功'); } catch (e) { console.log('[pauldron][造成伤害失败] ' + e); }
+
+                        // 击退：推离穿戴者
+                        try {
+                            let dirX = target.getX() - x1;
+                            let dirZ = target.getZ() - z1;
+                            target.knockback(1.5, dirX, dirZ);
+                            console.log('[pauldron][击退] 成功');
+                        } catch (e) { console.log('[pauldron][击退失败] ' + e); }
+                    }
+                })
+        )
+})
+
+//扣挠之手
+StartupEvents.registry('item', event => {
+    event.create('rainbow:hand_of_scratches')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:hand_of_scratches')) return false;
+                    return true;
+                })
+        )
+})
+
+//通灵卷轴
+StartupEvents.registry('item', event => {
+    event.create('rainbow:kuchiyosenojutsu')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:kuchiyosenojutsu')) return false;
+                    return true;
+                })
+        )
+})
+
+//烛心套餐
+StartupEvents.registry('item', event => {
+    event.create('rainbow:wicked_package')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:wicked_package')) return false;
                     return true;
                 })
         )

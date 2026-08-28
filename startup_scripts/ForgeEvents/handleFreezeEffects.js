@@ -16,9 +16,11 @@ function handleFreezeEffects(event, attacker, victim, source, range_damage, thro
         // 计算碰撞箱体积
         let aabb = victim.getBoundingBox();
         let volume = aabb.getXsize() * aabb.getYsize() * aabb.getZsize() * 3;
+        // 四舍五入，使体积始终为整数
+        volume = Math.round(volume);
         // 体积不足1格则按1计算，避免除零
         if (volume < 1.0) volume = 1.0;
-        // 阈值：体积 * 20 tick（1体积格 = 1秒 = 60tick）
+        // 阈值：体积 * 20 tick（1体积格 = 3秒 = 60tick）
         let durationTicks = Math.floor(volume * 60);
 
         //console.log('handleFreezeEffects - 实体: ' + victim.getName().getString() + ' | 体积: ' + volume.toFixed(2) + ' 格 | 已冻结: ' + frozenTicks + ' tick | 阈值: ' + durationTicks + ' tick');

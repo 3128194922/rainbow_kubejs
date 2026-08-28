@@ -144,4 +144,22 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
             console.log("七阳之戒出错：" + e);
         }
     }
+
+    // --- 肩甲 ---
+    // 受伤时抵消一次不小于 6 的伤害（完全免伤），抵消后物品进入冷却，冷却期间无法抵消
+    if(hasCurios(victim, "rainbow:pauldron"))
+    {
+        try{
+            if (event.getAmount() >= 6 && !victim.cooldowns.isOnCooldown("rainbow:pauldron")) {
+                event.setAmount(0);
+                ParticleTextAPI.sendInFront(victim, "肩甲抵消！", 0xFFFFFF);
+                victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "minecraft:block.anvil.place", "players", 1.0, 1.0);
+                victim.cooldowns.addCooldown("rainbow:pauldron", SecoundToTick(20));
+            }
+        }
+        catch(e)
+        {
+            console.log("肩甲出错："+e)
+        }
+    }
 }

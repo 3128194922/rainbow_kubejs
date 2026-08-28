@@ -106,7 +106,7 @@ ServerEvents.loaded(event => {
         // 清空区域UV
         let areaUVResult = clearAreaUVEntries(server);
         // 清空公告板层
-        let billboardResult = clearDyeingEntries($DyeingMod.getBillboardData(server));
+        let billboardResult = clearDyeingEntries($BillboardSavedData.get(server));
         // 清空屏幕覆盖层
         let screenResult = clearDyeingEntries($DyeingMod.getScreenOverlayData(server));
         console.log('[Dyeing清理] 完成(实体/特效) | paint=' + paintResult + ' uv=' + uvResult + ' areaPaint=' + areaPaintResult + ' areaUV=' + areaUVResult + ' billboard=' + billboardResult + ' screen=' + screenResult);

@@ -35,19 +35,6 @@ function isChairSeat(entity) {
     }
 }
 
-// 在指定账号找到实体（跨维度）
-function findEntityByUUID(levels, uuidString) {
-    if (!uuidString) return null
-    try {
-        var uuid = $UUID.fromString(uuidString)
-        for (var i = 0; i < levels.size(); i++) {
-            var e = levels.get(i).getEntity(uuid)
-            if (e != null) return e
-        }
-    } catch (err) {}
-    return null
-}
-
 // 移除座位实体（其乘客会被原版自动甩下）
 function removeSeat(seat) {
     try {
@@ -159,44 +146,40 @@ EntityEvents.hurt(event => {
 // ==========================================
 // 座位实体生命周期清理
 // ==========================================
-// 每 10 tick 检查一次每个在线玩家的"椅子座位"：
+// 每个玩家每 10 tick（按 age 轮询）检查一次自己的"椅子座位"：
 //   - 玩家已下车 / 座位不存在 / 椅子方块已被移除 → 移除座位实体并清除标记
-let chairTickCounter = 0
-ServerEvents.tick(event => {
-    if (++chairTickCounter % 10 !== 0) return
+// 写法对齐项目已验证模式（SetEffect.js 的 PlayerEvents.tick、Skillwheel.js 的
+// player.level.getEntity(UUID.fromString(...)) / player.level.getBlock(x,y,z)）
+// 注意：玩家骑乘中跨维度移动属极端情况，届时旧座位可能遗留（不可见 marker，无副作用）
+PlayerEvents.tick(event => {
+    let player = event.player
+    if (!player || !player.level || player.level.isClientSide()) return
+    if (player.age % 10 !== 0) return
 
-    // 所有变量都声明在函数作用域，避免 Rhino 对 try/for 块内 const/let 的作用域 bug
-    let srv, levels, players, player, seatUuid, vehicle, oldSeat
-    let cx, cy, cz, chairBlock
+    // 所有变量都声明在函数作用域，避免 Rhino 对 try 块内 const/let 的作用域 bug
+    let seatUuid, vehicle, seat, cx, cy, cz, chairBlock
     try {
-        srv = event.server
-        levels = srv.allLevels
-        players = srv.players
+        seatUuid = player.persistentData.getString('rainbowChairSeat')
+        if (!seatUuid) return
 
-        for (var i = 0; i < players.size(); i++) {
-            player = players.get(i)
-            seatUuid = player.persistentData.getString('rainbowChairSeat')
-            if (!seatUuid) continue
+        vehicle = player.vehicle
+        // 玩家已下车，或正在乘坐的不是我们的座位
+        if (!isChairSeat(vehicle)) {
+            // 在玩家当前维度找回旧座位并移除，防止遗留
+            seat = player.level.getEntity($UUID.fromString(seatUuid))
+            removeSeat(seat)
+            player.persistentData.remove('rainbowChairSeat')
+            return
+        }
 
-            vehicle = player.vehicle
-            // 玩家已下车，或正在乘坐的不是我们的座位
-            if (!isChairSeat(vehicle)) {
-                // 尝试找到旧座位并移除，防止遗留
-                oldSeat = findEntityByUUID(levels, seatUuid)
-                removeSeat(oldSeat)
-                player.persistentData.remove('rainbowChairSeat')
-                continue
-            }
-
-            // 正在坐：校验椅子方块是否仍然存在（用生成时记录的方块坐标）
-            cx = vehicle.persistentData.getInt('ChairX')
-            cy = vehicle.persistentData.getInt('ChairY')
-            cz = vehicle.persistentData.getInt('ChairZ')
-            chairBlock = vehicle.level.getBlock(cx, cy, cz)
-            if (!chairBlock || chairBlock.id !== CHAIR_BLOCK) {
-                removeSeat(vehicle) // discard 会自动甩下玩家
-                player.persistentData.remove('rainbowChairSeat')
-            }
+        // 正在坐：校验椅子方块是否仍然存在（用生成时记录的方块坐标）
+        cx = vehicle.persistentData.getInt('ChairX')
+        cy = vehicle.persistentData.getInt('ChairY')
+        cz = vehicle.persistentData.getInt('ChairZ')
+        chairBlock = vehicle.level.getBlock(cx, cy, cz)
+        if (!chairBlock || chairBlock.id !== CHAIR_BLOCK) {
+            removeSeat(vehicle) // discard 会自动甩下玩家
+            player.persistentData.remove('rainbowChairSeat')
         }
     } catch (e) {
         console.log('[food_stall_chairs] 座位清理失败: ' + e)

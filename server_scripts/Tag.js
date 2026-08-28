@@ -19,17 +19,17 @@ ServerEvents.tags("item", event => {
     //event.add('offhandattack:can_hands_use',[''])
 
     // 技能饰品
-    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask',
-    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
+    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
+    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package',
     'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
     'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb'])
 
-    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask',
-    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
-    'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
-    'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb'])
+    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
+    'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package','mysticartifacts:emergency_plan',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','rainbow:pauldron',
+    'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket','rainbow:wandering_gummy_pack',
+    'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb','rainbow:hand_of_scratches'])
 
     //技能饰品二级菜单
     event.add('skillwheel:submenu',['rainbow:lyre'])

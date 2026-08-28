@@ -382,10 +382,46 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVi
 //极限闪避事件
 ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent", event => {
     let player = event.getPlayer();
+    let attacker = event.getDamageSource().getActual();
+
     if (!player || !player.isPlayer()) return;
+
+    // 极限闪避触发反馈：播放原版经验升级音效 + 武士刀（村正）同款悬浮字幕粒子
+    ParticleTextAPI.sendInFront(player, "完美闪避！", 0xFFAA00);
+    player.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @a ${player.getX()} ${player.getY()} ${player.getZ()} 1.0 1.0`);
+
+    // 强制播放完美闪避动画（assets/rainbow/player_animation/完美闪避.json，注册 ID 为内部名 perfect_dodge）
+    // 快速淡入 3 tick 保证闪避反馈的即时性；global.playPlayerAnim 由 server_scripts/player_animator/main.js 注册
+    if (typeof global.playPlayerAnim === "function") {
+        global.playPlayerAnim(player, "rainbow:perfect_dodge", 3);
+    } else {
+        console.log("[极限闪避] global.playPlayerAnim 未定义，跳过动画播放");
+    }
+
+
+    if(hasCurios(player, "rainbow:dismas_scarf"))
+    {
+        if (attacker && attacker.isAlive()) {
+            // 1.20.1 中 DamageSource 无 setBypassArmor/setBypassMagic，需使用自定义伤害类型（见 server_scripts/rainbow/dismas_scarf.js）
+            // DamageSource / Registries / ResourceKey / ResourceLocation 已在 CONST.js 定义为 const
+            let registry = player.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+            let holder = registry.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation('rainbow', 'dismas_scarf')));
+            let source = new DamageSource(holder, player, player);
+            attacker.attack(source, 12);
+
+            // 反击命中反馈：在攻击者（对方实体）位置生成横扫粒子 + 播放横扫音效
+            let ax = attacker.getX();
+            let ay = attacker.getY() + attacker.getBbHeight() * 0.5;
+            let az = attacker.getZ();
+            let server = player.server;
+            // sweep_attack 粒子第一个 delta 为横扫弧度（1.0≈57°），0 0 0 速度、0 数量
+            server.runCommandSilent(`/particle minecraft:sweep_attack ${ax} ${ay} ${az} 1.0 0.0 0.0 0.0 0`);
+            server.runCommandSilent(`/playsound minecraft:entity.player.attack.sweep player @a ${ax} ${ay} ${az} 0.8 1.0`);
+        }
+    }
     if(hasCurios(player,"rainbow:beast_mask"))
     {
-        player.heal(10);
+        player.heal(4);
     }
     if(hasCurios(player,"rainbow:sharingan"))
     {
@@ -399,6 +435,9 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
 // 盾反判定：举盾时间不超过10tick即判定为盾反
 ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
     let player = event.player;          // ServerPlayer 盾反玩家
+
+    if(player.isAlive() && player.isPlayer()) return; // 只处理玩家盾反
+
     let attacker = event.attacker;      // LivingEntity 被盾反击退的攻击者（可能为 null）
     let source = event.damageSource;    // DamageSource 被格挡的伤害来源
     let dmg = event.blockedDamage;      // float 被盾反格挡的伤害量
@@ -407,6 +446,8 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
     let py = player.getY();
     let pz = player.getZ();
     let server = player.server;
+
+    ParticleTextAPI.sendInFront(player, "盾反！", 0xFFAA00);
 
     // ===== 打击感反馈 =====
     // 音效三连：高频金属瞬态(铁砧) + 盾牌格挡 + 重击闷响，音高随机微调让每次盾反有变化
@@ -420,6 +461,8 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
     server.runCommandSilent(`particle minecraft:crit ${px} ${py + 1} ${pz} 0.6 0.6 0.6 0.6 40`);
     server.runCommandSilent(`particle minecraft:cloud ${px} ${py + 0.8} ${pz} 1.3 0.1 1.3 0.25 25`);
 
+    // 武士刀（村正）同款悬浮字幕粒子
+    ParticleTextAPI.sendInFront(player, "盾反！", 0xFFAA00);
 
     if(hasCurios(player,"rainbow:sharingan"))
         {

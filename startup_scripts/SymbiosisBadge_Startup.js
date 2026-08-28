@@ -69,6 +69,7 @@ StartupEvents.registry('item', event => {
                     const entity = slotContext.entity()
                     return entity ? !hasCurios(entity, 'rainbow:ccb') : false
                 })
+                .canUnequip(canUnequipNotOnCooldown)
                 .canEquipFromUse((slotContext, stack) => false)
                 .onUnequip((slotContext, newStack, stack) => {
                     const player = slotContext.entity()

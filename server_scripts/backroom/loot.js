@@ -42,8 +42,8 @@ ServerEvents.genericLootTables(event => {
 
     //饰品和武器
     const curios = [Item.of('mysticartifacts:katana', '{Damage:0}'), 'rainbow:dice', 'rainbow:moai_charm', 'rainbow:giants_ring', 
-    'rainbow:gravity_core', Item.of('rainbow:lyre', '{submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"},the_end:0}'), 'rainbow:ancientaegis', 
-    'rainbow:big_stomach', 'zgmobs:heart_crystal', 'scepterofdominion:scepter_of_dominion', Item.of('mysticartifacts:katana', '{Damage:0}'),
+    'rainbow:gravity_core', Item.of('rainbow:lyre', '{submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"},the_end:0}'), 'rainbow:ancientaegis',
+    'zgmobs:heart_crystal', 'scepterofdominion:scepter_of_dominion', Item.of('mysticartifacts:katana', '{Damage:0}'),
      Item.of('mysticartifacts:two_dragons_play_ball', '{Damage:0}'), 'mysticartifacts:sword_swarm_charm', 'mysticartifacts:death_eye', 
      'mysticartifacts:poker_card',Item.of('rainbow:baseball_bat', '{Damage:0}'), Item.of('rainbow:tyrfing', '{Damage:0}'), 'helldivers:magic_book']
     

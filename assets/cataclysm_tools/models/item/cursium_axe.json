@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "cataclysm_tools:item/cursium_axe"
+  }
+}

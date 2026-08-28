@@ -59,57 +59,6 @@ EntityEvents.hurt(event => {
 
 });
 
-// 实体生成事件
-EntityEvents.spawned(event => {
-    let entity = event.getEntity();
-    let level = event.getLevel();
-    // 禁止生成的实体列表
-    let inControl = ["youkaisfeasts:deer","youkaisfeasts:crab"]
-    if (level.isClientSide()) return;
-    if (!entity) return;
-
-    let id = entity.getEncodeId();
-    if (id == null) return;
-/*
-    // --- 蜜蜂喜好食物设置 ---
-    if(id.toString() == "minecraft:bee")
-        {
-            // 随机为蜜蜂分配一个喜好的食物，存储在 persistentData 中
-            entity.persistentData.putString("like_food",Item.of(global.foodlist[Math.floor(randomInRange(0,global.foodlist.length - 1))]).getDisplayName().getString())
-        }
-    */
-    // --- 核弹侦测 ---
-    /*if(id.toString() === "alexscaves:nuclear_bomb")
-        {
-            let pos = entity.getBlock().pos;
-
-            level.server.tell(`警告：侦测到核弹打击！坐标：${pos.x} ${pos.y} ${pos.z}`)
-
-            console.log(`警告：侦测到核弹打击！坐标：${pos.x} ${pos.y} ${pos.z}`)
-        }
-*/
-    // --- 禁止特定实体生成 ---
-    if (inControl.indexOf(id.toString()) != -1) 
-        {
-            let pos = entity.getBlock().pos;   // 实体位置
-            event.cancel();                   // 取消原始实体生成
-        }
-
-    // --- 飞鱼替换 ---
-    // 将 shifted_lens:flying_fish 替换为 alexsmobs:flying_fish
-    /*if(id.toString() == "shifted_lens:flying_fish")
-        {
-            let newEntity = level.createEntity("alexsmobs:flying_fish")
-            newEntity.setPosition(entity.x,entity.y,entity.z)
-            newEntity.spawn()
-            event.cancel()
-        }*/
-    /*if(id.toString() == "minecraft:zombie")
-        {
-            entity.setItemSlot("offhand", "piglinproliferation:buckler")
-        }*/
-});
-
 // 大师球 + 莉莉丝拥抱：灵魂替死
 EntityEvents.hurt(event => {
     let entity = event.entity;

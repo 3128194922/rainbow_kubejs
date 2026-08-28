@@ -13,16 +13,16 @@
 	#Set to true if you need to find the class name for a screen that's causing problems
 	"Print Screen Classnames" = false
 	#A list of screens that can accept quark's buttons. Use "Print Screen Classnames" to find the names of any others you'd want to add.
-	"Allowed Screens" = ["me.duquee.createutilities.blocks.voidtypes.chest.VoidChestScreen", "com.mrcrayfish.backpacked.client.gui.screen.inventory.BackpackScreen"]
+	"Allowed Screens" = ["me.duquee.createutilities.blocks.voidtypes.chest.VoidChestScreen", "com.mrcrayfish.backpacked.client.gui.screen.inventory.BackpackScreen", "dev.latvian.mods.kubejs.gui.KubeJSScreen"]
 	#If set to true, the 'Allowed Screens' option will work as a Blacklist rather than a Whitelist. WARNING: Use at your own risk as some mods may not support this.
 	"Use Screen List Blacklist" = false
 	#If 'true' and TerraBlender is present, Quark will add a TerraBlender region. The region will contain vanilla biomes and the Glimmering Weald.
-	"Terrablender Add Region" = true
+	"Terrablender Add Region" = false
 	#Quark will set this weight for its TerraBlender region.
 	"Terrablender Region Weight" = 1
 	#If 'true', Quark will modify the `minecraft:overworld` MultiNoiseBiomeSourceParameterList preset, even when Terrablender is installed.
 	#This will have various knock-on effects but might make the Weald more common, or appear closer to modded biomes. Who knows?
-	"Terrablender Modify Vanilla Anyway" = true
+	"Terrablender Modify Vanilla Anyway" = false
 	#Set to false to disable the popup message telling you that you can config quark in the q menu
 	"Enable Onboarding" = true
 	#The amount of slots the chest button system should seek when trying to figure out if a container should be eligible for them.
@@ -33,7 +33,7 @@
 	[general.chest_button_offsets]
 		"Player X" = 0
 		"Player Y" = 0
-		"Top X" = -25
+		"Top X" = 0
 		"Top Y" = 0
 		"Middle X" = 0
 		"Middle Y" = 0
@@ -1609,13 +1609,13 @@
 	[client.improved_tooltips]
 		"Attribute Tooltips" = true
 		"Food Tooltips" = true
-		"Shulker Tooltips" = false
+		"Shulker Tooltips" = true
 		"Map Tooltips" = true
 		"Enchanting Tooltips" = true
 		"Fuel Time Tooltips" = true
 		"Shulker Box Use Colors" = true
-		"Shulker Box Require Shift" = false
-		"Map Require Shift" = false
+		"Shulker Box Require Shift" = true
+		"Map Require Shift" = true
 		#The value of each shank of food.
 		#Tweak this when using mods like Hardcore Hunger which change that value.
 		"Food Divisor" = 2
@@ -1822,17 +1822,17 @@
 
 [oddities]
 	Backpack = true
-	Crate = true
+	Crate = false
 	Magnets = true
 	"Matrix Enchanting" = true
 	Pipes = true
 	"Tiny Potato" = true
-	"Totem Of Holding" = true
+	"Totem Of Holding" = false
 
 	[oddities.backpack]
 		#Set this to true to allow the backpacks to be unequipped even with items in them
 		"Super Op Mode" = false
-		"Enable Ravager Hide" = true
+		"Enable Ravager Hide" = false
 		"Items In Backpack Tick" = true
 		"Base Ravager Hide Drop" = 1
 		"Extra Chance Per Looting" = 0.5

@@ -1,0 +1,88 @@
+{
+
+  "gui.horseman.has_lead": "拥有栓绳",
+
+  "gui.horseman.switch_inventory.button.from_horse.tooltip": "玩家背包 §8[§7CTRL+%s§8]",
+
+  "gui.horseman.switch_inventory.button.from_inventory.tooltip": "%s 背包 §8[§7CTRL+%s§8]",
+
+  "gui.horseman.switch_inventory.button.from_inventory..tooltip.mount": "骑乘",
+
+  "horseman.configuration.enabled": "启用",
+
+  "horseman.configuration.movement": "移动",
+
+  "horseman.configuration.fix_horse_moved_wrongly": "修复'移动异常'错误",
+
+  "horseman.configuration.horse_step_height_modifier": "马匹台阶跨越高度调整",
+
+  "horseman.configuration.horse_fast_step_down": "快速下台阶",
+
+  "horseman.configuration.horse_fast_step_down_two_blocks": "快速下两格台阶",
+
+  "horseman.configuration.increase_horse_airborne_speed": "增加空中移动速度",
+
+  "horseman.configuration.increase_horse_airborne_speed_amount": "空中速度增幅",
+
+  "horseman.configuration.horse_swim_when_ridden": "游泳",
+
+  "horseman.configuration.rotate_horse_instead_of_player": "马匹转向",
+
+  "horseman.configuration.saddled_horse_wander_radius": "已上鞍马匹游荡半径",
+
+  "horseman.configuration.ridden_horse_prevent_rearing": "防止骑乘时马匹扬蹄",
+
+  "horseman.configuration.hitching": "栓绳设置",
+
+  "horseman.configuration.requires_lead": "需要栓绳",
+
+  "horseman.configuration.lead_slot": "栓绳槽位",
+
+  "horseman.configuration.free_camera": "自由视角",
+
+  "horseman.configuration.angle_threshold": "角度阈值",
+
+  "horseman.configuration.misc": "杂项设置",
+
+  "horseman.configuration.mounted_block_break_speed_modifier": "骑乘时方块破坏速度调整",
+
+  "horseman.configuration.horse_fits_in_boat": "马匹可进入船只",
+
+  "horseman.configuration.shears_remove_chest": "剪刀可移除马铠",
+
+  "horseman.configuration.horse_creative_taming": "创造模式立即驯服",
+
+  "horseman.configuration.improved_mount_gui": "改进骑乘界面",
+
+  "horseman.configuration.fix_mounted_camera_lag": "修复骑乘视角卡顿",
+
+  "horseman.configuration.prevent_jumping_in_water": "水中禁止跳跃",
+
+  "horseman.configuration.horse_model_head_offset": "马头俯仰角度偏移",
+
+  "horseman.configuration.horse_model_y_offset": "马头高度偏移",
+
+  "horseman.configuration.render_lead_indication_without_slot": "无栓绳槽时显示栓绳标记",
+
+  "horseman.configuration.switch_inventory": "切换背包",
+
+  "horseman.configuration.player_button_position_x": "背包按钮X坐标",
+
+  "horseman.configuration.player_button_position_y": "背包按钮Y坐标",
+
+  "horseman.configuration.horse_button_position_x": "马匹按钮X坐标",
+
+  "horseman.configuration.horse_button_position_y": "马匹按钮Y坐标",
+
+  "horseman.configuration.transparent_horse": "马匹透明化",
+
+  "horseman.configuration.max_transparency": "最大透明度",
+
+  "horseman.configuration.start_angle": "起始角度",
+
+  "horseman.configuration.end_angle": "结束角度",
+
+  "horseman.configuration.jeb_horse": "彩虹马（jeb_ horse彩蛋）"
+
+}
+

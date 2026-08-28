@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+	  "layer0" : "ignissoulfires:item/ignitium_pickaxe_hand"
+	}
+  }

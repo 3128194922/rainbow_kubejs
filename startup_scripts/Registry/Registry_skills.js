@@ -7,7 +7,7 @@ StartupEvents.registry('item', event => {
         .tag("curios:belt")
         .displayName("火遁·豪火灭却")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
                     let stack = ev.stack;
                     if (!stack.nbt) {

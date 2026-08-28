@@ -1,0 +1,407 @@
+{
+  "item.legendary_monsters.dinosaur_bone" : "恐龙骨头",
+  "item.legendary_monsters.ambushers_skin" : "伏击兽皮",
+  "item.legendary_monsters.sharp_battle_axe" : "锋锐悍斧",
+  "item.legendary_monsters.anchor_handle" : "锚把手",
+  "item.legendary_monsters.reinforced_monstrous_anchor" : "怪怖之锚",
+  "item.legendary_monsters.ancient_spike" : "荒古尖刺",
+
+  "item.legendary_monsters.shulker_mimic_spawn_egg" : "重壳潜影贝刷怪蛋",
+  "item.legendary_monsters.ancient_guardian_spawn_egg" : "荒古守卫者刷怪蛋",
+  "item.legendary_monsters.posessed_paladin_spawn_egg" : "附魂圣骑刷怪蛋",
+  "item.legendary_monsters.monstrous_anchor" : "怪怖之锚",
+  "item.legendary_monsters.spiky_shield" : "尖刺之盾",
+  "item.legendary_monsters.withered_ribcage" : "凋零胸腔",
+  "item.legendary_monsters.chorus_blade" : "紫颂之刃",
+  "item.legendary_monsters.chorus_mask" : "紫颂面具",
+  "item.legendary_monsters.chorus_crystal" : "紫颂水晶",
+  "item.legendary_monsters.chorus_cannon" : "紫颂加农",
+  "item.legendary_monsters.infected_chorus_fruit" : "侵染紫颂果",
+  "item.legendary_monsters.chorus_bomb_projectile" : "紫颂炸弹",
+  "item.legendary_monsters.large_shulker_shell" : "大型潜影壳",
+  "item.legendary_monsters.shulker_shield" : "潜影之盾",
+  "item.legendary_monsters.shulker_helmet" : "潜影贝胄",
+  "item.legendary_monsters.the_great_frost" : "巨寒之霜",
+  "item.legendary_monsters.dinosaur_bone_shield" : "恐龙骨盾",
+  "item.legendary_monsters.frozen_rune" : "冰冻符文",
+  "item.legendary_monsters.frostbitten_shield" : "霜冻之盾",
+  "item.legendary_monsters.mossy_chestplate" : "覆藓胸甲",
+  "item.legendary_monsters.lava_eaters_skin" : "炽嘴蝾螈皮",
+  "item.legendary_monsters.fiery_jaw" : "炽火大颚",
+  "item.legendary_monsters.void_sword" : "虚空之剑",
+  "item.legendary_monsters.dinosaur_bone_meal" : "恐龙骨粉",
+  "item.legendary_monsters.entity_warper" : "实体扭曲仪",
+  "item.legendary_monsters.nature_crystal" : "自然水晶",
+  "item.legendary_monsters.warped_mushroom_cap_part" : "诡异蘑菇伞片",
+  "item.legendary_monsters.void_gem" : "虚空宝石",
+  "item.legendary_monsters.withered_bone" : "凋零骨头",
+  "item.legendary_monsters.void_entity_warper" : "虚空扭曲仪",
+  "item.legendary_monsters.mossy_hammer" : "覆藓磐锤",
+  "item.legendary_monsters.overgrown_colossus_spawn_egg" : "蔓生巨像刷怪蛋",
+  "item.legendary_monsters.mossy_golem_spawn_egg" : "覆藓傀儡刷怪蛋",
+
+  "item.legendary_monsters.hovering_hurricane_spawn_egg" : "飓旋刷怪蛋",
+  "item.legendary_monsters.stratling_spawn_egg" : "惊灵刷怪蛋",
+  "item.legendary_monsters.spike_bug_spawn_egg" : "尖刺蠕虫刷怪蛋",
+  "item.legendary_monsters.ambusher_spawn_egg" : "伏击兽刷怪蛋",
+  "item.legendary_monsters.skeletosaurus_spawn_egg" : "骸龙刷怪蛋",
+  "item.legendary_monsters.warped_fungussus_spawn_egg" : "诡疑菌怪刷怪蛋",
+  "item.legendary_monsters.chorusling_spawn_egg" : "紫颂灵刷怪蛋",
+  "item.legendary_monsters.lava_eater_spawn_egg" : "炽嘴蝾螈刷怪蛋",
+  "item.legendary_monsters.endersent_spawn_egg" : "末影遣使刷怪蛋",
+  "item.legendary_monsters.frostbitten_golem_spawn_egg" : "霜冻傀儡刷怪蛋",
+  "item.legendary_monsters.withered_abomination_spawn_egg" : "凋零恶煞刷怪蛋",
+  "item.legendary_monsters.dune_sentinel_spawn_egg" : "沙丘哨兵刷怪蛋",
+  "item.legendary_monsters.haunted_knight_spawn_egg" : "缠魂骑士刷怪蛋",
+  "item.legendary_monsters.haunted_guard_spawn_egg" : "缠魂守卫刷怪蛋",
+  "item.legendary_monsters.bomber_spawn_egg" : "崩魔苦力怕刷怪蛋",
+  "item.legendary_monsters.fatal_mortar" : "致命迫击炮刷怪蛋",
+  "item.legendary_monsters.ender_hammer" : "末影钣锤",
+  "item.legendary_monsters.withered_scythe" : "凋零之镰",
+  "item.legendary_monsters.dinosaur_bone_club" : "恐龙骨槌",
+  "item.legendary_monsters.air_rune" : "大气符文",
+  "item.legendary_monsters.wand_of_clouds" : "层云叠杖",
+  "item.legendary_monsters.sharp_sai" : "锋锐之钗",
+  "item.legendary_monsters.axe_of_lightning" : "闪电之斧",
+  "item.legendary_monsters.molten_metal_ingot" : "熔融金属锭",
+  "item.legendary_monsters.atmospheric_boots" : "大气之靴",
+  "item.legendary_monsters.soul_great_sword" : "灵魂巨剑",
+  "item.legendary_monsters.spiky_spear" : "尖刺之矛",
+  "item.legendary_monsters.golden_halbert" : "金锻斧枪",
+  "item.legendary_monsters.knights_sword" : "骑士长铗",
+  "item.legendary_monsters.corrupted_soul" : "堕落之魂",
+  "item.legendary_monsters.purified_soul" : "净化之魂",
+  "item.legendary_monsters.knight_summoner" : "骑士召令",
+  "item.legendary_monsters.guard_summoner" : "守卫召令",
+  "item.legendary_monsters.deactivated_knight_summoner" : "黯淡的骑士召令",
+  "item.legendary_monsters.deactivated_guard_summoner" : "黯淡的守卫召令",
+  "item.legendary_monsters.knights_sword_blade_half" : "骑士长铗碎刃",
+  "item.legendary_monsters.long_stick_half" : "长碎柄",
+  "item.legendary_monsters.primal_ice_shard" : "始冰碎片",
+  "item.legendary_monsters.withered_horn" : "凋零之角",
+  "item.legendary_monsters.guide_book" : "指南书",
+  "item.legendary_monsters.skeloraptor_spawn_egg" : "骸龙刷怪蛋",
+  "item.legendary_monsters.fatal_mortar_spawn_egg" : "致命迫击炮刷怪蛋",
+  "item.legendary_monsters.chiseled_ancient_dripstone_shard" : "雕纹荒古滴水石碎片",
+  "item.legendary_monsters.sand_cannon" : "沙地加农",
+  "item.legendary_monsters.blastproof_metal_scrap" : "抗爆金属废料",
+  "item.legendary_monsters.blastproof_helmet" : "抗爆头盔",
+  "item.legendary_monsters.ancient_sandstone_shard" : "古代砂岩碎片",
+  "item.legendary_monsters.ancient_detonator" : "古代雷管",
+  "item.legendary_monsters.crystal_of_sandstorm" : "沙暴水晶",
+  "item.legendary_monsters.explosive_sand" : "爆砂",
+  "item.legendary_monsters.sickle_of_harvest" : "丰收之镰",
+
+  "item.legendary_monsters.heart_of_tornado" : "龙卷之心",
+
+  "item.legendary_monsters.cloud_rod" : "浮云棒",
+
+  "item.legendary_monsters.music_disc_advance" : "音乐唱片",
+
+  "item.legendary_monsters.music_disc_advance.desc" : "Light Canvas - Advance",
+  "item.legendary_monsters.crystal_of_air" : "大气水晶",
+  "item.legendary_monsters.fiery_boots" : "炽火之靴",
+
+  "item.legendary_monsters.eye_of_sandstorm" : "沙暴之眼",
+  "item.legendary_monsters.eye_of_many_ribs" : "阜骨之眼",
+  "item.legendary_monsters.eye_of_frost" : "冰冻之眼",
+  "item.legendary_monsters.eye_of_soul" : "灵魂之眼",
+  "item.legendary_monsters.eye_of_air" : "大气之眼",
+  "item.legendary_monsters.eye_of_moss" : "苔藓之眼",
+  "item.legendary_monsters.eye_of_chorus" : "紫颂之眼",
+  "item.legendary_monsters.eye_of_shulker" : "潜影之眼",
+  "item.legendary_monsters.eye_of_bones" : "尸骨之眼",
+  "item.legendary_monsters.eye_of_magma" : "岩浆之眼",
+  "item.legendary_monsters.eye_of_ghost" : "鬼魂之眼",
+
+
+  "entity.legendary_monsters.ice_spike": "冰刺",
+  "entity.legendary_monsters.skeletosaurus": "骸龙",
+
+  "entity.legendary_monsters.hovering_hurricane": "飓旋",
+  "entity.legendary_monsters.stratling": "惊灵",
+  "entity.legendary_monsters.mossy_golem": "覆藓傀儡",
+  "entity.legendary_monsters.overgrown_colossus": "蔓生巨像",
+  "entity.legendary_monsters.warped_fungussus": "诡疑菌怪",
+  "entity.legendary_monsters.frostbitten_golem": "霜冻傀儡",
+  "entity.legendary_monsters.lava_eater": "炽嘴蝾螈",
+  "entity.legendary_monsters.endersent": "末影遣使",
+  "entity.legendary_monsters.chorusling": "紫颂灵",
+  "entity.legendary_monsters.shulker_mimic": "重壳潜影贝",
+  "entity.legendary_monsters.ambusher": "伏击兽",
+  "entity.legendary_monsters.spiky_bug": "尖刺蠕虫",
+  "entity.legendary_monsters.withered_abomination": "凋零恶煞",
+  "entity.legendary_monsters.ancient_guardian": "荒古守卫者",
+  "entity.legendary_monsters.dark_cloud_golem": "浮云傀儡",
+  "entity.legendary_monsters.knights_armor": "骑士",
+  "entity.legendary_monsters.guard": "守卫",
+  "entity.legendary_monsters.haunted_knight": "缠魂骑士",
+  "entity.legendary_monsters.haunted_guard": "缠魂守卫",
+  "entity.legendary_monsters.posessed_paladin": "附魂圣骑",
+  "entity.legendary_monsters.dune_sentinel": "沙丘哨兵",
+  "entity.legendary_monsters.skeloraptor": "骸龙",
+  "entity.legendary_monsters.bomb": "炸弹",
+  "entity.legendary_monsters.bomber": "自走爆弹",
+
+  "creativetab.legendary_monsters" : "传奇怪物",
+
+  "sounds.legendary_monsters.endersent_attack": "末影遣使：重击地面",
+  "sounds.legendary_monsters.endersent_ambient": "末影遣使：交谈",
+  "sounds.legendary_monsters.endersent_death": "末影遣使：痛苦薨殂",
+
+  "effect.legendary_monsters.chorus_infection": "紫颂侵染",
+  "effect.legendary_monsters.freeze": "冻结",
+  "effect.legendary_monsters.soul_eater": "噬魂者",
+  "effect.legendary_monsters.bleeding": "流血",
+  "effect.legendary_monsters.soul_rage": "灵魂之怒",
+  "effect.legendary_monsters.stun": "晕眩",
+  "effect.legendary_monsters.fear": "恐惧",
+  "effect.legendary_monsters.broken_armor": "碎甲",
+  "effect.legendary_monsters.gravity_pull": "重力吸引",
+  "effect.legendary_monsters.curse_of_desert": "沙漠诅咒",
+  "block.legendary_monsters.ancient_dripstone_bricks": "荒古滴水石砖",
+  "block.legendary_monsters.ancient_dripstone_block": "荒古滴水石块",
+  "block.legendary_monsters.ancient_dripstone_brick_pillar": "荒古滴水石砖柱",
+  "block.legendary_monsters.chiseled_ancient_dripstone_bricks": "雕纹荒古滴水石砖",
+  "block.legendary_monsters.ancient_dripstone_tiles": "荒古滴水石瓦",
+  "block.legendary_monsters.ancient_dripstone_brick_slab": "荒古滴水石砖台阶",
+  "block.legendary_monsters.ancient_dripstone_brick_wall": "荒古滴水石砖墙",
+  "block.legendary_monsters.ancient_dripstone_brick_stairs": "荒古滴水石砖楼梯",
+  "block.legendary_monsters.ancient_dripstone_tile_slab": "荒古滴水石瓦台阶",
+  "block.legendary_monsters.ancient_dripstone_tile_stairs": "荒古滴水石瓦楼梯",
+  "block.legendary_monsters.ancient_dripstone_tile_wall": "荒古滴水石瓦墙",
+  "block.legendary_monsters.cloud_block": "云块",
+  "block.legendary_monsters.cloud_bricks": "云砖",
+  "block.legendary_monsters.skeletosaurus_egg": "骸龙蛋",
+
+  "block.legendary_monsters.polished_diorite_pillar": "平滑闪长岩柱",
+
+  "advancements.legendary_monsters.legendary_monsters_root.title": "传奇怪物",
+  "advancements.legendary_monsters.legendary_monsters_root.description": "新挑战生物！",
+  "advancements.legendary_monsters.nether_root.title": "传奇怪物：下界",
+  "advancements.legendary_monsters.nether_root.description": "来自下界的新挑战！",
+  "advancements.legendary_monsters.end_root.title": "传奇怪物：末地",
+  "advancements.legendary_monsters.end_root.description": "来自末地的新挑战！",
+
+  "advancements.legendary_monsters.locate_skeletosaurus_nest.title": "很久以前",
+  "advancements.legendary_monsters.locate_skeletosaurus_nest.description": "找到骸龙巢穴",
+  "advancements.legendary_monsters.defeat_skeletosaurus.title": "古代骷髅",
+  "advancements.legendary_monsters.defeat_skeletosaurus.description": "击败骸龙",
+
+  "advancements.legendary_monsters.locate_soul_fortress_remains.title": "灵魂要塞",
+  "advancements.legendary_monsters.locate_soul_fortress_remains.description": "找到灵魂要塞遗迹",
+  "advancements.legendary_monsters.defeat_withered_abomination.title": "噬魂者",
+  "advancements.legendary_monsters.defeat_withered_abomination.description": "击败凋零恶煞",
+
+  "advancements.legendary_monsters.locate_mossy_temple.title": "青苔满布",
+  "advancements.legendary_monsters.locate_mossy_temple.description": "找到覆藓神殿",
+  "advancements.legendary_monsters.defeat_overgrown_colossus.title": "覆藓野兽",
+  "advancements.legendary_monsters.defeat_overgrown_colossus.description": "击败蔓生巨像",
+
+  "advancements.legendary_monsters.locate_ancient_stronghold.title": "满城尽带滴水石",
+  "advancements.legendary_monsters.locate_ancient_stronghold.description": "找到荒古要塞",
+  "advancements.legendary_monsters.defeat_ancient_guardian.title": "唯一 - 披甲怪兽",
+  "advancements.legendary_monsters.defeat_ancient_guardian.description": "击败荒古守卫者",
+  "advancements.legendary_monsters.defeat_ambusher.title": "欺诈者",
+  "advancements.legendary_monsters.defeat_ambusher.description": "击败伏击兽",
+  "advancements.legendary_monsters.defeat_spiky_bug.title": "恶心的蠕虫",
+  "advancements.legendary_monsters.defeat_spiky_bug.description": "击败尖刺蠕虫",
+
+  "advancements.legendary_monsters.locate_shulker_tower.title": "此处失重！",
+  "advancements.legendary_monsters.locate_shulker_tower.description": "找到潜影高塔",
+  "advancements.legendary_monsters.defeat_shulker_mimic.title": "幽怖骇人潜影盒",
+  "advancements.legendary_monsters.defeat_shulker_mimic.description": "击败重壳潜影贝",
+
+  "advancements.legendary_monsters.locate_ancient_tower_remains.title": "远走离乡",
+  "advancements.legendary_monsters.locate_ancient_tower_remains.description": "找到古老高塔遗迹",
+  "advancements.legendary_monsters.defeat_endersent.title": "高个子",
+  "advancements.legendary_monsters.defeat_endersent.description": "击败末影遣使",
+  "advancements.legendary_monsters.defeat_chorusling.title": "紫颂侵染",
+  "advancements.legendary_monsters.defeat_chorusling.description": "击败紫颂灵",
+
+  "advancements.legendary_monsters.locate_cloudy_temple.title": "其为云筑..",
+  "advancements.legendary_monsters.locate_cloudy_temple.description": "找到浮云神殿",
+  "advancements.legendary_monsters.defeat_cloud_golem.title": "与天为敌",
+  "advancements.legendary_monsters.defeat_cloud_golem.description": "击败浮云傀儡",
+
+  "advancements.legendary_monsters.locate_lava_eater.title": "火山霹地",
+  "advancements.legendary_monsters.locate_lava_eater.description": "找到炽嘴蝾螈巢穴",
+  "advancements.legendary_monsters.defeat_lava_eater.title": "炽火野兽",
+  "advancements.legendary_monsters.defeat_lava_eater.description": "击败炽嘴蝾螈",
+
+  "advancements.legendary_monsters.locate_frostbitten_temple.title": "冰冻之地",
+  "advancements.legendary_monsters.locate_frostbitten_temple.description": "找到霜冻神殿",
+  "advancements.legendary_monsters.defeat_frostbitten_golem.title": "最冰冷的傀儡",
+  "advancements.legendary_monsters.defeat_frostbitten_golem.description": "击败霜冻傀儡",
+
+  "advancements.legendary_monsters.defeat_warped_fungussus.title": "它在传送！",
+  "advancements.legendary_monsters.defeat_warped_fungussus.description": "击败诡疑菌怪",
+
+  "advancements.legendary_monsters.locate_abandoned_crypt.title": "可怕入口",
+  "advancements.legendary_monsters.locate_abandoned_crypt.description": "找到废弃墓穴",
+  "advancements.legendary_monsters.defeat_haunted_knight.title": "活盔甲",
+  "advancements.legendary_monsters.defeat_haunted_knight.description": "击败缠魂骑士",
+  "advancements.legendary_monsters.defeat_haunted_guard.title": "不死守卫",
+  "advancements.legendary_monsters.defeat_haunted_guard.description": "击败缠魂守卫",
+  "advancements.legendary_monsters.defeat_posessed_paladin.title": "堕落骑士",
+  "advancements.legendary_monsters.defeat_posessed_paladin.description": "击败附魂圣骑",
+
+  "advancements.legendary_monsters.defeat_bomber.title": "砂岩炸弹",
+  "advancements.legendary_monsters.defeat_bomber.description": "击败崩魔苦力怕",
+  "advancements.legendary_monsters.defeat_dune_sentinel.title": "古代战争兵器",
+  "advancements.legendary_monsters.defeat_dune_sentinel.description": "击败沙丘哨兵",
+  "advancements.legendary_monsters.locate_ruined_pyramid.title": "另一座沙漠神殿！",
+  "advancements.legendary_monsters.locate_ruined_pyramid.description": "找到荒废金字塔",
+
+  "death.attack.legendary_monsters.spikes": "%s 被尖刺戳穿了",
+  "item.legendary_monsters.soul_great_sword1": "\u00A76特殊能力:\u00A7750%在暴击后",
+  "item.legendary_monsters.soul_great_sword2": "\u00A77概率给予敌人[流血]效果.",
+  "item.legendary_monsters.soul_great_sword3": "\u00A72特殊能力2:\u00A77提供10秒[灵魂之怒]效果",
+  "item.legendary_monsters.soul_great_sword4": "\u00A77攻击速度提高0.5，护甲提高6，护甲耐久提高1",
+  "item.legendary_monsters.soul_great_sword5": "\u00A77[点击右键使用]]",
+
+
+  "item.legendary_monsters.wand_of_clouds1": "\u00A76特殊能力:\u00A77召唤一朵大爆云[14伤害]和",
+  "item.legendary_monsters.wand_of_clouds2": "\u00A77三朵小爆云[各5伤害]攻击敌人\u00A76[右键实体使用]",
+
+
+  "item.legendary_monsters.withered_ribcage1": "§6特殊能力:§7该胸甲可使玩家",
+  "item.legendary_monsters.withered_ribcage2": "§7免疫凋零效果.",
+
+  "item.legendary_monsters.withered_scythe1": "§6特殊能力:§7右键向前冲刺",
+  "item.legendary_monsters.withered_scythe2": "§7对敌人造成伤害",
+
+  "item.legendary_monsters.m_anchor1": "§6特殊能力:§7右键长按1.5秒后轰击空气",
+  "item.legendary_monsters.m_anchor2": "§7使[4格内]所有生物停滞[3秒]",
+  "item.legendary_monsters.m_anchor3": "§6特殊能力2:§7攻击时给予附近生物4伤害",
+
+
+  "item.legendary_monsters.mossy_chestplate1": "\u00A76特殊能力:\u00A77按R键[默认]召唤围绕你的毒云",
+  "item.legendary_monsters.mossy_chestplate2": "§7毒云将对生物造成伤害并治愈你",
+
+
+  "item.legendary_monsters.mossy_hammer1": "§6特殊能力:§7对所有实体造成10伤害",
+  "item.legendary_monsters.mossy_hammer2": "§7并对四格内所有实体施加中毒效果，若玩家物品栏内有",
+  "item.legendary_monsters.mossy_hammer3": "§7骨粉，将在3格内每个受伤的实体下方生成苔藓块！",
+  "item.legendary_monsters.mossy_hammer4": "§6[右键方块使用] ",
+  "item.legendary_monsters.mossy_hammer5": "§7此武器同时可作镐使用！",
+
+  "item.legendary_monsters.sand_cannon1": "§6特殊能力:§7长按右键1.5秒后发射砂岩炸弹",
+
+
+  "item.legendary_monsters.chorus_helmet1": "§6特殊能力:§7该面具可使玩家",
+
+  "item.legendary_monsters.chorus_helmet2": "§7免疫紫颂侵染效果",
+
+
+
+
+  "item.legendary_monsters.chorus_blade1": "§6特殊能力:§7传送玩家到随机位置",
+  "item.legendary_monsters.chorus_blade2": "§7如可用于躲避攻击§6[右键使用]",
+
+
+  "item.legendary_monsters.axe_of_lightning1": "§6特殊能力:§7右键召唤雷击§6[每段9伤害，无视护甲],",
+  "item.legendary_monsters.axe_of_lightning2": "§7右键方块在所目视方向上",
+  "item.legendary_monsters.axe_of_lightning3": "§7召唤电爆冲击波§6[该武器的每段冲击波伤害，无视护甲]",
+
+
+  "item.legendary_monsters.atm_boots1": "§6特殊能力:§740%摔落伤害减免",
+
+
+  "item.legendary_monsters.dino_club1": "§6特殊能力:§7右键方块产生",
+  "item.legendary_monsters.dino_club2": "§7呈圆形的冲击波",
+
+  "item.legendary_monsters.entity_warper1": "§6特殊能力:§7传送4格内",
+  "item.legendary_monsters.entity_warper2": "§7所有实体至玩家身边！§6[右键使用]",
+
+  "item.legendary_monsters.void_entity_warper1": "§6特殊能力:§7抓取6格内",
+  "item.legendary_monsters.void_entity_warper2": "§7指定实体至玩家身边§6[右键使用]",
+
+
+  "item.legendary_monsters.great_frost1": "§6特殊能力:§7右键方块召唤冰刺",
+  "item.legendary_monsters.great_frost2": "§6特殊能力2:§7潜行+右键方块召唤环身冰刺",
+
+
+  "item.legendary_monsters.shulker_helmet1": "§7该头盔可使玩家免疫漂浮效果",
+
+  "item.legendary_monsters.dino_shield": "§6极其耐用！",
+
+  "item.legendary_monsters.blast_proof_helmet1": "§6特殊能力:§735%爆炸伤害减免",
+  "item.legendary_monsters.blast_proof_helmet2": "§6（再也不怕苦力怕突脸啦！）",
+
+
+  "item.legendary_monsters.fiery_jaw1": "§6特殊能力:§7炽火之颚将推开",
+  "item.legendary_monsters.fiery_jaw2": "§7玩家身边3格内所有实体.同时玩家将喷出火焰§6[右键使用]",
+
+
+  "item.legendary_monsters.golden_halberd1": "§6特殊能力: §725%概率在暴击后",
+
+  "item.legendary_monsters.golden_halberd2": "§7给予敌人[流血]效果.",
+
+
+  "item.legendary_monsters.fiery_boots1": "§6特殊能力:§7按X键[默认]使走过的地方着火.",
+
+  "item.legendary_monsters.frost_shield1": "§6特殊能力:§7使敌人冻结3秒",
+
+  "item.legendary_monsters.frost_shield2": "§6[格挡使用]",
+
+  "item.legendary_monsters.chorus_cannon1": "§6特殊能力:§7长按右键1.5秒后发射紫颂炸弹",
+
+  "item.legendary_monsters.chorus_cannon2": "§7对敌人施加紫颂侵染效果",
+
+  "item.legendary_monsters.spiky_shield1": "\u00A76特殊能力:\u00A77当你用盾牌格挡时将伤害反馈给敌人时",
+  "item.legendary_monsters.spiky_shield2": "\u00A77有50%概率给予敌人[流血]效果",
+  "item.legendary_monsters.spiky_shield3": "§2[反弹伤害:5 + 25%敌源伤害] ",
+  "item.legendary_monsters.spiky_shield4": "§6[格挡使用]",
+
+  "item.legendary_monsters.shulker_shield1": "§6特殊能力:§760%概率使敌人漂浮",
+  "item.legendary_monsters.shulker_shield2": "§6[格挡使用]",
+
+  "item.legendary_monsters.heartoftornado1": "§6长按右键发射可抓取实体的龙卷风[持续3秒]",
+
+  "death.attack.legendary_monsters.laser": "%s被%s使用纯粹闪电能量湮灭",
+
+  "death.attack.legendary_monsters.clouds": "%s被%s粉碎而死",
+
+  "legendary_monsters.message.stratling_interaction": "右键进行互动（交易）",
+  "legendary_monsters.message.pet_sit_enable": " §c坐下§f 模式已启用",
+  "legendary_monsters.message.pet_walk_enable": " §a行走§f 模式已启用",
+  "legendary_monsters.message.pet_stand_enable": " §c停留§f 模式已启用",
+  "legendary_monsters.message.pet_stand_disable": " §a自由行走§f 模式已启用",
+
+  "legendary_monsters.message.stun_message": " §c准备发动眩晕攻击！",
+  "legendary_monsters.message.mossy_golem_string_message_name": "覆藓傀儡",
+  "legendary_monsters.message.knight_string_message_name": "骑士",
+  "legendary_monsters.message.guard_string_message_name": "守卫",
+  "legendary_monsters.message.skeloraptor_string_message_name": "骸龙",
+
+  "key.categories.legendary_monsters": "传奇怪物按键分类",
+  "key.legendary_monsters.mossy_chestplate_ability": "传奇怪物胸甲技能",
+  "key.legendary_monsters.fiery_boots_ability": "传奇怪物靴子技能",
+  "item.legendary_monsters.totem_of_moss": "覆藓图腾",
+  "item.legendary_monsters.totem_of_moss1": "§6右键方块召唤覆藓傀儡，可加速周围作物生长",
+  "item.legendary_monsters.totem_of_moss2": "§7并协助战斗。死亡后可轻松重生。",
+  "item.legendary_monsters.totem_of_moss3": "§f潜行键+右键切换'§a停留模式§7'",
+
+  "item.legendary_monsters.guard_summoner1": "§6右键方块召唤守卫来保护你",
+  "item.legendary_monsters.guard_summoner2": "§7可使用铁锭驯服",
+  "item.legendary_monsters.guard_summoner3": "§6比骑士伤害更高、攻击范围更大，但速度较慢",
+  "item.legendary_monsters.guard_summoner4": "§7死亡后可用铁锭和黯淡的守卫召令重生",
+  "item.legendary_monsters.knight_summoner1": "§6右键方块召唤骑士来保护你",
+  "item.legendary_monsters.knight_summoner2": "§7可使用铁锭驯服",
+  "item.legendary_monsters.knight_summoner3": "§6伤害低于守卫，但可快速连击并格挡攻击",
+  "item.legendary_monsters.knight_summoner4": "§7死亡后可用铁锭和黯淡的骑士召令重生",
+
+  "legendary_monsters.message.skeloraptor_time_until_next_roar": "咆哮冷却：",
+  "block.legendary_monsters.skeletosaurus_egg1": "§7放置后等待孵化后可用生肉驯服",
+  "block.legendary_monsters.skeletosaurus_egg2": "§7可骑乘并指挥攻击",
+  "block.legendary_monsters.skeletosaurus_egg3": "§7按R键咆哮可吓退生物",
+  "block.legendary_monsters.skeletosaurus_egg4": "§6在灵魂沙上可加速孵化",
+
+  "item.legendary_monsters.cloud_golem_spawn_egg": "浮云傀儡刷怪蛋",
+  "entity.legendary_monsters.cloud_golem": "浮云傀儡"
+}
+
+
+
+

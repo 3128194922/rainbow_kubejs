@@ -33,7 +33,7 @@ ItemEvents.modification(event => {
    backtanks.forEach(id => {
       event.modify(id, item => {
          item.attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create()
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .curioTick((slotContext, stack) => {
                   let player = slotContext.entity();
                   if (!player) return;
@@ -71,7 +71,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('chromaticarsenal:golden_heart', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .addAttribute(
                    "minecraft:generic.max_health",
                    "golden_heart",
@@ -86,7 +86,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('caverns_and_chasms:tinplate', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .addAttribute(
                    "minecraft:generic.armor_toughness",
                    "tinplate",
@@ -100,7 +100,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('caverns_and_chasms:saddled_egg', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .addAttribute(
                    "minecraft:generic.armor_toughness",
                    "saddled_egg",
@@ -114,7 +114,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('species:wicked_swapper', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .addAttribute(
                    "attributeslib:dodge_chance",
                    "wicked_swapper",
@@ -128,7 +128,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('oreganized:gargoyle', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -172,7 +172,7 @@ ItemEvents.modification(event => {
 ItemEvents.modification(event => {
    event.modify('species:kinetic_core', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -266,7 +266,7 @@ function getTideFishTotalCount() {
 ItemEvents.modification(event => {
    event.modify('tide:fishing_journal', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;
@@ -318,7 +318,7 @@ ItemEvents.modification(event => {
 /*ItemEvents.modification(event => {
    event.modify('royalvariations:spectral_gauntlet', item => {
        item.attachCuriosCapability(
-           CuriosJSCapabilityBuilder.create()
+           CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (!entity) return false;

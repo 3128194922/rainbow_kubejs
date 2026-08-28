@@ -104,6 +104,19 @@ function listCuriosCooldown(player) {
     }
     return result
 }
+// 通用卸下判定：饰品物品处于原版 item cooldown 时禁止卸下（所有饰品通用）
+// 用法：CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+function canUnequipNotOnCooldown(slotContext, stack) {
+    let entity = slotContext.entity();
+    if (entity == null) return true;
+    try {
+        // 非玩家实体无 cooldowns，异常时放行卸下
+        return !entity.cooldowns.isOnCooldown(stack.getItem());
+    } catch (err) {
+        return true;
+    }
+}
+
 // 获取指定槽位类型中的所有饰品物品列表
 function getCuriosItems(player, slotType) {
     let curios = getCuriosInventorySafe(player)

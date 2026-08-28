@@ -15,7 +15,9 @@ const SYM_ATTRS = Object.freeze([
 const SYM_OP = AttributeModifier.Operation.ADDITION
 
 function removeSymbiosisModifiers(entity) {
-    if (!entity?.isLiving()) return
+    // 注意：本 Rhino 版本的 a?.b() 不会短路调用（obj 为 null 时会以 Undefined 调用导致崩溃），
+    // 必须用显式判空（与 SymbiosisBadge_Server.js 的写法保持一致）
+    if (!entity || !entity.isLiving()) return
     for (const attr of SYM_ATTRS) {
         const inst = entity.getAttribute(attr.id)
         if (inst) inst.removeModifier(attr.uuid)
@@ -24,7 +26,7 @@ function removeSymbiosisModifiers(entity) {
 }
 
 function applySymbiosisModifiers(entity) {
-    if (!entity?.isLiving()) return
+    if (!entity || !entity.isLiving()) return
     let isNewHealth = false
     for (const attr of SYM_ATTRS) {
         const inst = entity.getAttribute(attr.id)
@@ -51,7 +53,7 @@ StartupEvents.registry('item', event => {
                     const lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID")
                     const vehicle = player.vehicle
 
-                    if (vehicle?.isLiving()) {
+                    if (vehicle && vehicle.isLiving()) {
                         const vehicleUUID = vehicle.uuid.toString()
                         if (lastUUID && lastUUID !== vehicleUUID) {
                             removeSymbiosisModifiers(player.level.getEntity(UUID.fromString(lastUUID)))

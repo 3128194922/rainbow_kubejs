@@ -21,7 +21,7 @@ ServerEvents.tags("item", event => {
     // 技能饰品
     event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','mysticartifacts:emergency_plan',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
     'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb'])
 
@@ -111,6 +111,9 @@ ServerEvents.tags("item", event => {
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])
+
+    //盾牌forge词条
+    event.add("forge:tools/shields", ['species:ricoshield','alexsmobs:shield_of_the_deep','alexsmobs:skelewag_sword'])
 /*
     // 物品同化标签添加
     global.UNIFIED_ITEMS.forEach(group => {

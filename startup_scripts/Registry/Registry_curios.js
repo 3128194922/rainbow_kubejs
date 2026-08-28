@@ -2903,8 +2903,7 @@ StartupEvents.registry('item', event => {
                     if (level.isClientSide()) return; // 服务端才结算
 
                     //—— 触发判定：用相邻 tick 的位移距离代表速度（只调 Java 方法，绝不读原生字段，避免 Rhino 空指针）——
-                    // 翻滚 3格/8tick ≈ 0.375 方块/tick；走路≈0.13、疾跑≈0.28，均远低于阈值
-                    let SPEED_THRESHOLD = 0.33;
+                    let SPEED_THRESHOLD = 1.0;
                     let pd = entity.getPersistentData();
                     let hasPrev = pd.contains('pauldron_px');
                     let x0 = pd.getDouble('pauldron_px');
@@ -2918,12 +2917,13 @@ StartupEvents.registry('item', event => {
                     let dx = x1 - x0;
                     let dz = z1 - z0;
                     let move = Math.sqrt(dx * dx + dz * dz);
+                    //console.log(move);
                     if (move < SPEED_THRESHOLD) return;
 
                     // 高速分支本身只会在翻滚时出现，无需节流（避免依赖取时间的方法）
                     let box = entity.getBoundingBox().inflate(1.0, 0.5, 1.0);
                     let targets = level.getEntitiesWithin(box);
-                    console.log('[pauldron][高速] move=' + move.toFixed(3) + ' 目标数=' + targets.length);
+                    //console.log('[pauldron][高速] move=' + move.toFixed(3) + ' 目标数=' + targets.length);
 
                     let idx, target;
                     for (idx = 0; idx < targets.length; idx++) {
@@ -2932,17 +2932,25 @@ StartupEvents.registry('item', event => {
                         if (target.getId() === entity.getId()) continue; // 排除穿戴者自身
                         if (!target.isAlive()) continue;
 
-                        console.log('[pauldron][命中] 目标=' + target + ' 类型=' + (typeof target.getType === "function" ? target.getType() : 'n/a'));
+                        //console.log('[pauldron][命中] 目标=' + target + ' 类型=' + (typeof target.getType === "function" ? target.getType() : 'n/a'));
 
                         // 造成伤害（来源记为穿戴者玩家）
-                        try { target.attack(entity.damageSources().playerAttack(entity), 8); console.log('[pauldron][造成伤害] 成功'); } catch (e) { console.log('[pauldron][造成伤害失败] ' + e); }
+                        try { 
+
+                            // 获取玩家动能伤害属性值（来自oreganized）
+                            let kineticAttr = target.getAttribute('oreganized:kinetic_damage');
+                            let kineticDamage = kineticAttr ? kineticAttr.getValue() : 0;
+
+                            target.attack(entity.damageSources().playerAttack(entity), 2 + kineticDamage); 
+                            //console.log('[pauldron][造成伤害] 成功'); 
+                        } catch (e) { console.log('[pauldron][造成伤害失败] ' + e); }
 
                         // 击退：推离穿戴者
                         try {
                             let dirX = target.getX() - x1;
                             let dirZ = target.getZ() - z1;
                             target.knockback(1.5, dirX, dirZ);
-                            console.log('[pauldron][击退] 成功');
+                            //console.log('[pauldron][击退] 成功');
                         } catch (e) { console.log('[pauldron][击退失败] ' + e); }
                     }
                 })

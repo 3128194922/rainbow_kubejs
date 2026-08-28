@@ -16,8 +16,8 @@ const POWER = {
     Leader: "领袖",
     Stealth: "隐匿",
     Evolve: "演化",
-    // DTM 法术特性（详见 dtm_traits.js）
-    Frost: "冰霜",
+    // DTM 法术特性（详见 dtm_traits.js）——暂时禁用，恢复时取消注释
+    /*Frost: "冰霜",
     Quake: "岩爆",
     Blast: "连发",
     Trapper: "地雷",
@@ -25,7 +25,7 @@ const POWER = {
     Clone: "分身",
     Wind: "狂风",
     Venom: "剧毒",
-    Haunt: "鬼火",
+    Haunt: "鬼火",*/
 };
 
 /**
@@ -108,9 +108,10 @@ EntityEvents.hurt(event => {
             entity.setAttributeBaseValue("generic.max_health", Health * 3);
             entity.setHealth(entity.getMaxHealth());
             // DTM 法术:把抽到的 DTM 词条注入 DTMMobData,由 mod 自动施法(定义于 dtm_traits.js,priority 1)
-            if (typeof global.applyDTMPowersToMiniBoss === "function") {
-                global.applyDTMPowersToMiniBoss(entity);
-            }
+            // ——暂时禁用,恢复时取消注释
+            //if (typeof global.applyDTMPowersToMiniBoss === "function") {
+            //    global.applyDTMPowersToMiniBoss(entity);
+            //}
         }
     }
 });

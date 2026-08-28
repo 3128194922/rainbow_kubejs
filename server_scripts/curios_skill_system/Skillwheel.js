@@ -2114,6 +2114,60 @@ global.kuchiyoseScrollTick = function (scroll, tickNum) {
 
 
 // ==========================================
+// 应急方案：吸收最近玩家饰品的冷却
+// 剩余冷却读取使用 server_scripts/Utils.js 的 getItemCooldownRemaining
+// ==========================================
+
+registerSkill('mysticartifacts:emergency_plan', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('mysticartifacts:emergency_plan')) return;
+    if (player.level.clientSide) return;
+
+    // AABB 查询周围16格内离自己最近的玩家（排除自己）
+    let searchBox = player.boundingBox.inflate(16);
+    let nearestPlayer = null;
+    let nearestDistSq = Infinity;
+    player.level.getEntitiesWithin(searchBox).forEach(entity => {
+        if (!entity || !entity.isPlayer() || !entity.isAlive()) return;
+        if (entity.getUuid().toString() == player.getUuid().toString()) return;
+        let dx = entity.getX() - player.getX();
+        let dy = entity.getY() - player.getY();
+        let dz = entity.getZ() - player.getZ();
+        let distSq = dx * dx + dy * dy + dz * dz;
+        if (distSq < nearestDistSq) {
+            nearestDistSq = distSq;
+            nearestPlayer = entity;
+        }
+    });
+
+    if (!nearestPlayer) {
+        player.tell(Text.gray('周围16格内没有其他玩家。'));
+        return;
+    }
+
+    // 遍历目标玩家 Curios 所有饰品栏，清除冷却中的饰品并把剩余冷却转移（取最大值）
+    let curiosStacks = listCuriosStack(nearestPlayer);
+    let maxRemaining = 0;
+    let clearedCount = 0;
+    curiosStacks.forEach(stack => {
+        let remaining = getItemCooldownRemaining(nearestPlayer, stack);
+        if (remaining <= 0) return; // -1=读取失败 0=无冷却
+        nearestPlayer.cooldowns.removeCooldown(stack.getItem());
+        clearedCount++;
+        if (remaining > maxRemaining) maxRemaining = remaining;
+    });
+
+    if (clearedCount <= 0) {
+        player.tell(Text.gray(nearestPlayer.username + ' 的饰品均未处于冷却。'));
+        return;
+    }
+
+    // 把剩余冷却转移到本物品
+    player.cooldowns.addCooldown('mysticartifacts:emergency_plan', maxRemaining);
+    player.tell(Text.green('已吸收 ' + nearestPlayer.username + ' 的 ' + clearedCount + ' 件饰品冷却，本物品进入 ' + Math.ceil(maxRemaining / 20) + ' 秒冷却。'));
+    nearestPlayer.tell(Text.yellow(player.username + ' 吸收了你饰品的冷却！'));
+});
+
+// ==========================================
 // 主入口逻辑
 // ==========================================
 

@@ -514,6 +514,52 @@ function nbtToJs(nbt) {
     return String(nbt);
 }
 
+/**
+ * 获取指定玩家实体指定物品的冷却剩余时间（tick）
+ * 原版 ItemCooldowns 无公开的剩余时间接口，通过反射读取：
+ *   ItemCooldowns.cooldowns (Map<Item, CooldownInstance>) / tickCount / CooldownInstance.endTimeTicks
+ * @param {Internal.Player} player - 玩家实体（KubeJS 包装或原版实体均可）
+ * @param {string | ItemStack} item - 物品ID字符串（含 Java String）或物品堆（ItemStack）
+ * @returns {number} 剩余 tick 数；0 = 无冷却；-1 = 读取失败
+ */
+function getItemCooldownRemaining(player, item) {
+    try {
+        if (!player || !item) return -1;
+        let mcPlayer = player.minecraftEntity ? player.minecraftEntity : player;
+
+        // 统一解析为原版 Item 对象（冷却 Map 的 key）
+        let mcItem = null;
+        if (typeof item.getItem === 'function') {
+            mcItem = item.getItem();          // 原版/包装 ItemStack
+        } else if (item.item !== undefined) {
+            mcItem = item.item;               // KubeJS ItemStack 包装的 .item 属性
+        } else {
+            mcItem = Item.of(String(item)).item; // 字符串ID
+        }
+        if (!mcItem) return -1;
+
+        let cd = mcPlayer.getCooldowns();
+        let cdClass = cd.getClass();
+        let mapField = cdClass.getDeclaredField('cooldowns');
+        mapField.setAccessible(true);
+        let cdMap = mapField.get(cd);
+        let inst = cdMap.get(mcItem);
+        if (inst == null) return 0;
+
+        let tickField = cdClass.getDeclaredField('tickCount');
+        tickField.setAccessible(true);
+        let now = tickField.getInt(cd);
+
+        let endField = inst.getClass().getDeclaredField('endTimeTicks');
+        endField.setAccessible(true);
+        let remaining = endField.getInt(inst) - now;
+        return remaining > 0 ? remaining : 0;
+    } catch (e) {
+        console.error('[Utils] getItemCooldownRemaining 读取失败: ' + e);
+        return -1;
+    }
+}
+
 ServerEvents.commandRegistry(event => {
     let { commands: Commands } = event;
 

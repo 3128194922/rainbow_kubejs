@@ -100,3 +100,10 @@ EntityJSEvents.attributes(event => {
     });
 
 });
+
+// 玩家暴击率归零
+EntityJSEvents.attributes(event => {
+    event.modify(EntityType.PLAYER, attributes => {
+        attributes.add('attributeslib:crit_chance', 0)
+    })
+})

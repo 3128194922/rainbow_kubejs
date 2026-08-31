@@ -124,14 +124,30 @@ StartupEvents.registry("mob_effect", event => {
         .color(0xEAF044)
         .modifyAttribute("minecraft:generic.max_health", "dismember", 0.05, "multiply_total")
 */
-    // 装填核心 Buff
+    // 装填核心 Buff：10秒内霰弹枪进入冷却时立即取消，最多3次
+    // 剩余次数存 entity.persistentData['reload_core_charges']（由 Skillwheel.js 主动技能写入 3）
     event.create("rainbow:reload_buff")
         .beneficial()
         .color(0x55FFFF)
         .effectTick((entity, amplifier) => {
             if (!entity || entity.level.isClientSide()) return;
-            entity.cooldowns.removeCooldown('netherexp:shotgun_fist');
-            entity.cooldowns.removeCooldown('netherexp:pump_charge_shotgun');
+            let data = entity.persistentData;
+            let charges = data.getInt('reload_core_charges') || 0;
+            if (charges <= 0) return;
+            let used = false;
+            if (entity.cooldowns.isOnCooldown('netherexp:shotgun_fist')) {
+                entity.cooldowns.removeCooldown('netherexp:shotgun_fist');
+                used = true;
+            }
+            if (entity.cooldowns.isOnCooldown('netherexp:pump_charge_shotgun')) {
+                entity.cooldowns.removeCooldown('netherexp:pump_charge_shotgun');
+                used = true;
+            }
+            if (used) {
+                charges--;
+                data.putInt('reload_core_charges', charges);
+                if (charges <= 0) entity.removeEffect('rainbow:reload_buff');
+            }
         })
 
     // 连射核心 Buff
@@ -175,4 +191,8 @@ StartupEvents.registry("mob_effect", event => {
     .beneficial()
     .color(0x556B2F)
     .modifyAttribute("moreattribute:cooldown_reduction", "cooldowns_reduction", 0.1, "multiply_total")
+
+    //难以发现
+    event.create("rainbow:invisible")
+    .beneficial() // 标记为有益效果
 });

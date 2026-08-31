@@ -3,6 +3,9 @@
 // 👹 实体事件处理脚本
 // ==========================================
 
+// 文本粒子 API（server_scripts 作用域无法访问 startup_scripts\CONST.js，需单独加载）
+let DiceParticleTextAPI = Java.loadClass('com.uniye.mysticartifacts.util.ParticleTextAPI')
+
 // 监听实体受伤事件
 EntityEvents.hurt(event => {
     const { entity, source } = event;
@@ -114,17 +117,57 @@ EntityEvents.death(event => {
     // --- 攻击者触发逻辑 ---
     if (!attacker) return;
 
-    // 赌徒骰子：击杀时概率重置主副手物品冷却
+    // 赌徒骰子：击杀时随机减少冷却中饰品/主副手 当前剩余冷却的 0%~25%
+    // 暴击率与幸运值绑定（幸运25=100%暴击），暴击使减少百分比×2
+    // 有趣的设定：摇出 0% 时依旧会暴击 → 会出现「暴击 0%」
+    // 骰子自身有 5 秒触发冷却，冷却期间击杀不生效
+    // 冷却读取/恢复使用 global.getItemCooldownInfo / global.restoreCooldownByRemaining（startup_scripts/Utils.js 注册，按当前剩余折算）
     if (hasCurios(attacker, "rainbow:dice") && !attacker.cooldowns.isOnCooldown("rainbow:dice")) {
-        let luckAttr = attacker.getAttribute("minecraft:generic.luck");
-        const lucky = luckAttr ? luckAttr.getValue() : 0;
-        const mainHandItem = attacker.getItemInHand("main_hand").getId();
-        const offHandItem = attacker.getItemInHand("off_hand").getId();
-        // 触发概率 = 幸运值/25（幸运值需要 >= 0，否则不触发）
-        if (lucky >= 0 && randomBool(lucky / 25.0)) {
-            attacker.cooldowns.removeCooldown(mainHandItem);
-            attacker.cooldowns.removeCooldown(offHandItem);
-            attacker.cooldowns.addCooldown("rainbow:dice",SecoundToTick(6))
+        try {
+            // 收集主副手 + Curios 饰品栏中处于冷却的物品（按物品ID去重）
+            let cooled = [];
+            let seen = {};
+            let collect = function (stack) {
+                try {
+                    if (!stack || stack.isEmpty()) return;
+                    let id = String(stack.getId());
+                    if (seen[id]) return;
+                    seen[id] = true;
+                    let info = global.getItemCooldownInfo ? global.getItemCooldownInfo(attacker, stack) : null;
+                    if (info && info.remaining > 0) cooled.push(stack);
+                } catch (ignored) {}
+            };
+            collect(attacker.getItemInHand("main_hand"));
+            collect(attacker.getItemInHand("off_hand"));
+            listCuriosStack(attacker).forEach(function (stack) { collect(stack); });
+
+            // 没有任何冷却中的物品时不触发、不进入冷却（避免空反馈和浪费触发）
+            if (cooled.length > 0) {
+                // 触发成功，进入 5 秒自身冷却
+                attacker.cooldowns.addCooldown("rainbow:dice", SecoundToTick(5));
+                // 掷骰：随机减少百分比 0%~25%
+                let pct = Math.random() * 0.25;
+                // 暴击判定：幸运值/25（幸运≥25必定暴击，幸运<0不暴击）
+                let luckAttr = attacker.getAttribute("minecraft:generic.luck");
+                let lucky = luckAttr ? luckAttr.getValue() : 0;
+                let crit = lucky >= 0 && randomBool(lucky / 25.0);
+                // 暴击使减少百分比×2（0% 暴击后数值依然是 0%，但会显示「暴击 0%」）
+                let effPct = crit ? pct * 2 : pct;
+
+                if (effPct > 0) {
+                    cooled.forEach(function (stack) {
+                        if (global.restoreCooldownByRemaining) global.restoreCooldownByRemaining(attacker, stack, effPct);
+                    });
+                }
+
+                // 反馈：原版经验音效（暴击高音调）+ 文本粒子（暴击显示"暴击"前缀，未暴击只显示百分比）
+                let pctText = Math.round(effPct * 100) + "%";
+                let msg = crit ? "暴击 -" + pctText : "-" + pctText;
+                server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @a ${attacker.x} ${attacker.y} ${attacker.z} 1 ${crit ? 1.5 : 1.0}`);
+                DiceParticleTextAPI.sendInFront(attacker, msg, crit ? 0xFFAA00 : 0x55FFFF);
+            }
+        } catch (e) {
+            console.log("[赌徒骰子] 触发出错: " + e);
         }
     }
 })

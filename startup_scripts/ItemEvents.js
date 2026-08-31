@@ -629,3 +629,35 @@ ForgeEvents.onEvent('top.theillusivec4.curios.api.event.CurioAttributeModifierEv
         console.log(e);
     }
 });
+
+// 音箱：副手拿着正在播放音乐的 etched:boombox 时 攻击力 +5
+// etched 3.0.4 BoomboxItem 源码判定："正在播放" = NBT 含 "Record" 唱片数据(hasRecord) 且 "Paused" 不为 true(!isPaused)
+// 暂停/换唱片都会改变物品 NBT，LivingEntity 装备变更检测(ItemStack.matches 比较NBT)会自动触发属性重算，无需手动轮询
+ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
+    try {
+        let item = event.getItemStack();
+        if (item.id !== 'etched:boombox') return;
+        if (event.getSlotType() !== 'offhand') return;
+
+        // KubeJS ItemStack 包装类无 hasTag()，用 item.nbt（无 NBT 时返回 null，同文件 gargoyle 写法）
+        let tag = item.nbt;
+        if (tag == null) return;
+
+        // 无唱片 或 已暂停 → 未在播放
+        if (!tag.contains("Record", 10)) return;
+        if (tag.getBoolean("Paused")) return;
+
+        event.addModifier(
+            "minecraft:generic.attack_damage",
+            new AttributeModifier(
+                "a7c3e91f-2b4d-4e5f-8a6b-9c1d2e3f4a07",
+                "boombox_music_attack",
+                5,
+                "addition"
+            )
+        );
+    } catch (e) {
+        console.log("音箱属性添加出错：");
+        console.log(e);
+    }
+});

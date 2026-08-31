@@ -24,7 +24,7 @@ function registerCoreCharging(itemId, handler) {
 // 满能量后由 Skillwheel.js 主动触发技能，触发时清零能量
 const MAX_ENERGY = 100;
 let CoreChargingConfig = {
-    'rainbow:reload_core': 'Energy',
+    // 'rainbow:reload_core' 已移除充能（新机制：盾反被动 + 主动技能冷却取消，无能量条件）
     'rainbow:short_core': 'Energy',
     'rainbow:fury_mask': 'Energy'
 };

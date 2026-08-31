@@ -63,6 +63,7 @@ const $PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilde
 const $DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.DeferredRegister")[
     "create(net.minecraftforge.registries.IForgeRegistry,java.lang.String)"
 ]
+const EntityType = Java.loadClass('net.minecraft.world.entity.EntityType')
 
 global.CURIONUMBER = 4
 global.CURSES = [

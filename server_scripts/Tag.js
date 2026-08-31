@@ -27,7 +27,7 @@ ServerEvents.tags("item", event => {
 
     event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package','mysticartifacts:emergency_plan',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','rainbow:pauldron',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','rainbow:pauldron','rainbow:dice',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket','rainbow:wandering_gummy_pack',
     'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','rainbow:bottled_lightning','mysticartifacts:witch_pot','species:smoke_bomb','rainbow:hand_of_scratches'])
 

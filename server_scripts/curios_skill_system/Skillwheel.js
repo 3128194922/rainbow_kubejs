@@ -381,15 +381,15 @@ registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, subme
 });
 */
 // --- 装填核心 ---
+// 主动技能：10秒内霰弹枪每次进入冷却立即取消，最多3次
+// 剩余次数存 player.persistentData['reload_core_charges']，由 Effects.js 的 rainbow:reload_buff effectTick 消耗
+// 被动（盾反时霰弹枪冷却 -33%）见 startup_scripts/ForgeEvents.js 的 ShieldParriedEvent
 registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    let reloadEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
-    if (reloadEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:reload_core")) {
-        player.potionEffects.add("rainbow:reload_buff", 200, 0, false, false);
-        if (!itemStack.nbt) itemStack.nbt = {};
-        itemStack.nbt.putDouble("Energy", 0);
-        player.cooldowns.addCooldown("rainbow:reload_core", 200);
-        event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
-    }
+    if (player.cooldowns.isOnCooldown("rainbow:reload_core")) return;
+    player.persistentData.putInt('reload_core_charges', 3);
+    player.potionEffects.add("rainbow:reload_buff", SecoundToTick(10), 0, false, false);
+    player.cooldowns.addCooldown("rainbow:reload_core", SecoundToTick(30));
+    event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
 });
 
 // --- 连射核心 ---
@@ -504,7 +504,7 @@ registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submen
     try{
             if (!itemStack || itemStack.isEmpty()) return;
     if (player.cooldowns.isOnCooldown("species:smoke_bomb")) return;
-
+    player.potionEffects.add("rainbow:invisible",60,0,false,false)
     // 1. 模拟右键：临时将该物品装备到主/副手，调用物品 use()（内部播放蓄力音效并启动使用流程）
     let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
     let hand = InteractionHand.MAIN_HAND;
@@ -578,6 +578,7 @@ registerSkill('rainbow:wicked_package', (event, player, itemStack, isSubmenu, su
         if (!itemStack || itemStack.isEmpty()) return;
         if (player.cooldowns.isOnCooldown('rainbow:wicked_package')) return;
 
+        player.potionEffects.add("rainbow:invisible",60,0,false,false)
         // 1. 烟雾弹效果（同 species:smoke_bomb 技能）
         var x = player.getX();
         var y = player.getY();
@@ -702,7 +703,7 @@ EntityEvents.hurt(event => {
     let players = entity.level.players;
     for (let p of players) {
         if (!p || !p.isPlayer()) continue;
-        let whistleItem = getCuriosStackOnPlayer(p, 'rainbow:whistle');
+        let whistleItem = getCuriosItem(p, 'rainbow:whistle');
         if (!whistleItem || !whistleItem.nbt) continue;
         let endtick = whistleItem.nbt.getLong("endtick");
         if (endtick <= 0 || now >= endtick) continue; // 未激活或已过期

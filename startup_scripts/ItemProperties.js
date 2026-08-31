@@ -22,10 +22,7 @@ ItemEvents.modelProperties(event => {
         return (itemStack.nbt ? itemStack.nbt.getFloat("Energy") : 0.0) / 100.0;
     });
 
-    // 装填核心：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
-    event.register("rainbow:reload_core", "energy", (itemStack, level, entity, seed) => {
-        return itemStack.nbt && itemStack.nbt.getFloat("Energy") == 100.0 ? 1.0 : 0.0;
-    });
+    // 装填核心：能量充能机制已移除，不再注册 energy 模型属性（模型恒为基础款）
 
     // 狂怒面具：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
     event.register("rainbow:fury_mask", "energy", (itemStack, level, entity, seed) => {

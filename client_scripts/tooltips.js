@@ -143,8 +143,12 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("击杀生物概率刷新主手和副手物品冷却"));
-            text.add(2, Text.aqua(`触发概率 = 幸运值/25（幸运值需≥0，25幸运=100%）`));
+            text.add(1, Text.aqua("击杀生物时，随机减少主副手与饰品栏中"));
+            text.add(2, Text.aqua("处于冷却物品当前剩余冷却的 0%~25%"));
+            text.add(3, Text.aqua("触发后有 5 秒冷却"));
+            text.add(4, Text.aqua("暴击率 = 幸运值/25（幸运25=100%暴击）"));
+            text.add(5, Text.aqua("暴击使减少的百分比×2"));
+            text.add(6, Text.gold("骰子的嘲弄：即使摇出 0%，依旧会暴击"));
         }
     })
     event.addAdvanced('tide:fishing_journal', (item, advanced, text) => {
@@ -282,7 +286,8 @@ ItemEvents.tooltip((event) => {
         }
     })*/
     event.addAdvanced('rainbow:reload_core', (item, advanced, text) => {
-        text.add(1, Text.aqua(`取消霰弹炮CD`));
+        text.add(1, Text.aqua(`盾反时霰弹炮冷却 -33%`));
+        text.add(2, Text.aqua(`主动：10秒内霰弹炮冷却立即取消，最多3次`));
     })
     /*event.addAdvanced('rainbow:lyre', (item, advanced, text) => {
         text.add(1, Text.aqua(`取消号角CD`));
@@ -297,7 +302,8 @@ ItemEvents.tooltip((event) => {
         }
     })
 
-    event.addAdvanced(['rainbow:reload_core', 'rainbow:short_core'], (item, advanced, text) => {
+    // 装填核心已移除能量充能机制，不再显示能量条；连射核心保留
+    event.addAdvanced('rainbow:short_core', (item, advanced, text) => {
         let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
         let color = energy >= 100 ? "§a" : "§e";
         text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
@@ -343,13 +349,7 @@ ItemEvents.tooltip((event) => {
       }
       // 非SHIFT：显示当期想吃食物；未初始化时提示佩戴开启任务
       text.add(1, Text.gray("按[SHIFT]查看详细"));
-      if (!event.shift) {
-        if (foodId != null && foodId != "") {
-          text.add(2, Text.gold("想吃：").append(Text.gold(Item.of(foodId).getDisplayName().getString())));
-        } else {
-          text.add(2, Text.gray("佩戴后开启进食任务"));
-        }
-      }
+      text.add(2, Text.gray("佩戴后开启进食任务"));
       if (event.shift) {
         text.remove(1)
         text.remove(2)
@@ -597,7 +597,13 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("隐匿时获得暴击率与暴击伤害加成"));
     })
     event.addAdvanced('rainbow:sharingan', (item, advanced, text) => {
-        text.add(1, Text.aqua("玩家触发极限闪避、盾反时，刷新主手物品冷却"));
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("极限闪避或盾反成功时，洞察破绽"));
+            text.add(2, Text.aqua("▸ 恢复主副手与饰品栏中物品的冷却"));
+            text.add(3, Text.aqua("▸ 每次减少该物品当前剩余冷却的 25%"));
+        }
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
         text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));

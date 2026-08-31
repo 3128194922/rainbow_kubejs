@@ -128,7 +128,7 @@ global.stopPlayerAnim = function (player, fadeTicks, ease) {
         let easeName = easeStr.length > 0 ? easeStr.toUpperCase().trim() : PLAYER_ANIM_DEFAULT_EASE
 
         PlayerAnim.stop(player, ticks, easeName)
-        console.log(`[PlayerAnim] stop: player=${player.username || "?"} fade=${ticks} ease=${easeName}`)
+        //console.log(`[PlayerAnim] stop: player=${player.username || "?"} fade=${ticks} ease=${easeName}`)
         return true
     } catch (e) {
         console.error(`[PlayerAnim] stop 异常: ${e}`)
@@ -136,4 +136,4 @@ global.stopPlayerAnim = function (player, fadeTicks, ease) {
     }
 }
 
-console.log("[PlayerAnim] global.playPlayerAnim / global.stopPlayerAnim 已注册")
+//console.log("[PlayerAnim] global.playPlayerAnim / global.stopPlayerAnim 已注册")

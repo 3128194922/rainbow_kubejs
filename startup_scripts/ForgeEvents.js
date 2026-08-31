@@ -91,6 +91,11 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingChangeTargetEv
                 event.setNewTarget(null)
             }
         }
+
+        if(entity_B.isLiving() && entity_B.isPlayer() && entity_B.hasEffect('rainbow:invisible'))
+        {
+            event.setNewTarget(null) // 取消仇恨
+        }
     } catch (e) {
         console.log(e);
     }
@@ -379,12 +384,75 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVi
     }
 });
 
+// ==========================================
+// 写轮眼（rainbow:sharingan）：盾反/完美闪避时恢复冷却
+// 每次触发减少 主副手 + Curios 饰品栏 中处于冷却物品 当前剩余冷却的 25%
+// （如剩 40s 时触发一次 → 剩 30s）
+// 冷却读取/恢复依赖 startup_scripts/Utils.js 的 restoreCooldownByRemaining（按当前剩余折算）
+// ==========================================
+function sharinganRestoreCooldowns(player, ratio) {
+    try {
+        // console.log("[写轮眼] 阶段0-触发: 玩家=" + player.username + ", 恢复比例=" + ratio);
+        let done = {};   // 按物品ID去重，避免同一物品在主副手/饰品栏多处重复恢复
+        let count = 0;
+        let tryRestore = function (stack) {
+            try {
+                if (!stack || stack.isEmpty()) return;
+                let id = null;
+                try { id = String(stack.getId()); } catch (ignored) {}
+                if (id != null) {
+                    if (done[id]) {
+                        // console.log("[写轮眼] 阶段A-跳过重复物品: " + id);
+                        return;
+                    }
+                    done[id] = true;
+                }
+                // console.log("[写轮眼] 阶段A-尝试恢复: " + id);
+                if (restoreCooldownByRemaining(player, stack, ratio)) count++;
+            } catch (ignored) {
+                // console.log("[写轮眼] 阶段A-单物品处理异常(已忽略): " + ignored);
+            }
+        };
+
+        // 主副手
+        // console.log("[写轮眼] 阶段B-遍历主副手");
+        tryRestore(player.getItemInHand("main_hand"));
+        tryRestore(player.getItemInHand("off_hand"));
+
+        // Curios 饰品栏（curiosInventory 由 KubeJS-Curios 的 LivingEntityMixin 注入）
+        // console.log("[写轮眼] 阶段C-遍历Curios饰品栏");
+        let curios = player.curiosInventory;
+        if (curios == null) {
+            // console.log("[写轮眼] 阶段C-警告: curiosInventory 为 null（KubeJS-Curios 未注入或实体无饰品栏）");
+        } else {
+            for (let handler of curios.getCurios().values()) {
+                let stacks = handler.getStacks();
+                let size = stacks.getSlots();
+                for (let i = 0; i < size; i++) {
+                    tryRestore(stacks.getStackInSlot(i));
+                }
+            }
+        }
+        // console.log("[写轮眼] 阶段D-完成: 共恢复 " + count + " 个物品的冷却");
+        return count;
+    } catch (e) {
+        console.log("[写轮眼] 冷却恢复出错: " + e);
+        return 0;
+    }
+}
+
 //极限闪避事件
 ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent", event => {
+    // console.log("[极限闪避] 事件触发");
     let player = event.getPlayer();
+    if(player.level.isClientSide()) return;
     let attacker = event.getDamageSource().getActual();
 
-    if (!player || !player.isPlayer()) return;
+    if (!player || !player.isPlayer()) {
+        // console.log("[极限闪避] 阶段E-跳过: player无效或非玩家 (player=" + (player != null) + ")");
+        return;
+    }
+    // console.log("[极限闪避] 阶段E-玩家有效: " + player.username);
 
     // 极限闪避触发反馈：播放原版经验升级音效 + 武士刀（村正）同款悬浮字幕粒子
     ParticleTextAPI.sendInFront(player, "完美闪避！", 0xFFAA00);
@@ -425,18 +493,24 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     }
     if(hasCurios(player,"rainbow:sharingan"))
     {
-        let mainHandItem = player.getItemInHand("main_hand").getId();
-        //let offHandItem = attacker.getItemInHand("off_hand").getId();
-        player.cooldowns.removeCooldown(mainHandItem);
-        //player.cooldowns.removeCooldown(offHandItem);
+        // 写轮眼：完美闪避时恢复主副手 + Curios 饰品 总冷却时长 25% 的冷却
+        // console.log("[极限闪避] 阶段F-检测到写轮眼, 开始恢复冷却");
+        sharinganRestoreCooldowns(player, 0.25);
     }
 });
 
 // 盾反判定：举盾时间不超过10tick即判定为盾反
 ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
-    let player = event.player;          // ServerPlayer 盾反玩家
+    // console.log("[盾反] 事件触发");
+    let player = event.player;          // ServerPlayer 盾反玩家（非玩家格挡时为 null）
+    if(player.level.isClientSide()) return;
 
-    if(player.isAlive() && player.isPlayer()) return; // 只处理玩家盾反
+    // 修复：原判断 isAlive() && isPlayer() 时 return 写反了，导致玩家盾反逻辑从未执行
+    if(!player || !player.isAlive()) {
+        // console.log("[盾反] 阶段E-跳过: player为null或已死亡 (player=" + (player != null) + ")");
+        return; // 只处理玩家盾反
+    }
+    // console.log("[盾反] 阶段E-玩家有效: " + player.username);
 
     let attacker = event.attacker;      // LivingEntity 被盾反击退的攻击者（可能为 null）
     let source = event.damageSource;    // DamageSource 被格挡的伤害来源
@@ -466,10 +540,22 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
 
     if(hasCurios(player,"rainbow:sharingan"))
         {
-            let mainHandItem = player.getItemInHand("main_hand").getId();
-            //let offHandItem = attacker.getItemInHand("off_hand").getId();
-            player.cooldowns.removeCooldown(mainHandItem);
-            //attacker.cooldowns.removeCooldown(offHandItem);
+            // 写轮眼：盾反时恢复主副手 + Curios 饰品 总冷却时长 25% 的冷却
+            // console.log("[盾反] 阶段F-检测到写轮眼, 开始恢复冷却");
+            sharinganRestoreCooldowns(player, 0.25);
+        }
+
+    if(hasCurios(player,"rainbow:reload_core"))
+        {
+            // 装填核心被动：盾反成功时，两把霰弹枪当前剩余冷却 -33%（自身1秒触发冷却）
+            // 主动技能（10秒冷却）期间此被动不触发；仅在真正削减了冷却时才进入1秒冷却
+            if (!player.cooldowns.isOnCooldown("rainbow:reload_core")) {
+                let cutA = restoreCooldownByRemaining(player, Item.of('netherexp:shotgun_fist'), 0.33);
+                let cutB = restoreCooldownByRemaining(player, Item.of('netherexp:pump_charge_shotgun'), 0.33);
+                if (cutA || cutB) {
+                    player.cooldowns.addCooldown("rainbow:reload_core", SecoundToTick(1));
+                }
+            }
         }
 });
 

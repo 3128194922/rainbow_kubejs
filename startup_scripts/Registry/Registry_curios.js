@@ -453,8 +453,6 @@ StartupEvents.registry('item', event => {
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .tooltip("§7造成伤害可充能 (100点)")
-        .tooltip("§7能量满时右键使用，持续10秒移除霰弹枪冷却")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
@@ -2938,7 +2936,7 @@ StartupEvents.registry('item', event => {
                         try { 
 
                             // 获取玩家动能伤害属性值（来自oreganized）
-                            let kineticAttr = target.getAttribute('oreganized:kinetic_damage');
+                            let kineticAttr = entity.getAttribute('oreganized:kinetic_damage');
                             let kineticDamage = kineticAttr ? kineticAttr.getValue() : 0;
 
                             target.attack(entity.damageSources().playerAttack(entity), 2 + kineticDamage); 

@@ -513,10 +513,322 @@ global.getKeysByMod = (modid) => {
         id: k.getName(),
         name: k.getTranslatedKeyMessage().getString(),
         key: k.getKey().getDisplayName().getString(),
-        category: k.getCategory()
+        category: km.getCategory(),                      // 分类ID
       });
     }
   });
   return result;
 };
 //DamageSorce()
+
+// ==========================================
+// 物品冷却读取/恢复（原版 ItemCooldowns 无剩余时间公开接口）
+// 生产环境运行时字段为 SRG 名（f_xxxxx_），Rhino 不重映射原生反射的字符串参数，
+// 故按字段类型反射定位（名称无关，dev/生产通用），字段对象缓存避免重复查找：
+//   ItemCooldowns 中唯一的 Map 字段  = 冷却表 Map<Item, CooldownInstance>
+//   ItemCooldowns 中唯一的 int 字段  = tickCount（当前 tick）
+//   CooldownInstance 的两个 int 字段 = startTime/endTime（按值区分：小者=起点）
+// 写入端：不使用 addCooldown（其为替换语义，会把剩余值当作新的 100% 总时长，
+// 导致客户端蒙版以剩余值为满格重新扫一遍）。改为「窗口前移」：将 CooldownInstance
+// 的 startTime/endTime 同减 delta，窗口长度（=物品原有总时长）保持不变——
+// 客户端蒙版进度 = (now-start)/(end-start) = 1 - 剩余/原有总时长，
+// 减少冷却时蒙版瞬间向前跳 delta/总时长，且多次触发总时长基准不漂移。
+// 服务端反射改写后经 player.sendData('kubejs_cd_shift') 通知客户端脚本对本地冷却
+// 做同样前移（见 client_scripts/cooldown_mask_sync.js）。
+// 冷却完全清空时走 removeCooldown 公开 API（原版自动发包，蒙版直接清空 = 进度拉满）。
+// ==========================================
+let _cdMapField = null;      // 反射缓存：ItemCooldowns 的 Map 字段
+let _cdTickField = null;     // 反射缓存：ItemCooldowns 的 int 字段（tickCount）
+let _cdInstFields = null;    // 反射缓存：CooldownInstance 的两个 int 字段
+let _cdForgeRegistries = null;         // ForgeRegistries（注册表 ID <-> Item 互查，Forge API 无 SRG 之扰）
+let _cdResourceLocationCls = null;     // net.minecraft.resources.ResourceLocation
+
+// 初始化 ItemCooldowns 的反射字段缓存（沿父类链查找，服务端实际类型为 ServerItemCooldowns）
+function _cdInitFields(cd) {
+    if (_cdMapField) return true;
+    try {
+        // console.log('[冷却调试] 阶段1-开始反射定位字段, 实际类: ' + cd.getClass().getName());
+        let mapF = null, tickF = null;
+        let cls = cd.getClass();
+        while (cls != null && (!mapF || !tickF)) {
+            let fs = cls.getDeclaredFields();
+            for (let i = 0; i < fs.length; i++) {
+                let t = String(fs[i].getType().getName());
+                if (t == 'java.util.Map' && !mapF) mapF = fs[i];
+                else if (t == 'int' && !tickF) tickF = fs[i];
+            }
+            cls = cls.getSuperclass();
+        }
+        if (!mapF || !tickF) {
+            // console.log('[冷却调试] 阶段1-失败: 未找到 Map/int 字段 (mapF=' + (mapF != null) + ', tickF=' + (tickF != null) + ')');
+            return false;
+        }
+        mapF.setAccessible(true);
+        tickF.setAccessible(true);
+        _cdMapField = mapF;
+        _cdTickField = tickF;
+        // console.log('[冷却调试] 阶段1-成功: mapField=' + mapF.getName() + ', tickField=' + tickF.getName());
+        return true;
+    } catch (e) {
+        console.error('[Utils] _cdInitFields 反射初始化失败: ' + e);
+        return false;
+    }
+}
+
+// 把各种物品形态（原版 ItemStack / KubeJS 包装 / 原版 Item）统一解析为原版 Item
+function _toMcItem(stackOrItem) {
+    try {
+        if (stackOrItem == null) return null;
+        if (typeof stackOrItem.getItem === 'function') return stackOrItem.getItem();
+        if (stackOrItem.item !== undefined) return stackOrItem.item;
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// 初始化 CooldownInstance 的两个 int 字段缓存（startTime/endTime，按值区分：小者=起点）
+function _cdInitInstFields(inst) {
+    if (_cdInstFields) return true;
+    try {
+        let ints = [];
+        let fs = inst.getClass().getDeclaredFields();
+        for (let i = 0; i < fs.length; i++) {
+            if (String(fs[i].getType().getName()) == 'int') {
+                fs[i].setAccessible(true);
+                ints.push(fs[i]);
+            }
+        }
+        if (ints.length < 2) return false;
+        _cdInstFields = ints;
+        return true;
+    } catch (e) {
+        console.error('[Utils] _cdInitInstFields 失败: ' + e);
+        return false;
+    }
+}
+
+// 经 ForgeRegistries 查询原版 Item 的注册表 ID（'modid:name'），失败返回 null
+function _cdGetItemRegistryId(mcItem) {
+    try {
+        if (!_cdForgeRegistries) _cdForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries');
+        let key = _cdForgeRegistries.ITEMS.getKey(mcItem);
+        return key ? String(key) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 冷却窗口前移（保持总时长基准不变的核心写入函数）
+ * 将 CooldownInstance 的 startTime/endTime 同减 delta：
+ *   - 窗口长度（总时长）不变 → 蒙版/百分比始终以物品原有总时长为 100%
+ *   - endTime 提前 delta → 实际剩余冷却正确减少 delta tick
+ *   - 蒙版进度 = 1 - 剩余/总时长，瞬间向前跳 delta/总时长，不重置为满格
+ * 写入方式：Field.setInt 直接改写字段（Java 反射规范允许写非 static 的 final
+ * 实例字段，仅 static final 被禁止）。不能用构造器 newInstance 整替——
+ * Rhino 把 JS 数字装箱成 Double，与 int 形参的 Integer 装箱不匹配，
+ * newInstance(Object...) 无方法分派转换，会抛 argument type mismatch。
+ * 直接改写不触发原版同步包，客户端蒙版同步由调用方经 sendData 通知客户端
+ * 脚本执行同样前移。
+ * @param {Internal.Player} player - 玩家（KubeJS 包装或原版实体均可）
+ * @param {Item} mcItem - 原版 Item
+ * @param {number} delta - 前移的 tick 数（>0）
+ * @returns {boolean} 是否成功
+ */
+function _cdShiftInstance(player, mcItem, delta) {
+    try {
+        if (!player || !mcItem || !(delta > 0)) return false;
+        let mcPlayer = player.minecraftEntity ? player.minecraftEntity : player;
+        let cd = mcPlayer.getCooldowns();
+        if (!cd || !_cdInitFields(cd)) return false;
+
+        let inst = _cdMapField.get(cd).get(mcItem);
+        if (!inst) return false;
+        if (!_cdInitInstFields(inst)) return false;
+
+        // 读原值 → 同减 delta → 写回（保持窗口长度不变）
+        let t1 = _cdInstFields[0].getInt(inst);
+        let t2 = _cdInstFields[1].getInt(inst);
+        let start = Math.min(t1, t2);
+        let end = Math.max(t1, t2);
+        let ns = Math.floor(start - delta);
+        let ne = Math.floor(end - delta);
+        // CooldownInstance 字段顺序未知（SRG 名），按值对号入座：小值→起点字段，大值→终点字段
+        if (t1 <= t2) {
+            _cdInstFields[0].setInt(inst, ns);
+            _cdInstFields[1].setInt(inst, ne);
+        } else {
+            _cdInstFields[0].setInt(inst, ne);
+            _cdInstFields[1].setInt(inst, ns);
+        }
+        return true;
+    } catch (e) {
+        console.error('[Utils] _cdShiftInstance 失败: ' + e);
+        return false;
+    }
+}
+
+/**
+ * 读取玩家某物品的冷却信息（tick）
+ * @param {Internal.Player} player - 玩家（KubeJS 包装或原版实体均可）
+ * @param {ItemStack|Item} stackOrItem - 物品堆或物品
+ * @returns {object|null} {remaining:剩余tick, duration:总时长tick}；无冷却时 remaining=0；读取失败返回 null
+ */
+function getItemCooldownInfo(player, stackOrItem) {
+    try {
+        if (!player || !stackOrItem) {
+            // console.log('[冷却调试] 阶段2-参数为空 (player=' + (player != null) + ', item=' + (stackOrItem != null) + ')');
+            return null;
+        }
+        let mcItem = _toMcItem(stackOrItem);
+        if (!mcItem) {
+            // console.log('[冷却调试] 阶段2-物品解析失败: ' + stackOrItem);
+            return null;
+        }
+
+        let mcPlayer = player.minecraftEntity ? player.minecraftEntity : player;
+        let cd = mcPlayer.getCooldowns();
+        if (!cd || !_cdInitFields(cd)) {
+            // console.log('[冷却调试] 阶段2-获取冷却对象或反射初始化失败');
+            return null;
+        }
+
+        let inst = _cdMapField.get(cd).get(mcItem);
+        if (inst == null) {
+            // console.log('[冷却调试] 阶段2-该物品无冷却记录: ' + mcItem);
+            return { remaining: 0, duration: 0 };
+        }
+
+        if (!_cdInstFields && !_cdInitInstFields(inst)) {
+            // console.log('[冷却调试] 阶段2-失败: CooldownInstance 字段初始化失败');
+            return null;
+        }
+
+        let now = _cdTickField.getInt(cd);
+        let t1 = _cdInstFields[0].getInt(inst);
+        let t2 = _cdInstFields[1].getInt(inst);
+        let end = Math.max(t1, t2);
+        let remaining = end - now;
+        let result = {
+            remaining: remaining > 0 ? remaining : 0,
+            duration: end - Math.min(t1, t2)
+        };
+        // console.log('[冷却调试] 阶段2-成功: item=' + mcItem + ', start=' + Math.min(t1, t2) + ', end=' + end + ', now=' + now + ', 剩余=' + result.remaining + 't, 总时长=' + result.duration + 't');
+        return result;
+    } catch (e) {
+        console.error('[Utils] getItemCooldownInfo 读取失败: ' + e);
+        return null;
+    }
+}
+
+/**
+ * 冷却恢复内部实现（写入走公开 API，客户端冷却遮罩自动同步）
+ * @param {Internal.Player} player - 玩家
+ * @param {ItemStack|Item} stackOrItem - 物品堆或物品
+ * @param {number} ratio - 恢复比例（0.25 = 25%）
+ * @param {string} basis - 折算基准：'remaining'=按当前剩余（默认），'duration'=按总时长
+ * @returns {boolean} 该物品是否处于冷却且已被修改
+ */
+function _restoreCooldownImpl(player, stackOrItem, ratio, basis) {
+    try {
+        if (!player || !stackOrItem) return false;
+        let mcItem = _toMcItem(stackOrItem);
+        if (!mcItem) return false;
+
+        let info = getItemCooldownInfo(player, stackOrItem);
+        if (!info || info.remaining <= 0) {
+            // console.log('[冷却调试] 阶段3-跳过(无冷却或读取失败): item=' + mcItem + ', info=' + JSON.stringify(info));
+            return false;
+        }
+        if (basis == 'duration' && info.duration <= 0) return false;
+
+        // 按剩余：新剩余 = 剩余 × (1 - ratio)，例：剩 100t、0.25 → 剩 75t
+        // 按总时长：新剩余 = 剩余 - 总时长 × ratio，例：总 200t 剩 100t、0.25 → 剩 50t
+        let newRemaining = (basis == 'duration')
+            ? Math.ceil(info.remaining - info.duration * ratio)
+            : Math.ceil(info.remaining * (1 - ratio));
+        // console.log('[冷却调试] 阶段3-计算: item=' + mcItem + ', 剩余=' + info.remaining + 't, 基准=' + basis + ', 恢复比例=' + ratio + ', 新剩余=' + newRemaining + 't');
+
+        if (newRemaining <= 0) {
+            // 完全清空：走原版公开 API（自动发包，客户端蒙版瞬间清空 = 进度直接拉满）
+            player.cooldowns.removeCooldown(mcItem);
+            return true;
+        }
+
+        let delta = info.remaining - newRemaining; // 实际减少的 tick 数
+        if (delta > 0) {
+            // 窗口前移：总时长基准不变，蒙版进度 = 1 - 剩余/原有总时长，瞬间前跳不重置
+            if (_cdShiftInstance(player, mcItem, delta)) {
+                // 通知客户端对本地冷却做同样前移（蒙版同步通道）
+                let itemId = null;
+                try {
+                    if (typeof stackOrItem.getId === 'function') itemId = String(stackOrItem.getId());
+                } catch (ignored) {}
+                if (!itemId) itemId = _cdGetItemRegistryId(mcItem);
+                if (itemId) {
+                    try {
+                        player.sendData('kubejs_cd_shift', { id: itemId, d: delta });
+                    } catch (ignored) {}
+                }
+            } else {
+                // 反射失败兜底：退回替换语义（冷却数值正确，但蒙版会以剩余值为 100% 重置）
+                player.cooldowns.addCooldown(mcItem, newRemaining);
+            }
+        }
+        return true;
+    } catch (e) {
+        console.error('[Utils] _restoreCooldownImpl 失败: ' + e);
+        return false;
+    }
+}
+
+/**
+ * 按当前剩余冷却的比例恢复物品冷却
+ * 新剩余 = 当前剩余 × (1 - ratio)，收益随剩余递减，例：剩 40s、0.25 → 剩 30s
+ * @param {number} ratio - 恢复比例（0.25 = 每次减少当前剩余冷却的 25%）
+ */
+function restoreCooldownByRemaining(player, stackOrItem, ratio) {
+    return _restoreCooldownImpl(player, stackOrItem, ratio, 'remaining');
+}
+
+/**
+ * 按总冷却时长的比例恢复物品冷却
+ * 新剩余 = 当前剩余 - 总时长 × ratio，收益恒定，例：总 60s 剩 50s、0.25 → 剩 35s
+ * @param {number} ratio - 恢复比例（0.25 = 每次减少总冷却时长的 25%）
+ */
+function restoreCooldownByDuration(player, stackOrItem, ratio) {
+    return _restoreCooldownImpl(player, stackOrItem, ratio, 'duration');
+}
+
+// 兼容别名：默认按当前剩余折算（dice / sharingan 均使用此基准）
+function restoreCooldownRatio(player, stackOrItem, ratio) {
+    return restoreCooldownByRemaining(player, stackOrItem, ratio);
+}
+
+// 挂到 global 供 server_scripts / client_scripts 作用域跨作用域调用
+// （global 在各脚本类型间共享，事件回调运行时 startup 已加载完毕）
+global.getItemCooldownInfo = getItemCooldownInfo;
+global.restoreCooldownRatio = restoreCooldownRatio;
+global.restoreCooldownByRemaining = restoreCooldownByRemaining;
+global.restoreCooldownByDuration = restoreCooldownByDuration;
+
+// 按注册表 ID（'modid:name'）解析原版 Item（客户端蒙版同步用；
+// startup_scripts 在客户端物理侧同样加载，global 跨脚本类型可见）
+global.getItemById = function (id) {
+    try {
+        if (!id) return null;
+        if (!_cdForgeRegistries) _cdForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries');
+        if (!_cdResourceLocationCls) _cdResourceLocationCls = Java.loadClass('net.minecraft.resources.ResourceLocation');
+        return _cdForgeRegistries.ITEMS.getValue(new _cdResourceLocationCls(String(id)));
+    } catch (e) {
+        return null;
+    }
+};
+
+// 客户端：按物品 ID 前移本地冷却窗口（与 _cdShiftInstance 同逻辑，供网络事件回调调用）
+global.shiftCooldownWindowById = function (player, itemId, delta) {
+    let item = global.getItemById(itemId);
+    if (!item) return false;
+    return _cdShiftInstance(player, item, delta);
+};

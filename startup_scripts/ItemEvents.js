@@ -498,7 +498,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
             new AttributeModifier(
                 '608a0e60-8e1a-4878-9832-9e737079e301',
                 'monocle',
-                0.5,
+                0.2,
                 "multiply_base"
             )
         )
@@ -652,7 +652,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (even
             new AttributeModifier(
                 "a7c3e91f-2b4d-4e5f-8a6b-9c1d2e3f4a07",
                 "boombox_music_attack",
-                5,
+                1,
                 "addition"
             )
         );

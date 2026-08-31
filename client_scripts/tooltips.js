@@ -606,7 +606,7 @@ ItemEvents.tooltip((event) => {
         }
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
-        text.add(1, Text.aqua("不移动时每秒恢复 2 点生命值"));
+        text.add(1, Text.aqua("不移动时每秒恢复4点生命值"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     // 心之项链（功能见 startup_scripts/Registry/Registry_curios.js）

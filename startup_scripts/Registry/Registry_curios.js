@@ -1798,9 +1798,9 @@ StartupEvents.registry('item', event => {
                     tag.putDouble("lastZ", player.z);
                     tag.putBoolean("Moving", moving);
 
-                    // 不移动时每秒恢复 10 血量
+                    // 不移动时每秒恢复 4 血量
                     if (!moving) {
-                        player.heal(5);
+                        player.heal(4);
                     }
                 })
         )
@@ -1854,28 +1854,6 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-        )
-})
-
-//箭袋
-StartupEvents.registry('item', event => {
-    event.create("rainbow:quiver")
-            .rarity("epic")
-            .maxStackSize(1)
-            .tag("curios:charm")
-            .tooltip(Text.gold("[箭袋]"))
-            .tag("rainbow:quivers")
-            .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    if (!entity) return false;
-                    if (hasCurios(entity, 'rainbow:quivers')) return false;
-                    if(hasCuriosTag(entity, "rainbow:quivers")) return false;
-                    return true;
-                })
-                .addAttribute("attributeslib:arrow_damage", "quiver", 0.1, "multiply_total")
-                .addAttribute("attributeslib:arrow_velocity", "quiver", 0.1, "multiply_total")
         )
 })
 
@@ -2020,30 +1998,6 @@ StartupEvents.registry('item', event => {
                 })
                 .addAttribute("minecraft:generic.attack_damage", "power_glove", 1, "addition")
                 .addAttribute("minecraft:generic.attack_speed", "power_glove", 0.1, "multiply_total")
-        )
-})
- */
-
-//火焰动力手套
-/*
-StartupEvents.registry('item', event => {
-    event.create("rainbow:fire_gauntlet")
-            .rarity("epic")
-            .maxStackSize(1)
-            //.tooltip(Text.gold("[手套]"))
-            //.tag("rainbow:glove")
-            .tag("curios:charm")
-            .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
-                .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();
-                    if (!entity) return false;
-                    if (hasCurios(entity, 'rainbow:fire_gauntlet')) return false;
-                    if(hasCuriosTag(entity, "rainbow:glove")) return false;
-                    return true;
-                })
-                .addAttribute("attributeslib:fire_damage", "fire_gauntlet", 1, "addition")
-                .addAttribute("minecraft:generic.attack_speed", "fire_gauntlet", 0.1, "multiply_total")
         )
 })
  */

@@ -108,14 +108,14 @@ StartupEvents.registry("item", event => {
         .tooltip("§6出了滕州你才发现，这面有多么好吃")
 
     // 血肉：回复少量饱食度和饱和度
-    event.create("rainbow:monster_meat", "basic").maxStackSize(64).rarity("epic")
+    /*event.create("rainbow:monster_meat", "basic").maxStackSize(64).rarity("epic")
         .food(foodBuilder => {
             foodBuilder
                 .alwaysEdible()
                 .meat()
                 .hunger(5)
                 .saturation(5.0)
-        })
+        })*/
 
     // 群系之刃：高攻击力剑
     //event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
@@ -168,7 +168,7 @@ StartupEvents.registry("item", event => {
             */
     // 超精密构件：合成材料
     event.create("rainbow:super_mechanism", "basic")
-        .tooltip("§6集黑暗科技时代圣遗物，绿皮的铁炸弹，钛君的OS，机械神教的神秘小系统于一身")
+        .tooltip("§6黑暗科技时代的圣遗物")
 
     // 屎：食用后反胃，甚至关闭游戏
     /*event.create("rainbow:shit", "basic").food(foodBuilder => { foodBuilder.meat().hunger(-1).saturation(2.0).alwaysEdible().fastToEat().effect("minecraft:nausea", 300, 5, 0.99) })
@@ -183,30 +183,30 @@ StartupEvents.registry("item", event => {
     //event.create("rainbow:coin_2", "basic")
 
     // 动力剑系列
-    event.create("rainbow:baseball_bat", "sword").attackDamageBonus(7.0).attackDamageBaseline(0.0)
-    event.create("rainbow:baseball_power", "sword")
-        .attackDamageBonus(19.0)
-        .attackDamageBaseline(0.0)
+/*event.create("rainbow:baseball_bat", "sword").attackDamageBonus(7.0).attackDamageBaseline(0.0)
+event.create("rainbow:baseball_power", "sword")
+    .attackDamageBonus(19.0)
+    .attackDamageBaseline(0.0)*/
 
-    // 泰拉刃：强大的武器
-    //event.create("rainbow:terasword", "sword")
+// 泰拉刃：强大的武器
+//event.create("rainbow:terasword", "sword")
 
-    //村民脑子
-    //event.create("rainbow:brain").maxDamage(300)
+//村民脑子
+//event.create("rainbow:brain").maxDamage(300)
 
-    //虚空之眼
-    //event.create("rainbow:void_eye")
+//虚空之眼
+//event.create("rainbow:void_eye")
 
-    //活体金属
-    //event.create("rainbow:living_metal")
+//活体金属
+//event.create("rainbow:living_metal")
 
-    // 逻辑数字：用于自动化或逻辑计算的物品
-    let Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'plus', 'minus', 'multiply', 'divide', 'missingno']
-    Numbers.forEach(id => {
-        event.create(`rainbow:${id}`, "basic").displayName(`逻辑 ${ItemToNumberF(id)}`)
-    })
+// 逻辑数字：用于自动化或逻辑计算的物品
+let Numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'plus', 'minus', 'multiply', 'divide', 'missingno']
+Numbers.forEach(id => {
+    event.create(`rainbow:${id}`, "basic").displayName(`逻辑 ${ItemToNumberF(id)}`)
+})
 
-    // 索敌棒：选择两个实体，让它们互相索敌攻击
-    event.create("rainbow:aggro_stick").unstackable().glow(true)
-        .tooltip("§6右键点击两个实体，让它们互相索敌攻击")
+// 索敌棒：选择两个实体，让它们互相索敌攻击
+event.create("rainbow:aggro_stick").unstackable().glow(true)
+    .tooltip("§6右键点击两个实体，让它们互相索敌攻击")
 })

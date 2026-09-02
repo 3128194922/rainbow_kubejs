@@ -97,6 +97,18 @@ StartupEvents.registry("mob_effect", event => {
     // 下班时间：有益
     event.create("rainbow:off_work_time")
     .beneficial() // 标记为有益效果
+
+    // 兽性面具闪避：每级增加1%属性闪避，最多由饰品逻辑叠加到10级。
+    event.create("rainbow:beast_dodge")
+        .beneficial()
+        .color(0xAAFF55)
+        .modifyAttribute("attributeslib:dodge_chance", "beast_dodge", 0.01, "addition")
+
+    // 狂怒面具状态：作为攻击回血与非跳劈暴击回血的状态标记。
+    event.create("rainbow:fury")
+        .beneficial()
+        .color(0xFF3333)
+
     // 韧性：有益，增加攻击力和减伤
     /*event.create("rainbow:resilience")
         .beneficial()
@@ -186,12 +198,6 @@ StartupEvents.registry("mob_effect", event => {
     .color(0x556B2F)
     .modifyAttribute("moreattribute:no_collision", "void", 1, "addition")
     
-    //冷却缩减
-    event.create("rainbow:cooldowns_reduction")
-    .beneficial()
-    .color(0x556B2F)
-    .modifyAttribute("moreattribute:cooldown_reduction", "cooldowns_reduction", 0.1, "multiply_total")
-
     //难以发现
     event.create("rainbow:invisible")
     .beneficial() // 标记为有益效果

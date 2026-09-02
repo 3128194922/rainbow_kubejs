@@ -10,10 +10,7 @@
 
 // Open Menu Button - server_scripts
 
-let $SimpleMenuProvider = Java.loadClass("net.minecraft.world.SimpleMenuProvider");
-let $CraftingMenu = Java.loadClass("net.minecraft.world.inventory.CraftingMenu");
-let $ChestMenu = Java.loadClass("net.minecraft.world.inventory.ChestMenu");
-let $Optional = Java.loadClass("java.util.Optional");
+// SimpleMenuProvider / CraftingMenu / ChestMenu / Optional 统一由 server_scripts/CONST.js 提供。
 
 NetworkEvents.dataReceived("server", (event) => {
     const { data, player, level } = event;

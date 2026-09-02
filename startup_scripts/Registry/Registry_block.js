@@ -68,7 +68,7 @@ StartupEvents.registry("block", event => {
                 let range = 5;
                 let aabb = new AABB(pos).inflate(range);
 
-                let entities = level.getEntitiesOfClass($LivingEntity, aabb);
+                let entities = level.getEntitiesOfClass(LivingEntity, aabb);
 
                 for (let e of entities) {
                     if (e.isPlayer()) continue;

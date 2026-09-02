@@ -109,7 +109,7 @@ BlockEvents.rightClicked("create:encased_fluid_pipe", event => {
         event.block.pos,
         event.block.blockState.setValue(
             BlockProperties[event.facing.toString().toUpperCase()],
-            Java.loadClass("java.lang.Boolean")[currentState ? "FALSE" : "TRUE"]
+            JavaBoolean[currentState ? "FALSE" : "TRUE"]
         )
     )
     // 播放音效

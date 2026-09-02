@@ -17,7 +17,7 @@
  * @param {Object} attacker 攻击者实体
  * @param {Object} victim   受害者实体
  */
-function handleBackstabDamage(event, attacker, victim) {
+function handleBackstabDamage(event, attacker, victim, context) {
     try {
         // 未加载到 FarmersDelight 类（未装 mod）时直接跳过
         if (BackstabbingEnchantment === null) return;
@@ -41,7 +41,7 @@ function handleBackstabDamage(event, attacker, victim) {
         event.setAmount(originalAmount * 2);
 
         // 泣血之刃：背刺时恢复背刺伤害50%的血量
-        if (hasCurios(attacker, 'rainbow:blood_collection_bag')) {
+        if (hasContextCurio(context, "attacker", attacker, 'rainbow:blood_collection_bag')) {
             let healAmount = event.getAmount() * 0.5;
             attacker.heal(healAmount);
         }

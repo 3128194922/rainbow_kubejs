@@ -10,18 +10,19 @@
  * @param {string[]} soure_magic 魔法伤害
  * @param {string[]} boom_damage 爆炸伤害
  */
-function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isLiving()) return;
     let mainHand = attacker.getItemInHand("main_hand");
-    let offHand = attacker.getItemInHand("off_hand");
+    let damageType = context != null ? context.damageType : String(source.getType());
+    let isRangeDamage = context != null ? context.isRangeDamage : range_damage.indexOf(damageType) != -1;
     
     // 提尔锋：按目标护甲值增加伤害
-    if (mainHand.id == "rainbow:tyrfing" && range_damage.indexOf(source.getType()) == -1) {
+    if (mainHand.id == "rainbow:tyrfing" && !isRangeDamage) {
         event.setAmount(event.getAmount() + event.getAmount() * victim.getArmorValue());
     }
 
     // 重锤：下落动能增伤（根据下落距离和动能伤害属性）
-    if (mainHand.id == "rainbow:heavy_axe" && range_damage.indexOf(source.getType()) == -1) {
+    if (mainHand.id == "rainbow:heavy_axe" && !isRangeDamage) {
         let kineticAttr = attacker.getAttribute('oreganized:kinetic_damage');
         let kineticValue = kineticAttr ? kineticAttr.getValue() : 0;
         let bonus = (attacker.fallDistance * 0.5) + (kineticValue * 2);

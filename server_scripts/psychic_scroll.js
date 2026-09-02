@@ -30,7 +30,7 @@ function pwBuildBox(entity) {
     else if (ly >= lz) { hx = PW_HALF_WIDTH; hy = PW_HALF_THICK; hz = PW_HALF_WIDTH; }
     else { hx = PW_HALF_WIDTH; hy = PW_HALF_WIDTH; hz = PW_HALF_THICK; }
     var cx = entity.getX(), cy = entity.getY() + 0.25, cz = entity.getZ();
-    return new $AABB(cx - hx, cy - hy, cz - hz, cx + hx, cy + hy, cz + hz);
+    return new AABB(cx - hx, cy - hy, cz - hz, cx + hx, cy + hy, cz + hz);
 }
 
 // UUID 兼容取值：KubeJS 包装对象用 uuid 属性，原生实体用 getUUID()
@@ -108,7 +108,7 @@ global.psychicWallTick = function (entity, tickNum) {
             if (c == null || c.getId() == selfId) continue;
             if (!c.isAlive()) continue;
             var isProj = false;
-            try { isProj = c instanceof $Projectile; } catch (e) {}
+            try { isProj = c instanceof Projectile; } catch (e) {}
             if (isProj) continue; // 抛射体由 (B) 前瞻拦截统一处理
 
             var cu = pwUuidOf(c);
@@ -135,7 +135,7 @@ global.psychicWallTick = function (entity, tickNum) {
         // 前瞻平面判定（速度+1.0 余量）保留：防 3格/tick 高速箭
         // 隧穿 0.9 格薄板导致漏偏转。
         // ==========================================
-        var bigBox = new $AABB(cx - 5, cy - 5, cz - 5, cx + 5, cy + 5, cz + 5);
+        var bigBox = new AABB(cx - 5, cy - 5, cz - 5, cx + 5, cy + 5, cz + 5);
         var projs = level.getEntitiesWithin(bigBox);
         var j, p;
         var dbgProjCount = 0; // 诊断：区内抛射体计数
@@ -143,7 +143,7 @@ global.psychicWallTick = function (entity, tickNum) {
             p = projs[j];
             if (p == null || p.getId() == selfId || !p.isAlive()) continue;
             var isProj2 = false;
-            try { isProj2 = p instanceof $Projectile; } catch (e) {}
+            try { isProj2 = p instanceof Projectile; } catch (e) {}
             if (!isProj2) continue;
             dbgProjCount++;
 
@@ -170,9 +170,9 @@ global.psychicWallTick = function (entity, tickNum) {
             p.setDeltaMovement(look.scale(Math.max(pSpeed * 2, 0.8)));
             // 旋转修正（按 look 反算 yaw/pitch，旧值一并写入防插值翻转）
             // 注意：Rhino 的 Math 无 toDegrees，用 * 180 / Math.PI
-            var yawDeg = Math.atan2(-lx, lz) * 180 / Math.PI;
+            var yawDeg = Math.atan2(-lx, lz) * 180 / MATH_PI;
             var clampedLy = Math.max(-0.999, Math.min(0.999, ly));
-            var pitchDeg = -Math.asin(clampedLy) * 180 / Math.PI;
+            var pitchDeg = -Math.asin(clampedLy) * 180 / MATH_PI;
             try { p.setYRot(yawDeg); p.setXRot(pitchDeg); } catch (e) {}
             try { p.yRotO = yawDeg; p.xRotO = pitchDeg; } catch (e) {}
             // 标记速度变更以同步到客户端
@@ -238,7 +238,7 @@ global.summonPsychicScroll = function (player, seconds) {
             wall.setCustomName(ownerUuid);
             wall.setCustomNameVisible(false);
         } catch (e) {
-            try { wall.setCustomName($Component.literal(ownerUuid)); } catch (e2) {}
+            try { wall.setCustomName(Component.literal(ownerUuid)); } catch (e2) {}
         }
         var d = wall.getPersistentData();
         d.putString('pwOwner', ownerUuid);
@@ -262,10 +262,10 @@ ServerEvents.commandRegistry(function (event) {
 
     let summonFeedback = function (ctx, wall, secText) {
         if (wall == null) {
-            ctx.getSource().sendFailure($Component.literal('§c心理卷轴召唤失败，查看服务器日志'));
+            ctx.getSource().sendFailure(Component.literal('§c心理卷轴召唤失败，查看服务器日志'));
             return 0;
         }
-        ctx.getSource().sendSuccess($Component.literal(
+        ctx.getSource().sendSuccess(Component.literal(
             '§a✓ 心理卷轴已召唤（' + secText + '）：面前 2 格处，面向你的视线方向'), false);
         return 1;
     };
@@ -280,7 +280,7 @@ ServerEvents.commandRegistry(function (event) {
                 let player = ctx.getSource().getEntity();
                 return summonFeedback(ctx, global.summonPsychicScroll(player, 15), '15 秒');
             })
-            .then(Commands.argument('seconds', $DArg.doubleArg(1, 600))
+            .then(Commands.argument('seconds', DoubleArgumentType.doubleArg(1, 600))
                 .executes(function (ctx) {
                     let player = ctx.getSource().getEntity();
                     let sec = Number(Arguments.DOUBLE.getResult(ctx, 'seconds'));

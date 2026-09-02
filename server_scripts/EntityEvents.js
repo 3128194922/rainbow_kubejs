@@ -3,8 +3,7 @@
 // 👹 实体事件处理脚本
 // ==========================================
 
-// 文本粒子 API（server_scripts 作用域无法访问 startup_scripts\CONST.js，需单独加载）
-let DiceParticleTextAPI = Java.loadClass('com.uniye.mysticartifacts.util.ParticleTextAPI')
+// 文本粒子 API 统一通过 global.sendParticleTextInFront 提供。
 
 // 监听实体受伤事件
 EntityEvents.hurt(event => {
@@ -164,7 +163,7 @@ EntityEvents.death(event => {
                 let pctText = Math.round(effPct * 100) + "%";
                 let msg = crit ? "暴击 -" + pctText : "-" + pctText;
                 server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @a ${attacker.x} ${attacker.y} ${attacker.z} 1 ${crit ? 1.5 : 1.0}`);
-                DiceParticleTextAPI.sendInFront(attacker, msg, crit ? 0xFFAA00 : 0x55FFFF);
+                global.sendParticleTextInFront(attacker, msg, crit ? 0xFFAA00 : 0x55FFFF);
             }
         } catch (e) {
             console.log("[赌徒骰子] 触发出错: " + e);

@@ -313,7 +313,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-let Player = Java.loadClass('net.minecraft.world.entity.player.Player')
+// Player / ResourceKey 统一由 server_scripts/CONST.js 提供。
 /**
  * 
  * @param {Player} player 
@@ -390,7 +390,6 @@ function isInsideStructure(pos, level, structures) {
     return null;
 }
 
-let ResourceKey = Java.loadClass("net.minecraft.resources.ResourceKey");
 /**
  * 获取所有生物群系 ID
  * @param {Server} server
@@ -628,4 +627,3 @@ ServerEvents.commandRegistry(event => {
     );
     
 });
-

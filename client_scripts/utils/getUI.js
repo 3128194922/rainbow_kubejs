@@ -9,7 +9,7 @@
 function getScreen()
 {
     ClientEvents.tick(event => {
-        let mc = Java.loadClass("net.minecraft.client.Minecraft").getInstance();
+        let mc = Minecraft.getInstance();
         let screen = mc.screen;
     
         if (screen != null) {

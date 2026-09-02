@@ -263,7 +263,7 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
         true,
         e => {
           try {
-            if (!e.hasEffect($Effects.INVISIBILITY)) {
+            if (!e.hasEffect(MobEffects.INVISIBILITY)) {
               e.potionEffects.add('minecraft:invisibility', 200, 0, false, false)
             }
           } catch(er) { console.log(er) }

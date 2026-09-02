@@ -1,8 +1,4 @@
 // priority: 500
-// 抛射体撞击事件（占位）
-ForgeEvents.onEvent("net.minecraftforge.event.entity.ProjectileImpactEvent", event => {
-})
-
 // 玩家放置方块事件
 ForgeEvents.onEvent("net.minecraftforge.event.level.BlockEvent$EntityPlaceEvent", event => {
     try {
@@ -119,18 +115,21 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
+        let effectCode = global.FORGE_EFFECT_EXPIRED_CODES[effectId];
 
-        // 下班时间到了，实体消失
-        if (effectId === "effect.rainbow.off_work_time") {
-            entity.discard()
-        }
+        // 固定效果 ID 通过表查找后只执行一个处理分支。
+        switch (effectCode) {
+            // 下班时间到了，实体消失
+            case 1:
+                entity.discard()
+                break;
 
-        // 虚化效果到期，移除油漆层
-        if (effectId === "effect.rainbow.void") {
-            entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
-        }
+            // 虚化效果到期，移除油漆层
+            case 2:
+                entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
+                break;
 
-        if (effectId === "effect.rainbow.short_buff") {
+            case 3:
             let item = entity.getItemInHand("main_hand");
             if (item.id == 'species:crankbow') {
                 if (item.nbt.getBoolean("IsUsing") == true) {
@@ -152,6 +151,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Expir
                     ice_chunk.spawn()
                 }
             }
+                break;
         }
     }
     catch (e) {
@@ -167,15 +167,16 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added
         // 获取效果实例
         let effectInstance = event.getEffectInstance();
         let effectId = effectInstance.getEffect().getDescriptionId();
+        let effectCode = global.FORGE_EFFECT_ADDED_CODES[effectId];
 
         // 虚化效果添加时，显示半透明油漆层（使用效果色的半透明版本）
-        if (effectId === "effect.rainbow.void") {
+        if (effectCode === 1) {
             entity.server.runCommandSilent("/dyeing paint add static void_effect " + entity.uuid + " 80FFFFFF")
         }
 
         // 玩家专用逻辑：防化服免疫中毒/辐照/凋零
         if (!entity.isPlayer()) return;
-        if (effectId.toString() == "effect.minecraft.poison" || effectId.toString() == "effect.alexscaves.irradiated" || effectId.toString() == "effect.minecraft.wither") {
+        if (global.FORGE_HAZMAT_EFFECT_CODES[effectId] === true) {
             if (entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
                 && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
                 && entity.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
@@ -201,14 +202,8 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (ev
         let inputItemId = entity.item.id;
         let inputCount = entity.item.count;
 
-        // 配方列表：输入 → 输出
-        let voidTransmuteRecipes = {
-            'rainbow:raw_voidore': 'createutilities:void_steel_ingot',
-            'minecraft:dragon_breath': 'rainbow:ender_air'
-        };
-
         // 检查是否有对应配方
-        let outputItemId = voidTransmuteRecipes[inputItemId];
+        let outputItemId = global.FORGE_VOID_TRANSMUTE_RECIPES[inputItemId];
         if (!outputItemId) return;
 
         // 创建转化后的掉落物实体，数量对应
@@ -231,39 +226,41 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityLeaveLevelEvent", (ev
 
 
 // 监听左键空击事件（已注释大部分逻辑）
-ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerInteractEvent$LeftClickEmpty', event => {
-    /* 
-    // 剑气/投射物逻辑
-    // ...
-    */
-})
+/*
+// 剑气/投射物逻辑
+// ...
+*/
 
 // 监听效果移除事件
 ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remove', event => {
     try {
         let entity = event.getEntity();
-        if (!event.getEffectInstance()) return;
-        let buffId = event.getEffectInstance().getDescriptionId();
+        let effectInstance = event.getEffectInstance();
+        if (!effectInstance) return;
+        let buffId = effectInstance.getDescriptionId();
+        let effectCode = global.FORGE_EFFECT_REMOVED_CODES[buffId];
 
-        // 虚化效果被移除时，移除油漆层
-        if (buffId == "effect.rainbow.void") {
-            entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
-        }
+        // 固定效果 ID 通过表查找后只执行对应逻辑。
+        switch (effectCode) {
+            // 虚化效果被移除时，移除油漆层
+            case 1:
+                entity.server.runCommandSilent("/dyeing paint remove " + entity.uuid + " void_effect")
+                break;
 
-        if (!entity.isPlayer()) return;
+            // 嗜血效果移除逻辑：如果没有打伞，则会被点燃
+            case 2:
+                if (!entity.isPlayer()) break;
 
-        let item_main = entity.getItemInHand("main_hand").getId();
-        let item_off = entity.getItemInHand("off_hand").getId();
-
-        // 嗜血效果移除逻辑：如果没有打伞，则会被点燃
-        if (buffId == "effect.species.bloodlust") {
-            if (item_main == 'artifacts:umbrella' || item_off == 'artifacts:umbrella') {
-                event.setCanceled(true);
-            }
-            else {
-                entity.secondsOnFire = 100;
-                event.setCanceled(true);
-            }
+                let item_main = entity.getItemInHand("main_hand").getId();
+                let item_off = entity.getItemInHand("off_hand").getId();
+                if (item_main == 'artifacts:umbrella' || item_off == 'artifacts:umbrella') {
+                    event.setCanceled(true);
+                }
+                else {
+                    entity.secondsOnFire = 100;
+                    event.setCanceled(true);
+                }
+                break;
         }
 
     } catch (e) {
@@ -294,74 +291,50 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
         let player = event.getSource().getPlayer();
         if (event.getEntity().getLevel().isClientSide()) return;
         if (!player || !player.isPlayer()) return;
+        // 同一次死亡事件只构建一次饰品索引，供三个击杀效果复用。
+        let curioIndex = buildCurioIndex(player);
 
         // 宝箱吊坠：击杀计数逻辑
-        let item = getCuriosItem(player, "rainbow:treasure_necklace");
-        if (!item) return;
+        let item = curioIndex["rainbow:treasure_necklace"];
+        if (item) {
+            let nbt = item.getOrCreateTag();
 
-        let nbt = item.getOrCreateTag();
+            // 读取计数
+            let kills = nbt.getInt("kill");
 
-        // 读取计数
-        let kills = nbt.getInt("kill");
-
-        if (kills < 100) {
-            nbt.putInt("kill", kills + 1);
-        } else {
-            nbt.putInt("kill", 0);
-            item.setDamageValue(item.getDamageValue() + Integer.valueOf("100"))
-            // 宝箱吊坠满 100 击杀：从战利品表生成奖励
-            try {
-                let pos = player.block.getPos();
-                player.server.runCommandSilent("loot spawn " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " loot rainbow:treasure_necklace");
-            } catch (lootErr) {
-                console.log("宝箱吊坠战利品生成出现问题：");
-                console.log(lootErr);
+            if (kills < 100) {
+                nbt.putInt("kill", kills + 1);
+            } else {
+                nbt.putInt("kill", 0);
+                item.setDamageValue(item.getDamageValue() + Integer.valueOf("100"))
+                // 宝箱吊坠满 100 击杀：从战利品表生成奖励
+                try {
+                    let pos = player.block.getPos();
+                    player.server.runCommandSilent("loot spawn " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " loot rainbow:treasure_necklace");
+                } catch (lootErr) {
+                    console.log("宝箱吊坠战利品生成出现问题：");
+                    console.log(lootErr);
+                }
             }
         }
 
-    } catch (e) {
-        console.log("监听死亡出现问题：");
-        console.log(e);
-    }
-});
-
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
-    try {
-        let player = event.getSource().getPlayer();
-        if (event.getEntity().getLevel().isClientSide()) return;
-        if (!player || !player.isPlayer()) return;
-
         // 大师球储存灵魂
-        let item = getCuriosItem(player, "rainbow:dead_river");
-        if (!item) return;
+        let soulItem = curioIndex["rainbow:dead_river"];
+        if (soulItem && player.getItemInHand("main_hand").id != 'species:spectralibur') {
+            let nbt = soulItem.getOrCreateTag();
 
-        if (player.getItemInHand("main_hand").id == 'species:spectralibur') return;
+            let Souls = nbt.getInt("Souls");
 
-        let nbt = item.getOrCreateTag();
-
-        let Souls = nbt.getInt("Souls");
-
-        if (Souls == null) {
-            nbt.putInt("Souls", 0)
-        }
-        else {
-            nbt.putInt("Souls", Souls + 1)
+            if (Souls == null) {
+                nbt.putInt("Souls", 0)
+            }
+            else {
+                nbt.putInt("Souls", Souls + 1)
+            }
         }
 
-    } catch (e) {
-        console.log("监听死亡出现问题：");
-        console.log(e);
-    }
-});
-
-// 兽性面具：击杀敌人治疗自己
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', event => {
-    try {
-        let player = event.getSource().getPlayer();
-        if (event.getEntity().getLevel().isClientSide()) return;
-        if (!player || !player.isPlayer()) return;
-
-        if (hasCurios(player, "rainbow:beast_mask")) {
+        // 兽性面具：击杀敌人治疗自己
+        if (curioIndex["rainbow:beast_mask"] != null) {
             player.heal(4);
         }
     } catch (e) {
@@ -370,19 +343,6 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDeathEvent', e
 });
 
 //DamageSorce()
-//怪物看到玩家事件
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingVisibilityEvent', event => {
-    try {
-        let target = event.entity;         // 被看的实体
-        let observer = event.getLookingEntity(); // 观察者
-
-        if (!target || !observer) return;
-
-    } catch (e) {
-        console.log("监听看见出现问题：");
-        console.log(e);
-    }
-});
 
 // ==========================================
 // 写轮眼（rainbow:sharingan）：盾反/完美闪避时恢复冷却
@@ -455,7 +415,7 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     // console.log("[极限闪避] 阶段E-玩家有效: " + player.username);
 
     // 极限闪避触发反馈：播放原版经验升级音效 + 武士刀（村正）同款悬浮字幕粒子
-    ParticleTextAPI.sendInFront(player, "完美闪避！", 0xFFAA00);
+    global.sendParticleTextInFront(player, "完美闪避！", 0xFFAA00);
     player.server.runCommandSilent(`/playsound minecraft:entity.player.levelup player @a ${player.getX()} ${player.getY()} ${player.getZ()} 1.0 1.0`);
 
     // 强制播放完美闪避动画（assets/rainbow/player_animation/完美闪避.json，注册 ID 为内部名 perfect_dodge）
@@ -467,7 +427,15 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     }
 
 
-    if(hasCurios(player, "rainbow:dismas_scarf"))
+    // 第三阶段：极限闪避事件内复用一次饰品索引，避免三个饰品分别扫描 Curios 槽位。
+    let evasionCurioIndex = null;
+    try {
+        evasionCurioIndex = buildCurioIndex(player);
+    } catch (e) {
+        console.log("[极限闪避] 饰品索引构建失败: " + e);
+    }
+
+    if(evasionCurioIndex != null && evasionCurioIndex["rainbow:dismas_scarf"] != null)
     {
         if (attacker && attacker.isAlive()) {
             // 1.20.1 中 DamageSource 无 setBypassArmor/setBypassMagic，需使用自定义伤害类型（见 server_scripts/rainbow/dismas_scarf.js）
@@ -487,11 +455,11 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
             server.runCommandSilent(`/playsound minecraft:entity.player.attack.sweep player @a ${ax} ${ay} ${az} 0.8 1.0`);
         }
     }
-    if(hasCurios(player,"rainbow:beast_mask"))
+    if(evasionCurioIndex != null && evasionCurioIndex["rainbow:beast_mask"] != null)
     {
         player.heal(4);
     }
-    if(hasCurios(player,"rainbow:sharingan"))
+    if(evasionCurioIndex != null && evasionCurioIndex["rainbow:sharingan"] != null)
     {
         // 写轮眼：完美闪避时恢复主副手 + Curios 饰品 总冷却时长 25% 的冷却
         // console.log("[极限闪避] 阶段F-检测到写轮眼, 开始恢复冷却");
@@ -499,8 +467,10 @@ ForgeEvents.onEvent("cc.sighs.extremeevasion.event.ExtremeEvasionTriggeredEvent"
     }
 });
 
-// 盾反判定：举盾时间不超过10tick即判定为盾反
+// 旧盾反监听占位：实际逻辑已迁移到 startup_scripts/shield_parry/main.js。
 ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
+    // 盾反逻辑已迁移到 startup_scripts/shield_parry/main.js，保留旧块避免影响历史注释上下文。
+    return;
     // console.log("[盾反] 事件触发");
     let player = event.player;          // ServerPlayer 盾反玩家（非玩家格挡时为 null）
     if(player.level.isClientSide()) return;
@@ -521,7 +491,7 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
     let pz = player.getZ();
     let server = player.server;
 
-    ParticleTextAPI.sendInFront(player, "盾反！", 0xFFAA00);
+    global.sendParticleTextInFront(player, "盾反！", 0xFFAA00);
 
     // ===== 打击感反馈 =====
     // 音效三连：高频金属瞬态(铁砧) + 盾牌格挡 + 重击闷响，音高随机微调让每次盾反有变化
@@ -536,7 +506,7 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
     server.runCommandSilent(`particle minecraft:cloud ${px} ${py + 0.8} ${pz} 1.3 0.1 1.3 0.25 25`);
 
     // 武士刀（村正）同款悬浮字幕粒子
-    ParticleTextAPI.sendInFront(player, "盾反！", 0xFFAA00);
+    global.sendParticleTextInFront(player, "盾反！", 0xFFAA00);
 
     if(hasCurios(player,"rainbow:sharingan"))
         {

@@ -4,18 +4,9 @@
 // 用途: 通过 KubeJS 读取任意玩家的 Field-Guide 收集进度数据
 // ============================================================
 
-// 懒加载 Field-Guide 相关类
-let FGProgressManager = null;
-let FGPlayerProgress = null;
-let FGServerManager = null;
-
 function ensureClassesLoaded() {
-    if (FGProgressManager) return true;
     try {
-        FGProgressManager = Java.loadClass('com.evandev.fieldguide.server.progress.FieldGuideProgressManager');
-        FGPlayerProgress = Java.loadClass('com.evandev.fieldguide.server.progress.PlayerFieldGuideProgress');
-        FGServerManager = Java.loadClass('com.evandev.fieldguide.server.ServerFieldGuideManager');
-        return true;
+        return FieldGuideProgressManager != null && FieldGuidePlayerProgress != null && FieldGuideServerManager != null;
     } catch (e) {
         console.error('[FieldGuideReader] 无法加载 Field-Guide 类，请确保 Field-Guide mod 已安装: ' + e);
         return false;
@@ -27,7 +18,7 @@ function ensureClassesLoaded() {
  */
 function getProgressManager() {
     if (!ensureClassesLoaded()) return null;
-    return FGProgressManager.getInstance();
+    return FieldGuideProgressManager.getInstance();
 }
 
 /**
@@ -207,7 +198,7 @@ function getProgressSummary(playerOrUUID) {
  */
 function getAllEntryIds() {
     if (!ensureClassesLoaded()) return [];
-    let manager = FGServerManager.getInstance();
+    let manager = FieldGuideServerManager.getInstance();
     let ids = manager.getAllEntryIds();
     let result = [];
     let it = ids.iterator();
@@ -242,7 +233,7 @@ function getCompletionStats(playerOrUUID) {
  */
 function getCategoryEntryIds(categoryId) {
     if (!ensureClassesLoaded()) return [];
-    let manager = FGServerManager.getInstance();
+    let manager = FieldGuideServerManager.getInstance();
     if (!manager) return [];
 
     let expectId = String(categoryId);
@@ -352,7 +343,7 @@ ServerEvents.commandRegistry(event => {
                                 // 提示已安装的条目 ID，类似 Field-Guide 自带指令的 suggestResource 行为
                                 try {
                                     if (ensureClassesLoaded()) {
-                                        let ids = FGServerManager.getInstance().getAllEntryIds();
+                                        let ids = FieldGuideServerManager.getInstance().getAllEntryIds();
                                         let it = ids.iterator();
                                         while (it.hasNext()) builder.suggest(String(it.next()));
                                     }

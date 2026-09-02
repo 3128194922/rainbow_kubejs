@@ -7,7 +7,7 @@
 // Registers new potion types (normal and long) and custom brewing recipes
 
 /** @type {Internal.DeferredRegister} */
-const rainbow_POTIONS = $DeferredRegisterCreate(ForgeRegistries.POTIONS, "rainbow")
+const rainbow_POTIONS = DeferredRegisterCreate(ForgeRegistries.POTIONS, "rainbow")
 rainbow_POTIONS.register(ForgeModEvents.eventBus())
 
 /**
@@ -25,7 +25,7 @@ function registerPotionPair(effectID, normalSec, longSec) {
     StartupEvents.init(event => {
         // 普通药水
         const normalBuilder = Utils.lazy(() =>
-            new $PotionBuilder(`rainbow:${normalID}`)
+            new PotionBuilder(`rainbow:${normalID}`)
                 .effect(effectID, normalSec * 20, 0)
         )
         rainbow_POTIONS.register(normalID, () =>
@@ -34,7 +34,7 @@ function registerPotionPair(effectID, normalSec, longSec) {
 
         // 延长药水
         const longBuilder = Utils.lazy(() =>
-            new $PotionBuilder(`rainbow:${longID}`)
+            new PotionBuilder(`rainbow:${longID}`)
                 .effect(effectID, longSec * 20, 0)
         )
         rainbow_POTIONS.register(longID, () =>

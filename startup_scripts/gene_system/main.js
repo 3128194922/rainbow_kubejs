@@ -7,16 +7,14 @@
 // 繁殖时子嗣概率继承父母基因或随机获得新基因
 // ==========================================
 
-const UUID_CLASS = Java.loadClass('java.util.UUID');
-const $AttributeModifier = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier');
-const $Operation = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier$Operation');
+// UUID / AttributeModifier / AttributeModifierOperation 统一由 startup_scripts/CONST.js 提供。
 
 const GENE_KEY = "entity_gene";
 
 function getOperation(opName) {
-    if (opName === "multiply_base") return $Operation.MULTIPLY_BASE;
-    if (opName === "multiply_total") return $Operation.MULTIPLY_TOTAL;
-    return $Operation.ADDITION;
+    if (opName === "multiply_base") return AttributeModifierOperation.MULTIPLY_BASE;
+    if (opName === "multiply_total") return AttributeModifierOperation.MULTIPLY_TOTAL;
+    return AttributeModifierOperation.ADDITION;
 }
 
 function getGenePool(entityId) {
@@ -38,8 +36,8 @@ function applyGeneEffect(entity, geneId) {
         let attribute = entity.getAttribute(effect.attribute);
         if (!attribute) return false;
 
-        let uuid = UUID_CLASS.fromString(effect.UUID);
-        let modifier = new $AttributeModifier(uuid, geneId, effect.NUMBER, getOperation(effect.OPERATION));
+        let uuid = UUID.fromString(effect.UUID);
+        let modifier = new AttributeModifier(uuid, geneId, effect.NUMBER, getOperation(effect.OPERATION));
 
         attribute.removeModifier(uuid);
         attribute.addPermanentModifier(modifier);
@@ -57,7 +55,7 @@ function removeGeneEffect(entity, geneId) {
     try {
         let attribute = entity.getAttribute(effect.attribute);
         if (attribute) {
-            let uuid = UUID_CLASS.fromString(effect.UUID);
+            let uuid = UUID.fromString(effect.UUID);
             attribute.removeModifier(uuid);
         }
     } catch (e) {}

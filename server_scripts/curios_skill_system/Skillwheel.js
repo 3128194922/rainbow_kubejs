@@ -404,19 +404,6 @@ registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submen
     }
 });
 
-// --- 狂怒面具 ---
-// 伤害累计满 100 (NBT "Energy") 后触发：冷却缩减等级2 (amplifier=1)，持续5秒
-registerSkill('rainbow:fury_mask', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    let furyDamage = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
-    if (furyDamage >= 100 && !player.cooldowns.isOnCooldown("rainbow:fury_mask")) {
-        player.potionEffects.add("rainbow:cooldowns_reduction", SecoundToTick(5), 2, false, false);
-        if (!itemStack.nbt) itemStack.nbt = {};
-        itemStack.nbt.putDouble("Energy", 0);
-        player.cooldowns.addCooldown("rainbow:fury_mask", 200);
-        event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
-    }
-});
-
 // --- 幻影之躯 ---
 /*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     let headItem = player.getItemBySlot("head");
@@ -473,7 +460,6 @@ registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex,
 // --- 皇家法杖 ---
 registerSkill('royalletiations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
-        let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
         let hand = InteractionHand.MAIN_HAND;
         let src = event.data ? event.data.getString("sourceType") : "";
         if (src === "vanilla_offhand") {
@@ -506,7 +492,6 @@ registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submen
     if (player.cooldowns.isOnCooldown("species:smoke_bomb")) return;
     player.potionEffects.add("rainbow:invisible",60,0,false,false)
     // 1. 模拟右键：临时将该物品装备到主/副手，调用物品 use()（内部播放蓄力音效并启动使用流程）
-    let InteractionHand = Java.loadClass("net.minecraft.world.InteractionHand");
     let hand = InteractionHand.MAIN_HAND;
     let src = event.data ? event.data.getString("sourceType") : "";
     if (src === "vanilla_offhand") {
@@ -1085,22 +1070,22 @@ registerSkill('rainbow:dead_river', (event, player, itemStack, isSubmenu, submen
     // 优先召唤高消耗变种，花光所有灵魂
     // HULKING_SPECTRE (消耗 3) > JOUSTING_SPECTRE (消耗 2) > SPECTRE (消耗 1)
     while (souls >= 3) {
-        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
-        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.HULKING_SPECTRE, true);
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.HULKING_SPECTRE, true);
         souls -= 3;
         totalConsumed += 3;
     }
 
     while (souls >= 2) {
-        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
-        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.JOUSTING_SPECTRE, true);
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.JOUSTING_SPECTRE, true);
         souls -= 2;
         totalConsumed += 2;
     }
 
     while (souls >= 1) {
-        let bp = new $BlockPosSp(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
-        $Spectre.spawnSpectre(serverLevel, player, bp, $Spectre.Type.SPECTRE, true);
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.SPECTRE, true);
         souls -= 1;
         totalConsumed += 1;
     }
@@ -1339,10 +1324,6 @@ let wickedMaskSkillMap = {
         let { event, player, itemStack } = ctx;
 
         // 加载 Cataclysm 抛射体类（构造函数均为 public，可直接 new）
-        let $Wither_Homing_Missile_Entity = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Homing_Missile_Entity');
-        let $Wither_Missile_Entity = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Missile_Entity');
-        let $LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity');
-
         let HOMING_MISSILE_DAMAGE = 12.0;
         let MISSILE_DAMAGE = 10.0;
         let DURATION_TICKS = SecoundToTick(5); // 持续 5 秒火力输出
@@ -1368,8 +1349,8 @@ let wickedMaskSkillMap = {
                 // rotateTowardsMovement 用 yRot=atan2(z,x)+90, xRot=atan2(horizDist,y)-90
                 // 而原版 shoot() 用 yRot=atan2(x,z), xRot=atan2(y,horizDist)，两者数值不同
                 // 必须手动用 cataclysm 的公式设置朝向，否则第一帧渲染朝向错误
-                let yRot = Math.atan2(dz, dx) * (180 / Math.PI) + 90;
-                let xRot = Math.atan2(horizDist, dy) * (180 / Math.PI) - 90;
+                let yRot = Math.atan2(dz, dx) * (180 / MATH_PI) + 90;
+                let xRot = Math.atan2(horizDist, dy) * (180 / MATH_PI) - 90;
                 try {
                     // 追踪导弹与普通导弹交替发射
                     let isHomingTurn = (homingCount + missileCount) % 2 === 0;
@@ -1389,7 +1370,7 @@ let wickedMaskSkillMap = {
                                 if (!e || !e.isLiving() || !e.isAlive()) return;
                                 if (e == player) return;
                                 try {
-                                    if (!(e instanceof $LivingEntity)) return;
+                                    if (!(e instanceof LivingEntity)) return;
                                 } catch (err) { return; }
                                 // 判断实体是否在视线方向附近（投影到视线上的距离 + 垂直距离）
                                 let toEntity = e.position().subtract(eyePos);
@@ -1409,7 +1390,7 @@ let wickedMaskSkillMap = {
                         if (target) {
                             // 追踪导弹：基础点 (getX, getEyeY+1, getZ)，eyeX ±1，首次 +1，之后交替
                             let offsetX = (homingCount % 2 === 0) ? 1.5 : -1.5;
-                            let homing = new $Wither_Homing_Missile_Entity(player, dir, player.level, HOMING_MISSILE_DAMAGE, target);
+                            let homing = new WitherHomingMissile(player, dir, player.level, HOMING_MISSILE_DAMAGE, target);
                             homing.setPositionAndRotation(baseX, baseY, baseZ + offsetX, yRot, xRot);
                             player.level.addFreshEntity(homing);
                             player.level.playSound(null, baseX + offsetX, baseY, baseZ, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
@@ -1419,7 +1400,7 @@ let wickedMaskSkillMap = {
                     } else {
                         // 导弹：基础点 (getX, getEyeY+1, getZ+1)，eyeX ±1，首次 -1，之后交替
                         let offsetX = (missileCount % 2 === 0) ? -1 : 1;
-                        let missile = new $Wither_Missile_Entity(player, dir, player.level, MISSILE_DAMAGE);
+                        let missile = new WitherMissile(player, dir, player.level, MISSILE_DAMAGE);
                         missile.setPositionAndRotation(baseX + 1, baseY, baseZ + offsetX, yRot, xRot);
                         player.level.addFreshEntity(missile);
                         player.level.playSound(null, baseX + offsetX, baseY + 1, baseZ + 1, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
@@ -1491,7 +1472,7 @@ let wickedMaskSkillMap = {
                 if (entity.owner && entity.owner == player) return;
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
-                    if (!(entity instanceof $Monster)) return;
+                    if (!(entity instanceof Monster)) return;
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
@@ -1530,7 +1511,7 @@ let wickedMaskSkillMap = {
                 if (entity.owner && entity.owner == player) return;
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
-                    if (!(entity instanceof $Monster)) return;
+                    if (!(entity instanceof Monster)) return;
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
@@ -1581,7 +1562,7 @@ let wickedMaskSkillMap = {
                 if (entity.owner && entity.owner == player) return;
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
-                    if (!(entity instanceof $Monster)) return;
+                    if (!(entity instanceof Monster)) return;
                 } catch (err) { return; }
 
                 // 同时施加 凝视压制 与 末地沉重 两种药水效果（解析 MobEffect 对象后添加）
@@ -1625,7 +1606,7 @@ let wickedMaskSkillMap = {
                 if (entity.owner && entity.owner == player) return;
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
-                    if (!(entity instanceof $Monster)) return;
+                    if (!(entity instanceof Monster)) return;
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
@@ -1671,7 +1652,7 @@ let wickedMaskSkillMap = {
             let pitch = Math.asin(dir.y());
 
             // 3. 构造死亡激光实体（完整构造函数，caster 为玩家），从玩家眼睛高度向视角方向发射
-            let beam = new $DeathLaserBeam(laserType, player.level, player,
+            let beam = new DeathLaserBeam(laserType, player.level, player,
                 player.getX(), player.getEyeY(), player.getZ(),
                 yaw, pitch, DURATION, DAMAGE, HP_DAMAGE);
 
@@ -1868,11 +1849,11 @@ function resolveKuchiyoseThrowable(level, itemId) {
         try {
             let probe = level.createEntity(itemId);
             if (probe != null) {
-                if (probe instanceof $ThrowableItemProjectile) {
+                if (probe instanceof ThrowableItemProjectile) {
                     plan = { kind: 'item_projectile', entity: itemId };
-                } else if (probe instanceof $AbstractArrow) {
+                } else if (probe instanceof AbstractArrow) {
                     plan = { kind: 'arrow', entity: itemId };
-                } else if (probe instanceof $Projectile) {
+                } else if (probe instanceof Projectile) {
                     plan = { kind: 'projectile', entity: itemId };
                 }
                 probe.discard();

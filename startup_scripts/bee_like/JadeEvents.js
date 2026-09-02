@@ -7,7 +7,7 @@
 // 注册 Jade (Waila) 的通用数据提供者
 JadeEvents.onCommonRegistration(event=>{
     // 为所有实体注册一个数据提供者，ID 为 'rainbow:bee_like'
-    event.entityDataProvider('rainbow:bee_like', $Entitys).setCallback((tag,accessor)=>{
+    event.entityDataProvider('rainbow:bee_like', Entitys).setCallback((tag,accessor)=>{
         let entity = accessor.getEntity();
         if (!entity) return;
         

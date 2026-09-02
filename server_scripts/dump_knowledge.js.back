@@ -3,7 +3,7 @@
 // 功能：导出当前环境的所有物品、药水、实体、流体、生成结构等数据 (CSV格式)
 // ==========================================
 
-let $Registries = Java.loadClass("net.minecraft.core.registries.Registries");
+// Registries 统一由 server_scripts/CONST.js 提供。
 
 // 定义辅助函数，将 Java 集合转换为 JS 数组
 function toJsArray(collection) {
@@ -57,11 +57,11 @@ function collectTags(server, type) {
 
         if (tagList.length === 0) {
             let registryKeyMap = {
-                'item': $Registries.ITEM,
-                'block': $Registries.BLOCK,
-                'entity_type': $Registries.ENTITY_TYPE,
-                'fluid': $Registries.FLUID,
-                'biome': $Registries.BIOME
+                'item': Registries.ITEM,
+                'block': Registries.BLOCK,
+                'entity_type': Registries.ENTITY_TYPE,
+                'fluid': Registries.FLUID,
+                'biome': Registries.BIOME
             };
             let key = registryKeyMap[type];
             if (key) {
@@ -129,15 +129,15 @@ ServerEvents.commandRegistry(event => {
                         mod_count: Platform.mods.size(),
                         items: [],
                         foods: [], // 专门存放食物属性
-                        effects: getRegistryIds(server, $Registries.MOB_EFFECT),
-                        entities: getRegistryIds(server, $Registries.ENTITY_TYPE),
-                        fluids: getRegistryIds(server, $Registries.FLUID),
-                        blocks: getRegistryIds(server, $Registries.BLOCK),
-                        biomes: getRegistryIds(server, $Registries.BIOME),
-                        enchantments: getRegistryIds(server, $Registries.ENCHANTMENT),
-                        structures: getRegistryIds(server, $Registries.STRUCTURE), // 生成结构
-                        structure_sets: getRegistryIds(server, $Registries.STRUCTURE_SET), // 结构集
-                        template_pools: getRegistryIds(server, $Registries.TEMPLATE_POOL), // 模板池
+                        effects: getRegistryIds(server, Registries.MOB_EFFECT),
+                        entities: getRegistryIds(server, Registries.ENTITY_TYPE),
+                        fluids: getRegistryIds(server, Registries.FLUID),
+                        blocks: getRegistryIds(server, Registries.BLOCK),
+                        biomes: getRegistryIds(server, Registries.BIOME),
+                        enchantments: getRegistryIds(server, Registries.ENCHANTMENT),
+                        structures: getRegistryIds(server, Registries.STRUCTURE), // 生成结构
+                        structure_sets: getRegistryIds(server, Registries.STRUCTURE_SET), // 结构集
+                        template_pools: getRegistryIds(server, Registries.TEMPLATE_POOL), // 模板池
                         tags: {
                             item: collectTags(server, 'item'),
                             block: collectTags(server, 'block'),

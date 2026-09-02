@@ -7,8 +7,8 @@
 
 JadeEvents.onClientRegistration((event) => {
 
-    // 无参重载无法被 Rhino 解析，必须显式传 UID 与实体类（$Entitys 定义于 CONST.js）
-    event.entity('mini_boss_system:words', $Entitys).tooltip((tooltip, accessor, pluginConfig) => {
+    // 无参重载无法被 Rhino 解析，必须显式传 UID 与实体类（Entitys 定义于 CONST.js）
+    event.entity('mini_boss_system:words', Entitys).tooltip((tooltip, accessor, pluginConfig) => {
         let { serverData } = accessor;
         if (!serverData || !serverData.contains("MB_WORDS")) return;
 

@@ -64,17 +64,14 @@ function rollPowers() {
 // ==================== Boss 判定 ====================
 // 复用 Field-Guide 的实体类型标签 fieldguide:bosses 识别真正的 boss，
 // 命中标签的实体不会被 miniboss 转化、也不会被赋予词条。
-const FG_TagKey = Java.loadClass('net.minecraft.tags.TagKey');
-const FG_Registries = Java.loadClass('net.minecraft.core.registries.Registries');
-const FG_ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation');
-const FG_BuiltInRegistries = Java.loadClass('net.minecraft.core.registries.BuiltInRegistries');
-const FG_BOSS_TAG = FG_TagKey.create(FG_Registries.ENTITY_TYPE, new FG_ResourceLocation('fieldguide', 'bosses'));
+// TagKey / Registries / ResourceLocation / BuiltInRegistries 统一由 server_scripts/CONST.js 提供。
+const FG_BOSS_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation('fieldguide', 'bosses'));
 
 function isBossEntity(entity) {
     try {
-        let key = FG_BuiltInRegistries.ENTITY_TYPE.getResourceKey(entity.getType());
+        let key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(entity.getType());
         if (!key || !key.isPresent()) return false;
-        let holder = FG_BuiltInRegistries.ENTITY_TYPE.getHolder(key.get());
+        let holder = BuiltInRegistries.ENTITY_TYPE.getHolder(key.get());
         if (!holder || !holder.isPresent()) return false;
         return holder.get().is(FG_BOSS_TAG);
     } catch (er) {

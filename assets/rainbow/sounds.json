@@ -109,5 +109,11 @@
 	"sounds": [
 	  "rainbow:kuchiyosenojutsu"
 	]
+  },
+	"voice.animals": {
+	"subtitle": "sounds.rainbow.animals",
+	"sounds": [
+	  "rainbow:animals"
+	]
   }
 }

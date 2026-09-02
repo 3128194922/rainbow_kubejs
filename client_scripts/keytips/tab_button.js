@@ -13,7 +13,7 @@
 // （RA 的按钮每帧通过位置 supplier 自行更新坐标）；找不到实例时按 RA
 // 默认 TAB 布局退回计算（x = guiLeft + imageWidth - 28, y = guiTop - 28）。
 //
-// 类加载：$ImageButton / $ResourceLocation / $Minecraft 均已在
+// 类加载：$ImageButton / ResourceLocation / $Minecraft 均已在
 // client_scripts/CONST.js 声明（client_scripts 共享作用域，禁止重复声明）
 
 // RA 进度选项卡按钮类名（运行时扫描用）
@@ -27,7 +27,7 @@ var KT_FALLBACK_Y_OFFSET = 28
 // 选项卡贴图：复用 RA 的 tabs.png（u=56 为 RA 同款选项卡帧）
 // 帧偏移公式（AbstractWidget.renderTexture）：普通态=v，悬停态=v+vDiff
 // tabs.png 的 v=32 为悬停帧（与原版 TabButton 悬停帧一致）
-var KT_TAB_TEXTURE = new $ResourceLocation("reliable_advancements", "textures/gui/tabs.png")
+var KT_TAB_TEXTURE = new ResourceLocation("reliable_advancements", "textures/gui/tabs.png")
 var KT_TAB_U = 56
 var KT_TAB_V = 0
 var KT_TAB_HOVER_DIFF = 32
@@ -114,7 +114,7 @@ console.log("[帮助选项卡] 脚本已加载 v1")
 // =========================
 ClientEvents.tick(event => {
     try {
-        var mc = $Minecraft.getInstance()
+        var mc = Minecraft.getInstance()
         var screen = mc.screen
         if (!ktIsInvScreen(screen)) {
             // 离开背包界面：Screen 关闭时其组件一起销毁，只需重置跟踪状态
@@ -130,7 +130,7 @@ ClientEvents.tick(event => {
 
             // 原生 ImageButton（public 构造函数直接 new）：
             // x, y, w, h, u, v, 悬停v位移, 贴图, 贴图宽, 贴图高, onPress 回调
-            ktTabInstance = new $ImageButton(
+            ktTabInstance = new ImageButton(
                 pos.x, pos.y, KT_TAB_W, KT_TAB_H,
                 KT_TAB_U, KT_TAB_V, KT_TAB_HOVER_DIFF,
                 KT_TAB_TEXTURE, KT_TAB_TEX_W, KT_TAB_TEX_H,

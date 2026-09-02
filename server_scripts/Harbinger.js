@@ -1,12 +1,4 @@
-let $LivingTickEvent = Java.loadClass("net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent")
-let $LivingDamageEvent = Java.loadClass("net.minecraftforge.event.entity.living.LivingDamageEvent")
-let $WitherHomingMissile = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Homing_Missile_Entity')
-let $IAnimatedEntity = Java.loadClass('com.github.L_Ender.lionfishapi.server.animation.IAnimatedEntity')
-let $AnimationHandler = Java.loadClass('com.github.L_Ender.lionfishapi.server.animation.AnimationHandler')
-let $TheHarbinger = Java.loadClass('com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.The_Harbinger_Entity')
-let $ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
-let $ModEntities = Java.loadClass('com.github.L_Ender.cataclysm.init.ModEntities')
-let $WitherMissile = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Missile_Entity')
+// 先驱者相关 Java 类统一由 server_scripts/CONST.js 提供。
 
 function HarbingerDestructionMode(entity){
     if(entity.type=='cataclysm:the_harbinger'&&!entity.persistentData.harbingerDestructionMode){
@@ -75,13 +67,13 @@ let EmpAttackBlackList=[
 ]
 function HarbingerEMPAttack(entity){
     if(entity.type=='cataclysm:the_harbinger'&&entity.persistentData.harbingerDestructionMode
-        &&entity.getAnimation()==$IAnimatedEntity.NO_ANIMATION&&entity.age%60==0&&
+        &&entity.getAnimation()==IAnimatedEntity.NO_ANIMATION&&entity.age%60==0&&
         entity.getHealth()<entity.getMaxHealth()*0.5&&entity.persistentData.getInt('EMPCooldown')<=0&&entity.isAlive()){
-        $AnimationHandler.INSTANCE.sendAnimationMessage(entity,$TheHarbinger.STUN_ANIAMATION)
+        AnimationHandler.INSTANCE.sendAnimationMessage(entity,TheHarbinger.STUN_ANIAMATION)
         entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), "cataclysm:harbinger_deathlaser_prepare", "hostile", 1, 1)
-        if(entity.getAnimation()!==$TheHarbinger.STUN_ANIAMATION) return
+        if(entity.getAnimation()!==TheHarbinger.STUN_ANIAMATION) return
         entity.level.server.scheduleInTicks(65, () =>{
-            let EMPAttack = entity.damageSources().source($ResourceKey.create(Registries.DAMAGE_TYPE, "cataclysm:emp"), entity, entity)
+            let EMPAttack = entity.damageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, "cataclysm:emp"), entity, entity)
             entity.level.getEntitiesWithin(AABB.ofBlock(entity.block.pos).inflate(20.0)).forEach(target=>{
             if(target.isLiving() && target!=entity && !EmpAttackBlackList.includes(target.getType())){
             target.attack(EMPAttack,50+target.getMaxHealth()*0.2)
@@ -117,7 +109,7 @@ function HarbingerEMPAttack(entity){
         }
         })
             entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), "minecraft:item.totem.use", "hostile", 1, 1)
-            $AnimationHandler.INSTANCE.sendAnimationMessage(entity,$TheHarbinger.LAUNCH_ANIAMATION)
+            AnimationHandler.INSTANCE.sendAnimationMessage(entity,TheHarbinger.LAUNCH_ANIAMATION)
         })
         entity.persistentData.putInt('EMPCooldown',800)
     }
@@ -221,7 +213,7 @@ EntityEvents.hurt(event=>{
         }
     }
 })
-NativeEvents.onEvent($LivingDamageEvent,event=>{
+NativeEvents.onEvent(LivingDamageEvent,event=>{
     let Mobs = event.entity
     let Attacker = event.source.actual
     let DamageType = event.source.getType().toString()
@@ -233,8 +225,8 @@ NativeEvents.onEvent($LivingDamageEvent,event=>{
     ]
     if(Mobs.type=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
         if(Mobs.getHealth()<Mobs.getMaxHealth()*0.5&&DamageType=='cataclysm.emp'
-        &&Mobs.getAnimation()!==$TheHarbinger.DEATHLASER_ANIMATION){
-            $AnimationHandler.INSTANCE.sendAnimationMessage(Mobs,$TheHarbinger.LAUNCH_ANIAMATION)
+        &&Mobs.getAnimation()!==TheHarbinger.DEATHLASER_ANIMATION){
+            AnimationHandler.INSTANCE.sendAnimationMessage(Mobs,TheHarbinger.LAUNCH_ANIAMATION)
             Mobs.potionEffects.add('minecraft:resistance',666,2,false,false)
             event.setCanceled(true)
         }
@@ -261,7 +253,7 @@ NativeEvents.onEvent($LivingDamageEvent,event=>{
         MobBreakBlock(Mobs,2,3,true)
 }
 })
-NativeEvents.onEvent($LivingTickEvent,event=>{
+NativeEvents.onEvent(LivingTickEvent,event=>{
     let Mobs = event.entity;
     let target = Mobs.target
     if(Mobs == null) return
@@ -279,21 +271,21 @@ NativeEvents.onEvent($LivingTickEvent,event=>{
     }
 })
 
-NativeEvents.onEvent($LivingTickEvent,event=>{
+NativeEvents.onEvent(LivingTickEvent,event=>{
     let entity = event.entity;
     let target = entity.target;
     if(entity==null||target==null||!entity.isAlive())return
     if(entity.type=='cataclysm:the_harbinger'&&entity.persistentData.harbingerDestructionMode){
         if(entity.persistentData.getInt('FiveChargeCooldown')<=0&&entity.persistentData.getInt('ChargeNumber')<6&&
-        entity.getAnimation()==$IAnimatedEntity.NO_ANIMATION&&entity.getHealth()<=entity.getMaxHealth()*0.42){
+        entity.getAnimation()==IAnimatedEntity.NO_ANIMATION&&entity.getHealth()<=entity.getMaxHealth()*0.42){
             if(entity.persistentData.getInt('ChargeNumber')>=1){
                 entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), "cataclysm:harbinger_charge_prepare", "hostile", 3, 1)
             }
-            if(entity.getAnimation()!==$TheHarbinger.CHARGE_ANIMATION){
-                $AnimationHandler.INSTANCE.sendAnimationMessage(entity,$IAnimatedEntity.NO_ANIMATION)
+            if(entity.getAnimation()!==TheHarbinger.CHARGE_ANIMATION){
+                AnimationHandler.INSTANCE.sendAnimationMessage(entity,IAnimatedEntity.NO_ANIMATION)
             }
             entity.potionEffects.add('minecraft:glowing',80,0,false,false)
-            $AnimationHandler.INSTANCE.sendAnimationMessage(entity,$TheHarbinger.CHARGE_ANIMATION)
+            AnimationHandler.INSTANCE.sendAnimationMessage(entity,TheHarbinger.CHARGE_ANIMATION)
             entity.persistentData.putInt('ChargeNumber',entity.persistentData.getInt('ChargeNumber')+1)
         }
         if(entity.persistentData.getInt('ChargeNumber')>=6){
@@ -303,7 +295,7 @@ NativeEvents.onEvent($LivingTickEvent,event=>{
     }
 })
 
-NativeEvents.onEvent($LivingTickEvent,event=>{
+NativeEvents.onEvent(LivingTickEvent,event=>{
     let Mobs = event.entity
     let target = Mobs.target
     let directionVec3 = Vec3d.directionFromRotation(Mobs.getRotationVector())
@@ -330,7 +322,7 @@ NativeEvents.onEvent($LivingTickEvent,event=>{
         let dh = dx*dx+dz*dz
         if(Mobs.age%80==0){
         if(target.isAlive()){
-        let missile = new $WitherHomingMissile(Mobs, directionVec3, Mobs.level,30,target)
+        let missile = new WitherHomingMissile(Mobs, directionVec3, Mobs.level,30,target)
         Mobs.level.playSound(null, Mobs.getX(), Mobs.getY(), Mobs.getZ(), "cataclysm:rocket_launch", "hostile", 2, 1)
         missile.spawn()
         }
@@ -343,9 +335,9 @@ NativeEvents.onEvent($LivingTickEvent,event=>{
             }
         }
     }
-    if(Mobs.nbt.getBoolean('Is_Act')==false||Mobs.getAnimation()==$TheHarbinger.STUN_ANIAMATION) return
+    if(Mobs.nbt.getBoolean('Is_Act')==false||Mobs.getAnimation()==TheHarbinger.STUN_ANIAMATION) return
     if(Mobs.type=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
-        if(Mobs.getAnimation()!==$TheHarbinger.CHARGE_ANIMATION){
+        if(Mobs.getAnimation()!==TheHarbinger.CHARGE_ANIMATION){
         if(Mobs.getHealth()>Mobs.getMaxHealth()*0.5){
         let NormaltargetY = target.y + target.getEyeHeight()+5;
         let dy = NormaltargetY - Mobs.y;
@@ -370,7 +362,7 @@ NativeEvents.onEvent($LivingTickEvent,event=>{
                 Mobs.level.server.scheduleInTicks(40, () => {Mobs.persistentData.HowitzerSkillCooldown=false})
             }
         }
-        if(Mobs.isMoving()||Mobs.getAnimation()==$TheHarbinger.CHARGE_ANIMATION){
+        if(Mobs.isMoving()||Mobs.getAnimation()==TheHarbinger.CHARGE_ANIMATION){
             MobBreakBlock(Mobs,2,5,false)
         }
         }

@@ -10,13 +10,10 @@
  * @param {string[]} soure_magic 魔法伤害
  * @param {string[]} boom_damage 爆炸伤害
  */
-function handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isLiving()) return;
-    const mainHand = attacker.getItemInHand("main_hand");
-    const offHand = attacker.getItemInHand("off_hand");
-
     // 牢大饮料/曼巴效果：速度加成伤害倍率
-    if (hasCurios(attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
+    if (hasContextCurio(context, "attacker", attacker, "rainbow:ice_tea") || attacker.hasEffect("rainbow:manba")) {
         event.setAmount(event.getAmount() * attacker.getSpeed().toFixed(2) * 10);
         // 音效降低音量并通过原生冷却系统限制短时间触发次数
         if (!attacker.cooldowns.isOnCooldown("rainbow:ice_tea")) {
@@ -44,7 +41,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
     }*/
 
     // 链式闪电饰品：攻击时触发链式闪电，下雨天增强
-    if (hasCurios(attacker, "rainbow:bottled_lightning")) {
+    if (hasContextCurio(context, "attacker", attacker, "rainbow:bottled_lightning")) {
         if(!attacker.cooldowns.isOnCooldown("rainbow:bottled_lightning")) {
         let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');
         lightning.setCreatorEntityID(attacker.getId());

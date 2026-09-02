@@ -10,13 +10,13 @@
  * @param {string[]} soure_magic 魔法伤害
  * @param {string[]} boom_damage 爆炸伤害
  */
-function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!victim.isPlayer()) return;
 
     // --- 古代庇护饰品 ---
     // 转移伤害给绑定的玩家
-    if (hasCurios(victim, "rainbow:ancientaegis")) {
-        let item = getCuriosItem(victim, "rainbow:ancientaegis");
+    if (hasContextCurio(context, "victim", victim, "rainbow:ancientaegis")) {
+        let item = getContextCurioStack(context, "victim", "rainbow:ancientaegis");
         if (item && item.nbt) {
             let uuidStr = item.nbt.getString("UUID");
             if (uuidStr) {
@@ -24,7 +24,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
                     let uuid = UUID.fromString(uuidStr);
                     let targetPlayer = victim.level.getPlayerByUUID(uuid);
                     if (targetPlayer) {
-                        if(hasCurios(targetPlayer, "rainbow:ancientaegis"))
+                        if(getCuriosItem(targetPlayer, "rainbow:ancientaegis") != null)
                         {
                             return; // 目标玩家也有古代庇护，不转移伤害
                         }
@@ -41,7 +41,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
 
     // --- 巫毒女巫锅 ---
     // 佩戴时，攻击者每有一个负面药水效果，对玩家的伤害减少4%，最高100%
-    if (hasCurios(victim, "mysticartifacts:witch_pot")) {
+    if (hasContextCurio(context, "victim", victim, "mysticartifacts:witch_pot")) {
         try {
             if (attacker != null && attacker.isAlive()) {
                 let effects = attacker.getActiveEffects();
@@ -62,24 +62,16 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
     }
 
     // --- 兽性面具 ---
-    // 受伤时概率获得伤害吸收（5秒，4点吸收心），幸运值8时最大25%
-    if (hasCurios(victim, "rainbow:beast_mask")) {
-        try {
-            let luck = victim.getAttribute("minecraft:generic.luck").getValue();
-            if (luck > 0) {
-                let chance = Math.min(luck / 8, 1.0) * 0.25;
-                if (Math.random() < chance) {
-                    victim.potionEffects.add("minecraft:absorption", 100, 0, false, false);
-                }
-            }
-        } catch (e) {
-            console.log("[兽性面具] 受伤吸收出错: " + e);
-        }
-    }
+    // 每次受伤增加1层 rainbow:beast_dodge，最高10层；击杀回血和极限闪避回血保留。
+    handleBeastMaskHurt(event, victim, context);
+
+    // --- 狂怒面具 ---
+    // 玩家累计受到10点伤害后进入狂怒状态，触发后进入5秒冷却。
+    handleFuryMaskHurt(event, victim, context);
 
     // --- 圣饼 ---
     // 10%伤害减免 + 60tick无敌帧
-    if (hasCurios(victim, "rainbow:the_wafer")) {
+    if (hasContextCurio(context, "victim", victim, "rainbow:the_wafer")) {
             try{
                 event.setAmount(event.getAmount() * 0.9);
                 victim.invulnerableTime = 30;
@@ -92,7 +84,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
 
     // --- 混沌核心 ---
     // 携带时: 1)伤害乘以倍率(受幸运影响) 2)概率反弹伤害给攻击者(受幸运影响)
-    if (hasCurios(victim, "rainbow:chaos_core")) {
+    if (hasContextCurio(context, "victim", victim, "rainbow:chaos_core")) {
         try {
             let luckAttr = victim.getAttribute("minecraft:generic.luck");
             let luckValue = luckAttr ? luckAttr.getValue() : 0;
@@ -114,15 +106,16 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
 
     // --- 七阳之戒 ---
     // 1)小于10的伤害有概率完全抵消 2)火焰/岩浆伤害转换为治疗(均受幸运影响)
-    if (hasCurios(victim, "rainbow:dark_sun_ring")) {
+    if (hasContextCurio(context, "victim", victim, "rainbow:dark_sun_ring")) {
         try {
             let luckAttr = victim.getAttribute("minecraft:generic.luck");
             let luckValue = luckAttr ? luckAttr.getValue() : 0;
             if (luckValue < 0) luckValue = 0; // 幸运需要 >= 0
 
             // 火焰/岩浆伤害转换为治疗: 触发概率 = 幸运/25
-            let sourceType = source.getType();
-            let isFireLava = sourceType === "inFire" || sourceType === "onFire" || sourceType === "lava" || sourceType === "hotFloor";
+            let isFireLava = context != null
+                ? context.isFireDamage
+                : source.getType() === "inFire" || source.getType() === "onFire" || source.getType() === "lava" || source.getType() === "hotFloor";
             if (isFireLava) {
                 let healChance = Math.min(1.0, luckValue / 25.0);
                 if (Math.random() < healChance) {
@@ -147,12 +140,12 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
 
     // --- 肩甲 ---
     // 受伤时抵消一次不小于 6 的伤害（完全免伤），抵消后物品进入冷却，冷却期间无法抵消
-    if(hasCurios(victim, "rainbow:pauldron"))
+    if(hasContextCurio(context, "victim", victim, "rainbow:pauldron"))
     {
         try{
             if (event.getAmount() >= 12 && !victim.cooldowns.isOnCooldown("rainbow:pauldron")) {
                 event.setAmount(0);
-                ParticleTextAPI.sendInFront(victim, "肩甲抵消！", 0xFFFFFF);
+                global.sendParticleTextInFront(victim, "肩甲抵消！", 0xFFFFFF);
                 victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "minecraft:block.anvil.place", "players", 1.0, 1.0);
                 victim.cooldowns.addCooldown("rainbow:pauldron", SecoundToTick(20));
             }

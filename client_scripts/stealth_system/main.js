@@ -77,7 +77,7 @@ ClientEvents.tick(event => {
             stealthAlpha = Math.max(stealthTargetAlpha, stealthAlpha - STEALTH_FADE_SPEED);
         }
 
-        let mc = $Minecraft.getInstance();
+        let mc = Minecraft.getInstance();
         let window = mc.getWindow();
         let width = window.getGuiScaledWidth();
         let height = window.getGuiScaledHeight();

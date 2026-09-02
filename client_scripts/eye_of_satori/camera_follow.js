@@ -5,28 +5,28 @@ let isCameraFollowing = false
 let currentTargetUUID = null
 
 function setCameraEntity(entity) {
-    let mc = $Minecraft.getInstance()
+    let mc = Minecraft.getInstance()
     let player = mc.player
     if (!entity || !player) return false
     if (entity.isAlive == null || !entity.isAlive()) return false
     if (entity.level !== player.level) return false
     mc.setCameraEntity(entity)
-    mc.options.setCameraType($CameraType.THIRD_PERSON_BACK)
+    mc.options.setCameraType(CameraType.THIRD_PERSON_BACK)
     return true
 }
 
 function resetCamera() {
-    let mc = $Minecraft.getInstance()
+    let mc = Minecraft.getInstance()
     let player = mc.player
     if (!player) return false
     mc.setCameraEntity(player)
-    mc.options.setCameraType($CameraType.THIRD_PERSON_BACK)
+    mc.options.setCameraType(CameraType.THIRD_PERSON_BACK)
     return true
 }
 
 ClientEvents.tick(event => {
     try {
-        let mc = $Minecraft.getInstance()
+        let mc = Minecraft.getInstance()
         let player = mc.player
         if (!player) return
 

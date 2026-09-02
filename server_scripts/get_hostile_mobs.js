@@ -7,8 +7,7 @@
 
 ServerEvents.commandRegistry(event => {
     const { commands: Commands } = event;
-    const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
-    const MobCategory = Java.loadClass("net.minecraft.world.entity.MobCategory");
+    // ForgeRegistries / MobCategory 统一由 server_scripts/CONST.js 提供。
 
     event.register(
         Commands.literal("gethostilemobs")

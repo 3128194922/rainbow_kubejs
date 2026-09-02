@@ -4,6 +4,7 @@
  * @param {Internal.AttackEntityEvent} event
  * @param {Internal.Player} entity
  * @param {Internal.Entity} target
+ * @param {Object} context 攻击事件上下文
  */
 
 // 流浪软糖包：Java 类与软糖列表缓存
@@ -12,7 +13,7 @@
 function getGummyList() {
     if (gummyListCache != null) return gummyListCache
     try {
-        let tagKey = $ItemTags.create(new $ResourceLocation('collectorsreap', 'gummies'))
+        let tagKey = ItemTags.create(new ResourceLocation('collectorsreap', 'gummies'))
         let tag = ForgeRegistries.ITEMS.tags().getTag(tagKey)
         if (tag == null) return null
         let list = []
@@ -30,21 +31,41 @@ function getGummyList() {
     }
 }*/
 
-function handleAttackCurios(event, entity, target) {
+function handleAttackCurios(event, entity, target, context) {
+    // 第三阶段：复用攻击事件内的饰品索引，避免每个饰品判断都重新扫描 Curios 槽位。
+    let curioIndex = null;
+    let curioCodes = null;
+    try {
+        curioIndex = context != null ? context.attackerCurioIndex : null;
+        if (curioIndex == null) {
+            curioIndex = buildCurioIndex(entity);
+            if (context != null) {
+                context.attackerCurioIndex = curioIndex;
+            }
+        }
+        curioCodes = global.FORGE_ATTACK_CURIO_CODES;
+    } catch (err) {
+        console.log("[攻击饰品分发] 初始化索引失败: " + err);
+    }
+
+    let hasAttackCurio = function(itemId, code) {
+        return curioIndex != null && curioCodes != null && curioCodes[itemId] === code && curioIndex[itemId] != null;
+    };
+
     // 末影手套：攻击时为目标附着末影火 3秒
-    if (hasCurios(entity, 'rainbow:ender_glove')) {
+    if (hasAttackCurio('rainbow:ender_glove', 1)) {
         if (global.SFire) {
             global.SFire.setOnFire(target, 3, "endergetic:ender");
         }
     }
     // 生灵手套：攻击时为目标附着生灵火 3秒
-    if (hasCurios(entity, 'rainbow:living_gauntlet')) {
+    if (hasAttackCurio('rainbow:living_gauntlet', 2)) {
         if (global.SFire) {
             global.SFire.setOnFire(target, 3, "dungeonsdelight:living");
         }
     }
     // 天秤座：攻击时交换双方药水效果
-    if (hasCurios(entity, 'rainbow:libra')) {
+    if (hasAttackCurio('rainbow:libra', 3)) {
         try {
             let playerEffects = entity.potionEffects.getActive();
             let targetEffects = target.potionEffects.getActive();
@@ -59,7 +80,7 @@ function handleAttackCurios(event, entity, target) {
         }
     }
     //点金手套：概率点金对方，概率受玩家幸运值影响。点金效果：附着金块材质+冻结3秒后解冻移除
-    if(hasCurios(entity, 'rainbow:gold_glove'))
+    if(hasAttackCurio('rainbow:gold_glove', 4))
     {
         try {
             if(target.isPlayer()) return; // 目标为玩家时不触发点金效果
@@ -94,7 +115,7 @@ function handleAttackCurios(event, entity, target) {
     }
 
     // 流浪软糖包：攻击概率触发随机软糖食用效果，2s冷却，幸运8时最大25%
-    if (hasCurios(entity, 'rainbow:wandering_gummy_pack')) {
+    if (hasAttackCurio('rainbow:wandering_gummy_pack', 5)) {
         try {
             // 冷却检查（原版 cooldown 机制，2s）
             if (entity.cooldowns.isOnCooldown('rainbow:wandering_gummy_pack')) return
@@ -111,7 +132,7 @@ function handleAttackCurios(event, entity, target) {
                 if (gummyList == null) return
 
                 let gummyItem = gummyList[Math.floor(Math.random() * gummyList.length)]
-                let gummyStack = new $ItemStack(gummyItem, 1)
+                let gummyStack = new ItemStack(gummyItem, 1)
                 let foodProps = gummyStack.getFoodProperties(entity)
 
                 if (foodProps != null) {

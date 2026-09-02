@@ -96,7 +96,7 @@ function getRiddenInput(player) {
     const isJumping = isClient && Minecraft.getInstance().player.input.jumping
     const speed = forward <= 0.0 ? forward * 0.25 : forward
 
-    const angle = (player.yRotO * Math.PI) / 180
+    const angle = (player.yRotO * MATH_PI) / 180
     const sin = Math.sin(angle)
     const cos = Math.cos(angle)
     const x = strafe * cos - speed * sin

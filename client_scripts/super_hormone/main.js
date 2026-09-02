@@ -78,7 +78,7 @@ ClientEvents.tick(event => {
         // 更新全局标志位（alpha > 0.01 视为激活，供 stealth_system 判断优先级）
         global.superHormoneActive = superHormoneAlpha > 0.01;
 
-        let mc = $Minecraft.getInstance();
+        let mc = Minecraft.getInstance();
         let window = mc.getWindow();
         let width = window.getGuiScaledWidth();
         let height = window.getGuiScaledHeight();

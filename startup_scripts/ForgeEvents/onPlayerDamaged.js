@@ -10,15 +10,14 @@
  * @param {string[]} soure_magic 魔法伤害
  * @param {string[]} boom_damage 爆炸伤害
  */
-function onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!victim.isPlayer()) return;
 
     // --- 动能核心（受伤时触发范围动能爆破 AOE） ---
-    if(hasCurios(victim, "species:kinetic_core"))
+    if(hasContextCurio(context, "victim", victim, "species:kinetic_core"))
     {
         // 动能核心：受到伤害时释放范围动能爆破，对周围非友军造成伤害（参考圣经脉冲 + taunt_effect 友军判断）
-        if (victim.isPlayer()) {
-            try {
+        try {
                 var damage = event.getAmount();
 
                 // 粒子效果
@@ -66,9 +65,8 @@ function onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_d
                     ));
                     entity.hurtMarked = true;
                 });
-            } catch (e) {
-                console.log("动能核心AOE出错：" + e);
-            }
+        } catch (e) {
+            console.log("动能核心AOE出错：" + e);
         }
     }
 }

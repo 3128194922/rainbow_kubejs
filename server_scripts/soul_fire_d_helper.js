@@ -11,15 +11,13 @@
 //   endergetic:ender       - 末影火, 伤害 3.0
 //   dungeonsdelight:living - 活火, 伤害 2.0
 
-const $FireManager = Java.loadClass("it.crystalnest.soul_fire_d.api.FireManager")
-const $ResourceLocation = Java.loadClass("net.minecraft.resources.ResourceLocation")
-const $Fire = Java.loadClass("it.crystalnest.soul_fire_d.api.Fire")
+// FireManager / Fire / FireTyped / BiConsumer 统一由 server_scripts/CONST.js 提供。
 
 global.SFire = {
   // ==================== 火焰类型常量 ====================
 
-  DEFAULT_FIRE_TYPE: $FireManager.DEFAULT_FIRE_TYPE,
-  SOUL_FIRE_TYPE: $FireManager.SOUL_FIRE_TYPE,
+  DEFAULT_FIRE_TYPE: FireManager.DEFAULT_FIRE_TYPE,
+  SOUL_FIRE_TYPE: FireManager.SOUL_FIRE_TYPE,
 
   // ==================== 设置实体着火 ====================
 
@@ -32,7 +30,7 @@ global.SFire = {
   setOnFire: function(entity, seconds, fireType) {
     var loc = this._resolve(fireType)
     if (loc != null) {
-      $FireManager.setOnFire(entity, seconds, loc)
+      FireManager.setOnFire(entity, seconds, loc)
     }
   },
 
@@ -42,7 +40,7 @@ global.SFire = {
    * @param {number} seconds - 燃烧秒数
    */
   setOnSoulFire: function(entity, seconds) {
-    $FireManager.setOnFire(entity, seconds, $FireManager.SOUL_FIRE_TYPE)
+    FireManager.setOnFire(entity, seconds, FireManager.SOUL_FIRE_TYPE)
   },
 
   /**
@@ -55,8 +53,7 @@ global.SFire = {
   setOnFireCustom: function(entity, seconds, fireType, setter) {
     var loc = this._resolve(fireType)
     if (loc != null) {
-      var BiConsumer = Java.loadClass("java.util.function.BiConsumer")
-      $FireManager.setOnFire(entity, seconds, loc, new BiConsumer({
+      FireManager.setOnFire(entity, seconds, loc, new BiConsumer({
         accept: function(e, s) {
           // e 是 Entity, s 是 Integer
           // 在 Rhino 中需要特殊处理
@@ -76,7 +73,7 @@ global.SFire = {
    */
   damageInFire: function(entity, fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.damageInFire(entity, loc) : false
+    return loc != null ? FireManager.damageInFire(entity, loc) : false
   },
 
   /**
@@ -87,7 +84,7 @@ global.SFire = {
    */
   damageOnFire: function(entity, fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.damageOnFire(entity, loc) : false
+    return loc != null ? FireManager.damageOnFire(entity, loc) : false
   },
 
   // ==================== 获取伤害源 ====================
@@ -100,7 +97,7 @@ global.SFire = {
    */
   getInFireDamageSource: function(entity, fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getInFireDamageSourceFor(entity, loc) : null
+    return loc != null ? FireManager.getInFireDamageSourceFor(entity, loc) : null
   },
 
   /**
@@ -111,7 +108,7 @@ global.SFire = {
    */
   getOnFireDamageSource: function(entity, fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getOnFireDamageSourceFor(entity, loc) : null
+    return loc != null ? FireManager.getOnFireDamageSourceFor(entity, loc) : null
   },
 
   // ==================== 实体火类型查询 ====================
@@ -122,8 +119,7 @@ global.SFire = {
    * @returns {ResourceLocation} 火焰类型ID
    */
   getEntityFireType: function(entity) {
-    var FireTyped = Java.loadClass("it.crystalnest.soul_fire_d.api.type.FireTyped")
-    return entity instanceof FireTyped ? entity.getFireType() : $FireManager.DEFAULT_FIRE_TYPE
+    return entity instanceof FireTyped ? entity.getFireType() : FireManager.DEFAULT_FIRE_TYPE
   },
 
   /**
@@ -146,7 +142,7 @@ global.SFire = {
    */
   isOnCustomFire: function(entity) {
     var ft = this.getEntityFireType(entity)
-    return ft != null && ft.toString() !== $FireManager.DEFAULT_FIRE_TYPE.toString()
+    return ft != null && ft.toString() !== FireManager.DEFAULT_FIRE_TYPE.toString()
   },
 
   // ==================== 火焰属性查询 ====================
@@ -158,7 +154,7 @@ global.SFire = {
    */
   getFire: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getFire(loc) : null
+    return loc != null ? FireManager.getFire(loc) : null
   },
 
   /**
@@ -168,7 +164,7 @@ global.SFire = {
    */
   getFireDamage: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getProperty(loc, function(f) { return f.getDamage() }) : 0
+    return loc != null ? FireManager.getProperty(loc, function(f) { return f.getDamage() }) : 0
   },
 
   /**
@@ -178,7 +174,7 @@ global.SFire = {
    */
   getFireLight: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getProperty(loc, function(f) { return f.getLight() }) : 0
+    return loc != null ? FireManager.getProperty(loc, function(f) { return f.getLight() }) : 0
   },
 
   /**
@@ -188,7 +184,7 @@ global.SFire = {
    */
   canRainDouse: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getProperty(loc, function(f) { return f.canRainDouse() }) : false
+    return loc != null ? FireManager.getProperty(loc, function(f) { return f.canRainDouse() }) : false
   },
 
   /**
@@ -198,7 +194,7 @@ global.SFire = {
    */
   invertHealAndHarm: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null ? $FireManager.getProperty(loc, function(f) { return f.invertHealAndHarm() }) : false
+    return loc != null ? FireManager.getProperty(loc, function(f) { return f.invertHealAndHarm() }) : false
   },
 
   // ==================== 火焰组件查询 ====================
@@ -213,7 +209,7 @@ global.SFire = {
     var loc = this._resolve(fireType)
     if (loc == null) return null
     var comp = this._component(component)
-    return comp != null ? $FireManager.getComponentId(loc, comp) : null
+    return comp != null ? FireManager.getComponentId(loc, comp) : null
   },
 
   // ==================== 火焰注册查询 ====================
@@ -225,7 +221,7 @@ global.SFire = {
    */
   isRegistered: function(fireType) {
     var loc = this._resolve(fireType)
-    return loc != null && $FireManager.isRegisteredType(loc)
+    return loc != null && FireManager.isRegisteredType(loc)
   },
 
   /**
@@ -233,7 +229,7 @@ global.SFire = {
    * @returns {string[]}
    */
   listFires: function() {
-    return $FireManager.getFireTypes().stream()
+    return FireManager.getFireTypes().stream()
       .map(function(rl) { return rl.toString() })
       .toList()
   },
@@ -243,7 +239,7 @@ global.SFire = {
    * @returns {Array<{type: string, damage: number, light: number, canRainDouse: boolean, invertHealAndHarm: boolean}>}
    */
   listFireDetails: function() {
-    return $FireManager.getFires().stream()
+    return FireManager.getFires().stream()
       .map(function(f) {
         return {
           type: f.getFireType().toString(),
@@ -265,12 +261,12 @@ global.SFire = {
    */
   _resolve: function(fireType) {
     if (fireType == null) return null
-    if (fireType instanceof $ResourceLocation) return fireType
+    if (fireType instanceof ResourceLocation) return fireType
     if (typeof fireType === "string") {
       var parts = fireType.split(":")
-      if (parts.length === 2) return new $ResourceLocation(parts[0], parts[1])
+      if (parts.length === 2) return new ResourceLocation(parts[0], parts[1])
       if (parts.length === 1) {
-        return new $ResourceLocation(fireType)
+        return new ResourceLocation(fireType)
       }
     }
     return null
@@ -283,17 +279,17 @@ global.SFire = {
    */
   _component: function(name) {
     switch (name) {
-      case "SOURCE_BLOCK": return $Fire.Component.SOURCE_BLOCK
-      case "CAMPFIRE_BLOCK": return $Fire.Component.CAMPFIRE_BLOCK
-      case "CAMPFIRE_ITEM": return $Fire.Component.CAMPFIRE_ITEM
-      case "LANTERN_BLOCK": return $Fire.Component.LANTERN_BLOCK
-      case "LANTERN_ITEM": return $Fire.Component.LANTERN_ITEM
-      case "TORCH_BLOCK": return $Fire.Component.TORCH_BLOCK
-      case "TORCH_ITEM": return $Fire.Component.TORCH_ITEM
-      case "WALL_TORCH_BLOCK": return $Fire.Component.WALL_TORCH_BLOCK
-      case "FLAME_PARTICLE": return $Fire.Component.FLAME_PARTICLE
-      case "FIRE_ASPECT_ENCHANTMENT": return $Fire.Component.FIRE_ASPECT_ENCHANTMENT
-      case "FLAME_ENCHANTMENT": return $Fire.Component.FLAME_ENCHANTMENT
+      case "SOURCE_BLOCK": return Fire.Component.SOURCE_BLOCK
+      case "CAMPFIRE_BLOCK": return Fire.Component.CAMPFIRE_BLOCK
+      case "CAMPFIRE_ITEM": return Fire.Component.CAMPFIRE_ITEM
+      case "LANTERN_BLOCK": return Fire.Component.LANTERN_BLOCK
+      case "LANTERN_ITEM": return Fire.Component.LANTERN_ITEM
+      case "TORCH_BLOCK": return Fire.Component.TORCH_BLOCK
+      case "TORCH_ITEM": return Fire.Component.TORCH_ITEM
+      case "WALL_TORCH_BLOCK": return Fire.Component.WALL_TORCH_BLOCK
+      case "FLAME_PARTICLE": return Fire.Component.FLAME_PARTICLE
+      case "FIRE_ASPECT_ENCHANTMENT": return Fire.Component.FIRE_ASPECT_ENCHANTMENT
+      case "FLAME_ENCHANTMENT": return Fire.Component.FLAME_ENCHANTMENT
       default: return null
     }
   }

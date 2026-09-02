@@ -1,7 +1,6 @@
 // priority: 0
 
-const Minecraft = Java.loadClass('net.minecraft.client.Minecraft')
-const GLFW = Java.loadClass('org.lwjgl.glfw.GLFW')
+// Minecraft / GLFW 统一由 client_scripts/CONST.js 提供。
 
 const targetCode = 'wwssaaddbaba'
 

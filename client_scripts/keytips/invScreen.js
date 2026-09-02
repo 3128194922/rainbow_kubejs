@@ -6,10 +6,10 @@
 // 在物品栏界面绘制指向特定槽位（饰品、属性、时装）的引导线和文本
 // Draws guide lines and text pointing to specific slots (Curios, Attributes, Fashion) in the inventory screen
 
-let $Color = Java.loadClass("java.awt.Color")
+// Color 统一由 client_scripts/CONST.js 提供。
 
 function RGBA(r, g, b, a) {
-  return new $Color(r / 255, g / 255, b / 255, a / 100).getRGB()
+  return new Color(r / 255, g / 255, b / 255, a / 100).getRGB()
 }
 
 // 屏幕判定：Rhino 的 instanceof 对原始 Java Screen 对象不可用

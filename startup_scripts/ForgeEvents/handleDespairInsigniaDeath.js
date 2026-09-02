@@ -1,20 +1,26 @@
 // priority: 5000
 /**
- * 绝望徽记：佩戴时受到大于1的伤害直接击杀玩家
- * 在 LivingHurtEvent 中调用，位于核心充能逻辑之后
+ * 极限证章：佩戴者造成的全部伤害降低50%。
+ * 在 LivingHurtEvent 中调用，兼容直接攻击和投射物攻击。
  */
-function handleDespairInsigniaDeath(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function handleDespairInsigniaDeath(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     try{
-    // 仅对玩家生效
-    if (!victim.isPlayer()) return;
-    // 未佩戴绝望徽记则跳过
-    if (!hasCurios(victim, 'rainbow:despair_insignia')) return;
-    // 伤害≤1时放过（避免虚空/指令等强制伤害误杀）
-    if (event.getAmount() <= 1) return;
-    // 设置巨量伤害让玩家自然死亡，避免 victim.kill() 递归触发 LivingHurtEvent
-    event.setAmount(1e10);
+    let damagePlayer = attacker;
+    if (damagePlayer == null || !damagePlayer.isPlayer()) {
+        let directEntity = source != null ? source.immediate : null;
+        if (directEntity != null && directEntity.owner != null && directEntity.owner.isPlayer()) {
+            damagePlayer = directEntity.owner;
+        }
+    }
+    if (damagePlayer == null || !damagePlayer.isPlayer()) return;
+    let hasInsignia = damagePlayer == attacker
+        ? hasContextCurio(context, "attacker", damagePlayer, 'rainbow:despair_insignia')
+        : getCuriosItem(damagePlayer, 'rainbow:despair_insignia') != null;
+    if (!hasInsignia) return;
+    if (!(event.getAmount() > 0)) return;
+    event.setAmount(event.getAmount() * 0.5);
     }catch(e){
-        console.log('handleDespairInsigniaDeath报错:')
+        console.log('handleDespairInsigniaDamage报错:')
         console.log(e)
     }
 }

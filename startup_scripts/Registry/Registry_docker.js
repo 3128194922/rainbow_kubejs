@@ -84,8 +84,7 @@ StartupEvents.registry("block", event => {
                 let z = pos.getZ() + 0.5;
                 let range = 5;
 
-                let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
-                let entities = level.getEntitiesOfClass($LivingEntity, AABB.ofBlock(pos).inflate(range));
+                let entities = level.getEntitiesOfClass(LivingEntity, AABB.ofBlock(pos).inflate(range));
 
                 // 找到第一个有效目标
                 let target = null;
@@ -180,8 +179,7 @@ StartupEvents.registry("block", event => {
                 let z = pos.getZ() + 0.5;
                 let range = 5;
 
-                let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
-                let entities = level.getEntitiesOfClass($LivingEntity, AABB.ofBlock(pos).inflate(range));
+                let entities = level.getEntitiesOfClass(LivingEntity, AABB.ofBlock(pos).inflate(range));
 
                 // 找到第一个有效目标
                 let target = null;
@@ -264,8 +262,7 @@ StartupEvents.registry("block", event => {
                 let z = pos.getZ() + 0.5;
                 let range = 10;
 
-                let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
-                let entities = level.getEntitiesOfClass($LivingEntity, AABB.ofBlock(pos).inflate(range));
+                let entities = level.getEntitiesOfClass(LivingEntity, AABB.ofBlock(pos).inflate(range));
 
                 // 对范围内的每个有效目标逐一发射
                 for (let target of entities) {
@@ -364,9 +361,8 @@ StartupEvents.registry("block", event => {
                     ty = (data.player_y + 1.62) - y;
                     tz = data.player_z - z;
                 } else {
-                    let $LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity");
                     let aabb = AABB.ofBlock(pos).inflate(range);
-                    let entities = level.getEntitiesOfClass($LivingEntity, aabb);
+                    let entities = level.getEntitiesOfClass(LivingEntity, aabb);
                     let target = null;
                     for (let e of entities) {
                         if (e.isPlayer()) continue;

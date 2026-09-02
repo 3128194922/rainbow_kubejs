@@ -102,7 +102,8 @@ function rgbToPower(r, g, b) {
           let offsetBlockPos = { x: block.x + beam.offset.x, y: block.y + beam.offset.y, z: block.z + beam.offset.z };
           let offsetBlock = level.getBlock(offsetBlockPos.x, offsetBlockPos.y, offsetBlockPos.z);
           if(!offsetBlock.hasTag("rainbow:corundum_cluster")) return;
-          let facing = offsetBlock.properties?.facing;
+          let facing = null;
+          if (offsetBlock.properties != null) facing = offsetBlock.properties.facing;
           //console.log(`偏移方块: (${offsetBlockPos.x}, ${offsetBlockPos.y}, ${offsetBlockPos.z}), facing=${facing}`);
 
           if (facing && directionMap[facing]) {

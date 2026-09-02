@@ -19,7 +19,7 @@ const SEAT_Y_OFFSET = 0.5
 // ==========================================
 // 常量：Java 类加载
 // ==========================================
-const $UUID = Java.loadClass('java.util.UUID')
+// UUID 统一由 server_scripts/CONST.js 提供。
 
 // ==========================================
 // 工具函数
@@ -166,7 +166,7 @@ PlayerEvents.tick(event => {
         // 玩家已下车，或正在乘坐的不是我们的座位
         if (!isChairSeat(vehicle)) {
             // 在玩家当前维度找回旧座位并移除，防止遗留
-            seat = player.level.getEntity($UUID.fromString(seatUuid))
+            seat = player.level.getEntity(UUID.fromString(seatUuid))
             removeSeat(seat)
             player.persistentData.remove('rainbowChairSeat')
             return

@@ -124,7 +124,8 @@ ItemEvents.rightClicked(event => {
     if (blockHit.getType() != HitResultType.MISS) {
         end = blockHit.getLocation()
     }
-    let aabb = AABB.of(eyePos.x(), eyePos.y(), eyePos.z(), end.x(), end.y(), end.z()).inflate(1)
+    // Java.loadClass 返回原生 AABB 类时，使用六参数构造器兼容 Forge 1.20.1 的 Rhino 重载解析。
+    let aabb = new AABB(eyePos.x(), eyePos.y(), eyePos.z(), end.x(), end.y(), end.z()).inflate(1)
     let closestDistance = reach
     level.getEntitiesWithin(aabb).forEach(entity => {
         if (entity != player) {
@@ -279,8 +280,8 @@ Object.keys(tameableMobs).forEach(id => {
                                 )
                                 e.setMotion(motion.x(), motion.y(), motion.z())
                             }
-                            let yaw = Math.atan2(dz, dx) * (180 / JavaMath.PI) - 90
-                            let pitch = -Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)) * (180 / JavaMath.PI)
+                            let yaw = Math.atan2(dz, dx) * (180 / MATH_PI) - 90
+                            let pitch = -Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)) * (180 / MATH_PI)
                             e.setYaw(yaw)
                             e.setPitch(pitch)
                         }

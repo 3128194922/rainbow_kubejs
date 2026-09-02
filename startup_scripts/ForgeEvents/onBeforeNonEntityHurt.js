@@ -10,7 +10,10 @@
  * @param {number} soure_magic 魔法伤害
  * @param {number} boom_damage 爆炸伤害
  */
-function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage){
+function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context){
+    let damageType = context != null ? context.damageType : String(source.getType());
+    let isHazardDamage = context != null ? context.isHazardDamage : damageType == "poison_cloud" || damageType == "wither";
+    let isStarveDamage = context != null ? context.isStarveDamage : damageType == "starve";
     // --- 虚化效果 ---
     if(victim.hasEffect("rainbow:void"))
         {
@@ -30,9 +33,17 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
                 event.setCanceled(true);
                 return;
             }
-        let tank = getCuriosItem(victim, 'create:copper_backtank') ? getCuriosItem(victim, 'create:copper_backtank') : getCuriosItem(victim, 'create:netherite_backtank');
-        let currentAir = tank.nbt.getInt("Air");
-        if (tank && currentAir > 0) {
+        let tank = context != null
+            ? getContextCurioStack(context, "victim", 'create:copper_backtank')
+            : getCuriosItem(victim, 'create:copper_backtank');
+        if (tank == null) {
+            tank = context != null
+                ? getContextCurioStack(context, "victim", 'create:netherite_backtank')
+                : getCuriosItem(victim, 'create:netherite_backtank');
+        }
+        // 只在找到背罐后读取 NBT，避免空饰品导致额外异常。
+        let currentAir = tank != null ? tank.nbt.getInt("Air") : 0;
+        if (tank != null && currentAir > 0) {
             let damage = event.getAmount();
             let airPerDamage = 5;
             let requiredAir = damage * airPerDamage;
@@ -62,18 +73,18 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
         && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
         && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
         && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
-        if (source.getType() == "poison_cloud" || source.getType() == "wither") {
+        if (isHazardDamage) {
             event.setCanceled(true)
         }
     }
 
     // --- 暴食护符（免饥饿伤害） ---
-    if (source.getType() == "starve" && hasCurios(victim, "rainbow:gluttony_charm")) {
+    if (isStarveDamage && hasContextCurio(context, "victim", victim, "rainbow:gluttony_charm")) {
         event.setCanceled(true);
     }
 
     // --- 血战沙场之证（攻击半血以下实体伤害翻倍） ---
-    if (attacker && hasCurios(attacker, "rainbow:berserk_emblem")) {
+    if (attacker && hasContextCurio(context, "attacker", attacker, "rainbow:berserk_emblem")) {
         if (victim instanceof LivingEntity && victim.getHealth() < victim.getMaxHealth() * 0.5) {
             event.setAmount(event.getAmount() * 2);
         }

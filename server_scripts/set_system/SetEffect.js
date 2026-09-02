@@ -7,12 +7,7 @@
 //       装备变更即时评估 + tick 兜底 + 内存存储
 // ==========================================
 
-// --- Java 类加载（本系统专用类；getCuriosInventorySafe 来自 Utils_Curios.js）---
-const $SetAttributeModifier = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier')
-const $SetOperation = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier$Operation')
-const $SetUUID = Java.loadClass('java.util.UUID')
-const $SetString = Java.loadClass('java.lang.String')
-const $SetMobEffectInstance = Java.loadClass('net.minecraft.world.effect.MobEffectInstance')
+// --- Java 类统一由 server_scripts/CONST.js 提供；getCuriosInventorySafe 来自 Utils_Curios.js ---
 
 // --- 全局状态（内存存储，重启后由登录/tick 自动重算）---
 // uuid -> [{setId, phaseIndex}]  当前激活的阶段列表
@@ -35,14 +30,14 @@ function setEffectKey(setId, phaseIndex, eIdx) {
     return 'set_' + setId + '_p' + phaseIndex + '_e' + eIdx
 }
 function setEffectUuid(key) {
-    return $SetUUID.nameUUIDFromBytes($SetString.valueOf(key).getBytes())
+    return UUID.nameUUIDFromBytes(JavaString.valueOf(key).getBytes())
 }
 
 // 操作字符串 -> Operation 枚举
 function parseOperation(op) {
-    if (op === 'MULTIPLY_BASE' || op === 1) return $SetOperation.MULTIPLY_BASE
-    if (op === 'MULTIPLY_TOTAL' || op === 2) return $SetOperation.MULTIPLY_TOTAL
-    return $SetOperation.ADDITION
+    if (op === 'MULTIPLY_BASE' || op === 1) return AttributeModifierOperation.MULTIPLY_BASE
+    if (op === 'MULTIPLY_TOTAL' || op === 2) return AttributeModifierOperation.MULTIPLY_TOTAL
+    return AttributeModifierOperation.ADDITION
 }
 
 // 标签 -> Ingredient（带缓存）
@@ -171,7 +166,7 @@ function applyAttribute(player, effect, key) {
     if (attr.getModifier(uuid)) return // 已存在
     let opEnum = parseOperation(effect.operation)
     try {
-        attr.addPermanentModifier(new $SetAttributeModifier(uuid, key, effect.amount, opEnum))
+        attr.addPermanentModifier(new AttributeModifier(uuid, key, effect.amount, opEnum))
     } catch (e) {
         console.error('[套装系统] 应用属性修饰符失败 ' + effect.attribute + ': ' + e)
     }
@@ -344,7 +339,7 @@ function reevaluateSetsForce(player) {
 function maintainActiveEffects(player) {
     let active = ActiveSetTracker[pid(player)]
     if (!active || active.length === 0) return
-    let gameTime = player.level.gameTime
+    let gameTime = player.level.getTime()
     for (let entry of active) {
         let set = SetRegistry[entry.setId]
         if (!set) continue

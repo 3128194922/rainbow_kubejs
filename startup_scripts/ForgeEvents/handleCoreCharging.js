@@ -20,20 +20,18 @@ function registerCoreCharging(itemId, handler) {
 // ==========================================
 
 // --- 充能配置表：itemId → 能量 NBT 字段名 ---
-// 受击造成伤害时累计能量到饰品 NBT 字段，满 MAX_ENERGY 后停止累计并播放提示音效
+// 造成伤害时累计能量到仍使用本表的饰品 NBT 字段，满 MAX_ENERGY 后停止累计并播放提示音效
 // 满能量后由 Skillwheel.js 主动触发技能，触发时清零能量
 const MAX_ENERGY = 100;
 let CoreChargingConfig = {
     // 'rainbow:reload_core' 已移除充能（新机制：盾反被动 + 主动技能冷却取消，无能量条件）
-    'rainbow:short_core': 'Energy',
-    'rainbow:fury_mask': 'Energy'
+    'rainbow:short_core': 'Energy'
 };
 
 Object.keys(CoreChargingConfig).forEach(itemId => {
-    registerCoreCharging(itemId, (event, player, amount, victim) => {
+    registerCoreCharging(itemId, (event, player, amount, victim, stack) => {
         if (player.cooldowns.isOnCooldown(itemId)) return;
 
-        let stack = getCuriosItem(player, itemId);
         if (!stack) return;
 
         let nbt = stack.getOrCreateTag();
@@ -57,7 +55,7 @@ Object.keys(CoreChargingConfig).forEach(itemId => {
  * @param {Internal.Entity} attacker 伤害来源的致因实体 (如玩家)
  * @param {Internal.Entity} victim 受害者实体
  */
-function handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isAlive()) return;
 
     let amount = event.getAmount();
@@ -65,7 +63,9 @@ function handleCoreCharging(event, attacker, victim, source, range_damage, throw
     // 解析实际造成伤害的玩家（直接伤害或投射物所有者）
     let directEntity = source.immediate;
     let chargingPlayer = null;
-    if (attacker.isPlayer()) {
+    if (context != null && context.attackerIsPlayer) {
+        chargingPlayer = attacker;
+    } else if (attacker.isPlayer()) {
         chargingPlayer = attacker;
     } else if (directEntity != null && directEntity.owner != null && directEntity.owner.isPlayer()) {
         chargingPlayer = directEntity.owner;
@@ -74,7 +74,10 @@ function handleCoreCharging(event, attacker, victim, source, range_damage, throw
 
     // 遍历已注册的充能处理函数
     Object.keys(CoreChargingRegistry).forEach(itemId => {
-        if (!hasCurios(chargingPlayer, itemId)) return;
-        CoreChargingRegistry[itemId](event, chargingPlayer, amount, victim);
+        let stack = context != null && chargingPlayer == context.attacker
+            ? getContextCurioStack(context, "attacker", itemId)
+            : getCuriosItem(chargingPlayer, itemId);
+        if (stack == null) return;
+        CoreChargingRegistry[itemId](event, chargingPlayer, amount, victim, stack);
     });
 }

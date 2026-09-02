@@ -389,14 +389,14 @@ function toUUID(str) {
     return UUID.fromString(str)
 }
 
-let $SlotAttribute = Java.loadClass('top.theillusivec4.curios.api.SlotAttribute')
+// SlotAttribute / KeyMapping / ForgeRegistries / ResourceLocation 统一由 startup_scripts/CONST.js 提供。
 
 /**
  * @param {string} str ID
- * @returns {$SlotAttribute}
+ * @returns {SlotAttribute}
  */
 function getSlotAttribute(str) {
-    return $SlotAttribute.getOrCreate(str)
+    return SlotAttribute.getOrCreate(str)
 }
 
 /**
@@ -452,7 +452,7 @@ function isEnemy(player, entity) {
  */
 global.getAllKeyMappings = () => {
   let keys = [];
-  $KeyMapping.ALL.values().toArray().forEach(k => {
+  KeyMapping.ALL.values().toArray().forEach(k => {
     try {
       keys.push({
         id: k.getName(), // 内部名称，如 key.attack
@@ -474,7 +474,7 @@ global.getAllKeyMappings = () => {
  */
 global.getKeyMappingById = (keyId) => {
     // 获得 {String → KeyMapping} 的 Map
-    const map = $KeyMapping.getAllKeyMappings();
+    const map = KeyMapping.getAllKeyMappings();
     if (!map) return null;
   
     // 遍历 entrySet()，找到 keyId 对应项
@@ -507,7 +507,7 @@ global.getKeyMappingById = (keyId) => {
  */
 global.getKeysByMod = (modid) => {
   let result = [];
-  $KeyMapping.ALL.values().toArray().forEach(k => {
+  KeyMapping.ALL.values().toArray().forEach(k => {
     if (k.getName().toLowerCase().includes(modid.toLowerCase())) {
       result.push({
         id: k.getName(),
@@ -611,8 +611,7 @@ function _cdInitInstFields(inst) {
 // 经 ForgeRegistries 查询原版 Item 的注册表 ID（'modid:name'），失败返回 null
 function _cdGetItemRegistryId(mcItem) {
     try {
-        if (!_cdForgeRegistries) _cdForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries');
-        let key = _cdForgeRegistries.ITEMS.getKey(mcItem);
+        let key = ForgeRegistries.ITEMS.getKey(mcItem);
         return key ? String(key) : null;
     } catch (e) {
         return null;
@@ -818,9 +817,7 @@ global.restoreCooldownByDuration = restoreCooldownByDuration;
 global.getItemById = function (id) {
     try {
         if (!id) return null;
-        if (!_cdForgeRegistries) _cdForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries');
-        if (!_cdResourceLocationCls) _cdResourceLocationCls = Java.loadClass('net.minecraft.resources.ResourceLocation');
-        return _cdForgeRegistries.ITEMS.getValue(new _cdResourceLocationCls(String(id)));
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(String(id)));
     } catch (e) {
         return null;
     }

@@ -85,7 +85,7 @@ BlockEvents.rightClicked("rainbow:luban_lock", event => {
                             targetBE.clearContent();
                         }
                         // 对非容器BE（如机械臂）加载空NBT清空自定义字段（heldItem等）
-                        let emptyTag = Java.loadClass('net.minecraft.nbt.CompoundTag')();
+                        let emptyTag = new CompoundTag();
                         targetBE.load(emptyTag);
                     } catch (e2) {}
                 }
@@ -217,7 +217,6 @@ BlockEvents.placed("rainbow:luban_lock", event => {
     }
 
     // 第二遍：重建CBC方块的邻居双向连接（setBlockAndUpdate可能已清除邻居的引用）
-    let Direction = Java.loadClass('net.minecraft.core.Direction');
     let cannonBlockCount = 0;
     for (let i = 0; i < captured.length; i++) {
         let entry = captured[i];

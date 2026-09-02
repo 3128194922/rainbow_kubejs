@@ -3,7 +3,7 @@
 // 💡 物品提示信息脚本
 // ==========================================@
 // 引入原版工具类用于格式化时长
-const $MobEffectUtil = Java.loadClass('net.minecraft.world.effect.MobEffectUtil')
+// MobEffectUtil 统一由 client_scripts/CONST.js 提供。
 
 ItemEvents.tooltip(event => {
     // 使用标签过滤器匹配目标物品
@@ -40,7 +40,7 @@ ItemEvents.tooltip(event => {
             // 3. 处理时长 (Duration)
             if (effectInstance.getDuration() > 20) {
                 try {
-                    let durationText = $MobEffectUtil.formatDuration(effectInstance, 1.0)
+                    let durationText = MobEffectUtil.formatDuration(effectInstance, 1.0)
                     effectComponent = Text.translate("potion.withDuration", effectComponent, durationText)
                 } catch (e) {
                     let totalSeconds = Math.floor(effectInstance.getDuration() / 20)
@@ -149,6 +149,7 @@ ItemEvents.tooltip((event) => {
             text.add(4, Text.aqua("暴击率 = 幸运值/25（幸运25=100%暴击）"));
             text.add(5, Text.aqua("暴击使减少的百分比×2"));
             text.add(6, Text.gold("骰子的嘲弄：即使摇出 0%，依旧会暴击"));
+            text.add(7, Text.darkGray("搏一搏，单车变宝马！"));
         }
     })
     event.addAdvanced('tide:fishing_journal', (item, advanced, text) => {
@@ -205,6 +206,7 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("▸ 食用/饮用速度 +50%"));
         text.add(2, Text.aqua("▸ 饱食度满仍可进食"));
         text.add(3, Text.aqua("▸ 受伤时以饱和度抵消伤害"));
+        text.add(4, Text.darkGray("我好吃个蜜汁火腿，烤鸡这一块~"));
       }
     })
     event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
@@ -233,8 +235,10 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
           text.remove(1)
-          text.add(1, Text.aqua("攻击伤害 +100"));
-          text.add(2, Text.red("受到任意大于1的伤害立即死亡"));
+          text.add(1, Text.aqua("幸运 -25，抢夺 +3，时运 +3"));
+          text.add(2, Text.aqua("经验获取 +400%，护甲与护甲韧性 -50%"));
+          text.add(3, Text.red("全属性伤害 -50%"));
+          text.add(4, Text.darkGray("高风险，高回报"));
           }
     })
     event.addAdvanced('rainbow:gluttony_charm', (item, advanced, text) => {
@@ -288,6 +292,7 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:reload_core', (item, advanced, text) => {
         text.add(1, Text.aqua(`盾反时霰弹炮冷却 -33%`));
         text.add(2, Text.aqua(`主动：10秒内霰弹炮冷却立即取消，最多3次`));
+        text.add(3, Text.darkGray("已经在换弹啦~"));
     })
     /*event.addAdvanced('rainbow:lyre', (item, advanced, text) => {
         text.add(1, Text.aqua(`取消号角CD`));
@@ -309,12 +314,38 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
     })
 
-    // 狂怒面具
+    // 狂怒面具：显示受伤充能与饰品NBT中保存的下一次音调进度
     event.addAdvanced('rainbow:fury_mask', (item, advanced, text) => {
-        let energy = item.nbt ? (item.nbt.getFloat("Energy") || 0) : 0;
-        let color = energy >= 100 ? "§a" : "§e";
-        text.add(1, Text.of(`当前能量: ${color}${energy.toFixed(1)} / 100.0`));
-        text.add(2, Text.aqua(`造成伤害充能，每满100点伤害获得冷却缩减 (等级2，5秒)`));
+        let energy = 0;
+        let pitch = 1.0;
+        try {
+            if (item.nbt != null) {
+                energy = item.nbt.getFloat("Energy") || 0;
+                pitch = item.nbt.getFloat("FuryPitch") || 1.0;
+            }
+        } catch (e) {
+            console.log("[狂怒面具提示] 读取怒气或音调出错: " + e);
+        }
+        energy = Math.max(0, Math.min(10, energy));
+        pitch = Math.max(1.0, Math.min(2.0, pitch));
+        let energyColor = energy >= 10 ? "§a" : "§e";
+        let pitchColor = pitch >= 2.0 ? "§a" : "§6";
+        text.add(1, Text.of(`当前怒气: ${energyColor}${energy.toFixed(1)} / 10.0`));
+        text.add(2, Text.of(`下次音调: ${pitchColor}${pitch.toFixed(1)} / 2.0`));
+        text.add(3, Text.aqua(`受到伤害累计充能，满10点进入狂怒状态（持续11秒，冷却5秒）`));
+        text.add(4, Text.aqua(`狂怒期间每次攻击回复5血，非跳劈暴击额外回复20血`));
+        text.add(5, Text.gold(`触发音效会逐次升调，达到最高音调后重置`));
+    })
+
+    // 葵花宝典：提示治疗代价、生命伤害和翻滚后的单次免伤
+    event.addAdvanced('rainbow:fist_of_seven_wounds', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.red("受到治疗效果 -100%"));
+            text.add(2, Text.aqua("佩戴时：每次翻滚后免疫下一次伤害"));
+            text.add(3, Text.darkGray("天下武功，唯快不破"));
+        }
     })
 
     const machine_name ={
@@ -418,7 +449,9 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("右键绑定在线玩家"));
             text.add(2, Text.aqua("你受到的伤害将转移到对应在线玩家身上"));
-            text.add(3, Text.gold("绑定对象ID: ").append(Text.yellow(`${item?.nbt?.getString("UUID")}`)));
+            let uuidText = ""
+            if (item.nbt != null) uuidText = item.nbt.getString("UUID")
+            text.add(3, Text.gold("绑定对象ID: ").append(Text.yellow(String(uuidText))));
         }
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
@@ -452,6 +485,7 @@ ItemEvents.tooltip((event) => {
             text.add(6, Text.aqua("优先召唤高消耗变种"));
             text.add(7, Text.aqua("配合莉莉丝之拥可消耗灵魂免死一次"));
             text.add(8, Text.gray("手持 spectralibur 时每秒转移1灵魂"));
+            text.add(9, Text.darkGray("拘束制御术式 零 解"));
         }
     })
     event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
@@ -570,6 +604,7 @@ ItemEvents.tooltip((event) => {
             text.add(5, Text.aqua("向外扩散金色冲击波"));
             text.add(6, Text.aqua("推开周围实体"));
             text.add(7, Text.aqua("每次脉冲恢复 100 血量"));
+            text.add(8, Text.darkGray("天主和帝皇"));
         }
     })
     event.addAdvanced('rainbow:mini_moon', (item, advanced, text) => {
@@ -603,6 +638,7 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("极限闪避或盾反成功时，洞察破绽"));
             text.add(2, Text.aqua("▸ 恢复主副手与饰品栏中物品的冷却"));
             text.add(3, Text.aqua("▸ 每次减少该物品当前剩余冷却的 25%"));
+            text.add(4, Text.darkGray("你那双写轮眼，究竟能看多远？"));
         }
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
@@ -706,6 +742,7 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("穿戴盔甲且进入隐匿状态"));
             text.add(2, Text.aqua("隐匿时每件盔甲提供 4% 伤害加成"));
+            text.add(3, Text.darkGray("据说闻起来像葡萄汁"));
         }
     })
     // 鸦羽骨哨：实际效果见 server_scripts/curios_skill_system/Skillwheel.js 的 registerSkill('rainbow:whistle')（主动技能：20秒范围内敌人攻击伤害降低50%，半径8格，自动排除友军）
@@ -859,10 +896,11 @@ ItemEvents.tooltip((event) => {
             text.add(2, Text.aqua("  开头0.5秒内为完美格挡窗口"));
             text.add(3, Text.aqua("  完美格挡：弹反弹道并反弹近战伤害"));
             text.add(4, Text.aqua("  普通格挡：抵消伤害"));
-            text.add(5, Text.gold("▸ 潜行右键居合斩"));
-            text.add(6, Text.aqua("  消耗6血量向前冲刺，斩击路径上所有敌人"));
-            text.add(7, Text.aqua("  冲刺伤害 = 攻击力×10，斩后10秒强化姿态"));
-            text.add(8, Text.aqua("  使用后短暂冷却"));
+            text.add(5, Text.aqua("  格挡时触发 ParticleJS 格挡粒子反馈"));
+            text.add(6, Text.gold("▸ 潜行右键居合斩"));
+            text.add(7, Text.aqua("  消耗6血量向前冲刺，斩击路径上所有敌人"));
+            text.add(8, Text.aqua("  冲刺伤害 = 攻击力×10，斩后10秒强化姿态"));
+            text.add(9, Text.aqua("  使用后短暂冷却"));
         }
     })
     // 击杀牌叠
@@ -1060,16 +1098,27 @@ ItemEvents.tooltip((event) => {
             text.add(4, Text.gold("▸ 幸运值 8 时概率最大（25%）"));
         }
     })
-    // 兽性面具
-    // 机制：1) 击杀敌人治疗自己(4点) 2) 受伤概率获得伤害吸收(5秒4点吸收心，幸运8时最大25%)
+    // 兽性面具：从玩家当前药水效果显示闪避层数，不读取饰品NBT
     event.addAdvanced('rainbow:beast_mask', (item, advanced, text) => {
+        let dodgeLevel = 0;
+        try {
+            if (Client.player != null) {
+                let dodgeEffect = Client.player.getEffect("rainbow:beast_dodge");
+                if (dodgeEffect != null) dodgeLevel = dodgeEffect.getAmplifier() + 1;
+            }
+        } catch (e) {
+            console.log("[兽性面具提示] 读取闪避层数出错: " + e);
+        }
+        dodgeLevel = Math.max(0, Math.min(10, dodgeLevel));
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("▸ 击杀敌人治疗自己 4 点生命"));
-            text.add(2, Text.aqua("▸ 受伤时概率获得伤害吸收(5秒)"));
-            text.add(3, Text.aqua("  触发极限闪避恢复10血量"));
-            text.add(4, Text.gold("  幸运值 8 时概率最大(25%)"));
+            text.add(2, Text.aqua("▸ 每次受伤增加1层被动闪避"));
+            text.add(3, Text.of(`▸ 当前闪避层数: §e${dodgeLevel}§r / 10`));
+            text.add(4, Text.aqua("  每层提供1%闪避，最多叠加10层，持续10秒"));
+            text.add(5, Text.aqua("  继续受伤会重置闪避效果持续时间"));
+            text.add(6, Text.aqua("  触发极限闪避恢复4血量"));
         }
     })
     // 多心经

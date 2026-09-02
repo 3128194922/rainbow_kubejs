@@ -16,8 +16,8 @@ const PowerLabel = {
 
 JadeEvents.onCommonRegistration((event) => {
     // 为所有实体注册数据提供者，仅当实体是 miniboss 才写入
-    // 无参重载无法被 Rhino 解析，必须显式传 UID 与实体类（$Entitys 定义于 CONST.js）
-    event.entityDataProvider('mini_boss_system:words', $Entitys).setCallback((tag, accessor) => {
+    // 无参重载无法被 Rhino 解析，必须显式传 UID 与实体类（Entitys 定义于 CONST.js）
+    event.entityDataProvider('mini_boss_system:words', Entitys).setCallback((tag, accessor) => {
         let entity = accessor.getEntity();
         if (!entity || !entity.isAlive()) return;
         if (!entity.persistentData.getBoolean("isMiniBoss")) return;

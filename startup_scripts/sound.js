@@ -36,6 +36,8 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.super_hormone")
 
     event.create("rainbow:voice.kuchiyosenojutsu")
+
+    event.create("rainbow:voice.animals")
 })
 
 // 注册物品

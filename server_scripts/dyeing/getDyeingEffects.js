@@ -68,16 +68,16 @@ global.getActiveDyeingEffects = function (entity) {
         let uuid = entity.uuid.toString();
         let result = [];
 
-        // 六类特效应有数据统一查询
-        collectDyeingMap($DyeingMod.getPaintData(server).getAll(uuid), "paint", result);
-        collectDyeingMap($DyeingMod.getUVData(server).getAll(uuid), "uv", result);
-        collectDyeingMap($DyeingMod.getAreaPaintData(server).getAll(uuid), "areaPaint", result);
-        collectDyeingMap($DyeingMod.getAreaUVData(server).getAll(uuid), "areaUV", result);
-        collectDyeingMap($DyeingMod.getScreenOverlayData(server).getAll(uuid), "screenOverlay", result);
+        // 六类特效统一通过 server_scripts/CONST.js 的 DyeingMod 查询。
+        collectDyeingMap(DyeingMod.getPaintData(server).getAll(uuid), "paint", result);
+        collectDyeingMap(DyeingMod.getUVData(server).getAll(uuid), "uv", result);
+        collectDyeingMap(DyeingMod.getAreaPaintData(server).getAll(uuid), "areaPaint", result);
+        collectDyeingMap(DyeingMod.getAreaUVData(server).getAll(uuid), "areaUV", result);
+        collectDyeingMap(DyeingMod.getScreenOverlayData(server).getAll(uuid), "screenOverlay", result);
 
         // 残影(trail) 为单条配置，无 id，存在即视为一条特效
         try {
-            let trail = $DyeingMod.getTrailData(server).get(uuid);
+            let trail = DyeingMod.getTrailData(server).get(uuid);
             if (trail != null) result.push({ type: "trail", id: "trail" });
         } catch (err) {
             console.log('[Dyeing查询] 收集 "trail" 特效异常: ' + err);

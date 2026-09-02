@@ -21,7 +21,7 @@
 
 //EntityEvents.spawned('ender_pearl', e => e.entity.owner.startRiding(e.entity))
 
-let DispenserBlock = Java.loadClass("net.minecraft.world.level.block.DispenserBlock");
+// DispenserBlock 统一由 server_scripts/CONST.js 提供。
 const facingMap = {
     'east': [1, 0, 0],
     'west': [-1, 0, 0],

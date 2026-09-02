@@ -8,8 +8,8 @@
 //   按键按下、BetterCombat 上抬、客户端 itemUseCooldown）全部由客户端独占
 //   （RollManager / MinecraftClientMixin），服务端不持有这些数据，
 //   因此本库无法也不判定这些项。
-//   服务端唯一可观测的"刚翻滚"信号是 LivingEntity 上的 invulnerableTicks
-//   （翻滚无敌窗口，由 RollPublish 包触发 setRollInvulnerableTicks）。
+//   服务端可观测的"刚翻滚"信号包括 CombatRoll Forge 事件；本库的窗口查询
+//   仍通过 LivingEntity 上的 invulnerableTicks（由 RollPublish 设置）完成。
 // ==========================================
 // 用法示例（任意 server_scripts 文件均可直接调用）：
 //   let info = global.getCombatRollInfo(player);     // 综合信息
@@ -17,12 +17,7 @@
 //   let dist= global.combatRollGetDistance(player);  // 有效翻滚距离
 // ==========================================
 
-// ---------- 基础 Java 类（内部，闭包捕获） ----------
-let CR_ResourceLocation  = Java.loadClass('net.minecraft.resources.ResourceLocation');
-let CR_EnchantmentHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper');
-let CR_MojangAttributes  = Java.loadClass('net.minecraft.world.entity.ai.attributes.Attributes');
-let CR_LivingEntityCls   = Java.loadClass('net.minecraft.world.entity.LivingEntity');
-let CR_FluidTags         = Java.loadClass('net.minecraft.tags.FluidTags');
+// ---------- 基础 Java 类（统一由 server_scripts/CONST.js 提供） ----------
 
 // ---------- CombatRoll mod 类（内部，懒加载，未安装时为 null） ----------
 let _CR = null;        // net.combatroll.CombatRoll
@@ -31,8 +26,8 @@ let _CR_Checked = false;
 let _loadCombatRollClasses = function () {
     if (_CR_Checked) return;
     _CR_Checked = true;
-    try { _CR = Java.loadClass('net.combatroll.CombatRoll'); } catch (e) { _CR = null; }
-    try { _CR_Ench = Java.loadClass('net.combatroll.api.Enchantments_CombatRoll'); } catch (e) { _CR_Ench = null; }
+    try { _CR = CombatRoll; } catch (e) { _CR = null; console.log('[CombatRoll] 获取 CombatRoll 类失败: ' + e); }
+    try { _CR_Ench = CombatRollEnchantments; } catch (e) { _CR_Ench = null; console.log('[CombatRoll] 获取附魔类失败: ' + e); }
 };
 
 /**
@@ -77,11 +72,11 @@ global.combatRollGetConfigSnapshot = function () {
 
 // ---------- 内部：经 Forge 注册表取属性 / 附魔对象 ----------
 let _crAttr = function (id) {
-    try { return ForgeRegistries.ATTRIBUTES.getValue(new CR_ResourceLocation(id)); }
+    try { return ForgeRegistries.ATTRIBUTES.getValue(new CombatRollResourceLocation(id)); }
     catch (e) { return null; }
 };
 let _crEnch = function (id) {
-    try { return ForgeRegistries.ENCHANTMENTS.getValue(new CR_ResourceLocation(id)); }
+    try { return ForgeRegistries.ENCHANTMENTS.getValue(new CombatRollResourceLocation(id)); }
     catch (e) { return null; }
 };
 
@@ -94,7 +89,7 @@ let _crEnch = function (id) {
 global.combatRollGetEnchantmentLevel = function (player, enchId) {
     let ench = _crEnch(enchId);
     if (ench == null) return 0;
-    try { return CR_EnchantmentHelper.getEquipmentLevel(ench, player.minecraftEntity); }
+    try { return CombatRollEnchantmentHelper.getEquipmentLevel(ench, player.minecraftEntity); }
     catch (e) { return 0; }
 };
 
@@ -345,7 +340,7 @@ global.combatRollCanRoll = function (player) {
     }
     // 7. 移动速度属性 > 0（与 isRollAvailable 一致）
     try {
-        if (mc.getAttributeValue(CR_MojangAttributes.MOVEMENT_SPEED) <= 0)
+        if (mc.getAttributeValue(CombatRollAttributes.MOVEMENT_SPEED) <= 0)
             reasons.push('移动速度属性为0');
     } catch (e) {}
 
@@ -493,7 +488,7 @@ global.combatRollComputeVelocity = function (player, forward, sideways) {
     let yaw;
     try { yaw = player.getYaw(); } catch (e) { yaw = 0; }
     // Vec3d.rotateY(-yaw)：x'=x*cos+z*sin ; z'=z*cos-x*sin
-    let rad = (-1.0) * yaw * Math.PI / 180;
+    let rad = (-1.0) * yaw * MATH_PI / 180;
     let cos = Math.cos(rad), sin = Math.sin(rad);
     let rx = dirX * cos + dirZ * sin;
     let rz = dirZ * cos - dirX * sin;
@@ -503,7 +498,7 @@ global.combatRollComputeVelocity = function (player, forward, sideways) {
     // 水中：按水深衰减（min(height,1) * 0.5）
     try {
         if (mc.isInWater()) {
-            let h = mc.getFluidHeight(CR_FluidTags.WATER);
+            let h = mc.getFluidHeight(FluidTags.WATER);
             if (h > 1) h = 1;
             vx *= h * 0.5; vz *= h * 0.5;
         }

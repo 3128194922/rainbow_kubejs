@@ -1,17 +1,17 @@
 // 圣经 - 盔甲纹饰伤害抵消
 // 根据玩家穿戴的纹饰盔甲数量提供伤害抵消：每件纹饰盔甲抵消 1 点伤害（最多 4 件），受到伤害最低为 0
 // 注册：[startup_scripts/Registry/Registry_curios.js] rainbow:the_bible
-function handleTheBible(event, attacker, victim, source) {
+function handleTheBible(event, attacker, victim, source, context) {
     if (victim == null || !victim.isPlayer()) return;
-    if (!hasCurios(victim, 'rainbow:the_bible')) return;
+        if (!hasContextCurio(context, "victim", victim, 'rainbow:the_bible')) return;
 
     try {
         // 统计 4 个盔甲栏位中带纹饰 (Trim) 的盔甲数量
         let armorSlots = [
-            { key: "head", slot: $BIBLE_EQUIP_SLOT.HEAD },
-            { key: "chest", slot: $BIBLE_EQUIP_SLOT.CHEST },
-            { key: "legs", slot: $BIBLE_EQUIP_SLOT.LEGS },
-            { key: "feet", slot: $BIBLE_EQUIP_SLOT.FEET }
+            { key: "head", slot: EquipmentSlot.HEAD },
+            { key: "chest", slot: EquipmentSlot.CHEST },
+            { key: "legs", slot: EquipmentSlot.LEGS },
+            { key: "feet", slot: EquipmentSlot.FEET }
         ];
 
         let trimCount = 0;

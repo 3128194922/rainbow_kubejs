@@ -330,31 +330,31 @@ function writeTargetToClipboard(player, k, tx, ty, tz, detected) {
 
     try {
         // 用 KubeJS 物品包装器直接修改 NBT (裁剪板结构: Pages->[0].Entries[])
-        let pagesList = new $ListTag()
-        let page = new $CompoundTag()
-        let entriesList = new $ListTag()
+        let pagesList = new ListTag()
+        let page = new CompoundTag()
+        let entriesList = new ListTag()
 
-        let e0 = new $CompoundTag()
+        let e0 = new CompoundTag()
         e0.putString('Text', '{"text":"目标X: ' + tx.toFixed(2) + '"}')
         e0.putBoolean('Checked', false)
         entriesList.add(e0)
 
-        let e1 = new $CompoundTag()
+        let e1 = new CompoundTag()
         e1.putString('Text', '{"text":"目标Y: ' + ty.toFixed(2) + '"}')
         e1.putBoolean('Checked', false)
         entriesList.add(e1)
 
-        let e2 = new $CompoundTag()
+        let e2 = new CompoundTag()
         e2.putString('Text', '{"text":"目标Z: ' + tz.toFixed(2) + '"}')
         e2.putBoolean('Checked', false)
         entriesList.add(e2)
 
-        let e3 = new $CompoundTag()
+        let e3 = new CompoundTag()
         e3.putString('Text', '{"text":"k: ' + k + '"}')
         e3.putBoolean('Checked', false)
         entriesList.add(e3)
 
-        let e4 = new $CompoundTag()
+        let e4 = new CompoundTag()
         e4.putString('Text', '{"text":"弹种: ' + detected.key + '"}')
         e4.putBoolean('Checked', false)
         entriesList.add(e4)
@@ -461,8 +461,8 @@ function readCurrentAngles(block, player) {
         }
         if (block.id == 'createbigcannons:fixed_cannon_mount') {
             // 固定基座: 水平安装炮塔, pitch/yaw 直接是显示角度 (保持原逻辑)
-            let tag = new $CompoundTag()
-            let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : $Direction.NORTH
+            let tag = new CompoundTag()
+            let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : Direction.NORTH
             cannonBe.writeToClipboard(tag, dir)
             let slotYaw = Number(tag.getInt('Yaw'))
             let slotPitch = Number(tag.getInt('Pitch'))
@@ -480,7 +480,7 @@ function readCurrentAngles(block, player) {
             // cannon_mount: 正立/倒立由 blockstate vertical_direction 判定 (up=倒立, down=正立)
             let verticalDir = null
             try {
-                verticalDir = block.blockState.getValue($BlockStateProperties.VERTICAL_DIRECTION)
+                verticalDir = block.blockState.getValue(BlockStateProperties.VERTICAL_DIRECTION)
             } catch (ex) {
                 verticalDir = null
             }
@@ -596,7 +596,7 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
             // FixedCannonMount: 不提供公开 setYaw/setPitch, 但它实现
             // Create 的 ClipboardCloneable: readFromClipboard(CompoundTag, Player, Direction, boolean)
             // 写入 int 角度(范围 -45~45) (水平安装炮塔, 角度即显示角度)
-            let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : $Direction.NORTH
+            let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : Direction.NORTH
             let baseYaw = dir.toYRot()
 
             let yawAdj = yaw - baseYaw
@@ -618,10 +618,10 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
                 applyNote = ' §c(部分角度超出固定基座可调范围±45°，已截断)'
             }
 
-            let clipTag = new $CompoundTag()
+            let clipTag = new CompoundTag()
             clipTag.putInt('Pitch', Math.round(pitchAdj))
             clipTag.putInt('Yaw', Math.round(yawAdj))
-            cannonBe.readFromClipboard(clipTag, player.minecraftEntity, $Direction.NORTH, false)
+            cannonBe.readFromClipboard(clipTag, player.minecraftEntity, Direction.NORTH, false)
             targetMeterYaw = yawAdj
             targetMeterPitch = pitchAdj
         } else {
@@ -677,7 +677,7 @@ ServerEvents.commandRegistry(function(event) {
     let Arguments = event.arguments
 
     let L = function(n) { return Commands.literal(n) }
-    let A = function(n, mi, ma) { return Commands.argument(n, $DArg.doubleArg(mi, ma)) }
+    let A = function(n, mi, ma) { return Commands.argument(n, DoubleArgumentType.doubleArg(mi, ma)) }
 
     let rootCbcAimTo = L('cbc_aim_to')
         .requires(function(s) {
@@ -701,23 +701,23 @@ ServerEvents.commandRegistry(function(event) {
 
                                 let detected = getAmmoFromHand(playerEnt)
                                 if (detected == null) {
-                                    ctx.getSource().sendFailure($Component.literal('§c无法识别弹种: 主手没有持有CBC炮弹物品'))
-                                    ctx.getSource().sendFailure($Component.literal('§e识别物品: solid_shot, he_shell, ap_shell, ap_shot, shrapnel_shell, bag_of_grapeshot, smoke_shell, fluid_shell, drop_mortar_shell, mortar_stone, traffic_cone, ap_autocannon_round, flak_autocannon_round, machine_gun_round'))
-                                    ctx.getSource().sendFailure($Component.literal('§7提示: 手持CBC炮弹后再次执行指令即可'))
+                                    ctx.getSource().sendFailure(Component.literal('§c无法识别弹种: 主手没有持有CBC炮弹物品'))
+                                    ctx.getSource().sendFailure(Component.literal('§e识别物品: solid_shot, he_shell, ap_shell, ap_shot, shrapnel_shell, bag_of_grapeshot, smoke_shell, fluid_shell, drop_mortar_shell, mortar_stone, traffic_cone, ap_autocannon_round, flak_autocannon_round, machine_gun_round'))
+                                    ctx.getSource().sendFailure(Component.literal('§7提示: 手持CBC炮弹后再次执行指令即可'))
                                     return 0
                                 }
 
                                 let err = writeTargetToClipboard(playerEnt, k, tx, ty, tz, detected)
                                 if (err != null) {
-                                    ctx.getSource().sendFailure($Component.literal(err))
+                                    ctx.getSource().sendFailure(Component.literal(err))
                                     return 0
                                 }
-                                ctx.getSource().sendSuccess($Component.literal('§a✓ 已写入副手剪切板: 目标[' + tx.toFixed(1) + ', ' + ty.toFixed(1) + ', ' + tz.toFixed(1) + '] 装药=待自动计算 弹种=' + detected.key), false)
-                                ctx.getSource().sendSuccess($Component.literal('§7提示: 手持该剪切板右键 炮塔基座(cannon_mount/fixed_cannon_mount) 自动读取当前角度并瞄准'), false)
+                                ctx.getSource().sendSuccess(Component.literal('§a✓ 已写入副手剪切板: 目标[' + tx.toFixed(1) + ', ' + ty.toFixed(1) + ', ' + tz.toFixed(1) + '] 装药=待自动计算 弹种=' + detected.key), false)
+                                ctx.getSource().sendSuccess(Component.literal('§7提示: 手持该剪切板右键 炮塔基座(cannon_mount/fixed_cannon_mount) 自动读取当前角度并瞄准'), false)
                                 console.log('[CBC Aim] 写入剪切板: k=' + k + ' target=[' + tx + ',' + ty + ',' + tz + '] ammo=' + detected.key)
                                 return 1
                             } catch (ex) {
-                                ctx.getSource().sendFailure($Component.literal('§c执行出错: ' + ex))
+                                ctx.getSource().sendFailure(Component.literal('§c执行出错: ' + ex))
                                 console.error('[CBC Aim] ' + ex)
                                 return 0
                             }

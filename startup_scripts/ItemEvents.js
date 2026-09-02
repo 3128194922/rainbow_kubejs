@@ -183,21 +183,6 @@ ItemEvents.modification(event => {
    })
 })
 
-// 延迟加载 Tide 类（运行时首次使用时才加载，避免 startup 阶段提前加载 Tide 类破坏 mod 注册流程）
-function getTideClass(name) {
-    try {
-        if (global._tideClasses == null) global._tideClasses = {};
-        if (global._tideClasses[name] != null) return global._tideClasses[name];
-        let cls = Java.tryLoadClass(name);
-        global._tideClasses[name] = cls; // 加载失败缓存 null，避免重复尝试
-        if (cls == null) console.log("getTideClass 未加载到类: " + name); // 帮助排查 classfilter/类名问题
-        return cls;
-    } catch (e) {
-        console.log("getTideClass 加载失败(" + name + "): " + e);
-        return null;
-    }
-}
-
 // 读取玩家 Tide 图鉴数据 NBT（服务端优先读 Forge 持久化数据，客户端走 CLIENT_DATA 兜底）
 // ⚠️ 切记：KubeJS 6 (1.20.1) 的 entity.persistentData 是 KubeJS 自己的数据（实体NBT键 KubeJSPersistentData），
 //          Tide 写入的是 Forge 的 Entity.getPersistentData()（实体NBT键 ForgeData），两者完全不同，

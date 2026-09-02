@@ -39,7 +39,7 @@ const EC_ICON_Y = 1
 // 帧偏移公式（AbstractWidget.renderTexture，与 ImageButton 的 v/vDiff 语义一致）：
 //   普通态 = v，悬停态 = v + vDiff，禁用态 = v + 2*vDiff
 // 注意：v 指向普通帧！曾误用 widgets.png 的 v=46（实为禁用帧，深色蒙版的根因）
-const EC_WIDGETS_TEXTURE = new $ResourceLocation("kubejs", "textures/gui/ender_chest_button.png")
+const EC_WIDGETS_TEXTURE = new ResourceLocation("kubejs", "textures/gui/ender_chest_button.png")
 const EC_WIDGETS_U = 0
 const EC_WIDGETS_V = 0
 const EC_WIDGETS_HOVER_DIFF = 18
@@ -119,7 +119,7 @@ console.log("[末影箱按钮] 脚本已加载 v10（children 包含性检测，
 // =========================
 ClientEvents.tick(event => {
     try {
-        var mc = $Minecraft.getInstance()
+        var mc = Minecraft.getInstance()
         var screen = mc.screen
         // 仅在生存模式背包 GUI 中生效（创造模式是 CreativeModeInventoryScreen，不匹配）
         if (!ecIsInvScreen(screen)) {
@@ -139,7 +139,7 @@ ClientEvents.tick(event => {
 
             // 原生 ImageButton（public 构造函数，直接 new，参数与 Field-Guide 的调用同构）：
             // x, y, w, h, u, v, 悬停v位移, 贴图, 贴图宽, 贴图高, onPress 回调
-            ecButtonInstance = new $ImageButton(
+            ecButtonInstance = new ImageButton(
                 pos.x, pos.y, EC_BUTTON_W, EC_BUTTON_H,
                 EC_WIDGETS_U, EC_WIDGETS_V, EC_WIDGETS_HOVER_DIFF,
                 EC_WIDGETS_TEXTURE, EC_WIDGETS_TEX_W, EC_WIDGETS_TEX_H,

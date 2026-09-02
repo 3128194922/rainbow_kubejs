@@ -419,7 +419,7 @@ StartupEvents.registry('item', event => {
 });*/
 
 
-// 极限之证
+// 极限证章：幸运-25、抢夺+1、时运+1、经验获取+400%；护甲、护甲韧性和全属性伤害降低50%。
 StartupEvents.registry('item', event => {
     event.create('rainbow:despair_insignia')
         .rarity("epic")
@@ -427,12 +427,12 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
-                .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-
-                    ev.modify("generic.attack_damage", "despair_insignia", 100.0, "addition");
-                })
+                .addAttribute("minecraft:generic.luck", "despair_insignia_luck", -25.0, "addition")
+                .addAttribute("minecraft:generic.armor", "despair_insignia_armor", -0.5, "multiply_total")
+                .addAttribute("minecraft:generic.armor_toughness", "despair_insignia_armor_toughness", -0.5, "multiply_total")
+                .addAttribute("attributeslib:experience_gained", "despair_insignia_experience", 4.0, "multiply_total")
+                .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
+                .modifyLootingLevel((slotContext, source, target, baseLooting, stack) => baseLooting + 3)
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();w
 
@@ -1160,7 +1160,7 @@ StartupEvents.registry('item', event => {
                     let { slotContext, uuid } = context
                     let identifier = slotContext.identifier() + slotContext.index()
                     context.modify(
-                        $SlotAttribute.getOrCreate('charm'),
+                        SlotAttribute.getOrCreate('charm'),
                         uuid,
                         identifier,
                         -4,
@@ -1202,7 +1202,7 @@ StartupEvents.registry('item', event => {
                     let { slotContext, uuid } = context
                     let identifier = slotContext.identifier() + slotContext.index()
                     context.modify(
-                        $SlotAttribute.getOrCreate('ring'),
+                        SlotAttribute.getOrCreate('ring'),
                         uuid,
                         identifier,
                         4,
@@ -2650,7 +2650,7 @@ StartupEvents.registry('item', event => {
 })
 
 // 兽性面具
-// 机制：1) 击杀敌人治疗自己 2) 受伤概率获得伤害吸收
+// 机制：1) 击杀敌人治疗自己 2) 每次受伤增加1层闪避药水，最高10层并重置10秒持续时间 3) 极限闪避回血保留
 StartupEvents.registry('item', event => {
     event.create('rainbow:beast_mask')
         .rarity("epic")
@@ -2720,16 +2720,15 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//狂怒面具
-// 机制：造成伤害可累计充能 (每满100点伤害)，满100点获得冷却缩减效果 (rainbow:cooldowns_reduction 等级2，持续5秒)
-// 伤害累计逻辑在 startup_scripts/ForgeEvents/handleCoreCharging.js 的 handleCoreCharging() 内
+// 狂怒面具
+// 机制：玩家累计受到10点伤害后进入狂怒状态，持续11秒且触发后冷却5秒；攻击回血，非跳劈暴击额外回血。
 StartupEvents.registry('item', event => {
     event.create('rainbow:fury_mask')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
-        .tooltip("§7造成伤害可充能 (每100点伤害)")
-        .tooltip("§7满100点伤害时获得冷却缩减 (等级2，持续5秒)")
+        .tooltip("§7累计受到10点伤害后进入狂怒状态")
+        .tooltip("§7狂怒持续11秒，触发冷却5秒")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .canEquip((slotContext, stack) => {
@@ -2741,7 +2740,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//七伤拳
+// 葵花宝典：受到治疗-100%；佩戴时每次翻滚后免疫下一次伤害。
 StartupEvents.registry('item', event => {
     event.create('rainbow:fist_of_seven_wounds')
         .rarity("epic")
@@ -2749,8 +2748,8 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
-                .addAttribute('attributeslib:current_hp_damage', 'fist_of_seven_wounds', 0.07, 'addition')
-                .addAttribute('attributeslib:healing_received', 'fist_of_seven_wounds', -0.7, 'multiply_total')
+                //.addAttribute('attributeslib:current_hp_damage', 'fist_of_seven_wounds', 0.07, 'addition')
+                .addAttribute('attributeslib:healing_received', 'fist_of_seven_wounds', -1.0, 'multiply_total')
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;

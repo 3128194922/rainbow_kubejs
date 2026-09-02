@@ -21,9 +21,7 @@
  */
 function getTideTemperature(player, level) {
     try {
-        // 加载 TideUtils 类
-        let TideUtils = Java.loadClass('com.li64.tide.util.TideUtils');
-        
+        // TideUtils 由 server_scripts/CONST.js 懒加载。
         // 获取玩家位置
         let pos = player.blockPosition();
         
@@ -61,9 +59,7 @@ function getTideTemperature(player, level) {
  */
 function getOreganizedHeatLevel(player) {
     try {
-        // 加载 ThermometerItem 类
-        let ThermometerItem = Java.loadClass('galena.oreganized.content.item.ThermometerItem');
-        
+        // ThermometerItem 由 server_scripts/CONST.js 懒加载。
         // 调用静态方法 ambientMeasurement(Player player)
         return ThermometerItem.ambientMeasurement(player);
     } catch (e) {

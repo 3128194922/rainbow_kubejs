@@ -1,28 +1,28 @@
-let $CuriosApi = Java.loadClass("top.theillusivec4.curios.api.CuriosApi")
+// CuriosApi 统一由 startup_scripts/CONST.js 提供。
 
 // 检测实体是否装备了指定饰品物品
 /*function hasCurios(entity, stack) {
-    return $CuriosApi.getCuriosHelper().findEquippedCurio(stack, entity).isPresent()
+    return CuriosApi.getCuriosHelper().findEquippedCurio(stack, entity).isPresent()
 }*/
 // 饰品槽位操作：shrink收缩/grow扩容/getfor查询数量/setfor设置数量/unlock解锁/lock锁定
 function CuriosSlotMethod(method, slot, player, amount) {
     switch (method) {
         case "shrink":
-            $CuriosApi.getSlotHelper().shrinkSlotType(slot, amount, player)
+            CuriosApi.getSlotHelper().shrinkSlotType(slot, amount, player)
             break;
         case "grow":
-            $CuriosApi.getSlotHelper().growSlotType(slot, amount, player)
+            CuriosApi.getSlotHelper().growSlotType(slot, amount, player)
             break;
         case "getfor":
-            return $CuriosApi.getSlotHelper().getSlotsForType(player, slot)
+            return CuriosApi.getSlotHelper().getSlotsForType(player, slot)
         case "setfor":
-            $CuriosApi.getSlotHelper().setSlotsForType(slot, player, amount)
+            CuriosApi.getSlotHelper().setSlotsForType(slot, player, amount)
             break;
         case "unlock":
-            $CuriosApi.getSlotHelper().unlockSlotType(slot, player)
+            CuriosApi.getSlotHelper().unlockSlotType(slot, player)
             break;
         case "lock":
-            $CuriosApi.getSlotHelper().lockSlotType(slot, player)
+            CuriosApi.getSlotHelper().lockSlotType(slot, player)
             break;
     }
 }
@@ -31,8 +31,8 @@ function getCuriosInventorySafe(player) {
     if (player == null) return null
     //先检查实体是否有curios能力，避免对非玩家实体抛IllegalStateException
     try {
-        if (!$CuriosApi.getCuriosInventory(player).isPresent()) return null
-        return $CuriosApi.getCuriosInventory(player).resolve().get()
+        if (!CuriosApi.getCuriosInventory(player).isPresent()) return null
+        return CuriosApi.getCuriosInventory(player).resolve().get()
     } catch (e) {
         return null
     }

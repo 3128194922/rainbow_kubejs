@@ -73,7 +73,7 @@ function clearDyeingEntries(savedData, server) {
 // 白名单特效所属实体的记录会被跳过，不计入清理统计
 // 返回: 移除的实体条数
 function clearAreaUVEntries(server) {
-    let savedData = $DyeingMod.getAreaUVData(server);
+    let savedData = DyeingMod.getAreaUVData(server);
     let entityCount = 0;
     let effectCount = 0;
     let keys = savedData.getEntries().keySet().toArray();
@@ -98,17 +98,17 @@ ServerEvents.loaded(event => {
     try {
         let server = event.server;
         // 清空静态/动画油漆层
-        let paintResult = clearDyeingEntries($DyeingMod.getPaintData(server));
+        let paintResult = clearDyeingEntries(DyeingMod.getPaintData(server));
         // 清空实体UV贴图层
-        let uvResult = clearDyeingEntries($DyeingMod.getUVData(server));
+        let uvResult = clearDyeingEntries(DyeingMod.getUVData(server));
         // 清空区域油漆
-        let areaPaintResult = clearDyeingEntries($DyeingMod.getAreaPaintData(server));
+        let areaPaintResult = clearDyeingEntries(DyeingMod.getAreaPaintData(server));
         // 清空区域UV
         let areaUVResult = clearAreaUVEntries(server);
         // 清空公告板层
-        let billboardResult = clearDyeingEntries($BillboardSavedData.get(server));
+        let billboardResult = clearDyeingEntries(BillboardSavedData.get(server));
         // 清空屏幕覆盖层
-        let screenResult = clearDyeingEntries($DyeingMod.getScreenOverlayData(server));
+        let screenResult = clearDyeingEntries(DyeingMod.getScreenOverlayData(server));
         console.log('[Dyeing清理] 完成(实体/特效) | paint=' + paintResult + ' uv=' + uvResult + ' areaPaint=' + areaPaintResult + ' areaUV=' + areaUVResult + ' billboard=' + billboardResult + ' screen=' + screenResult);
     } catch (err) {
         console.log('[Dyeing清理] 错误: ' + err);

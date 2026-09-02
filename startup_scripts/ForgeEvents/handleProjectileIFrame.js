@@ -66,7 +66,7 @@ function getEntityRegistryId(entity) {
  * @param {Object} victim 受害者实体
  * @param {Object} source 伤害来源 DamageSource
  */
-function handleProjectileIFrame(event, victim, source) {
+function handleProjectileIFrame(event, victim, source, context) {
     try {
         if (source === null || source === undefined) return;
         if (victim === null || victim === undefined) return;
@@ -94,7 +94,7 @@ function handleProjectileIFrame(event, victim, source) {
         }
 
         // --- 伤害类型黑名单检查 ---
-        let damageType = source.getType();
+        let damageType = context != null ? context.damageType : source.getType();
         if (damageType !== null && damageType !== undefined) {
             let damageTypeStr = String(damageType);
             if (DAMAGE_TYPE_BLACKLIST.indexOf(damageTypeStr) !== -1) {

@@ -737,7 +737,7 @@ CuriosJSEvents.registerRenderer(event => {
                 try {
                     // 使用全身纹理渲染
                     let texture = new ResourceLocation('rainbow', 'textures/models/armor/sk1.png')
-                    let vertexConsumer = renderTypeBuffer.getBuffer($RenderType.entityCutoutNoCull(texture))
+                    let vertexConsumer = renderTypeBuffer.getBuffer(RenderType.entityCutoutNoCull(texture))
                     model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0, 1.0, 1.0, 1.0)
                 } finally {
                     matrixStack.popPose()

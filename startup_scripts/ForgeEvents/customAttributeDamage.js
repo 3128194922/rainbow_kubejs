@@ -10,10 +10,13 @@
  * @param {number} soure_magic 魔法伤害
  * @param {number} boom_damage 爆炸伤害
  */
-function customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isLiving()) return;
+    let damageType = context != null ? context.damageType : String(source.getType());
+    let isThrownDamage = context != null ? context.isThrownDamage : thrown_damage.indexOf(damageType) != -1;
+    let isExplosionDamage = context != null ? context.isExplosionDamage : boom_damage.indexOf(damageType) != -1;
 
-    if (thrown_damage.indexOf(source.getType()) != -1) {
+    if (isThrownDamage) {
         let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");
         event.setAmount(attributeValue + event.getAmount())
     }
@@ -23,7 +26,7 @@ function customAttributeDamage(event, attacker, victim, source, range_damage, th
         event.setAmount(attributeValue * event.getAmount())
     }*/
 
-    if (boom_damage.indexOf(source.getType()) != -1) {
+    if (isExplosionDamage) {
         let attributeValue = attacker.getAttributeValue("rainbow:generic.boom_damage");
         event.setAmount(attributeValue + event.getAmount())
     }

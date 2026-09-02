@@ -10,10 +10,12 @@
  * @param {string[]} soure_magic 魔法伤害
  * @param {string[]} boom_damage 爆炸伤害
  */
-function onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage) {
+function onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     // --- 神射手护符（距离越远伤害越高，每格+10%，最高+200%） ---
-    if (attacker && hasCurios(attacker, "rainbow:sharpshooter_charm")) {
-        if (victim instanceof LivingEntity && victim.isAlive() && range_damage.indexOf(source.getType()) != -1) {
+    if (attacker && hasContextCurio(context, "attacker", attacker, "rainbow:sharpshooter_charm")) {
+        let damageType = context != null ? context.damageType : String(source.getType());
+        let isRangeDamage = context != null ? context.isRangeDamage : range_damage.indexOf(damageType) != -1;
+        if (victim instanceof LivingEntity && victim.isAlive() && isRangeDamage) {
             var dx = attacker.getX() - victim.getX();
             var dy = attacker.getY() - victim.getY();
             var dz = attacker.getZ() - victim.getZ();
@@ -75,7 +77,7 @@ function onEntityHurt(event, attacker, victim, source, range_damage, thrown_dama
 
     // --- 划痕之手（hand_of_scratches）：穿戴时，攻击额外对目标造成其最大生命 5% 的额外伤害 ---
     // 穿戴者为攻击者（玩家），额外伤害叠加到本次伤害中，伤害来源仍为攻击者（玩家）
-    if (hasCurios(attacker, "rainbow:hand_of_scratches") && attacker && attacker.isPlayer() && victim instanceof LivingEntity && victim.isAlive()) {
+    if (hasContextCurio(context, "attacker", attacker, "rainbow:hand_of_scratches") && attacker && attacker.isPlayer() && victim instanceof LivingEntity && victim.isAlive()) {
         // 原版物品冷却：触发间隔 5s（100 tick），冷却中不额外触发
         if (attacker.cooldowns.isOnCooldown("rainbow:hand_of_scratches")) return;
         attacker.cooldowns.addCooldown("rainbow:hand_of_scratches", 100);

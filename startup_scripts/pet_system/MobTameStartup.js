@@ -93,7 +93,7 @@ function getRiddenInput(player) {
     if (forward <= 0.0) {
         forward *= 0.25
     }
-    let yawRad = (player.yRotO * JavaMath.PI) / 180
+    let yawRad = (player.yRotO * MATH_PI) / 180
     let sin = Math.sin(yawRad)
     let cos = Math.cos(yawRad)
     let x = strafe * cos - forward * sin

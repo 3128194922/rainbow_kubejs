@@ -67,13 +67,11 @@ StartupEvents.registry("item", event => {
             let main = entity.getItemInHand('main_hand');
             let off = entity.getItemInHand('off_hand');
 
-            let enchantHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper');
-
             // 如果副手是附魔书，不处理
             if (off.id.endsWith('enchanted_book')) return;
 
             // 获取副手物品的附魔
-            let enchants = enchantHelper.getEnchantments(off);
+            let enchants = EnchantmentHelper.getEnchantments(off);
 
             // 删除所有诅咒类附魔
             let removed = enchants.keySet().removeIf(function (enchant) {
@@ -82,7 +80,7 @@ StartupEvents.registry("item", event => {
 
             if (removed) {
                 // 把新的附魔写回副手物品
-                enchantHelper.setEnchantments(enchants, off);
+                EnchantmentHelper.setEnchantments(enchants, off);
 
                 // 删除修复代价
                 let tag = off.getOrCreateTag();
@@ -187,6 +185,14 @@ StartupEvents.registry("item", event => {
 event.create("rainbow:baseball_power", "sword")
     .attackDamageBonus(19.0)
     .attackDamageBaseline(0.0)*/
+
+// 先驱者动力剑：恢复普通形态与充能形态的实际注册，供现有右键和攻击逻辑使用。
+event.create("rainbow:baseball_bat", "sword")
+    .attackDamageBonus(7.0)
+    .attackDamageBaseline(0.0)
+event.create("rainbow:baseball_power", "sword")
+    .attackDamageBonus(19.0)
+    .attackDamageBaseline(0.0)
 
 // 泰拉刃：强大的武器
 //event.create("rainbow:terasword", "sword")

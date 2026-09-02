@@ -2,9 +2,6 @@
 // 视角切换工具函数
 
 ClientEvents.init(event => {
-    const Minecraft = Java.loadClass("net.minecraft.client.Minecraft")
-    const CameraType = Java.loadClass("net.minecraft.client.CameraType")
-
     global.setCameraEntity = function(entity) {
         const mc = Minecraft.getInstance()
         const player = mc.player

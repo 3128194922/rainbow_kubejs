@@ -2831,7 +2831,7 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//肩甲：翻滚无敌帧期间每 tick 用 AABB 检测，对撞到的活体造成伤害 + 击退
+//肩甲：翻滚/高速移动期间每 tick 用 AABB 检测；骑马时降低速度门槛并扩大碰撞范围，对撞到的敌对活体造成伤害 + 击退
 StartupEvents.registry('item', event => {
     event.create('rainbow:pauldron')
         .rarity("epic")
@@ -2853,8 +2853,18 @@ StartupEvents.registry('item', event => {
                     if (level == null) return;
                     if (level.isClientSide()) return; // 服务端才结算
 
-                    //—— 触发判定：用相邻 tick 的位移距离代表速度（只调 Java 方法，绝不读原生字段，避免 Rhino 空指针）——
-                    let SPEED_THRESHOLD = 1.0;
+                    //—— 骑马判定：仅 AbstractHorse（马、驴、骡及其变种）启用骑马强化 ——
+                    let vehicle = null;
+                    let ridingHorse = false;
+                    try {
+                        vehicle = entity.getVehicle();
+                        ridingHorse = vehicle != null && vehicle instanceof AbstractHorse;
+                    } catch (e) {
+                        console.log('[pauldron][读取坐骑失败] ' + e);
+                    }
+
+                    //—— 触发判定：用相邻 tick 的位移距离代表速度；骑马时速度门槛降至0.3 ——
+                    let SPEED_THRESHOLD = ridingHorse ? 0.3 : 1.0;
                     let pd = entity.getPersistentData();
                     let hasPrev = pd.contains('pauldron_px');
                     let x0 = pd.getDouble('pauldron_px');
@@ -2871,8 +2881,10 @@ StartupEvents.registry('item', event => {
                     //console.log(move);
                     if (move < SPEED_THRESHOLD) return;
 
-                    // 高速分支本身只会在翻滚时出现，无需节流（避免依赖取时间的方法）
-                    let box = entity.getBoundingBox().inflate(1.0, 0.5, 1.0);
+                    // 骑马时扩大水平/垂直碰撞范围；普通翻滚保持原范围。
+                    let COLLISION_RADIUS = ridingHorse ? 2.0 : 1.0;
+                    let COLLISION_HEIGHT = ridingHorse ? 0.75 : 0.5;
+                    let box = entity.getBoundingBox().inflate(COLLISION_RADIUS, COLLISION_HEIGHT, COLLISION_RADIUS);
                     let targets = level.getEntitiesWithin(box);
                     //console.log('[pauldron][高速] move=' + move.toFixed(3) + ' 目标数=' + targets.length);
 
@@ -2881,7 +2893,20 @@ StartupEvents.registry('item', event => {
                         target = targets[idx];
                         if (target == null) continue;
                         if (target.getId() === entity.getId()) continue; // 排除穿戴者自身
+                        if (target instanceof Player) continue; // 排除所有玩家
+                        if (target instanceof AbstractHorse) continue; // 排除所有马匹及马类坐骑
+                        if (vehicle != null && target.getId() === vehicle.getId()) continue; // 排除当前坐骑
                         if (!target.isAlive()) continue;
+
+                        // 跳过玩家、坐骑及其相关友军，避免误伤队友/宠物/驯服关系实体。
+                        let allied = false;
+                        try {
+                            if (target.isAlliedTo != null && target.isAlliedTo(entity)) allied = true;
+                            if (!allied && vehicle != null && target.isAlliedTo != null && target.isAlliedTo(vehicle)) allied = true;
+                        } catch (e) {
+                            console.log('[pauldron][判断友军失败] ' + e);
+                        }
+                        if (allied) continue;
 
                         //console.log('[pauldron][命中] 目标=' + target + ' 类型=' + (typeof target.getType === "function" ? target.getType() : 'n/a'));
 
@@ -2892,7 +2917,8 @@ StartupEvents.registry('item', event => {
                             let kineticAttr = entity.getAttribute('oreganized:kinetic_damage');
                             let kineticDamage = kineticAttr ? kineticAttr.getValue() : 0;
 
-                            target.attack(entity.damageSources().playerAttack(entity), 2 + kineticDamage); 
+                            let BASE_DAMAGE = ridingHorse ? 8 : 2;
+                            target.attack(entity.damageSources().playerAttack(entity), BASE_DAMAGE + kineticDamage);
                             //console.log('[pauldron][造成伤害] 成功'); 
                         } catch (e) { console.log('[pauldron][造成伤害失败] ' + e); }
 

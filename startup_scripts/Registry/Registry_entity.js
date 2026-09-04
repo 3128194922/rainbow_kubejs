@@ -112,6 +112,30 @@ StartupEvents.registry('entity_type', event => {
 });
 
 // ==========================================
+// 🎯 CBC 炮击目标实体
+// ==========================================
+// 独立于 rainbow:kuchiyose_scroll，避免把实体 ID 当作物品注册或复用通灵卷轴逻辑。
+StartupEvents.registry('entity_type', event => {
+    event.create('rainbow:cannon_target_marker', 'entityjs:nonliving')
+        .sized(0.25, 0.25)
+        .clientTrackingRange(32)
+        .updateInterval(1)
+        .mobCategory('misc')
+        .modelResource(entity => "rainbow:geo/entity/psychic_scroll.geo.json")
+        .textureResource(entity => "rainbow:textures/item/beacon_ball.png")
+        .tick(entity => {
+            try {
+                if (entity.getLevel().isClientSide()) return;
+                if (typeof global.cannonTargetMarkerTick == 'function') {
+                    global.cannonTargetMarkerTick(entity);
+                }
+            } catch (e) {
+                console.log('[CannonTarget] 目标实体tick异常: ' + e);
+            }
+        });
+});
+
+// ==========================================
 // 🌀 心理卷轴（心理墙变体）
 // ==========================================
 // 与 DomesticationInnovation 的 PsychicWallEntity 对齐：基类 entityjs:nonliving

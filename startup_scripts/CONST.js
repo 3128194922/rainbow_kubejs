@@ -11,6 +11,7 @@ const Vec3 = Java.loadClass('net.minecraft.world.phys.Vec3');
 const ForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries')
 const InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
 const InteractionResult = Java.loadClass('net.minecraft.world.InteractionResult')
+const ClickAction = Java.loadClass('net.minecraft.world.inventory.ClickAction')
 const EquipmentSlot = Java.loadClass('net.minecraft.world.entity.EquipmentSlot')
 const SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
 const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
@@ -28,6 +29,8 @@ const WallClimberNavigation = Java.loadClass("net.minecraft.world.entity.ai.navi
 const isClient = Platform.isClientEnvironment()
 const Minecraft = isClient ? Java.loadClass("net.minecraft.client.Minecraft") : null
 const Animal = Java.loadClass("net.minecraft.world.entity.animal.Animal")
+// 肩甲骑乘强化使用 AbstractHorse 覆盖马、驴、骡及其马类变种。
+const AbstractHorse = Java.loadClass("net.minecraft.world.entity.animal.horse.AbstractHorse")
 const Villager = Java.loadClass("net.minecraft.world.entity.npc.Villager")
 const Entitys = Java.loadClass('net.minecraft.world.entity.Entity')
 const AttributeModifier = Java.loadClass('net.minecraft.world.entity.ai.attributes.AttributeModifier');
@@ -52,6 +55,9 @@ const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
 const DamageSource = Java.loadClass('net.minecraft.world.damagesource.DamageSource')
 const Registries = Java.loadClass('net.minecraft.core.registries.Registries')
 const ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
+const LootParams = Java.loadClass('net.minecraft.world.level.storage.loot.LootParams')
+const LootContextParams = Java.loadClass('net.minecraft.world.level.storage.loot.parameters.LootContextParams')
+const LootContextParamSets = Java.loadClass('net.minecraft.world.level.storage.loot.parameters.LootContextParamSets')
 
 const ItemTags = Java.loadClass('net.minecraft.tags.ItemTags')
 const PotionBuilder = Java.loadClass("dev.latvian.mods.kubejs.misc.PotionBuilder")

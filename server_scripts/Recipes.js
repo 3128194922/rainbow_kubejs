@@ -336,6 +336,12 @@ ServerEvents.recipes(event => {
     //event.recipes.create.filling('gimmethat:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings'])
     //event.recipes.create.filling('gimmethat:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots'])
 
+    // 民主甲配方（rainbow 复刻）
+    event.recipes.create.filling('rainbow:democracy_helmet', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_helmet']).id('rainbow:democracy_helmet')
+    event.recipes.create.filling('rainbow:democracy_chestplate', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_chestplate']).id('rainbow:democracy_chestplate')
+    event.recipes.create.filling('rainbow:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings']).id('rainbow:democracy_leggings')
+    event.recipes.create.filling('rainbow:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots']).id('rainbow:democracy_boots')
+
     // 臭屁瓶
     event.recipes.create.mixing('alexsmobs:stink_bottle', ['alexscaves:guano', 'quark:bottled_cloud'])
 

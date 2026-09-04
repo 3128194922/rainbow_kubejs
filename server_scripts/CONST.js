@@ -58,9 +58,8 @@ const DirectionAxis = Java.loadClass('net.minecraft.core.Direction$Axis')
 // CBC 瞄准: 炮塔基座方块状态属性 (VERTICAL_DIRECTION: down=正立/up=倒置)
 const BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
 
-// Dyeing mod: UV/油漆/公告板/屏幕覆盖层等实体染色数据入口（服务端）
+// Dyeing mod: UV/油漆/区域油漆/屏幕覆盖层等实体染色数据入口（服务端）
 const DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
-const BillboardSavedData = Java.loadClass('com.example.dyeing.data.BillboardSavedData')
 
 // 通灵卷轴技能: 可投掷物判定类（弹射体类层次）
 const ThrowableItemProjectile = Java.loadClass('net.minecraft.world.entity.projectile.ThrowableItemProjectile')

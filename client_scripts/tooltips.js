@@ -841,7 +841,7 @@ ItemEvents.tooltip((event) => {
         text.add(3, Text.aqua("每次撞击造成 8 点伤害"));
     })
     // 绝密(Helldiver)防具套装
-    event.addAdvanced(['mysticartifacts:democracy_helmet', 'mysticartifacts:democracy_chestplate', 'mysticartifacts:democracy_leggings', 'mysticartifacts:democracy_boots'], (item, advanced, text) => {
+    event.addAdvanced(['mysticartifacts:democracy_helmet', 'mysticartifacts:democracy_chestplate', 'mysticartifacts:democracy_leggings', 'mysticartifacts:democracy_boots', 'rainbow:democracy_helmet', 'rainbow:democracy_chestplate', 'rainbow:democracy_leggings', 'rainbow:democracy_boots'], (item, advanced, text) => {
         text.add(1, Text.aqua("绝地潜兵战术护甲(防御 6/11/9/6)"));
         text.add(2, Text.aqua("韧性 +4，使用超薄橡胶修复"));
     })
@@ -944,17 +944,61 @@ ItemEvents.tooltip((event) => {
     })
     // 量子密钥
     event.addAdvanced('mysticartifacts:quantum_key', (item, advanced, text) => {
+        // KubeJS 接管 MysticArtifacts 的量子密钥生命周期提示。
         text.add(1, Text.aqua("量子加密的解锁密钥"));
         text.add(2, Text.red("生成后60秒未使用即失效"));
         text.add(3, Text.aqua("用于解锁曼德尔砖"));
     })
     // 曼德尔砖
     event.addAdvanced('mysticartifacts:mandel_brick', (item, advanced, text) => {
+        // KubeJS 接管 MysticArtifacts 的曼德尔砖解锁与开奖提示。
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("将未过期的量子密钥右键到它进行解锁"));
             text.add(2, Text.aqua("解锁后再次右键开启，获得随机奖励"));
+        }
+    })
+    // rainbow 命名空间的量子密钥：显示复刻机制和当前剩余时间。
+    event.addAdvanced('rainbow:quantum_key', (item, advanced, text) => {
+        try {
+            text.add(1, Text.aqua("量子加密的解锁密钥"));
+            let creationTime = null
+            if (item.nbt != null && item.nbt.contains("CreationTime")) {
+                creationTime = item.nbt.getLong("CreationTime")
+            }
+            if (creationTime == null || Client.player == null) {
+                text.add(2, Text.gray("生成后60秒未使用即失效"));
+                return
+            }
+            let clientLevel = Client.player.level
+            if (clientLevel == null || typeof clientLevel.getTime !== 'function') {
+                text.add(2, Text.gray("生成后60秒未使用即失效"));
+                return
+            }
+            let remainingTicks = 1200 - (clientLevel.getTime() - creationTime)
+            if (remainingTicks > 0) {
+                text.add(2, Text.gray("剩余时间：" + Math.floor(remainingTicks / 20) + "秒"));
+            } else {
+                text.add(2, Text.red("已失效"));
+            }
+            text.add(3, Text.aqua("用于解锁曼德尔砖"));
+        } catch (e) {
+            console.log('[量子密钥] rainbow 提示信息失败: ' + e)
+        }
+    })
+    // rainbow 命名空间的曼德尔砖：显示解锁和开奖状态。
+    event.addAdvanced('rainbow:mandel_brick', (item, advanced, text) => {
+        try {
+            let unlocked = item.nbt != null && item.nbt.contains("Unlocked") && item.nbt.getBoolean("Unlocked")
+            text.add(1, unlocked ? Text.green("已解锁：右键开启随机奖励") : Text.gray("未解锁：按SHIFT查看详细"));
+            if (event.shift) {
+                text.remove(1)
+                text.add(1, Text.aqua("将未过期的量子密钥右键到它进行解锁"));
+                text.add(2, Text.aqua("解锁后再次右键开启，获得随机奖励"));
+            }
+        } catch (e) {
+            console.log('[曼德尔砖] rainbow 提示信息失败: ' + e)
         }
     })
     // 器灵
@@ -1165,13 +1209,15 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:the_3000_ways_to_kill', (item, advanced, text) => {
         text.add(1, Text.aqua("爆炸伤害 +2"));
     })
-    // 肩甲
+    // 肩甲：说明翻滚/高速移动碰撞，以及骑马时的低速阈值、范围和伤害强化。
     event.addAdvanced('rainbow:pauldron', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("翻滚/高速移动时撞击周围敌人"));
-            text.add(2, Text.aqua("对被撞到的敌人造成 8 点伤害并击退"));
+            text.add(2, Text.aqua("骑马时速度阈值降低，碰撞范围扩大"));
+            text.add(3, Text.aqua("骑马碰撞基础伤害 8 点；普通移动基础伤害 2 点"));
+            text.add(4, Text.gray("不会伤害玩家、坐骑及相关友军"));
         }
     })
     // 通灵卷轴（功能见 server_scripts/curios_skill_system/Skillwheel.js registerSkill('rainbow:kuchiyosenojutsu')）
@@ -1184,5 +1230,39 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua("朝施法方向持续发射(雪球/箭/投掷药水等)"));
             text.add(4, Text.gold("潜行：召唤偏转卷轴(偏转加速射来的抛射体)"));
         }
+    })
+    // CBC 炮击标定器：显示绑定底座与投掷目标实体的使用方式。
+    event.addAdvanced('rainbow:cannon_targeter', (item, advanced, text) => {
+        text.add(1, Text.gray("潜行右键 CBC 炮台底座：绑定"));
+        text.add(2, Text.gray("右键：投掷目标，目标停止后自动瞄准并开火"));
+        let nbt = item.getNbt();
+        if (nbt != null && nbt.contains('cannonTargetDimension')) {
+            text.add(3, Text.gold("已绑定：").append(Text.yellow(
+                nbt.getString('cannonTargetMount') + ' ['
+                + nbt.getInt('cannonTargetX') + ', '
+                + nbt.getInt('cannonTargetY') + ', '
+                + nbt.getInt('cannonTargetZ') + ']'
+            )));
+            text.add(4, Text.gray("维度：" + nbt.getString('cannonTargetDimension')));
+        } else {
+            text.add(3, Text.red("尚未绑定炮台底座"));
+        }
+    })
+    // 始冰镐：说明潜行右键切换范围，并显示当前模式。
+    event.addAdvanced('rainbow:frostium_pickaxe', (item, advanced, text) => {
+        let mode = 3
+        try {
+            // KubeJS 2001 的客户端 ItemStack 通过 nbt 读取标签，不使用 getNbt()。
+            let nbt = item.nbt
+            if (nbt != null && nbt.contains('FrostiumMiningMode')) {
+                let savedMode = nbt.getInt('FrostiumMiningMode')
+                if (savedMode == 3 || savedMode == 5 || savedMode == 7) mode = savedMode
+            }
+        } catch (e) {
+            console.log('[始冰镐提示] 读取挖掘模式失败：' + e)
+        }
+        text.add(1, Text.aqua('当前挖掘范围：' + mode + '×' + mode))
+        text.add(2, Text.gray('潜行右键：切换为下一个挖掘范围'))
+        text.add(3, Text.gray('可用范围：3×3、5×5、7×7'))
     })
 })

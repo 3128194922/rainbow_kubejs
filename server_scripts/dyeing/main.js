@@ -1,7 +1,7 @@
 // priority: 1000
 /**
  * Dyeing 特效残留清理：服务器加载时清空全部 dyeing 数据
- * 防止 UV/油漆/区域/公告板/屏幕覆盖层等特效在服务器关闭前来不及移除，
+ * 防止 UV/油漆/区域/屏幕覆盖层等特效在服务器关闭前来不及移除，
  * 导致下次进入游戏出现永久残留特效
  * 注意：持有 PRESERVED_EFFECT_IDS 白名单中特效 id 的实体跳过清理，
  * 保证服务器重启后仍存活的 mini boss 等永久特效得以保留。
@@ -48,7 +48,7 @@ function shouldSkipDyeing(savedData, server, uuid) {
     return hasPreservedEffect(savedData, uuid);
 }
 
-// 清空支持 removeAll 的数据类（Paint/UV/AreaPaint/Billboard/ScreenOverlay）
+// 清空支持 removeAll 的数据类（Paint/UV/AreaPaint/ScreenOverlay）
 // 白名单特效所属实体的记录会被跳过，不计入清理统计
 // 返回: 移除的实体条数
 function clearDyeingEntries(savedData, server) {
@@ -98,18 +98,18 @@ ServerEvents.loaded(event => {
     try {
         let server = event.server;
         // 清空静态/动画油漆层
-        let paintResult = clearDyeingEntries(DyeingMod.getPaintData(server));
+        // 将当前服务器对象传入清理函数，供永久特效白名单判断实体状态。
+        let paintResult = clearDyeingEntries(DyeingMod.getPaintData(server), server);
         // 清空实体UV贴图层
-        let uvResult = clearDyeingEntries(DyeingMod.getUVData(server));
+        let uvResult = clearDyeingEntries(DyeingMod.getUVData(server), server);
         // 清空区域油漆
-        let areaPaintResult = clearDyeingEntries(DyeingMod.getAreaPaintData(server));
+        let areaPaintResult = clearDyeingEntries(DyeingMod.getAreaPaintData(server), server);
         // 清空区域UV
         let areaUVResult = clearAreaUVEntries(server);
-        // 清空公告板层
-        let billboardResult = clearDyeingEntries(BillboardSavedData.get(server));
         // 清空屏幕覆盖层
-        let screenResult = clearDyeingEntries(DyeingMod.getScreenOverlayData(server));
-        console.log('[Dyeing清理] 完成(实体/特效) | paint=' + paintResult + ' uv=' + uvResult + ' areaPaint=' + areaPaintResult + ' areaUV=' + areaUVResult + ' billboard=' + billboardResult + ' screen=' + screenResult);
+        let screenResult = clearDyeingEntries(DyeingMod.getScreenOverlayData(server), server);
+        // 日志仅统计当前 Dyeing 模组仍提供的数据类型。
+        console.log('[Dyeing清理] 完成(实体/特效) | paint=' + paintResult + ' uv=' + uvResult + ' areaPaint=' + areaPaintResult + ' areaUV=' + areaUVResult + ' screen=' + screenResult);
     } catch (err) {
         console.log('[Dyeing清理] 错误: ' + err);
     }

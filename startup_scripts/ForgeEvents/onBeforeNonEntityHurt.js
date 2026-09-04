@@ -22,10 +22,10 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
     // --- 民主甲套装效果 ---
     // 只有穿戴全套民主装备时生效
     if (
-        victim.getItemBySlot("chest").id == "mysticartifacts:democracy_chestplate" &&
-        victim.getItemBySlot("feet").id == "mysticartifacts:democracy_boots" &&
-        victim.getItemBySlot("head").id == "mysticartifacts:democracy_helmet" &&
-        victim.getItemBySlot("legs").id == "mysticartifacts:democracy_leggings"
+        victim.getItemBySlot("chest").id == "rainbow:democracy_chestplate" &&
+        victim.getItemBySlot("feet").id == "rainbow:democracy_boots" &&
+        victim.getItemBySlot("head").id == "rainbow:democracy_helmet" &&
+        victim.getItemBySlot("legs").id == "rainbow:democracy_leggings"
     ) {
         //console.log(victim.invulnerableTime)
         if(victim.invulnerableTime > 0)

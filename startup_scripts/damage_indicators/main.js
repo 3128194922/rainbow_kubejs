@@ -218,3 +218,38 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingAttackEvent', 
         console.log(e);
     }
 });
+
+// morecallback 战斗事件反馈：神化暴击、神化闪避、原版跳劈统一使用 KubeJS ParticleJS 文本粒子。
+ForgeEvents.onEvent('com.morecallback.event.ApothicCriticalHitEvent', event => {
+    try {
+        let attacker = event.getAttacker();
+        if (attacker == null || attacker.level == null || attacker.level.isClientSide()) return;
+        global.sendParticleTextInFront(attacker, '暴击！', 0xFF3333);
+    } catch (e) {
+        console.log('[ParticleJS] 神化暴击文本粒子出错: ' + e);
+        console.log(e);
+    }
+});
+
+ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
+    try {
+        let target = event.getTarget();
+        if (target == null || target.level == null || target.level.isClientSide()) return;
+        global.sendParticleTextInFront(target, '闪避！', 0x55FFFF);
+    } catch (e) {
+        console.log('[ParticleJS] 神化闪避文本粒子出错: ' + e);
+        console.log(e);
+    }
+});
+
+ForgeEvents.onEvent('com.morecallback.event.VanillaCriticalHitEvent', event => {
+    try {
+        if (event.isSuppressed()) return;
+        let player = event.getPlayer();
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        global.sendParticleTextInFront(player, '跳劈！', 0xFFAA00);
+    } catch (e) {
+        console.log('[ParticleJS] 原版跳劈文本粒子出错: ' + e);
+        console.log(e);
+    }
+});

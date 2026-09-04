@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "gimmethat:democracy_chestplate"
+      "item": "rainbow:democracy_chestplate"
     },
     "title": {
       "text": "民主庇佑"
@@ -22,16 +22,16 @@
         "player": {
           "equipment": {
             "head": {
-              "items": ["gimmethat:democracy_helmet"]
+              "items": ["rainbow:democracy_helmet"]
             },
             "chest": {
-              "items": ["gimmethat:democracy_chestplate"]
+              "items": ["rainbow:democracy_chestplate"]
             },
             "legs": {
-              "items": ["gimmethat:democracy_leggings"]
+              "items": ["rainbow:democracy_leggings"]
             },
             "feet": {
-              "items": ["gimmethat:democracy_boots"]
+              "items": ["rainbow:democracy_boots"]
             }
           }
         }

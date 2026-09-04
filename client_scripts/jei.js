@@ -18,6 +18,9 @@ JEIEvents.hideItems(event => {
     event.hide('minecraft:chain_command_block')
     event.hide('minecraft:repeating_command_block')
     event.hide('minecraft:command_block_minecart')
+    // 隐藏 MysticArtifacts 的旧入口，使用 rainbow 命名空间的复刻物品。
+    event.hide('mysticartifacts:quantum_key')
+    event.hide('mysticartifacts:mandel_brick')
 })
 
 // 添加 JEI 物品信息

@@ -1,6 +1,6 @@
 // 始冰镐范围模式的纯逻辑函数，供 main.js 和 Node 测试共同使用。
 
-const FROSTIUM_PICKAXE_MODES = [3, 5, 7]
+const FROSTIUM_PICKAXE_MODES = [1, 3, 5, 7]
 
 function getNextFrostiumMode(currentMode) {
     let index = FROSTIUM_PICKAXE_MODES.indexOf(Number(currentMode))
@@ -27,7 +27,7 @@ function getFrostiumPlaneFromFace(face) {
 
 function getFrostiumTargets(center, mode, plane) {
     let normalizedMode = Number(mode)
-    if (FROSTIUM_PICKAXE_MODES.indexOf(normalizedMode) < 0) normalizedMode = 3
+    if (FROSTIUM_PICKAXE_MODES.indexOf(normalizedMode) < 0) normalizedMode = 1
 
     let radius = (normalizedMode - 1) / 2
     let targets = []

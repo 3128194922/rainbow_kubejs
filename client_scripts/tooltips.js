@@ -1248,21 +1248,4 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.red("尚未绑定炮台底座"));
         }
     })
-    // 始冰镐：说明潜行右键切换范围，并显示当前模式。
-    event.addAdvanced('rainbow:frostium_pickaxe', (item, advanced, text) => {
-        let mode = 3
-        try {
-            // KubeJS 2001 的客户端 ItemStack 通过 nbt 读取标签，不使用 getNbt()。
-            let nbt = item.nbt
-            if (nbt != null && nbt.contains('FrostiumMiningMode')) {
-                let savedMode = nbt.getInt('FrostiumMiningMode')
-                if (savedMode == 3 || savedMode == 5 || savedMode == 7) mode = savedMode
-            }
-        } catch (e) {
-            console.log('[始冰镐提示] 读取挖掘模式失败：' + e)
-        }
-        text.add(1, Text.aqua('当前挖掘范围：' + mode + '×' + mode))
-        text.add(2, Text.gray('潜行右键：切换为下一个挖掘范围'))
-        text.add(3, Text.gray('可用范围：3×3、5×5、7×7'))
-    })
 })

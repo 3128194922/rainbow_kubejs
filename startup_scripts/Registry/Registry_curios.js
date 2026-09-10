@@ -2019,12 +2019,12 @@ StartupEvents.registry('item', event => {
                     if(hasCuriosTag(entity, "rainbow:glove")) return false;
                     return true;
                 })
-                // 动态攻击力：攻速 > 2 时 +1，否则 +3
+                // 动态攻击力：攻速 > 2.4 时 +1，否则 +3
                 .modifyAttribute(e => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "ender_glove", atkSpeed > 2.5 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "ender_glove", atkSpeed > 2.4 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
@@ -2063,7 +2063,7 @@ StartupEvents.registry('item', event => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "living_gauntlet", atkSpeed > 2.5 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "living_gauntlet", atkSpeed > 2.4 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）
@@ -2103,7 +2103,7 @@ StartupEvents.registry('item', event => {
                     let player = e.slotContext.entity();
                     if (player == null || player === undefined) return;
                     let atkSpeed = player.getAttributeValue("minecraft:generic.attack_speed");
-                    e.modify("minecraft:generic.attack_damage", "gold_glove", atkSpeed > 2.5 ? 1 : 3, "addition");
+                    e.modify("minecraft:generic.attack_damage", "gold_glove", atkSpeed > 2.4 ? 1 : 3, "addition");
                 })
                 .curioTick((slotContext, stack) => {
                     // 攻速变化时写入 NBT 触发 Curios 属性重算（参考 eye_of_satori 刷新模式）

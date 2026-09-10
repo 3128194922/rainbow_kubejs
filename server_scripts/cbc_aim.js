@@ -437,9 +437,10 @@ function readClipboardData(clipboardItem) {
 // cannon_mount:  读 getYawOffset(0)/getPitchOffset(0) = 当前 cannonYaw/cannonPitch
 //                (与脚本 setYaw/setPitch 写入同一基准)
 // fixed_mount:   writeToClipboard 读回当前槽位值, 再按方块朝向基准角反解 (与写入互为逆运算)
-// YAW_FLIP:      cannon_mount 内部基准为 facing.toYRot (N=0,E=90,S=180,W=270),
-//                显示方位角用南0基准 → 加180°翻转; 若实测方向相反, 改为 0
-const YAW_FLIP = 180
+// 2026-09 按 CBC 源码校正约定: cannonYaw = 炮口方位角(原版 yaw 约定, 南0)原值,
+//                cannonPitch = 仰角(0=水平, 正值向上)原值, 无任何 +180/90-θ 偏移。
+//                (依据: CannonMountBlockEntity.applyRotation 的 contraption.yaw = cannonYaw 直接生效;
+//                 cannon_mounts 数据 JSON 射界 俯角30/仰角60 只有按 0=水平 才可玩)
 
 // 读取基座当前角度, 返回 { yaw: 显示方位角(南0), pitch: 真实仰角(向上为正), isInverted: 是否倒立,
 //                        rawYaw: 内部 cannonYaw(仪表基准), rawPitch: getPitchOffset原始值 }
@@ -466,13 +467,12 @@ function readCurrentAngles(block, player) {
             cannonBe.writeToClipboard(tag, dir)
             let slotYaw = Number(tag.getInt('Yaw'))
             let slotPitch = Number(tag.getInt('Pitch'))
-            let baseYaw = Number(dir.toYRot())
+            // 原 dir.toYRot()/getAxisDirection()/getAxis() 在本环境会解析失败(报 Cannot find function)，
+            // 改用 cannon_target/main.js 提供的方向名字符串映射，数值语义不变
+            let baseYaw = cannonTargetDirectionYaw(dir)
             let curYaw = (slotYaw + baseYaw) % 360
             if (curYaw < 0) curYaw += 360
-            let axDirStr = String(dir.getAxisDirection())
-            let axStr = String(dir.getAxis())
-            let flag1 = (axDirStr == 'POSITIVE') == (axStr == 'X')
-            let sgn = flag1 ? 1 : -1
+            let sgn = cannonTargetDirectionSign(dir)
             let curPitch = slotPitch * sgn
             console.log('[CBC Aim] 固定基座读回: slotYaw=' + slotYaw + ' 基准=' + baseYaw + ' → yaw=' + curYaw.toFixed(2) + ' | slotPitch=' + slotPitch + ' sgn=' + sgn + ' → pitch=' + curPitch.toFixed(2))
             return { yaw: curYaw, pitch: curPitch, isInverted: false, rawYaw: slotYaw, rawPitch: slotPitch }
@@ -487,15 +487,13 @@ function readCurrentAngles(block, player) {
             // 注意: Minecraft Direction 覆写了 toString() 返回小写 name ("up"/"down"),
             //       String(Direction.UP) == "up" (不是 "UP")!
             let isInverted = verticalDir != null && String(verticalDir) == 'up'
+            // 2026-09 校正: cannonYaw/cannonPitch 即方位角/仰角原值, 无翻转偏移
             let rawYaw = Number(cannonBe.getYawOffset(0))
             let rawPitch = Number(cannonBe.getPitchOffset(0))
-            // Yaw 基准换算: 正立 cannonYaw = yaw_MC+180, 倒立 cannonYaw = yaw_MC (绕竖直轴旋转方向相反)
-            let yawFlip = isInverted ? 0 : YAW_FLIP
-            let curYaw = (rawYaw + yawFlip) % 360
+            let curYaw = rawYaw % 360
             if (curYaw < 0) curYaw += 360
-            // rawPitch = cannonPitch*downSgn (倒立取反), 反解真实仰角
-            let curPitch = isInverted ? (rawPitch - 90) : (90 - rawPitch)
-            console.log('[CBC Aim] 炮塔基座读回(' + (isInverted ? '倒立' : '正立') + '): rawYaw=' + rawYaw.toFixed(2) + ' (翻转' + yawFlip + '°→' + curYaw.toFixed(2) + ') rawPitch=' + rawPitch.toFixed(2) + ' → 仰角=' + curPitch.toFixed(2))
+            let curPitch = rawPitch
+            console.log('[CBC Aim] 炮塔基座读回(' + (isInverted ? '倒立' : '正立') + '): rawYaw=' + rawYaw.toFixed(2) + ' rawPitch=' + rawPitch.toFixed(2) + ' → 方位角=' + curYaw.toFixed(2) + ' 仰角=' + curPitch.toFixed(2))
             return { yaw: curYaw, pitch: curPitch, isInverted: isInverted, rawYaw: rawYaw, rawPitch: rawPitch }
         }
     } catch (ex) {
@@ -533,13 +531,15 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
     let sz = block.pos.z + 0.5
 
     // 仰角扫描范围按基座类型与朝向决定 (各状态的物理可用射界):
-    //   fixed_cannon_mount(水平): cannonPitch 配置 [-30,60] → 仰角射界 [-30°,60°]
-    //   cannon_mount 正立:        cannonPitch [0,60] → 仰角射界 [30°,90°]
-    //   cannon_mount 倒立:        cannonPitch [-90,0] → 仰角射界 [-90°,0°]
+    //   来源: CBC 数据 data/createbigcannons/cannon_mounts/<type>/big_cannon.json
+    //   (cannonPitch=0 为炮管水平, 射界即仰角范围; 2026-09 校正, 旧范围 [30,90]/[-90,0] 基于错误约定)
+    //   fixed_cannon_mount(水平): 俯角30/仰角60 → 仰角射界 [-30°,60°]
+    //   cannon_mount 正立(down):  俯角30/仰角60 → 仰角射界 [-30°,60°]
+    //   cannon_mount 倒立(up):    俯角90/仰角15 → 仰角射界 [-90°,15°]
     let scanLow = -30, scanHigh = 60
     if (block.id != 'createbigcannons:fixed_cannon_mount') {
-        if (isInverted) { scanLow = -90; scanHigh = 0 }
-        else { scanLow = 30; scanHigh = 90 }
+        if (isInverted) { scanLow = -90; scanHigh = 15 }
+        else { scanLow = -30; scanHigh = 60 }
     }
 
     // 从装药=1开始递增，找到第一个能命中目标的解
@@ -597,17 +597,15 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
             // Create 的 ClipboardCloneable: readFromClipboard(CompoundTag, Player, Direction, boolean)
             // 写入 int 角度(范围 -45~45) (水平安装炮塔, 角度即显示角度)
             let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : Direction.NORTH
-            let baseYaw = dir.toYRot()
+            // 原 dir.toYRot()/getAxisDirection()/getAxis() 在本环境会解析失败，改用方向名字符串映射（cannon_target/main.js 提供）
+            let baseYaw = cannonTargetDirectionYaw(dir)
 
             let yawAdj = yaw - baseYaw
             while (yawAdj > 180) yawAdj -= 360
             while (yawAdj <= -180) yawAdj += 360
 
             // 方向符号: 与 CBC tick 逻辑一致 (PitchOrientedContraptionEntity.pitch = cannonPitch * sgn, cannonPitch=0)
-            let axDirStr = String(dir.getAxisDirection())
-            let axStr = String(dir.getAxis())
-            let flag1 = (axDirStr == 'POSITIVE') == (axStr == 'X')
-            let sgn = flag1 ? 1 : -1
+            let sgn = cannonTargetDirectionSign(dir)
             let pitchAdj = pitch * sgn
 
             if (yawAdj < -45) { yawAdj = -45; clipped = true }
@@ -626,17 +624,16 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
             targetMeterPitch = pitchAdj
         } else {
             // CannonMount: 垂直炮塔
-            //   正立/倒立由 vertical_direction 决定 (用户确认规则):
-            //     正立(down): cp = 90-θ  (θ∈[30,90] → cp∈[0,60])       cannonYaw = yaw_MC+180
-            //     倒立(up):   cp = -90-θ (θ∈[-90,0] → cp∈[-90,0])      cannonYaw = yaw_MC
-            //     (垂直炮塔炮口绕竖直轴旋转方向与水平炮塔相反; 正立由 MountedAutocannonContraption 骑乘 yaw=yRotO+180 印证,
-            //       倒立因炮口朝下旋转方向再翻转 180°)
+            // 2026-09 按 CBC 源码校正约定: cannonYaw = 炮口方位角(原版 yaw 约定)直接写入,
+            // cannonPitch = 仰角(0=水平, 正值抬仰角)直接写入, 无 +180 / 90-θ 偏移。
+            // (旧公式的 +180 让炮口恰好指向反方向; 依据 CannonMountBlockEntity.applyRotation
+            //   的 contraption.yaw = cannonYaw 直接生效, 以及 cannon_mounts 数据 JSON 射界)
             //    弹道高度常数 ballisticSign 与正/倒立一致 (+2/-2)
             // 物理射界保险 clamp (solve 已按扫描范围限定, 此处防边界浮点误差)
             if (pitch < scanLow) { pitch = scanLow; clamped = true }
             if (pitch > scanHigh) { pitch = scanHigh; clamped = true }
-            let cp = verticalSign * 90 - pitch
-            let cannonYawVal = yaw + (isInverted ? 0 : 180)
+            let cp = pitch
+            let cannonYawVal = yaw
             if (cannonYawVal >= 360) cannonYawVal -= 360
             if (clamped) {
                 applyNote = ' §c(目标超出炮塔物理射界，仰角已截断到可用范围)'

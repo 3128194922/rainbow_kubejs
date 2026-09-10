@@ -93,6 +93,30 @@ StartupEvents.registry("block", event => {
             );
         });
 });
+// 📻 炮兵电台：方块实体每秒主动扫描周围 16×1×16 内已组装火炮的 CBC 底座并记录数量；
+//    信标球（rainbow:cannon_targeter）潜行右键绑定电台后，投掷目标由电台调度范围内火炮齐射
+//    （扫描/绑定/调度逻辑在 server_scripts/cannon_target/main.js，通过 global.cannonRadioTick 调用）
+StartupEvents.registry('block', event => {
+    event.create('rainbow:artillery_radio', "cardinal")
+        .defaultCutout()
+        .displayName('炮兵电台')
+        .material('metal')
+        .soundType('metal') // 金属音效（Builder 无 metalSoundType 快捷方法，用 soundType 字符串指定）
+        .hardness(3)
+        .resistance(6)
+        .blockEntity(entityInfo => {
+            entityInfo.serverTick(20, 0, entity => {
+                try {
+                    if (typeof global.cannonRadioTick == 'function') {
+                        global.cannonRadioTick(entity)
+                    }
+                } catch (e) {
+                    console.log('[CannonTarget] 电台tick异常: ' + e)
+                }
+            })
+        })
+})
+
 /*
 // 逻辑计算机
 StartupEvents.registry("block", event => {

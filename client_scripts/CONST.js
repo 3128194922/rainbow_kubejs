@@ -17,4 +17,6 @@ const MobEffectUtil = Java.loadClass('net.minecraft.world.effect.MobEffectUtil')
 const LivingEntity = Java.loadClass('net.minecraft.world.entity.LivingEntity')
 const GLFW = Java.loadClass('org.lwjgl.glfw.GLFW')
 const Color = Java.loadClass("java.awt.Color")
+// 轴向旋转四元数工厂（cannon_target 信标球 billboard 渲染使用 YP 轴）
+const Axis = Java.loadClass("com.mojang.math.Axis")
 const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")

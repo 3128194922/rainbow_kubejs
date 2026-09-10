@@ -123,6 +123,17 @@ StartupEvents.registry('entity_type', event => {
         .mobCategory('misc')
         .modelResource(entity => "rainbow:geo/entity/psychic_scroll.geo.json")
         .textureResource(entity => "rainbow:textures/item/beacon_ball.png")
+        .render(context => {
+            // billboard 渲染：贴图始终面朝玩家（同烈焰弹），具体旋转在客户端执行
+            // 委托 client_scripts/cannon_target/main.js 的 global.cannonTargetMarkerBillboard
+            try {
+                if (typeof global.cannonTargetMarkerBillboard == 'function') {
+                    global.cannonTargetMarkerBillboard(context);
+                }
+            } catch (e) {
+                console.log('[CannonTarget] 目标实体渲染异常: ' + e);
+            }
+        })
         .tick(entity => {
             try {
                 if (entity.getLevel().isClientSide()) return;

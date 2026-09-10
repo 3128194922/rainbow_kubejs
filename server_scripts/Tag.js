@@ -107,7 +107,7 @@ ServerEvents.tags("item", event => {
     event.add('rainbow:docker', ['rainbow:docker', 'rainbow:luban_lock'])
 
     // 自动武器
-    event.add('shiledattack:auto_swing', ['cataclysm:ancient_spear','cataclysm:tidal_claws','alexsmobs:tendon_whip'])
+    event.add('shiledattack:auto_swing', ['cataclysm:ancient_spear','cataclysm:tidal_claws','alexsmobs:tendon_whip','mysticartifacts:katana'])
 
     // 古籍标签
     event.add("rainbow:oldbook", ['quark:ancient_tome'])

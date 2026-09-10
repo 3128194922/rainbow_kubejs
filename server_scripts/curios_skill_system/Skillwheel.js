@@ -168,16 +168,19 @@ registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIn
             let rangeId = "chronos_slow_range";
             let slowTicks = 10 * 20; // 持续 10 秒
 
-            server.runCommandSilent("/timecontroller sphere_follow " + player.username + " 100 " + slowTicks + " " + radius);
+            // 时缓API必须用玩家自身指令源执行：TimeController 会把时缓绑定到指令源所在维度，
+            // 用 server 控制台源会固定绑定主世界，导致其他维度（后室/副本等）时缓完全无效
+            player.runCommandSilent("/timecontroller sphere_follow " + player.username + " 100 " + slowTicks + " " + radius);
 
-            // Dyeing 半透明黑雾显示时停影响范围（以玩家为中心，跟随玩家移动）
+            // Dyeing 低透明度深蓝紫脉动旋转场显示时停影响范围（以玩家为中心，跟随玩家移动）
             server.runCommandSilent(
-                "/dyeing area add static " + rangeId + " " + uuid + " " +
+                "/dyeing area add scale " + rangeId + " " + uuid + " " +
                 (-radius) + " " + (-radius) + " " + (-radius) + " " +
                 radius + " " + radius + " " + radius + " " +
-                "80000000"
+                "402A3DFF 0.95 1.0 0.65 1.0 40 -60 -1"
             );
-            server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80000000 4.0");
+            // 施法者使用 1 倍冰蓝半透明染色，避免旧效果放大模型干扰时停范围
+            server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80B8D8FF 1.0");
 
             server.scheduleInTicks(slowTicks, function() {
                 try {
@@ -1299,10 +1302,11 @@ registerSkill('rainbow:super_hormone', (event, player, itemStack, isSubmenu, sub
         // 恢复 1000 血量
         player.heal(1000);
 
-        // 全局时间减缓 80%（使用 TimeController 的 global 模式）
-        let server = player.server;
+        // 当前维度全局时间减缓 80%（使用 TimeController 的 global 模式）
+        // 时缓API必须用玩家自身指令源执行：TimeController 会把时缓绑定到指令源所在维度，
+        // 用 server 控制台源会固定绑定主世界，导致其他维度（后室/副本等）时缓完全无效
         let durationTicks = 20 * 10;
-        server.runCommandSilent("/timecontroller global " + player.username + " 80 " + durationTicks);
+        player.runCommandSilent("/timecontroller global " + player.username + " 80 " + durationTicks);
 
         // 迅捷效果（与时缓同步持续 10 秒，等级 2，环境粒子，无粒子显示）
         player.potionEffects.add("minecraft:speed", durationTicks, 2, true, false);

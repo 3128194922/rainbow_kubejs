@@ -1,0 +1,268 @@
+# Don't change this! Version used to track needed updates.
+version = 6
+# Static mappings - registry aliasing at startup (requires restart)
+staticMappings = [  ]
+
+[debug]
+# Logging level: NONE, ERRORS, WARNINGS, ALL
+logLevel = "ERRORS"
+
+# Dynamic mappings - runtime effect conversion (reloadable)
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:bleeding* !*:bleeding*_immunity !*:bleeding*_resistance"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "majruszsdifficulty:bleeding, attributeslib:bleeding, valoria:bleeding"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# 将原版抗性效果替换为 Rainbow Power 自定义抗性效果。
+sourceEffect = "minecraft:resistance"
+targetEffect = "rainbow:resistance"
+# 保持药水等级不变。
+amplifierMultiplier = 1.0
+onlyVisualChange = false
+unidirectional = false
+extraApplyEffectTick = ""
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:stun* !*:stun*_resistance !*:stun*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "relics:stun, alexscaves:stunned"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:froz* !*:froz*_resistance !*:froz*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "mowziesmobs:frozen, more_rpg_classes:frozen_solid"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:chill* !*:chill*_resistance !*:chill*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "irons_spellbooks:chilled"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:immolat* !*:immolat*_resistance !*:immolat*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "irons_spellbooks:immolate"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:confusion* !*:confusion*_resistance !*:confusion*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "relics:confusion"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:knowledge* !*:knowledge*_resistance !*:knowledge*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "attributeslib:knowledge"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "*:sapped* !*:sapped*_resistance !*:sapped*_immunity"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "goety:sapped"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "more_rpg_classes:frozen_solid"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "mowziesmobs:frozen"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "more_rpg_classes:frosted"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "mowziesmobs:frozen, more_rpg_classes:frozen_solid"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "netherdepthsupgrade:lava_vision"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "alexsmobs:lava_vision"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "alexscaves:stunned"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "relics:stun"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "attributeslib:bleeding"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "majruszsdifficulty:bleeding"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# Source effect pattern: *:bleeding, *:bleeding*, modid:effect*, *:bleeding* !*:immunity
+sourceEffect = "valoria:bleeding"
+# Target effect (comma-separated for fallback): primary:effect, fallback:effect
+targetEffect = "majruszsdifficulty:bleeding, attributeslib:bleeding"
+# Amplifier multiplier
+amplifierMultiplier = 1.0
+# Visual change only (no amplifier conversion)
+onlyVisualChange = false
+# Unidirectional (prevents source mod handlers)
+unidirectional = false
+# Extra effects to call applyUpdateEffect() (comma-separated)
+extraApplyEffectTick = ""
+# Effects to block applyUpdateEffect() (comma-separated, supports wildcards)
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# 将原版抗火效果替换为 Rainbow Power 自定义抗火效果。
+sourceEffect = "minecraft:fire_resistance"
+targetEffect = "rainbow:fire_resistance"
+# 保持药水等级不变。
+amplifierMultiplier = 1.0
+# 使用自定义效果的属性实现，不仅替换显示。
+onlyVisualChange = false
+unidirectional = false
+extraApplyEffectTick = ""
+discardEffectTick = ""
+
+[[dynamicMappings]]
+# 将原版力量效果替换为 Rainbow Power 自定义力量效果。
+sourceEffect = "minecraft:strength"
+targetEffect = "rainbow:strength"
+# 保持药水等级不变。
+amplifierMultiplier = 1.0
+onlyVisualChange = false
+unidirectional = false
+extraApplyEffectTick = ""
+discardEffectTick = ""

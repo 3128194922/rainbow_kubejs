@@ -1,7 +1,7 @@
 // 盾反主入口：统一处理击退、粒子/音效反馈，以及原有饰品联动。
 
-// 将攻击者推离玩家，5 点伤害默认换算为 1 格水平击退速度。
-function applyShieldParryKnockback(player, attacker, blockedDamage) {
+// 将攻击者推离玩家，击飞距离 = 3 格基础 + 0.5 格/点攻击击退属性。
+function applyShieldParryKnockback(player, attacker) {
     try {
         if (!player || !attacker || !attacker.isAlive()) return;
 
@@ -18,7 +18,7 @@ function applyShieldParryKnockback(player, attacker, blockedDamage) {
         }
         if (distance < 0.0001) return;
 
-        let speed = calculateShieldParryKnockbackSpeed(blockedDamage);
+        let speed = calculateShieldParryKnockbackSpeed(player);
         if (!(speed > 0)) return;
 
         let motion = attacker.getDeltaMovement();
@@ -79,9 +79,22 @@ ForgeEvents.onEvent('com.shiledattack.event.ShieldParriedEvent', event => {
         if (player.level.isClientSide()) return;
 
         let attacker = event.attacker;
-        let blockedDamage = event.blockedDamage;
 
-        applyShieldParryKnockback(player, attacker, blockedDamage);
+        // 盾反抛射体时不击退发射者：伤害来源的直接实体是抛射物则跳过击退，仅播放反馈。
+        let isProjectileParry = false;
+        try {
+            let damageSource = event.damageSource;
+            if (damageSource != null && damageSource.getDirectEntity() instanceof Projectile) {
+                isProjectileParry = true;
+            }
+        } catch (projErr) {
+            console.log("盾反抛射体判定出现问题：");
+            console.log(projErr);
+        }
+
+        if (!isProjectileParry) {
+            applyShieldParryKnockback(player, attacker);
+        }
         playShieldParryFeedback(player, attacker);
 
         if (hasCurios(player, "rainbow:sharingan")) {

@@ -443,6 +443,11 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua("潜行右键：以自身为中心半径8格区域时间停止（持续5秒）"));
         }
     })
+    // 小宇宙物品：说明进入个人世界与返回进入前位置的右键行为。
+    event.addAdvanced('rainbow:mini_world', (item, advanced, text) => {
+        text.add(1, Text.aqua('右键：进入自己的个人小世界'))
+        text.add(2, Text.aqua('个人世界内右键：返回进入前的位置'))
+    })
     event.addAdvanced('rainbow:ancientaegis', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -844,6 +849,7 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced(['mysticartifacts:democracy_helmet', 'mysticartifacts:democracy_chestplate', 'mysticartifacts:democracy_leggings', 'mysticartifacts:democracy_boots', 'rainbow:democracy_helmet', 'rainbow:democracy_chestplate', 'rainbow:democracy_leggings', 'rainbow:democracy_boots'], (item, advanced, text) => {
         text.add(1, Text.aqua("绝地潜兵战术护甲(防御 6/11/9/6)"));
         text.add(2, Text.aqua("韧性 +4，使用超薄橡胶修复"));
+        text.add(3, Text.gray("GEO 战术模型，按装备部位显示"));
     })
     // 下界之音
     event.addAdvanced('mysticartifacts:nether_of_voice', (item, advanced, text) => {
@@ -1231,21 +1237,30 @@ ItemEvents.tooltip((event) => {
             text.add(4, Text.gold("潜行：召唤偏转卷轴(偏转加速射来的抛射体)"));
         }
     })
-    // CBC 炮击标定器：显示绑定底座与投掷目标实体的使用方式。
+    // CBC 炮击标定器（信标球）：一对一底座绑定 / 炮兵电台齐射绑定 两种互斥模式。
     event.addAdvanced('rainbow:cannon_targeter', (item, advanced, text) => {
-        text.add(1, Text.gray("潜行右键 CBC 炮台底座：绑定"));
-        text.add(2, Text.gray("右键：投掷目标，目标停止后自动瞄准并开火"));
+        text.add(1, Text.gray("潜行右键 CBC 炮台底座：绑定（该炮单独开火）"));
+        text.add(2, Text.gray("潜行右键炮兵电台：绑定（范围内火炮齐射）"));
+        text.add(3, Text.gray("右键：投掷目标，目标停止后自动开火"));
         let nbt = item.getNbt();
-        if (nbt != null && nbt.contains('cannonTargetDimension')) {
-            text.add(3, Text.gold("已绑定：").append(Text.yellow(
+        if (nbt != null && nbt.contains('cannonRadioBound')) {
+            text.add(4, Text.gold("已绑定炮兵电台：").append(Text.yellow(
+                '['
+                + nbt.getInt('cannonRadioX') + ', '
+                + nbt.getInt('cannonRadioY') + ', '
+                + nbt.getInt('cannonRadioZ') + ']'
+            )));
+            text.add(5, Text.aqua("电台模式：投掷后电台范围内 16×1×16 的所有火炮集中齐射"));
+        } else if (nbt != null && nbt.contains('cannonTargetDimension')) {
+            text.add(4, Text.gold("已绑定：").append(Text.yellow(
                 nbt.getString('cannonTargetMount') + ' ['
                 + nbt.getInt('cannonTargetX') + ', '
                 + nbt.getInt('cannonTargetY') + ', '
                 + nbt.getInt('cannonTargetZ') + ']'
             )));
-            text.add(4, Text.gray("维度：" + nbt.getString('cannonTargetDimension')));
+            text.add(5, Text.gray("维度：" + nbt.getString('cannonTargetDimension')));
         } else {
-            text.add(3, Text.red("尚未绑定炮台底座"));
+            text.add(4, Text.red("尚未绑定"));
         }
     })
 })

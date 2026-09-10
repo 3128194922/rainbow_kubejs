@@ -41,6 +41,7 @@
     Kubejs Entity附属：E:\Server_mod\其他项目\EntityJS-EntityJS-1.20.1-forge
     Forge 1.20.1源码：E:\Server_mod\其他项目\MinecraftForge
     Kubejs 渲染附属：E:\Server_mod\其他项目\RenderJS
+15. level.isClientSide 是错误写法 必须写为 level.isClientSide()
 
 # 输出要求
 

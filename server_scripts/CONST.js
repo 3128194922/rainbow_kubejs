@@ -70,6 +70,8 @@ const Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Project
 const SwordItem = Java.loadClass('net.minecraft.world.item.SwordItem')
 const EnchantmentHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper')
 const UUID = Java.loadClass('java.util.UUID')
+// 小宇宙物品：个人世界进入与返回 API（由 miniWorld 模组提供）
+const MiniWorldApi = Java.loadClass('com.miniworld.api.MiniWorldApi')
 const ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
 const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
 const CuriosApi = Java.loadClass('top.theillusivec4.curios.api.CuriosApi')

@@ -43,6 +43,8 @@ const DDEntities = Java.tryLoadClass('net.yirmiri.dungeonsdelight.core.registry.
 const DDSounds = Java.tryLoadClass('net.yirmiri.dungeonsdelight.core.registry.DDSounds')
 
 const AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.AbstractArrow')
+// 盾反判定抛射体使用：判断伤害来源的直接实体是否为抛射物
+const Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Projectile')
 const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
 const Stats = Java.loadClass('net.minecraft.stats.Stats')
 const EnchantmentHelper = Java.loadClass('net.minecraft.world.item.enchantment.EnchantmentHelper')
@@ -146,6 +148,10 @@ global.COLORS = {
     黑: [0.06, 0.06, 0.06]
   }
   
+
+//GUIJS 演示：原版熔炉配方查询与临时容器
+const RecipeType = Java.loadClass('net.minecraft.world.item.crafting.RecipeType')
+const SimpleContainer = Java.loadClass('net.minecraft.world.SimpleContainer')
 
 //获取全部附魔
 global.allEnchantments = []

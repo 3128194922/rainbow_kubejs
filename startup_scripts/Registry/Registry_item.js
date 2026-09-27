@@ -124,10 +124,15 @@ StartupEvents.registry("item", event => {
     // 群系之刃：高攻击力剑
     //event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
 
-    // 决斗细剑：对同类型生物伤害增加
-    event.create("rainbow:duel", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
-        .tooltip("§6对同一类型生物伤害增加1.5")
-
+    // 决斗细剑：对同一 UUID 生物伤害增加，主手提供 20% 闪避几率
+    event.create("rainbow:duel", "sword")
+    .maxDamage(1000)
+    .attackDamageBonus(3)
+    .maxStackSize(1)
+    .attackDamageBaseline(2.0)
+    .modifyAttribute("attributeslib:dodge_chance", "duel_dodge_chance", 0.2, "addition")
+    .speedBaseline(-2.0)
+    
     // 虚空粗矿
     event.create("rainbow:raw_voidore", "basic")
     // 魔爪
@@ -192,13 +197,34 @@ event.create("rainbow:baseball_power", "sword")
     .attackDamageBonus(19.0)
     .attackDamageBaseline(0.0)*/
 
-// 先驱者动力剑：恢复普通形态与充能形态的实际注册，供现有右键和攻击逻辑使用。
-event.create("rainbow:baseball_bat", "sword")
+// 先驱者动力剑：使用 GeckoJS 的 anim_sword 渲染 Blockbench 当前模型，并注册分解立场的三段触发动画。
+event.create("rainbow:power_sword", "anim_sword")
     .attackDamageBonus(7.0)
     .attackDamageBaseline(0.0)
-event.create("rainbow:baseball_power", "sword")
-    .attackDamageBonus(19.0)
-    .attackDamageBaseline(0.0)
+    .addController(controller => {
+        try {
+            controller
+                .name("power_sword_controller")
+                .triggerableAnim("decomposition_field_open", RawAnimation.begin().thenPlay("decomposition_field_open"))
+                .triggerableAnim("decomposition_field_loop", RawAnimation.begin().thenLoop("decomposition_field_loop"))
+                .triggerableAnim("decomposition_field_close", RawAnimation.begin().thenPlay("decomposition_field_close"));
+        }
+        catch (e) {
+            console.log("先驱者动力剑 GeckoJS 动画控制器注册出错：");
+            console.log(e);
+        }
+    })
+    .geoModel(geo => {
+        try {
+            geo.setSimpleModel("rainbow:geo/item/power_sword.geo.json");
+            geo.setSimpleTexture("rainbow:textures/item/power_sword_geo.png");
+            geo.setSimpleAnimation("rainbow:animations/item/power_sword.animation.json");
+        }
+        catch (e) {
+            console.log("先驱者动力剑 GeckoJS 模型注册出错：");
+            console.log(e);
+        }
+    })
 
 // 泰拉刃：强大的武器
 //event.create("rainbow:terasword", "sword")

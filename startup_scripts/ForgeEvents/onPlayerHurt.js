@@ -13,29 +13,31 @@
 function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!victim.isPlayer()) return;
 
-    // --- 古代庇护饰品 ---
-    // 转移伤害给绑定的玩家
-    if (hasContextCurio(context, "victim", victim, "rainbow:ancientaegis")) {
-        let item = getContextCurioStack(context, "victim", "rainbow:ancientaegis");
-        if (item && item.nbt) {
-            let uuidStr = item.nbt.getString("UUID");
-            if (uuidStr) {
+    // --- 远古之庇护 ---
+    // A 方案：受伤者与同队伍内其他在线佩戴者平均承担本次伤害。
+    // 转移部分使用魔法伤害，并由 global 标记阻止转移事件再次递归分摊。
+    if (hasContextCurio(context, "victim", victim, "rainbow:ancientaegis")
+        && !global.ancientAegisRedirecting
+        && typeof global.getAncientAegisDamageTargets === "function") {
+        try {
+            let targets = global.getAncientAegisDamageTargets(victim);
+            let originalAmount = event.getAmount();
+            if (targets != null && targets.length > 1 && originalAmount > 0) {
+                let sharedAmount = originalAmount / targets.length;
+                global.ancientAegisRedirecting = true;
                 try {
-                    let uuid = UUID.fromString(uuidStr);
-                    let targetPlayer = victim.level.getPlayerByUUID(uuid);
-                    if (targetPlayer) {
-                        if(getCuriosItem(targetPlayer, "rainbow:ancientaegis") != null)
-                        {
-                            return; // 目标玩家也有古代庇护，不转移伤害
-                        }
-                        // 将伤害转移给绑定目标，自身免伤
-                        targetPlayer.attack(targetPlayer.damageSources().magic(), event.getAmount());
-                        event.setAmount(0);
+                    for (let target of targets) {
+                        if (target == null || target.getId() === victim.getId()) continue;
+                        target.hurt(target.damageSources().magic(), sharedAmount);
                     }
-                } catch (err) {
-                    console.log("UUID 解析失败: " + err);
+                } finally {
+                    global.ancientAegisRedirecting = false;
                 }
+                event.setAmount(sharedAmount);
             }
+        } catch (e) {
+            global.ancientAegisRedirecting = false;
+            console.log("[远古之庇护] 队伍伤害分担失败: " + e);
         }
     }
 

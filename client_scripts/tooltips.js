@@ -179,6 +179,8 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:soul_diamond', (item, advanced, text) => {
         text.add(1, Text.aqua(`开启后释放心灵墙`));
     })
+    // 已停用：闪电瓶 tooltip。
+    /*
     event.addAdvanced('rainbow:bottled_lightning', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -194,6 +196,15 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("▸主动：进入灵体状态3秒，可穿墙逃生"));
             text.add(2, Text.aqua("  时间结束后返回生存模式，冷却10秒"));
+        }
+    })
+    */
+    event.addAdvanced('windswept:ice_lantern', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸主动：冻结半径4格内除自己外的所有实体15秒"));
+            text.add(2, Text.aqua("  释放时生成冰霜光环，冷却15秒"));
         }
     })
     event.addAdvanced('rainbow:cactus', (item, advanced, text) => {
@@ -452,11 +463,10 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("右键绑定在线玩家"));
-            text.add(2, Text.aqua("你受到的伤害将转移到对应在线玩家身上"));
-            let uuidText = ""
-            if (item.nbt != null) uuidText = item.nbt.getString("UUID")
-            text.add(3, Text.gold("绑定对象ID: ").append(Text.yellow(String(uuidText))));
+            text.add(1, Text.aqua("加入小队后右键打开队伍界面"));
+            text.add(2, Text.aqua("同队伍内佩戴者平均分担所受伤害"));
+            text.add(3, Text.aqua("分担伤害以魔法伤害形式转移"));
+            text.add(4, Text.aqua("未加入队伍时无法佩戴"));
         }
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
@@ -493,22 +503,22 @@ ItemEvents.tooltip((event) => {
             text.add(9, Text.darkGray("拘束制御术式 零 解"));
         }
     })
-    event.addAdvanced('rainbow:baseball_bat', (item, advanced, text) => {
-        // 先判断 NBT 是否存在
-        text.add(1, Text.gold(`[未激活]`));
-    })
-    event.addAdvanced('rainbow:baseball_power', (item, advanced, text) => {
-        // 先判断 NBT 是否存在
-        text.add(1, Text.gold("能量：").append(Text.yellow("0")));
+    event.addAdvanced('rainbow:power_sword', (item, advanced, text) => {
+        // 先判断 NBT 是否存在，并显示单物品当前的分解立场状态。
         let nbt = item.getNbt();
-        if (!nbt) {
-            return;
-        }
-        else
-        {
-            text.remove(1)
-            text.add(1, Text.gold("能量：").append(Text.yellow(`${nbt.getInt("Power")}`)));
-        }
+        let active = nbt != null && nbt.getBoolean("DecompositionField");
+        text.add(1, active ? Text.gold("[分解立场]") : Text.gray("[未激活]"));
+        text.add(2, Text.gold("能量：").append(Text.yellow(nbt != null ? `${nbt.getInt("Power")}` : "0")));
+        text.add(3, Text.gray("右键：开启 10 秒分解立场"));
+        text.add(4, Text.gray("攻击会消耗立场能量"));
+    })
+    // 决斗细剑：说明主手闪避加成、被动闪避回血、UUID 追击与极限闪避力量效果。
+    event.addAdvanced('rainbow:duel', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 主手：+20% 闪避几率"));
+        text.add(2, Text.aqua("▸ 连续攻击同一生物（按 UUID）：伤害 ×1.5"));
+        text.add(3, Text.aqua("▸ 触发被动闪避：恢复 4 点生命值"));
+        text.add(4, Text.aqua("▸ 触发极限闪避：获得力量 I，持续 3 秒"));
+        text.add(5, Text.gray("▸ 更换目标后重新记录目标 UUID"));
     })
     event.addAdvanced('rainbow:amber_bee', (item, advanced, text) => {
         text.add(1, Text.gray("按 [ALT] 查看详细"));
@@ -750,16 +760,15 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.darkGray("据说闻起来像葡萄汁"));
         }
     })
-    // 鸦羽骨哨：实际效果见 server_scripts/curios_skill_system/Skillwheel.js 的 registerSkill('rainbow:whistle')（主动技能：20秒范围内敌人攻击伤害降低50%，半径8格，自动排除友军）
+    // 鸦羽骨哨：主动技能将使用者和附近实体传送到使用者的个人维度
     event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("主动技能：开启后 10 秒内，以自身为中心"));
-            text.add(2, Text.aqua("半径 8 格内的敌人攻击伤害降低 50%"));
-            text.add(3, Text.aqua("领域自动排除友军（已驯服宠物/佣兵）"));
-            text.add(4, Text.aqua("半透明黑雾显示领域影响范围"));
-            text.add(5, Text.red("素材版权警告，需要验证版权问题"));
+            text.add(1, Text.aqua("主动技能：将自身传送进个人维度"));
+            text.add(2, Text.aqua("同时传送使用前半径 8 格内的所有实体"));
+            text.add(3, Text.aqua("包括附近玩家，排除使用者自身"));
+            text.add(4, Text.aqua("冷却 20 秒"));
         }
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
@@ -1236,6 +1245,12 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.aqua("朝施法方向持续发射(雪球/箭/投掷药水等)"));
             text.add(4, Text.gold("潜行：召唤偏转卷轴(偏转加速射来的抛射体)"));
         }
+    })
+    // 📻 炮兵电台：右键播报范围内火炮数量并播放电台音效；被信标球潜行右键绑定为齐射模式。
+    event.addAdvanced('rainbow:artillery_radio', (item, advanced, text) => {
+        text.add(1, Text.gray("右键：播报范围内已组装火炮数量（伴随无线电静电音效）"));
+        text.add(2, Text.gray("被信标球潜行右键：绑定电台齐射模式"));
+        text.add(3, Text.aqua("电台扫描范围：周围 16×1×16 内的 CBC 火炮底座"));
     })
     // CBC 炮击标定器（信标球）：一对一底座绑定 / 炮兵电台齐射绑定 两种互斥模式。
     event.addAdvanced('rainbow:cannon_targeter', (item, advanced, text) => {

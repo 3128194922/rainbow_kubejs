@@ -133,7 +133,7 @@ Curios 索引只在当前事件中使用，不跨 tick 缓存，避免玩家更�
 
 ### 攻击入口
 
-- `handleAttackWeapon.js`：泰拉刃、动力剑、决斗剑。通过物品 ID 查表后使用 `switch` 分发。
+- `handleAttackWeapon.js`：泰拉刃、动力剑。通过物品 ID 查表后使用 `switch` 分发；决斗剑的 UUID 伤害逻辑位于 `handleWeaponEffects.js`，闪避效果位于 `rainbow/duel/main.js`。
 - `handleAttackCurios.js`：末影手套、生灵手套、天秤座、点金手套、流浪软糖包。复用攻击事件的 Curios 索引。
 
 ### 受伤前

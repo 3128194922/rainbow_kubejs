@@ -4,7 +4,8 @@
 // 💍 注册饰品与特殊装备 (Curios)
 // ==========================================
 
-// 闪电瓶
+// 已停用：闪电瓶物品注册。
+/*
 StartupEvents.registry('item', event => {
     event.create('rainbow:bottled_lightning')
         .rarity("epic")
@@ -14,6 +15,7 @@ StartupEvents.registry('item', event => {
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
         )
 })
+*/
 
 // 心灵宝石
 StartupEvents.registry('item', event => {
@@ -634,7 +636,12 @@ StartupEvents.registry('item', event => {
         .maxStackSize(1)
         .tag("curios:charm")
         .attachCuriosCapability(
-            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+            CuriosJSCapabilityBuilder.create()
+                .canUnequip(canUnequipNotOnCooldown)
+                // 未加入 TeamJS 队伍时禁止佩戴；退队后的已装备饰品由服务器脚本自动卸下。
+                .canEquip(ancientAegisCanEquip)
+                // 右键用途固定为打开 TeamJS 队伍 GUI，禁止 Curios 默认的右键自动装备。
+                .canEquipFromUse((slotContext, stack) => false)
         )
 })
 

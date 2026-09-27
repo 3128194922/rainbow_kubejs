@@ -1,4 +1,6 @@
 // Priority: 5000
+const POWER_SWORD_ATTACK_FIELD_REDUCTION_TICKS = 2 * 20;
+
 /**
  * 处理玩家攻击实体时的武器充能逻辑
  * @param {Internal.AttackEntityEvent} event
@@ -29,23 +31,65 @@ function handleAttackWeapon(event, entity, target, context) {
             }
             break;
         case 2:
-            // 动力剑：充能逻辑
-            if (!mainHand.getNbt().getInt("Power")) {
-                mainHand.getNbt().putInt("Power", 4)
-            } else {
-                mainHand.getNbt().putInt("Power", mainHand.getNbt().getInt("Power") - 1)
-            }
+            // 先驱者动力剑：同一物品通过 NBT 开启分解立场，并保留原有攻击次数消耗。
+            try {
+                let powerSwordTag = mainHand.getNbt();
+                let currentTick = entity.level.getTime();
+                if (powerSwordTag == null || !powerSwordTag.getBoolean("DecompositionField")
+                    || powerSwordTag.getLong("DecompositionFieldUntil") <= currentTick) {
+                    if (powerSwordTag != null && powerSwordTag.getBoolean("DecompositionField")) {
+                        if (typeof global.triggerPowerSwordAnimation === "function") {
+                            global.triggerPowerSwordAnimation(entity, mainHand, "decomposition_field_close");
+                        }
+                        powerSwordTag.remove("DecompositionField");
+                        powerSwordTag.remove("DecompositionFieldUntil");
+                        powerSwordTag.remove("Power");
+                        entity.getInventory().setChanged();
+                    }
+                    return;
+                }
 
-            // 充能耗尽，变回普通棒球棍
-            if (mainHand.getNbt().getInt("Power") == 1) {
-                entity.setItemInHand("main_hand", "rainbow:baseball_bat")
-                entity.cooldowns.addCooldown("rainbow:baseball_bat", SecoundToTick(40))
+                // 动力剑每次有效攻击都会消耗分解立场 2 秒的有效持续时间。
+                let reducedFieldUntil = powerSwordTag.getLong("DecompositionFieldUntil") - POWER_SWORD_ATTACK_FIELD_REDUCTION_TICKS;
+                if (reducedFieldUntil <= currentTick) {
+                    if (typeof global.triggerPowerSwordAnimation === "function") {
+                        global.triggerPowerSwordAnimation(entity, mainHand, "decomposition_field_close");
+                    }
+                    powerSwordTag.remove("DecompositionField");
+                    powerSwordTag.remove("DecompositionFieldUntil");
+                    powerSwordTag.remove("Power");
+                    entity.getInventory().setChanged();
+                    entity.cooldowns.addCooldown("rainbow:power_sword", SecoundToTick(40));
+                }
+                else {
+                    powerSwordTag.putLong("DecompositionFieldUntil", reducedFieldUntil);
+
+                    let power = powerSwordTag.getInt("Power");
+                    if (power <= 0) {
+                        power = 4;
+                    }
+                    else {
+                        power = power - 1;
+                    }
+                    powerSwordTag.putInt("Power", power);
+                    entity.getInventory().setChanged();
+
+                    // 攻击次数耗尽时结束立场；定时结束由 server_scripts/power_sword/main.js 负责。
+                    if (power <= 1) {
+                        if (typeof global.triggerPowerSwordAnimation === "function") {
+                            global.triggerPowerSwordAnimation(entity, mainHand, "decomposition_field_close");
+                        }
+                        powerSwordTag.remove("DecompositionField");
+                        powerSwordTag.remove("DecompositionFieldUntil");
+                        powerSwordTag.remove("Power");
+                        entity.getInventory().setChanged();
+                        entity.cooldowns.addCooldown("rainbow:power_sword", SecoundToTick(40));
+                    }
+                }
             }
-            break;
-        case 3:
-            // 决斗剑：初始化类型
-            if (!mainHand.nbt.type) {
-                mainHand.nbt.type = none;
+            catch (e) {
+                console.log("先驱者动力剑攻击状态处理出错：");
+                console.log(e);
             }
             break;
     }

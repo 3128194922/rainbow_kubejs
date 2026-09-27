@@ -59,12 +59,15 @@ const DirectionAxis = Java.loadClass('net.minecraft.core.Direction$Axis')
 const BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
 
 // Dyeing mod: UV/油漆/区域油漆/屏幕覆盖层等实体染色数据入口（服务端）
-const DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
+// Dyeing 模组：使用 2dyeing-1.0.0.jar 的实际 Java 包名。
+const DyeingMod = Java.loadClass('com.dyeing.DyeingMod')
 
 // 通灵卷轴技能: 可投掷物判定类（弹射体类层次）
 const ThrowableItemProjectile = Java.loadClass('net.minecraft.world.entity.projectile.ThrowableItemProjectile')
 const AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.AbstractArrow')
 const Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Projectile')
+// 先驱者动力剑：服务端触发 GeckoJS 物品动画时使用的接口。
+const GeoItem = Java.loadClass('software.bernie.geckolib.animatable.GeoItem')
 
 // 第一阶段规范整理：服务端所有 Java 类统一在本文件加载，并使用无 $ 前缀变量。
 const SwordItem = Java.loadClass('net.minecraft.world.item.SwordItem')
@@ -73,6 +76,9 @@ const UUID = Java.loadClass('java.util.UUID')
 // 小宇宙物品：个人世界进入与返回 API（由 miniWorld 模组提供）
 const MiniWorldApi = Java.loadClass('com.miniworld.api.MiniWorldApi')
 const ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
+// 鸦羽骨哨：为非玩家实体跨维度传送到 miniWorld 出生点提供 Forge 传送器接口
+const ITeleporter = Java.loadClass('net.minecraftforge.common.util.ITeleporter')
+const PortalInfo = Java.loadClass('net.minecraft.world.level.portal.PortalInfo')
 const Player = Java.loadClass('net.minecraft.world.entity.player.Player')
 const CuriosApi = Java.loadClass('top.theillusivec4.curios.api.CuriosApi')
 const FreezableMob = Java.loadClass('com.li64.tide.data.FreezableMob')
@@ -91,6 +97,15 @@ const FluidTags = Java.loadClass('net.minecraft.tags.FluidTags')
 const BuiltInRegistries = Java.loadClass('net.minecraft.core.registries.BuiltInRegistries')
 const MATH_PI = 3.141592653589793
 
+// 迷你Boss词条系统：装备槽位（缴械词条卸甲用）
+const EquipmentSlot = Java.loadClass('net.minecraft.world.entity.EquipmentSlot')
+// 迷你Boss词条系统：爆炸破坏模式（自爆词条，BLOCKS=破坏方块）
+const LevelExplosionInteraction = Java.loadClass('net.minecraft.world.level.Level$ExplosionInteraction')
+// 迷你Boss词条系统：药水效果分类（驱散词条判定正面效果）
+const MobEffectCategory = Java.loadClass('net.minecraft.world.effect.MobEffectCategory')
+// 迷你Boss词条系统：方块注册表（演化蜘蛛词条放置蜘蛛网）
+const Blocks = Java.loadClass('net.minecraft.world.level.block.Blocks')
+
 // 可选模组类：用 tryLoadClass 保持原脚本的缺失模组容错行为。
 const CombatRoll = Java.tryLoadClass('net.combatroll.CombatRoll')
 const CombatRollEnchantments = Java.tryLoadClass('net.combatroll.api.Enchantments_CombatRoll')
@@ -99,10 +114,10 @@ const FieldGuidePlayerProgress = Java.tryLoadClass('com.evandev.fieldguide.serve
 const FieldGuideServerManager = Java.tryLoadClass('com.evandev.fieldguide.server.ServerFieldGuideManager')
 const TideUtils = Java.tryLoadClass('com.li64.tide.util.TideUtils')
 const ThermometerItem = Java.tryLoadClass('galena.oreganized.content.item.ThermometerItem')
-const FireManager = Java.loadClass('it.crystalnest.soul_fire_d.api.FireManager')
-const Fire = Java.loadClass('it.crystalnest.soul_fire_d.api.Fire')
+//const FireManager = Java.loadClass('it.crystalnest.soul_fire_d.api.FireManager')
+//const Fire = Java.loadClass('it.crystalnest.soul_fire_d.api.Fire')
 const BiConsumer = Java.loadClass('java.util.function.BiConsumer')
-const FireTyped = Java.loadClass('it.crystalnest.soul_fire_d.api.type.FireTyped')
+//const FireTyped = Java.loadClass('it.crystalnest.soul_fire_d.api.type.FireTyped')
 const CombatRollResourceLocation = ResourceLocation
 const CombatRollEnchantmentHelper = EnchantmentHelper
 const CombatRollAttributes = Attributes

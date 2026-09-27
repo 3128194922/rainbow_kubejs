@@ -10,9 +10,15 @@
 const PowerLabel = {
     Dig: "挖掘", Regenerate: "自愈", Reinforce: "援军", Leader: "领袖",
     Stealth: "隐匿", Evolve: "演化",
+    Parasite: "寄生", Adapt: "适应", Explode: "自爆", Disarm: "缴械", HeavyArmor: "重装",
+    Dispel: "驱散", Shadow: "暗影", Assassin: "刺客", Rigidity: "刚性", Fury: "狂怒",
+    Drain: "吸血",
     Frost: "冰霜", Quake: "岩爆", Blast: "连发", Trapper: "地雷",
     Snare: "诱捕", Clone: "分身", Wind: "狂风", Venom: "剧毒", Haunt: "鬼火",
 };
+
+// 等级罗马数字（词条等级系统，最高 5 级：自愈）
+const PowerLevelRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
 
 JadeEvents.onCommonRegistration((event) => {
     // 为所有实体注册数据提供者，仅当实体是 miniboss 才写入
@@ -29,7 +35,33 @@ JadeEvents.onCommonRegistration((event) => {
         try { keys = JSON.parse(powerStr); } catch (e) { keys = []; }
         if (!keys || keys.length === 0) return;
 
-        let labels = keys.map(k => PowerLabel[k] || k);
+        // 词条等级（main.js 抽取时写入 POWER_LEVELS），旧存档可能没有该字段
+        let levels = {};
+        let levelStr = entity.persistentData.getString("POWER_LEVELS");
+        if (levelStr) {
+            try { levels = JSON.parse(levelStr); } catch (e) { levels = {}; }
+        }
+
+        let labels = keys.map(k => {
+            // 标签表优先读取 server_scripts 热重载的 global.MB_POWER_LABELS_JSON
+            // （main.js 加载时写入，新增词条标签只需 /reload），
+            // server 脚本尚未加载时回退本地静态 PowerLabel
+            let labelMap = PowerLabel;
+            try {
+                let sharedJson = global.MB_POWER_LABELS_JSON;
+                if (sharedJson) {
+                    let parsed = JSON.parse(sharedJson);
+                    if (parsed && typeof parsed == 'object') labelMap = parsed;
+                }
+            } catch (e) { labelMap = PowerLabel; }
+            let label = labelMap[k] || k;
+            let lvl = levels[k] || 1;
+            // 等级 > 1 时追加罗马数字（如 挖掘II），固定 1 级词条不显示
+            if (lvl > 1 && PowerLevelRoman[lvl]) {
+                return label + PowerLevelRoman[lvl];
+            }
+            return label;
+        });
         tag.putString("MB_WORDS", labels.join("、"));
     });
 });

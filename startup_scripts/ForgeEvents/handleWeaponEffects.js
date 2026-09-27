@@ -47,13 +47,20 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
         }
     }*/
 
-    // 决斗剑：对已记录类型的生物造成额外伤害
+    // 决斗剑：按目标 UUID 记录单个生物；连续攻击同一生物时伤害提高 1.5 倍。
     if (mainHand.id == "rainbow:duel") {
-        let Nbt = mainHand.getOrCreateTag();
-        if (Nbt.type == victim.getType()) {
-            event.setAmount(event.getAmount() * 1.5);
-        } else {
-            Nbt.type = victim.getType();
+        try {
+            let duelTag = mainHand.getOrCreateTag();
+            let targetUuid = victim.getUuid().toString();
+            let recordedUuid = duelTag.getString("target_uuid");
+            if (recordedUuid != null && recordedUuid != "" && recordedUuid == targetUuid) {
+                event.setAmount(event.getAmount() * 1.5);
+            }
+            duelTag.putString("target_uuid", targetUuid);
+        }
+        catch (e) {
+            console.log("决斗细剑目标 UUID 记录或伤害处理出错：");
+            console.log(e);
         }
     }
 }

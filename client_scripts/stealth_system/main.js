@@ -34,11 +34,20 @@ let stealthTargetAlpha = 0;
 let stealthAlpha = 0;
 let lastReceivedState = null;
 
-// 接收服务端推送的隐匿状态（值变化时才记录并输出日志）
+// 接收服务端推送的隐匿状态（event.data 为 CompoundTag，值变化时才记录并输出日志）
 NetworkEvents.dataReceived(STEALTH_SYNC_CHANNEL, event => {
     let data = event.data;
     if (data === null || data === undefined) return;
-    let state = data.isStealth ? 1 : 0;
+
+    let state;
+    try {
+        // KubeJS 网络事件数据是 CompoundTag，必须使用 getBoolean 读取 NBT 字段。
+        state = data.getBoolean("isStealth") ? 1 : 0;
+    } catch (err) {
+        console.log(`[stealth_system] 读取隐匿状态失败: ${err}`);
+        return;
+    }
+
     if (lastReceivedState !== state) {
         lastReceivedState = state;
         stealthTargetAlpha = state;

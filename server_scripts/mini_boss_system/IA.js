@@ -8,6 +8,15 @@ function hasPower(entity, power) {
   return pd.getBoolean('isMiniBoss') && pd.getBoolean('_mb_p_' + power)
 }
 
+// 读取词条等级（main.js 抽取时写入 _mb_lvl_<key>），旧数据或未存储时默认 1 级
+function getPowerLevel(entity, power) {
+  if (!entity || !entity.isAlive()) return 1
+  let lvl = entity.persistentData.getInt('_mb_lvl_' + power)
+  // 显式判断：未存储/为 0 时回退 1 级，保证旧存档 miniboss 兼容
+  if (lvl <= 0) return 1
+  return lvl
+}
+
 function getTarget(mob) {
   try { return mob.getTarget() } catch(e) { return null }
 }
@@ -43,7 +52,8 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           let pd = e.persistentData
           let t = (pd.getInt('_mb_regen_t') || 0) + 1
           if (t >= 20) {
-            e.heal(2.0)
+            // 等级影响回血量：每秒回血 2.0 × 等级（1级=2.0，5级=10.0）
+            e.heal(2.0 * getPowerLevel(e, 'Regenerate'))
             t = 0
           }
           pd.putInt('_mb_regen_t', t)
@@ -68,7 +78,9 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
 
           let rawType = e.getType()
 
-          for (let i = 0; i < 3; i++) {
+          // 等级影响援军数量：生成数量 = 援军等级（1级=1只，3级=3只）
+          let count = getPowerLevel(e, 'Reinforce')
+          for (let i = 0; i < count; i++) {
             let spawn = level.createEntity(rawType)
             if (!spawn) { console.log(`Reinforce: createEntity returned null for ${rawType}`); continue }
             spawn.persistentData.putBoolean('_mb_reinforce_spawned', true)
@@ -184,7 +196,8 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           let state = e.level.getBlockState(pos)
           if (state.isAir()) return false
           let prog = pd.getInt('_mb_dig_progress') || 0
-          let bt = Math.max(10, Math.ceil((pd.getFloat('_mb_dig_hp') || 1) * DIG_BT))
+          // 等级影响挖掘速度：耗时 = 基础耗时 ÷ 等级（1级=12tick/硬度，2级减半）
+          let bt = Math.max(10, Math.ceil((pd.getFloat('_mb_dig_hp') || 1) * DIG_BT)) / getPowerLevel(e, 'Dig')
           return prog < bt
         },
         false,
@@ -209,7 +222,8 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           if (state.isAir()) { pd.putInt('_mb_dig_tx', 0); return }
 
           let hp = pd.getFloat('_mb_dig_hp') || 1
-          let bt = Math.max(10, Math.ceil(hp * DIG_BT))
+          // 等级影响挖掘速度：耗时 = 基础耗时 ÷ 等级（1级=12tick/硬度，2级减半）
+          let bt = Math.max(10, Math.ceil(hp * DIG_BT)) / getPowerLevel(e, 'Dig')
           let prog = (pd.getInt('_mb_dig_progress') || 0) + 1
           pd.putInt('_mb_dig_progress', prog)
 
@@ -267,6 +281,130 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
               e.potionEffects.add('minecraft:invisibility', 200, 0, false, false)
             }
           } catch(er) { console.log(er) }
+        }
+      )
+
+      // ==================== 演化 (Evolve) - 女巫：随机扔更多负面药水 ====================
+      // 演化女巫额外投掷的负面喷溅药水池（原版女巫 AI 之外补充）
+      const WITCH_POTIONS = ['minecraft:slowness', 'minecraft:weakness', 'minecraft:poison', 'minecraft:strong_poison', 'minecraft:harming'];
+      event.customGoal('mb_evolve_potion', 5,
+        e => {
+          if (!hasPower(e, 'Evolve') || e.getType() != 'minecraft:witch') return false;
+          let t = getTarget(e);
+          if (!t || !t.isAlive()) return false;
+          let dx = t.x - e.x, dy = t.y - e.y, dz = t.z - e.z;
+          return Math.sqrt(dx * dx + dy * dy + dz * dz) < 12;
+        },
+        e => {
+          let t = getTarget(e);
+          return t != null && t.isAlive();
+        },
+        true,
+        e => { e.persistentData.putInt('_mb_evolve_pot_t', 0) },
+        e => {},
+        true,
+        e => {
+          let pd = e.persistentData
+          let t = (pd.getInt('_mb_evolve_pot_t') || 0) + 1
+          if (t < 200) { pd.putInt('_mb_evolve_pot_t', t); return }  // 基础 10 秒冷却
+          pd.putInt('_mb_evolve_pot_t', 0)
+          let target = getTarget(e)
+          if (!target || !target.isAlive()) return
+          try {
+            let pot = e.level.createEntity('minecraft:potion')
+            if (!pot) return
+            // 随机负面喷溅药水（NBT 指定药水类型）
+            let potionId = WITCH_POTIONS[Math.floor(Math.random() * WITCH_POTIONS.length)]
+            pot.setItem(Item.of('minecraft:splash_potion', '{Potion:"' + potionId + '"}').item)
+            pot.setPos(e.x, e.y + 1.2, e.z)
+            // 抛射初速：指向目标并按距离抬升（参考原版女巫投掷）
+            let dx = target.x - e.x, dy = (target.y + 0.3) - (e.y + 1.2), dz = target.z - e.z
+            let dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
+            if (dist < 0.1) dist = 0.1
+            pot.setDeltaMovement(new Vec3(dx / dist * 0.7, dy / dist * 0.7 + dist * 0.045, dz / dist * 0.7))
+            pot.spawn()
+            try { e.level.playSound(null, e.x, e.y, e.z, 'minecraft:entity.witch.throw', 'hostile', 1.0, 1.0) } catch (er) {}
+          } catch (er) {
+            console.log('[MiniBoss 演化] 女巫扔药水失败: ' + er)
+          }
+        }
+      )
+
+      // ==================== 演化 (Evolve) - 蜘蛛：每15s在目标位置放蜘蛛网 ====================
+      event.customGoal('mb_evolve_web', 5,
+        e => {
+          if (!hasPower(e, 'Evolve') || e.getType() != 'minecraft:spider') return false;
+          let t = getTarget(e);
+          return t != null && t.isAlive();
+        },
+        e => {
+          let t = getTarget(e);
+          return t != null && t.isAlive();
+        },
+        true,
+        e => { e.persistentData.putInt('_mb_evolve_web_t', 0) },
+        e => {},
+        true,
+        e => {
+          let pd = e.persistentData
+          let t = (pd.getInt('_mb_evolve_web_t') || 0) + 1
+          if (t < 300) { pd.putInt('_mb_evolve_web_t', t); return }  // 15 秒
+          pd.putInt('_mb_evolve_web_t', 0)
+          let target = getTarget(e)
+          if (!target || !target.isAlive()) return
+          try {
+            let pos = new BlockPos(Math.floor(target.x), Math.floor(target.y), Math.floor(target.z))
+            // 仅在目标位置为空气时结网，避免卡进方块
+            if (e.level.getBlockState(pos).isAir()) {
+              e.level.setBlock(pos, Blocks.COBWEB.defaultBlockState())
+              try { e.level.playSound(null, target.x, target.y, target.z, 'minecraft:block.wool.place', 'blocks', 0.8, 1.0) } catch (er) {}
+            }
+          } catch (er) {
+            console.log('[MiniBoss 演化] 蜘蛛结网失败: ' + er)
+          }
+        }
+      )
+
+      // ==================== 演化 (Evolve) - 爬行者：远距离弹跳突进 ====================
+      event.customGoal('mb_evolve_jump', 5,
+        e => {
+          if (!hasPower(e, 'Evolve') || e.getType() != 'minecraft:creeper') return false;
+          let t = getTarget(e);
+          if (!t || !t.isAlive()) return false;
+          let dx = t.x - e.x, dy = t.y - e.y, dz = t.z - e.z;
+          let dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          // 距离较远（6~40格）且已落地时才会蓄力跳
+          if (dist < 6 || dist > 40) return false;
+          return e.onGround();
+        },
+        e => {
+          let t = getTarget(e);
+          return t != null && t.isAlive();
+        },
+        false,
+        e => { e.persistentData.putInt('_mb_evolve_jump_t', 0) },
+        e => {},
+        true,
+        e => {
+          let pd = e.persistentData
+          let t = (pd.getInt('_mb_evolve_jump_t') || 0) + 1
+          pd.putInt('_mb_evolve_jump_t', t)
+          if (t < 40 || !e.onGround()) return  // 2 秒冷却且须落地
+          let target = getTarget(e)
+          if (!target || !target.isAlive()) return
+          let dx = target.x - e.x, dy = target.y - e.y, dz = target.z - e.z
+          let dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
+          if (dist < 6) return
+          try {
+            // 弹跳加速度：水平速度随距离增大，固定上抛（重力约 0.08/tick，
+            // 0.85 可跳约 4.5 格高，滞空约 21 tick，最远可突进 25 格左右）
+            let speed = Math.min(1.4, 0.6 + dist * 0.04)
+            e.setDeltaMovement(new Vec3(dx / dist * speed, 0.85, dz / dist * speed))
+            pd.putInt('_mb_evolve_jump_t', 0)
+            try { e.level.playSound(null, e.x, e.y, e.z, 'minecraft:entity.slime.jump', 'hostile', 0.8, 0.7) } catch (er) {}
+          } catch (er) {
+            console.log('[MiniBoss 演化] 爬行者弹跳失败: ' + er)
+          }
         }
       )
 

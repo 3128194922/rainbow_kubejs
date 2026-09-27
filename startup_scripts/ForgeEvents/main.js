@@ -90,6 +90,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
 
     // 核心充能逻辑（仅保留连射核心等仍使用旧充能表的饰品）
     handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
+
+    // 迷你Boss词条伤害（暗影/刺客/狂怒/刚性，乘区最后结算，实现在 mini_boss_system/damage.js）
+    handleMiniBossPowers(event, attacker, victim);
     }
     catch(e)
     {
@@ -188,7 +191,8 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
         if (context == null) return;
         let entity = context.attacker;
         let target = context.target;
-        if (entity.level.clientSide) return;
+        // Forge 攻击入口必须调用 KubeJS 1.20.1 可用的 isClientSide() 方法。
+        if (entity.level.isClientSide()) return;
         if (entity.getType() == null || target.getType() == null) return;
 
         // 武器攻击实现

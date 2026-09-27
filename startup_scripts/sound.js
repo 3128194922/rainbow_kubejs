@@ -38,6 +38,10 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.kuchiyosenojutsu")
 
     event.create("rainbow:voice.animals")
+
+    // 炮兵电台触发音效：无线电静电噪声（CC0 素材，OpenGameArt "Frequency Static Sound Effects"），
+    // 对应 assets/rainbow/sounds/artillery_radio.ogg，播放点在 server_scripts/cannon_target/main.js
+    event.create("rainbow:voice.artillery_radio")
 })
 
 // 注册物品

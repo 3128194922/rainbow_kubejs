@@ -12,9 +12,19 @@ ItemEvents.modelProperties(event => {
     event.register("rainbow:terasword", "powers", (itemStack, level, entity, seed) => {
         return itemStack.nbt.getDouble("power") >= 1.0 ? 1.0 : 0.0;
     });
-    // 棒球棍：根据 NBT 中的 poweroff 值改变模型
-    event.register("rainbow:baseball_bat", "poweroff", (itemStack, level, entity, seed) => {
-        return itemStack.nbt.getDouble("poweroff") == 1.0 ? 1.0 : 0.0;
+    // 先驱者动力剑：根据分解立场截止时间切换模型，过期状态不显示立场贴图。
+    event.register("rainbow:power_sword", "decomposition_field", (itemStack, level, entity, seed) => {
+        try {
+            let powerSwordTag = itemStack.getNbt();
+            if (powerSwordTag == null || level == null) return 0.0;
+            return powerSwordTag.getBoolean("DecompositionField")
+                && powerSwordTag.getLong("DecompositionFieldUntil") > level.getTime() ? 1.0 : 0.0;
+        }
+        catch (e) {
+            console.log("先驱者动力剑模型属性读取出错：");
+            console.log(e);
+            return 0.0;
+        }
     });
 
     // 小嘀嗒：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)

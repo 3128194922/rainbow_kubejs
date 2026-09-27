@@ -115,5 +115,11 @@
 	"sounds": [
 	  "rainbow:animals"
 	]
+  },
+	"voice.artillery_radio": {
+	"subtitle": "sounds.rainbow.artillery_radio",
+	"sounds": [
+	  "rainbow:artillery_radio"
+	]
   }
 }

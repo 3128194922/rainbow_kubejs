@@ -619,97 +619,117 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
 });
 
 // --- 鸦羽骨哨 ---
-// 机制：主动技能开启时向饰品 NBT 写入 endtick（结束时间戳）。
-// 效力期间，以玩家为中心半径 8 格内的敌人（自动排除友军）攻击伤害降低 50%。
-// 被动伤害削减处理见本文件末尾的 EntityEvents.hurt("whistle") 区块。
-registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
-registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (player.isClientSide) return;
-    if (!itemStack) return;
-    if (player.cooldowns.isOnCooldown("rainbow:whistle")) return;
+// 机制：将使用者和使用前半径 8 格内的所有其他实体传送到使用者的个人维度。
+const WHISTLE_PERSONAL_WORLD_RADIUS = 8;
+const WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS = 20 * 20;
+const WHISTLE_PERSONAL_WORLD_X = 8.5;
+const WHISTLE_PERSONAL_WORLD_Y = -63;
+const WHISTLE_PERSONAL_WORLD_Z = 8.5;
+
+function createWhistlePersonalTeleporter() {
     try {
-        // 主动技能开启：为饰品写入 endtick = 当前游戏时间 + 10秒/200 tick（沿用结束时间戳计时）
-        if (itemStack.nbt == null) {
-            itemStack.nbt = {};
-        }
-        let now = player.level.getTime();
-        itemStack.nbt.putLong("endtick", now + 10 * 20);
-        player.tell(Text.gray("鸦羽骨哨生效：10 秒内半径 8 格敌人攻击伤害降低 50%（友军免疫）"));
-
-        // 玩家身上召唤缩放4的半透明黑色油漆层（ARGB=0x80000000，50%透明度），10s后移除
-        let server = player.server;
-        let uuid = player.uuid.toString();
-        let paintId = "whistle_effect";
-
-        // 使用 Dyeing 的 area 渲染半透明黑色长方体显示领域影响范围（半径 8，跟随玩家移动）
-        // from/to 为相对玩家位置的偏移；AreaPaintRenderer 每帧以实体位置为原点重算盒子顶点，自动跟随
-        let slowRadius = 8;
-        let rangeId = "whistle_range";
-        server.runCommandSilent(
-            "/dyeing area add static " + rangeId + " " + uuid + " " +
-            (-slowRadius) + " " + (-slowRadius) + " " + (-slowRadius) + " " +
-            slowRadius + " " + slowRadius + " " + slowRadius + " " +
-            "80000000"
-        );
-
-        server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80000000 4.0");
-        server.scheduleInTicks(10*20, function() {
-            try {
-                server.runCommandSilent("/dyeing paint remove " + uuid + " " + paintId);
-            } catch (err) {
-                console.log("[鸦羽骨哨] 移除油漆层错误: " + err);
+        // KubeJS 6 的 JavaWrapper 不提供该继承辅助方法，使用 Rhino 原生 JavaAdapter 延迟创建接口实现。
+        return new JavaAdapter(ITeleporter, {
+            getPortalInfo: function(entity, destination, defaultPortalInfo) {
+                return new PortalInfo(
+                    new Vec3(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z),
+                    Vec3.ZERO,
+                    entity.getYRot(),
+                    entity.getXRot()
+                );
             }
         });
-        // 领域范围矩形持续 10s（与 endtick 同步），到期后移除
-        server.scheduleInTicks(10*20, function() {
-            try {
-                server.runCommandSilent("/dyeing area remove " + uuid + " " + rangeId);
-            } catch (err) {
-                console.log("[鸦羽骨哨] 移除领域范围矩形错误: " + err);
-            }
-        });
-
-        player.cooldowns.addCooldown("rainbow:whistle", 20 * 20); // 冷却 20 秒
-    } catch (err) {
-        console.log("[鸦羽骨哨] 错误: " + err);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 创建实体传送器失败: ' + error);
+        return null;
     }
-});
+}
 
-// --- 鸦羽骨哨被动：领域内敌人攻击伤害降低 50% ---
-// 扫描所有玩家，找出持有未过期 whistle（endtick 结束时间戳）的玩家；
-// 若攻击者位于该玩家半径 8 格的领域内，且不是该玩家友军（已驯服宠物/佣兵），则本次伤害削减 50%。
-EntityEvents.hurt(event => {
-    let entity = event.entity;
-    if (!entity || entity.level.isClientSide()) return;
-    let attacker = event.source.actual;
-    if (!attacker) return;
-    if (!attacker.isLiving() || !attacker.isAlive()) return;
-    if (attacker.isPlayer()) return; // 不削减玩家造成的伤害
+function ensureWhistlePersonalWorld(player) {
+    try {
+        if (player == null || player.server == null) return false;
+        let dimensionKey = MiniWorldApi.ensureWorld(player.server, player.getUuid());
+        return dimensionKey != null;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 创建个人维度失败: ' + error);
+        return false;
+    }
+}
 
-    let now = entity.level.getTime();
-    let whistleRadius = 8;
-    let players = entity.level.players;
-    for (let p of players) {
-        if (!p || !p.isPlayer()) continue;
-        let whistleItem = getCuriosItem(p, 'rainbow:whistle');
-        if (!whistleItem || !whistleItem.nbt) continue;
-        let endtick = whistleItem.nbt.getLong("endtick");
-        if (endtick <= 0 || now >= endtick) continue; // 未激活或已过期
+function collectWhistleNearbyEntities(player) {
+    try {
+        let nearby = [];
+        let area = player.getBoundingBox().inflate(WHISTLE_PERSONAL_WORLD_RADIUS);
+        let entities = player.level.getEntitiesWithin(area);
+        let radiusSquared = WHISTLE_PERSONAL_WORLD_RADIUS * WHISTLE_PERSONAL_WORLD_RADIUS;
 
-        // 排除友军（已驯服宠物/佣兵），判定参考 Skillwheel 内其他技能
-        let playerUuid = p.getUuid().toString();
-        let OwnerName = attacker.persistentData.OwnerName;
-        if (OwnerName && OwnerName == playerUuid) continue;
-        if (attacker.owner && attacker.owner == p) continue;
-
-        // 距离判定：攻击者需处于该玩家半径 8 格领域内
-        let dx = attacker.getX() - p.getX();
-        let dy = attacker.getY() - p.getY();
-        let dz = attacker.getZ() - p.getZ();
-        if (dx * dx + dy * dy + dz * dz <= whistleRadius * whistleRadius) {
-            event.setDamage(event.damage * 0.5);
-            break;
+        for (let entity of entities) {
+            if (entity == null || entity.getId() === player.getId()) continue;
+            let dx = entity.getX() - player.getX();
+            let dy = entity.getY() - player.getY();
+            let dz = entity.getZ() - player.getZ();
+            if (dx * dx + dy * dy + dz * dz > radiusSquared) continue;
+            nearby.push(entity);
         }
+        return nearby;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 获取附近实体失败: ' + error);
+        return [];
+    }
+}
+
+function sendWhistleEntityToPersonalWorld(entity, owner, destination, teleporter) {
+    try {
+        if (entity == null || destination == null || teleporter == null || entity.isRemoved()) return false;
+        if (entity.isPlayer()) {
+            return MiniWorldApi.enter(entity, owner.getUuid(), true);
+        }
+        let movedEntity = entity.changeDimension(destination, teleporter);
+        if (movedEntity == null) return false;
+        movedEntity.setPos(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z);
+        movedEntity.setDeltaMovement(0, 0, 0);
+        return true;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 传送实体失败: ' + error);
+        return false;
+    }
+}
+
+registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
+registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player == null || player.level == null || player.level.isClientSide()) return;
+    if (!itemStack) return;
+    if (player.cooldowns.isOnCooldown('rainbow:whistle')) return;
+    try {
+        let nearbyEntities = collectWhistleNearbyEntities(player);
+        if (!ensureWhistlePersonalWorld(player)) {
+            player.tell(Text.red('鸦羽骨哨无法建立个人维度。'));
+            return;
+        }
+        let ownerEntered = MiniWorldApi.enter(player);
+        if (!ownerEntered) {
+            player.tell(Text.red('鸦羽骨哨传送失败。'));
+            return;
+        }
+        // 玩家已由 MiniWorldApi.enter 传送到个人维度，直接复用当前 ServerLevel，避免 Rhino 解析 getLevel(ResourceKey) 重载歧义。
+        let destination = player.level;
+        if (destination == null) {
+            player.tell(Text.red('鸦羽骨哨无法获取个人维度。'));
+            return;
+        }
+        let teleporter = createWhistlePersonalTeleporter();
+        if (teleporter == null) {
+            player.tell(Text.red('鸦羽骨哨无法创建实体传送器。'));
+            return;
+        }
+        let movedCount = 0;
+        for (let entity of nearbyEntities) {
+            if (sendWhistleEntityToPersonalWorld(entity, player, destination, teleporter)) movedCount++;
+        }
+        player.tell(Text.aqua('鸦羽骨哨已将你和附近 ' + movedCount + ' 个实体传送进个人维度。'));
+        player.cooldowns.addCooldown('rainbow:whistle', WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 个人维度传送失败: ' + error);
     }
 });
 
@@ -1117,7 +1137,60 @@ registerSkill('windswept:dream_catcher', (event, player, itemStack, isSubmenu, s
     player.cooldowns.addCooldown("windswept:dream_catcher", SecoundToTick(10));
 });
 
-// --- 闪电瓶 ---
+// --- 冰灯 ---
+// 主动技能：冻结半径4格内除施法者外的所有实体15秒，冷却15秒。
+const ICE_LANTERN_RADIUS = 4;
+const ICE_LANTERN_FREEZE_TICKS = 15 * 20;
+const ICE_LANTERN_COOLDOWN_TICKS = SecoundToTick(15);
+
+registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player == null || player.level == null || player.level.isClientSide()) return;
+    if (!itemStack || itemStack.isEmpty()) return;
+    if (player.cooldowns.isOnCooldown('windswept:ice_lantern')) return;
+
+    try {
+        let radius = ICE_LANTERN_RADIUS;
+        let radiusSquared = radius * radius;
+        let centerX = player.getX();
+        let centerY = player.getY();
+        let centerZ = player.getZ();
+        let area = player.getBoundingBox().inflate(radius);
+        let affectedCount = 0;
+        let playerId = player.getId();
+        let playerUuid = player.getUuid().toString();
+
+        // Dyeing 区域缩放特效：蓝白冰霜光环播放一次后自动移除。
+        event.server.runCommandSilent(
+            `/dyeing area add scale ice_lantern_freeze ${playerUuid} -4 0 -4 4 2 4 80DDF5FF 0.2 1.4 0.2 1.0 8 1 remove`
+        );
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            try {
+                if (!entity || entity.getId() === playerId || entity == player) return;
+
+                let dx = entity.getX() - centerX;
+                let dy = entity.getY() - centerY;
+                let dz = entity.getZ() - centerZ;
+                let distanceSquared = dx * dx + dy * dy + dz * dz;
+                if (distanceSquared > radiusSquared) return;
+
+                // 不缩短目标已有的更长原版冻结时间。
+                entity.setTicksFrozen(Math.max(entity.getTicksFrozen(), ICE_LANTERN_FREEZE_TICKS));
+                affectedCount++;
+            } catch (targetError) {
+                console.log('[冰灯] 设置实体冻结时间失败: ' + targetError);
+            }
+        });
+
+        player.cooldowns.addCooldown('windswept:ice_lantern', ICE_LANTERN_COOLDOWN_TICKS);
+        console.log('[冰灯] 释放完成，冻结实体数量: ' + affectedCount);
+    } catch (error) {
+        console.log('[冰灯] 主动技能执行失败: ' + error);
+    }
+});
+
+// 已停用：闪电瓶主动技能及其技能音效。
+/*
 registerSkillSound('rainbow:bottled_lightning', 'rainbow:voice.null');
 registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
     if (player.cooldowns.isOnCooldown("rainbow:bottled_lightning")) return;
@@ -1192,6 +1265,7 @@ registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu,
 
     player.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(30));
 });
+*/
 
 // --- 女巫坩埚 ---
 registerSkillSound('mysticartifacts:witch_pot', 'rainbow:voice.null');

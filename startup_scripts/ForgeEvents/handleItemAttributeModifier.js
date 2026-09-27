@@ -42,6 +42,22 @@ function handleItemAttributeModifier(event) {
             )
         );
     }
+
+    // 先驱者动力剑：普通状态 +7，分解立场状态额外 +12，合计保持原充能形态的 +19。
+    if (item.id === "rainbow:power_sword" && slotType === "mainhand") {
+        let powerSwordTag = item.getNbt();
+        if (powerSwordTag != null && powerSwordTag.getBoolean("DecompositionField")) {
+            event.addModifier(
+                "generic.attack_damage",
+                new AttributeModifier(
+                    "7a3b4c5d-6e7f-4801-9234-56789abcdef0",
+                    "power_sword_decomposition_field",
+                    12.0,
+                    "addition"
+                )
+            );
+        }
+    }
     //庇护盾牌
     /*if (item.id === "caverns_and_chasms:aegis" && slotType === "offhand")
         {

@@ -40,7 +40,8 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         }
     }*/
 
-    // 链式闪电饰品：攻击时触发链式闪电，下雨天增强
+    // 已停用：闪电瓶的攻击链式闪电效果。
+    /*
     if (hasContextCurio(context, "attacker", attacker, "rainbow:bottled_lightning")) {
         if(!attacker.cooldowns.isOnCooldown("rainbow:bottled_lightning")) {
         let lightning = attacker.level.createEntity('domesticationinnovation:chain_lightning');
@@ -58,6 +59,7 @@ function handleCuriosEffects(event, attacker, victim, source, range_damage, thro
         attacker.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(0.25));
         }
     }
+    */
 
     // 被标记目标（tag）受到远程攻击双倍伤害
     /*if (victim.hasEffect("rainbow:tag") && range_damage.indexOf(source.getType().toString()) != -1) {

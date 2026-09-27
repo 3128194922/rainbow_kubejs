@@ -220,15 +220,7 @@ ItemEvents.rightClicked("rainbow:eldritch_sword", event => {
     player.cooldowns.addCooldown("rainbow:creeper_charm", SecoundToTick(60 * 60));
 });*/
 
-// --- 棒球棍：充能 ---
-ItemEvents.rightClicked('rainbow:baseball_bat', event => {
-    let { player, item, level, server } = event;
-    if (level.isClientSide()) return;
-
-    let nbt = item.getNbt();
-    server.runCommandSilent(`/playsound domesticationinnovation:chain_lightning voice @p ${player.x} ${player.y} ${player.z}`);
-    player.setItemInHand("main_hand", Item.of("rainbow:baseball_power", `${nbt}`));
-});
+// 先驱者动力剑右键与定时状态清理已迁移到 server_scripts/power_sword/main.js。
 
 /*
 // --- 乐谱：播放音乐 ---
@@ -688,29 +680,6 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
     player.tell('已将伪装代号对应的数值基因写入注射器');
   });
 */
-// 远古之庇护：绑定UUID
-ItemEvents.entityInteracted("rainbow:ancientaegis",event => {
-    let player = event.getPlayer();
-    let hand = event.getHand();
-    let item = event.getItem();
-    let level = event.getLevel();
-    let target = event.getTarget();
-    let targetId = target.getType();
-    let itemId = item.id;
-
-    if(!item.nbt)
-        {
-            item.nbt = {}
-        }
-
-    if(target.isPlayer() && target.isAlive())
-        {
-            item.nbt.putString("UUID",target.getUuid().toString())
-            player.tell("绑定对象成功")
-        }
-
-})
-
 // 矿车和箱子右键安装逻辑
 // 将箱子、熔炉等安装到船或矿车上
 ItemEvents.entityInteracted(event => {

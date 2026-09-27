@@ -68,6 +68,10 @@ const DeferredRegisterCreate = Java.loadClass("net.minecraftforge.registries.Def
 ]
 const EntityType = Java.loadClass('net.minecraft.world.entity.EntityType')
 
+// 迷你Boss词条系统：药水效果判断（刺客词条判隐身）与光照层（暗影词条算亮度）
+const MobEffects = Java.loadClass('net.minecraft.world.effect.MobEffects')
+const LightLayer = Java.loadClass('net.minecraft.world.level.LightLayer')
+
 // 第一阶段规范整理：启动端类名统一使用无 $ 前缀，并集中在本文件加载。
 const SlotAttribute = Java.tryLoadClass('top.theillusivec4.curios.api.SlotAttribute')
 const CuriosApi = Java.tryLoadClass('top.theillusivec4.curios.api.CuriosApi')
@@ -128,9 +132,9 @@ console.log(`超构建概率：${global.SUPER_MECHAISM}`)
 // FarmersDelight 背刺附魔判定类（静态方法 isLookingBehindTarget 判断攻击者是否在目标背后）
 const BackstabbingEnchantment = Java.tryLoadClass('vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment')
 
-// Dyeing mod
-const DyeingMod = Java.loadClass('com.example.dyeing.DyeingMod')
-const PaintData = Java.loadClass('com.example.dyeing.data.PaintData')
+// Dyeing 模组：使用 2dyeing-1.0.0.jar 的实际 Java 包名。
+const DyeingMod = Java.loadClass('com.dyeing.DyeingMod')
+const PaintData = Java.loadClass('com.dyeing.data.PaintData')
 
 // ParticleJS 通用文本粒子已迁移到 startup_scripts/damage_indicators/main.js；不再加载已删除的旧文本类。
 // MysticArtifacts 武士刀格挡粒子读取的完美格挡窗口配置；粒子脚本会在类缺失时回退默认值。

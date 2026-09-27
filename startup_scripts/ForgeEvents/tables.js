@@ -28,8 +28,7 @@ const FORGE_VOID_TRANSMUTE_RECIPES = {
 
 const FORGE_ATTACK_WEAPON_CODES = {
     "rainbow:terasword": 1,
-    "rainbow:baseball_power": 2,
-    "rainbow:duel": 3
+    "rainbow:power_sword": 2
 };
 
 const FORGE_ATTACK_CURIO_CODES = {

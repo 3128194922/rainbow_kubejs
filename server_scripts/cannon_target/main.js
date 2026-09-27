@@ -19,6 +19,9 @@ const CANNON_FIXED_MOUNT_ID = 'createbigcannons:fixed_cannon_mount'
 const CANNON_RADIO_ID = 'rainbow:artillery_radio'
 // 电台扫描半径：16×1×16 即 XZ 各 -8..+7（共 16 格），Y 取电台所在层
 const CANNON_RADIO_HALF = 8
+// 电台触发音效（无线电静电噪声）：startup_scripts/sound.js 注册的声音事件，
+// 音频文件 assets/rainbow/sounds/artillery_radio.ogg，在电台方块位置播放
+const CANNON_RADIO_SOUND = 'rainbow:voice.artillery_radio'
 
 function cannonTargetWrapDegrees(angle) {
     let result = Number(angle)
@@ -453,6 +456,12 @@ function cannonTargetResolveRadio(marker) {
     }
     if (fired > 0) {
         cannonTargetTellOwner(marker, '§a炮兵电台已调度 ' + fired + ' 座火炮向目标集中开火！' + (failed > 0 ? ' §7(' + failed + ' 座未能开火)' : ''))
+        // 调度齐射成功时在电台位置播放电台触发音效
+        try {
+            level.playSound(null, radio.getX(), radio.getY(), radio.getZ(), CANNON_RADIO_SOUND, 'blocks', 0.9, 1.0)
+        } catch (se) {
+            console.log('[CannonTarget] 电台调度音效播放失败: ' + se)
+        }
     } else {
         cannonTargetTellOwner(marker, '§c电台范围内的火炮全部未能开火，请查看服务器日志。')
     }
@@ -712,10 +721,22 @@ function cannonRadioBind(event) {
                 player.tell('§e已绑定炮兵电台 [' + pos.x + ', ' + pos.y + ', ' + pos.z + ']，但范围内暂无已组装火炮。')
             }
             level.playSound(null, player.getX(), player.getY(), player.getZ(), 'item.lodestone_compass.lock', 'players', 1.0, 1.2)
+            // 绑定成功：在电台位置播放电台触发音效（无线电静电噪声）
+            try {
+                level.playSound(null, event.block.getX(), event.block.getY(), event.block.getZ(), CANNON_RADIO_SOUND, 'blocks', 0.9, 1.0)
+            } catch (se) {
+                console.log('[CannonTarget] 电台绑定音效播放失败: ' + se)
+            }
         } else {
             let cannons = cannonRadioScanCannons(event.block)
             let cached = event.block.entity != null ? event.block.entity.data.getInt('radioCannonCount') : -1
             player.tell('§b[炮兵电台] 主动发现范围内已组装火炮 ' + cannons.length + ' 座。' + (cached >= 0 && cached != cannons.length ? ' §7(上次记录 ' + cached + ' 座)' : ''))
+            // 右键触发电台播报：在电台位置播放电台触发音效
+            try {
+                level.playSound(null, event.block.getX(), event.block.getY(), event.block.getZ(), CANNON_RADIO_SOUND, 'blocks', 0.9, 1.0)
+            } catch (se) {
+                console.log('[CannonTarget] 电台播报音效播放失败: ' + se)
+            }
         }
         cancelEvent = true
     } catch (e) {

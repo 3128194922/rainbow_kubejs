@@ -4,12 +4,12 @@
 // Plugin Simulation & Player Event Handling
 // ==========================================
 // 包含功能：
-// 1. 死亡记录与 /back 命令（记录存 persistentData，重启不丢，用后清除+冷却）
+// 1. 死亡记录与 /back 命令（记录存 persistentData，重启不丢，用后清除，无冷却）
 // 2. /tpa 传送请求命令（请求-确认制：目标点击按钮或输入 /tpaccept /tpdeny）
 // 3. 登录/注册系统 (已注释)
 // 4. 玩家进入/退出服务器事件处理 (饰品初始化, 数据统计)
 // Included Features:
-// 1. Death recording & /back command (persistentData storage, one-time use + cooldown)
+// 1. Death recording & /back command (persistentData storage, one-time use, no cooldown)
 // 2. /tpa teleport request command (request-confirm: click button or /tpaccept /tpdeny)
 // 3. Login/Register system (Commented out)
 // 4. Player login/logout handling (Curios init, stats logging)
@@ -17,7 +17,6 @@
 // ============ 传送系统常量 ============
 const TPA_EXPIRE_TICKS = 20 * 60;    // /tpa 请求有效期：60 秒
 const TPA_COOLDOWN_TICKS = 20 * 30;  // /tpa 发起冷却：30 秒
-const BACK_COOLDOWN_TICKS = 20 * 60; // /back 使用冷却：60 秒
 const BACKROOM_DIM_STR = 'backroom:backroom'; // 后室维度字符串（统一判断方式）
 
 // /tpa 待处理请求表：{ 目标玩家名: { requester: 发起者名, expire: 过期 gameTime } }
@@ -283,7 +282,7 @@ ServerEvents.commandRegistry(event => {
             )
     );
 
-    // /back - 返回上次死亡地点（一次性使用，带冷却，记录持久化在玩家 NBT 中）
+    // /back - 返回上次死亡地点（一次性使用，无冷却，记录持久化在玩家 NBT 中）
     event.register(
         Commands.literal("back")
             .requires(src => src.hasPermission(0))
@@ -304,14 +303,6 @@ ServerEvents.commandRegistry(event => {
                         return 0;
                     }
 
-                    // 使用冷却检查
-                    let now = player.level.getTime();
-                    let cooldownUntil = player.persistentData.contains("back_cooldown") ? player.persistentData.getLong("back_cooldown") : 0;
-                    if (now < cooldownUntil) {
-                        player.tell(`§c/back 冷却中，还需等待 ${Math.ceil((cooldownUntil - now) / 20)} 秒`);
-                        return 0;
-                    }
-
                     let backDim = record.getString("dim");
                     let backX = record.getDouble("x");
                     let backY = record.getDouble("y");
@@ -325,9 +316,8 @@ ServerEvents.commandRegistry(event => {
 
                     player.teleportTo(backDim, backX, backY, backZ, record.getFloat("yaw"), record.getFloat("pitch"));
 
-                    // 用后清除记录（一次性使用），并写入冷却
+                    // 用后清除记录（一次性使用），下次死亡后可立即再次使用
                     player.persistentData.getCompound("PlayerPersisted").remove("back_record");
-                    player.persistentData.putLong("back_cooldown", now + BACK_COOLDOWN_TICKS);
                     player.tell(`§a已返回你上次死亡的位置 (${Math.floor(backX)}, ${Math.floor(backY)}, ${Math.floor(backZ)})`);
                     return 1;
                 } catch (e) {

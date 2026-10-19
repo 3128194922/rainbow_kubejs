@@ -43,6 +43,29 @@
     Kubejs 渲染附属：E:\Server_mod\其他项目\RenderJS
 15. level.isClientSide 是错误写法 必须写为 level.isClientSide()
 
+# EntityJS / Rhino 实体 API 避坑记录
+
+以下记录来自本项目 Forge 1.20.1、KubeJS 2001.6.5、Rhino 2001.2.3、EntityJS 0.6.6 环境中的使徒脚本报错；换版本或实体包装类型时，调用前仍需核对本地源码与实际运行结果。
+
+1. **tick 中重复声明局部变量**
+   - 报错表现：`InternalError: TypeError: redeclaration of var level`，或改名后出现 `redeclaration of var apostleLevel`。
+   - 规范：局部变量按项目约定使用 `let`；同一个函数或代码块中同名变量只声明一次，后续用赋值更新。不要只把 `level` 改名为 `apostleLevel` 来掩盖重复声明；同时检查活动脚本及回调中是否有重复变量/函数定义。连续热重载后仍报旧错误时，完整重载 server_scripts 或重启服务器，再判断是否仍可复现。
+
+2. **实体伤害使用 KubeJS `attack` 包装**
+   - 报错表现：`Cannot find function hurt in object ...`，可能出现在范围伤害、激光、接触伤害或弹幕命中处。
+   - 规范：本项目 KubeJS 2001.6.5 的 `EntityMixin` 将 Minecraft `hurt(DamageSource, float)` 映射为脚本方法 `attack(DamageSource, amount)`，使用 `target.attack(damageSource, amount)` 结算伤害；不要直接调用 `target.hurt(...)`。不要与只接收伤害数值的 `attack(amount)` 混淆。伤害源仍需使用该招式对应且已核对签名的 `DamageSource`，并分别记录命中回调、目标筛选、伤害异常或伤害未扣血，不能只凭技能特效认定命中。
+
+3. **EntityJS `MobEntityJS` 朝向使用 LookControl**
+   - 报错表现：`Cannot find function setYRot in object MobEntityJS[...]`、`setYBodyRot` 不可用，或 `MobEntityJS` 没有 `yRot`、`yBodyRot`、`yHeadRot` 公共字段。
+   - 规范：在本项目 Rhino/EntityJS 包装中，不能假设这些 setter 或字段可见。使徒瞄准目标和旋转招式使用 `entity.getLookControl().setLookAt(x, y, z)`，并以服务端运行日志确认；LookControl 控制注视方向，移动时实体身体朝向可能受导航控制，弹幕方向应由招式向量单独计算。不要按 Minecraft Java 字段可见性推断 Rhino 包装可访问性，也不要只改变量名掩盖 API 不匹配。
+
+4. **落雷伤害源使用无参 `lightningBolt()`**
+   - 报错表现：`Can't find method ... DamageSources...LightningBolt,MobEntityJS`，原因是给 `lightningBolt` 传入了当前包装不支持的实体参数。
+   - 规范：本项目已核对的调用形式为 `entity.damageSources().lightningBolt()`，再将返回的伤害源交给 `target.attack(source, amount)`；不要传入 `LightningBolt` 和使徒实体参数。
+
+5. **验证边界**
+   - 静态搜索、脚本重载和无报错日志只能证明对应阶段；不能替代游戏内确认实体朝向变化、伤害来源/数值、弹幕命中和多人服务器行为。修复后应记录实际测试环境与新日志，不要把未进游戏验证的写法标记为运行时已验证。
+
 # 输出要求
 
 不管有没有文本输出都应该输出文本 【前端变前台，后端变后厨，python送到家，Java炒米粉】

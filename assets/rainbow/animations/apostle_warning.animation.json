@@ -1,0 +1,29 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.apostle.warning_ring": {
+      "animation_length": 0.8,
+      "bones": {
+        "ring": { "scale": { "0.0": [1, 1, 1], "0.4": [1.04, 1, 1.04], "0.8": [1, 1, 1] } },
+        "column": { "scale": [0, 0, 0] },
+        "beam": { "scale": [0, 0, 0] }
+      }
+    },
+    "animation.apostle.warning_column": {
+      "animation_length": 0.8,
+      "bones": {
+        "ring": { "scale": [0, 0, 0] },
+        "column": { "scale": { "0.0": [1, 0.98, 1], "0.4": [1, 1, 1], "0.8": [1, 0.98, 1] } },
+        "beam": { "scale": [0, 0, 0] }
+      }
+    },
+    "animation.apostle.warning_beam": {
+      "animation_length": 0.8,
+      "bones": {
+        "ring": { "scale": [0, 0, 0] },
+        "column": { "scale": [0, 0, 0] },
+        "beam": { "scale": { "0.0": [1, 0.85, 1], "0.4": [1, 1, 1], "0.8": [1, 0.85, 1] } }
+      }
+    }
+  }
+}

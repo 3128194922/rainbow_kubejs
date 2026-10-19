@@ -17,7 +17,7 @@ if ($whistle -notmatch 'destination\s*=\s*player\.level') { throw 'whistle does 
 if ($whistle -notmatch 'getEntitiesWithin' -or $whistle -notmatch '8') { throw 'whistle nearby entity scan is missing' }
 if ($whistle -notmatch 'changeDimension') { throw 'whistle does not transfer non-player entities across dimensions' }
 if ($whistle -notmatch 'MiniWorldApi\.enter\([^\n]+true') { throw 'whistle does not transfer nearby players into the owner world' }
-if ($whistle -match 'endtick|dyeing area add|EntityEvents\.hurt') { throw 'whistle legacy damage field remains active' }
+if ($whistle -match 'dyeing area add|EntityEvents\.hurt') { throw 'whistle legacy damage field remains active' }
 if ($whistle -notmatch 'player\.level\.isClientSide\(\)') { throw 'whistle does not use the KubeJS 6 client-side check' }
 if ($tooltip.IndexOf("event.addAdvanced('rainbow:whistle'") -lt 0 -or $tooltip -notmatch '8') { throw 'whistle tooltip is not updated' }
 

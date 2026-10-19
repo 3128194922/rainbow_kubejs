@@ -176,8 +176,26 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:hungry_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("佩戴后会依据当下的饥饿值提供增益"));
     })
+    // 心灵宝石：已改为纯被动饰品（经验获取 +50%、经验等级上限 100 级），原念力墙技能已移除
+    // 越级经验暂存键名 SoulDiamondStoredXp 由 startup_scripts/Registry/Registry_curios.js 写入
     event.addAdvanced('rainbow:soul_diamond', (item, advanced, text) => {
-        text.add(1, Text.aqua(`开启后释放心灵墙`));
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("经验获取 +50%"));
+            text.add(2, Text.aqua("经验等级上限提升至 100 级"));
+            text.add(3, Text.gray("佩戴时超出 100 级的经验会暂存在宝石中"));
+            text.add(4, Text.gray("卸下宝石时原样返还"));
+        }
+
+        // 暂存的经验（仅在有暂存时显示）
+        let nbt = item.getNbt();
+        if (nbt != null) {
+            let stored = nbt.getInt('SoulDiamondStoredXp');
+            if (stored > 0) {
+                text.add(Text.gold(`已暂存经验：${stored} 点`));
+            }
+        }
     })
     // 已停用：闪电瓶 tooltip。
     /*
@@ -313,8 +331,10 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("远程攻击时，距离目标每格提升10%伤害"));
-            text.add(2, Text.aqua("最高提升200%伤害（20格）"));
+            // 神射手护符只在佩戴者发射的弹幕爆头后，按射手与目标距离计算伤害倍率。
+            text.add(1, Text.aqua("佩戴者发射的弹幕爆头后，按距离增伤"));
+            text.add(2, Text.aqua("伤害倍率：1 + 距离（格）×10%"));
+            text.add(3, Text.aqua("最多按20格计算（最高3倍伤害）"));
         }
     })
 
@@ -459,14 +479,15 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua('右键：进入自己的个人小世界'))
         text.add(2, Text.aqua('个人世界内右键：返回进入前的位置'))
     })
+    // 远古之庇护说明 MineTeam 非白队伍条件、队伍图标入口与分担规则。
     event.addAdvanced('rainbow:ancientaegis', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("加入小队后右键打开队伍界面"));
-            text.add(2, Text.aqua("同队伍内佩戴者平均分担所受伤害"));
-            text.add(3, Text.aqua("分担伤害以魔法伤害形式转移"));
-            text.add(4, Text.aqua("未加入队伍时无法佩戴"));
+            text.add(1, Text.aqua("右键提示 MineTeam 队伍入口；在物品栏点击队伍图标选队"));
+            text.add(2, Text.aqua("仅同一非白色队伍内的佩戴者平均分担所受伤害"));
+            text.add(3, Text.aqua("白色队伍是默认队伍，按未组队处理"));
+            text.add(4, Text.aqua("分担部分以魔法伤害形式转移；白队伍时不生效"));
         }
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
@@ -593,12 +614,15 @@ ItemEvents.tooltip((event) => {
         if (!nbt) return;
         text.add(2, Text.aqua("能量：").append(Text.yellow(`${nbt.getInt("kill")} / 100`)));
     })
+    // 已停用：幽匿护符 tooltip。
+    /*
     event.addAdvanced('rainbow:sculk_affinity', (item, advanced, text) => {
         text.add(1, Text.aqua("站在幽匿方块上时获得"));
         text.add(2, Text.aqua("+20% 移动速度"));
         text.add(3, Text.aqua("每秒恢复 10 点生命值"));
         text.add(4, Text.aqua("监守者不会攻击你"));
     })
+    */
     event.addAdvanced('rainbow:ccb', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -703,8 +727,9 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("受到伤害时触发范围动能爆破"));
-            text.add(2, Text.aqua("爆破伤害与范围随受伤值动态提升"));
+            text.add(1, Text.aqua("受到伤害或成功闪避时触发范围动能爆破"));
+            text.add(2, Text.aqua("受伤爆破按本次伤害计算；闪避爆破固定 6 点"));
+            text.add(3, Text.aqua("爆破半径 7 格，伤害随距离衰减"));
         }
     })
     event.addAdvanced('rainbow:giants_ring', (item, advanced, text) => {
@@ -760,7 +785,7 @@ ItemEvents.tooltip((event) => {
             text.add(3, Text.darkGray("据说闻起来像葡萄汁"));
         }
     })
-    // 鸦羽骨哨：主动技能将使用者和附近实体传送到使用者的个人维度
+    // 鸦羽骨哨：主动技能将使用者和附近实体送入个人维度，10 秒后各自返回原位置。
     event.addAdvanced('rainbow:whistle', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -768,10 +793,13 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("主动技能：将自身传送进个人维度"));
             text.add(2, Text.aqua("同时传送使用前半径 8 格内的所有实体"));
             text.add(3, Text.aqua("包括附近玩家，排除使用者自身"));
-            text.add(4, Text.aqua("冷却 20 秒"));
+            text.add(4, Text.aqua("10 秒后各自返回进入前的维度和位置"));
+            text.add(5, Text.aqua("冷却 20 秒"));
         }
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
+        // 提示提尔锋主手持有时提供的盔甲穿透属性。
+        text.add(Text.aqua("主手持有：+50 盔甲穿透"));
         text.add(Text.darkGray("美术资源：Embers Rekindled"))
     })
     event.addAdvanced('rainbow:hand_of_scratches', (item, advanced, text) => {
@@ -902,6 +930,12 @@ ItemEvents.tooltip((event) => {
             text.add(5, Text.aqua("冷却 2 秒"));
         }
     })
+    // 汉剑为无限耐久的普通剑；近战命中生命低于 25% 的存活实体时触发斩杀。
+    event.addAdvanced('rainbow:han_sword', (item, advanced, text) => {
+        text.add(1, Text.gray('攻击不会损耗耐久，没有主动技能'));
+        text.add(2, Text.red('近战命中当前生命低于最大生命 25% 的目标时斩杀'));
+    })
+
     // 武士刀
     event.addAdvanced('mysticartifacts:katana', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -1060,6 +1094,16 @@ ItemEvents.tooltip((event) => {
             text.add(5, Text.red("合成消耗30~50级经验"));
         }
     })
+    // 奥数法典：提示射线距离、目标限制与变身时长。
+    event.addAdvanced('rainbow:arcane_codex', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1);
+            text.add(1, Text.aqua("主动：射线命中 32 格内的非玩家生物"));
+            text.add(2, Text.aqua("将目标变为原版猪，持续 10 秒后恢复"));
+            text.add(3, Text.gold("不支持玩家、盔甲架等非 Mob 实体"));
+        }
+    })
     // 全视之眼
     event.addAdvanced('mysticartifacts:all_seeing_eye', (item, advanced, text) => {
         text.add(1, Text.aqua("右键打开在线玩家列表"));
@@ -1181,7 +1225,7 @@ ItemEvents.tooltip((event) => {
         }
     })
     // 多心经
-    // 机制：佩戴获得 +10% 冷却缩减（乘算）
+    // 机制：佩戴获得 +10% 冷却缩减；结算后单次伤害超过最大生命 10% 时限制伤害并冷却 20 秒。
     event.addAdvanced('rainbow:the_heart_sutra', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -1189,6 +1233,8 @@ ItemEvents.tooltip((event) => {
             text.add(1, Text.aqua("▸ 佩戴后获得 +10% 冷却缩减"));
             text.add(2, Text.aqua("▸ 所有技能冷却时间缩短"));
             text.add(3, Text.aqua("  效果为乘算，可与其他减CD叠加"));
+            text.add(4, Text.gold("▸ 护甲、保护等结算后，超过最大生命 10% 的单次伤害限制为 10%"));
+            text.add(5, Text.gray("  触发后物品冷却 20 秒；冷却期间不限制伤害"));
         }
     })
     // 抽血袋
@@ -1279,3 +1325,97 @@ ItemEvents.tooltip((event) => {
         }
     })
 })
+
+// ==========================================
+// 💎 圣遗物镶嵌提示
+// ==========================================
+// 配置与随机结果都来自 startup_scripts/wooden_sword_inlay（global.WOODEN_SWORD_INLAY_CONFIG + 圣遗物 NBT），
+// 因此改配置、觉醒元素或套装数值后提示会自动跟随。
+// 单条镶嵌数值的展示文本：百分比属性 ×100 后加 %，平坦属性保留两位小数并去掉多余的 0
+function formatInlayValue(def, amount) {
+    try {
+        if (def != null && def.percent) {
+            return (Math.round(amount * 10000) / 100) + '%';
+        }
+        return String(Math.round(amount * 100) / 100);
+    } catch (e) {
+        console.log('[圣遗物词条] 数值格式化失败：' + e);
+        return String(amount);
+    }
+}
+
+// 圣遗物展示其自身 NBT 中的镶嵌记录
+function addInlayTooltip(item, text, cfg) {
+    let nbt = item.getNbt();
+    let count = 0;
+    if (nbt != null && nbt.contains(cfg.nbt.count)) count = nbt.getInt(cfg.nbt.count);
+
+    if (count <= 0) {
+        text.add(1, Text.gold('[镶嵌] 未镶嵌'));
+        text.add(2, Text.gray(`在铁砧中与 ${cfg.materialId} 镶嵌，最多 ${cfg.maxSockets} 次`));
+        text.add(3, Text.gray('每次镶嵌随机获得一条属性加成'));
+        return;
+    }
+
+    let line = 1;
+    text.add(line++, Text.gold(`[镶嵌] ${count} / ${cfg.maxSockets}`));
+    for (let i = 0; i < count; i++) {
+        let attrKey = cfg.nbt.prefix + i + 'Attr';
+        // 待鉴定槽位（数据未同步完成）只占位显示
+        if (nbt == null || !nbt.contains(attrKey)) {
+            text.add(line++, Text.gray(' ▸ 待鉴定'));
+            continue;
+        }
+        let attrId = nbt.getString(attrKey);
+        let amount = nbt.getDouble(cfg.nbt.prefix + i + 'Val');
+        let def = cfg.attributes[attrId];
+        let name = (def != null && def.name != null) ? def.name : attrId;
+        let valueText = (def != null) ? formatInlayValue(def, amount) : String(amount);
+        text.add(line++, Text.aqua(` ▸ ${name} +${valueText}`));
+    }
+    if (count < cfg.maxSockets) {
+        text.add(line++, Text.gray(`还可在铁砧中镶嵌 ${cfg.maxSockets - count} 次（材料：${cfg.materialId}）`));
+        text.add(line++, Text.gray('第 5 次镶嵌后由五条词条确定觉醒元素'));
+    } else {
+        // 旧满镶嵌圣遗物没有元素 NBT 时，由共享算法按五条词条补算。
+        let element = global.getRelicAwakeningElement(nbt);
+        let def = element != null ? cfg.elements[element] : null;
+        if (def != null) {
+            let bonus = formatInlayValue(def, def.amount);
+            text.add(line++, Text.gold(`[元素觉醒] ${def.name}`));
+            text.add(line++, Text.aqua(`同元素 4 件：${def.attributeName} +${bonus}`));
+            text.add(line++, Text.aqua(`同元素 5 件：再加 ${bonus}（合计双倍）`));
+        }
+    }
+}
+
+ItemEvents.tooltip(event => {
+    // 圣遗物提示保留镶嵌状态；木剑不再接入本系统
+    event.addAdvanced('rainbow:relic', (item, advanced, text) => {
+        try {
+            let cfg = global.WOODEN_SWORD_INLAY_CONFIG;
+            if (cfg == null) return;
+            addInlayTooltip(item, text, cfg);
+        } catch (e) {
+            console.log('[圣遗物词条] 工具提示渲染失败：' + e);
+        }
+    });
+})
+// 悬赏委托书：任务从傻子村民处接取，右键定位并在 16 格内触发 GatewaysJS 传送门。
+ItemEvents.tooltip(event => {
+    event.addAdvanced('rainbow:bounty_contract', (item, advanced, text) => {
+        try {
+            let nbt = item.nbt;
+            if (nbt == null || !nbt.contains('RainbowBounty')) {
+                text.add('§7与傻子村民交互领取悬赏');
+                return;
+            }
+            let bounty = nbt.getCompound('RainbowBounty');
+            text.add(1, '§6悬赏：§f' + bounty.getString('name'));
+            text.add(2, '§7主手右键查看目标坐标');
+            text.add(3, '§7进入目标 16 格内再右键召唤传送门');
+        } catch (error) {
+            console.log('[悬赏] 委托书提示读取失败: ' + error);
+        }
+    });
+});

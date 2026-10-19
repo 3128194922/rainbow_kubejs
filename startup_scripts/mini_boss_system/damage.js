@@ -2,7 +2,7 @@
 // ============================================================
 // 迷你Boss词条系统 - 伤害类词条（LivingHurtEvent 管线实现）
 // ============================================================
-// 暗影(Shadow)/刺客(Assassin)/狂怒(Fury)/刚性(Rigidity) 需要修改伤害数值，
+// 暗影(Shadow)/刺客(Assassin)/狂怒(Fury)/刚性(Rigidity)/适应(Adapt) 需要修改伤害数值，
 // KubeJS 的 EntityEvents.hurt 只能取消不能改量，因此接入 ForgeEvents 伤害管线，
 // 由 startup_scripts/ForgeEvents/main.js 的 LivingHurtEvent 主入口调用 handleMiniBossPowers。
 // 注意：startup 与 server 是两个脚本包（作用域隔离），这里的 mbHasPower/mbGetPowerLevel
@@ -34,6 +34,45 @@ function mbGetPowerLevel(entity, power) {
 }
 
 /**
+ * 适应记录伤害类型：首次记录放行，重复类型由 LivingHurtEvent 将伤害设为0。
+ * 每级记录一种类型，旧存档的等级同样受2级新上限约束。
+ * @param {Object} entity - 持有适应词条的受击迷你Boss
+ * @param {Object} source - 当前伤害来源
+ * @returns {boolean} 已记录的伤害类型是否应归零
+ */
+function mbRecordAdaptDamage(entity, source) {
+    try {
+        if (!mbHasPower(entity, 'Adapt') || source == null) return false;
+        let damageType = source.getType();
+        if (!damageType) return false;
+
+        let pd = entity.persistentData;
+        let types = [];
+        let saved = pd.getString('_mb_adapt_types');
+        if (saved) {
+            try { types = JSON.parse(saved); } catch (e) { types = []; }
+        }
+        if (!Array.isArray(types)) types = [];
+        let cap = Math.min(mbGetPowerLevel(entity, 'Adapt'), 2);
+        // 旧存档可能已有3种已适应类型；按新上限保留最先记录的两种。
+        if (types.length > cap) {
+            types = types.slice(0, cap);
+            pd.putString('_mb_adapt_types', JSON.stringify(types));
+        }
+        if (types.indexOf(damageType) >= 0) return true;
+
+        if (types.length < cap) {
+            types.push(damageType);
+            pd.putString('_mb_adapt_types', JSON.stringify(types));
+        }
+        return false;
+    } catch (e) {
+        console.log('[MiniBoss 适应] 记录伤害类型失败: ' + e);
+        return false;
+    }
+}
+
+/**
  * 计算实体所处亮度（0~15）：方块光与 天光-天色变暗 取大值
  * @param {Object} entity - 待计算实体
  * @returns {number} 亮度 0~15
@@ -51,12 +90,13 @@ function mbLightLevel(entity) {
 }
 
 /**
- * 迷你Boss伤害类词条，由 ForgeEvents/main.js 的 LivingHurtEvent 主入口调用
+ * 迷你Boss伤害类词条（含适应的伤害归零），由 LivingHurtEvent 主入口调用
  * @param {Object} event - LivingHurtEvent（可 setAmount 修改伤害）
  * @param {Object} attacker - 攻击者（环境伤害时为 null）
  * @param {Object} victim - 受击者
+ * @param {Object} source - 当前伤害来源
  */
-function handleMiniBossPowers(event, attacker, victim) {
+function handleMiniBossPowers(event, attacker, victim, source) {
     let amount = event.getAmount();
     if (amount <= 0) return;
     let changed = false;
@@ -97,6 +137,12 @@ function handleMiniBossPowers(event, attacker, victim) {
             changed = true;
         }
         // 恰好等于15点：不增不减
+    }
+
+    // 所有增减伤计算完成后才处理适应，重复类型只把伤害数值归零，不取消事件。
+    if (mbRecordAdaptDamage(victim, source)) {
+        event.setAmount(0);
+        return;
     }
 
     if (changed) {

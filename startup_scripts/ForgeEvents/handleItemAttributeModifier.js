@@ -7,6 +7,19 @@ function handleItemAttributeModifier(event) {
     let item = event.getItemStack();
     let slotType = event.getSlotType();
 
+    // 提尔锋仅在主手时获得 +50 盔甲穿透。
+    if (item.id === "rainbow:tyrfing" && slotType === "mainhand") {
+        event.addModifier(
+            "attributeslib:armor_pierce",
+            new AttributeModifier(
+                "d8b3b8d2-1f0f-4e65-a489-00b0709d0b12",
+                "tyrfing_armor_pierce",
+                50.0,
+                "addition"
+            )
+        );
+    }
+
     // 邪恶面具：根据 maskId 动态添加属性
     /*if (item.id === "species:wicked_mask" && slotType === "head") {
         let maskId = item.getNbt().getString("id")
@@ -30,7 +43,8 @@ function handleItemAttributeModifier(event) {
     }*/
 
     // 饕餮之锅：食物数量影响攻击力
-    let foodnum = item.getNbt().getInt("foodnumber") || 0;
+    let itemNbt = item.getNbt();
+    let foodnum = itemNbt != null ? itemNbt.getInt("foodnumber") || 0 : 0;
     if (item.id === "rainbow:eldritch_pan" && slotType === "mainhand") {
         event.addModifier(
             "generic.attack_damage",

@@ -11,6 +11,8 @@ const Vec3 = Java.loadClass('net.minecraft.world.phys.Vec3');
 const ForgeRegistries = Java.loadClass('net.minecraftforge.registries.ForgeRegistries')
 const InteractionHand = Java.loadClass('net.minecraft.world.InteractionHand')
 const InteractionResult = Java.loadClass('net.minecraft.world.InteractionResult')
+// 原版跳劈冷却期间通过 Forge CriticalHitEvent 的 DENY 结果取消暴击倍率。
+const ForgeEventResult = Java.loadClass('net.minecraftforge.eventbus.api.Event$Result')
 const ClickAction = Java.loadClass('net.minecraft.world.inventory.ClickAction')
 const EquipmentSlot = Java.loadClass('net.minecraft.world.entity.EquipmentSlot')
 const SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
@@ -20,6 +22,10 @@ const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocatio
 const BlockPos = Java.loadClass('net.minecraft.core.BlockPos')
 const Direction = Java.loadClass('net.minecraft.core.Direction')
 const Mob = Java.loadClass('net.minecraft.world.entity.monster.Monster');
+// 血月：Forge 睡眠拒绝结果、自然生成类型与敌对实体分类。
+const BedSleepingProblem = Java.loadClass('net.minecraft.world.entity.player.Player$BedSleepingProblem')
+const MobSpawnType = Java.loadClass('net.minecraft.world.entity.MobSpawnType')
+const MobCategory = Java.loadClass('net.minecraft.world.entity.MobCategory')
 const LivingEntity = Java.loadClass("net.minecraft.world.entity.LivingEntity")
 const Difficulty = Java.loadClass("net.minecraft.world.Difficulty")
 const Vec2 = Java.loadClass("net.minecraft.world.phys.Vec2")
@@ -156,6 +162,11 @@ global.COLORS = {
 //GUIJS 演示：原版熔炉配方查询与临时容器
 const RecipeType = Java.loadClass('net.minecraft.world.item.crafting.RecipeType')
 const SimpleContainer = Java.loadClass('net.minecraft.world.SimpleContainer')
+
+// 木剑镶嵌系统：客户端与服务端用同一个种子取随机数，保证铁砧预览与服务端产物一致。
+const JavaRandom = Java.loadClass('java.util.Random')
+// 木剑镶嵌系统：保留铁砧改名时写入自定义名称组件。
+const Component = Java.loadClass('net.minecraft.network.chat.Component')
 
 //获取全部附魔
 global.allEnchantments = []

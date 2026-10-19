@@ -242,14 +242,35 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
     }
 });
 
+// 原版跳劈冷却 3 秒（60 tick）；以玩家持久数据记录冷却结束时间。
+const VANILLA_CRIT_COOLDOWN_TICKS = 60;
+const VANILLA_CRIT_COOLDOWN_KEY = 'rainbowVanillaCritCooldownUntil';
+
+// 原版跳劈事件在 Forge CriticalHitEvent 阶段拦截冷却中的暴击倍率。
+ForgeEvents.onEvent('net.minecraftforge.event.entity.player.CriticalHitEvent', event => {
+    try {
+        if (!event.isVanillaCritical()) return;
+        let player = event.getEntity();
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        let now = player.level.getTime();
+        let cooldownUntil = player.getPersistentData().getLong(VANILLA_CRIT_COOLDOWN_KEY);
+        if (now < cooldownUntil) event.setResult(ForgeEventResult.DENY);
+    } catch (e) {
+        console.log('[ParticleJS] 原版跳劈冷却判定出错: ' + e);
+        console.log(e);
+    }
+});
+
+// MoreCallback 的跳劈事件用于确认暴击未被抑制，并启动 3 秒冷却。
 ForgeEvents.onEvent('com.morecallback.event.VanillaCriticalHitEvent', event => {
     try {
         if (event.isSuppressed()) return;
         let player = event.getPlayer();
         if (player == null || player.level == null || player.level.isClientSide()) return;
-        global.sendParticleTextInFront(player, '跳劈！', 0xFFAA00);
+        player.getPersistentData().putLong(VANILLA_CRIT_COOLDOWN_KEY, player.level.getTime() + VANILLA_CRIT_COOLDOWN_TICKS);
+        global.sendParticleTextInFront(player, '重击！', 0xFFAA00);
     } catch (e) {
-        console.log('[ParticleJS] 原版跳劈文本粒子出错: ' + e);
+        console.log('[ParticleJS] 原版重击文本粒子出错: ' + e);
         console.log(e);
     }
 });

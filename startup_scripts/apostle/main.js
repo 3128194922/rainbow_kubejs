@@ -1,6 +1,9 @@
-// 使徒实体与弹幕实体统一在此功能入口注册，AI 实现在 server_scripts/apostle/main.js。
+// 使徒实体与弹幕实体统一在此功能入口注册；tick 回调直接取 level，避免 Rhino 重复声明冲突。
+// 动画控制器异常只记录一次；命中回调只抽样记录，用于定位弹幕未伤害的问题。
+const APOSTLE_ANIMATION_RUNTIME = { controllerErrorLogged: false };
+const APOSTLE_HIT_TRACE = { count: 0 };
 StartupEvents.registry('entity_type', event => {
-    // 村民变种使徒：使用 Blockbench 几何体与白金配色贴图。
+    // 村民变种使徒：使用 Blockbench 几何体、白金配色贴图和 GeckoLib 动画资源。
     event.create('rainbow:apostle', 'entityjs:mob')
         .mobCategory('monster')
         .sized(0.6, 1.95)
@@ -8,14 +11,33 @@ StartupEvents.registry('entity_type', event => {
         .updateInterval(2)
         .modelResource(entity => 'rainbow:geo/entity/apostle.geo.json')
         .textureResource(entity => 'rainbow:textures/entity/apostle.png')
+        .animationResource(entity => 'rainbow:animations/entity/apostle.animation.json')
+        // 移动与待机共用基础控制器，按 EntityJS animation event 的移动状态自动切换循环。
+        .addAnimationController('apostle_locomotion', 5, animationEvent => {
+            try {
+                if (animationEvent.isMoving()) {
+                    animationEvent.thenLoop('animation.apostle.move');
+                } else {
+                    animationEvent.thenLoop('animation.apostle.idle');
+                }
+                return true;
+            } catch (e) {
+                if (!APOSTLE_ANIMATION_RUNTIME.controllerErrorLogged) {
+                    APOSTLE_ANIMATION_RUNTIME.controllerErrorLogged = true;
+                    console.log('[使徒] 移动/待机动画控制器异常: ' + e);
+                }
+                return true;
+            }
+        })
+        // 召唤动作单独注册为服务端可触发的单次动画，避免影响移动/待机状态判断。
+        .addTriggerableAnimationController('apostle_summon_controller', 2, 'animation.apostle.summon_danmaku', 'summon_danmaku', 'PLAY_ONCE')
         .eggItem(item => {
             item.backgroundColor(0xDED7C5);
             item.highlightColor(0xC99A25);
         })
         .tick(entity => {
             try {
-                const level = entity.getLevel();
-                if (level.isClientSide()) return;
+                if (entity.getLevel().isClientSide()) return;
                 if (typeof global.apostleTick == 'function') {
                     global.apostleTick(entity);
                 }
@@ -50,8 +72,7 @@ StartupEvents.registry('entity_type', event => {
         })
         .tick(projectile => {
             try {
-                const level = projectile.getLevel();
-                if (level.isClientSide()) return;
+                if (projectile.getLevel().isClientSide()) return;
                 if (typeof global.apostleBulletTick == 'function') {
                     global.apostleBulletTick(projectile);
                 }
@@ -62,10 +83,15 @@ StartupEvents.registry('entity_type', event => {
         .onHitEntity(context => {
             try {
                 const projectile = context.entity;
-                const level = projectile.getLevel();
-                if (level.isClientSide()) return;
+                if (projectile.getLevel().isClientSide()) return;
+                APOSTLE_HIT_TRACE.count++;
+                if (APOSTLE_HIT_TRACE.count == 1 || APOSTLE_HIT_TRACE.count % 20 == 0) {
+                    console.log('[使徒] 弹幕碰撞回调已触发，累计命中回调: ' + APOSTLE_HIT_TRACE.count);
+                }
                 if (typeof global.apostleProjectileHit == 'function') {
                     global.apostleProjectileHit(projectile, context.result.getEntity());
+                } else {
+                    console.log('[使徒] 弹幕命中回调已触发，但伤害处理函数未加载');
                 }
             } catch (e) {
                 console.log('[使徒] 弹珠命中处理异常: ' + e);

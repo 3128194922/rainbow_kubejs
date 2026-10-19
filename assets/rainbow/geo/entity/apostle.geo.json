@@ -6,9 +6,9 @@
 				"identifier": "geometry.apostle",
 				"texture_width": 64,
 				"texture_height": 64,
-				"visible_bounds_width": 2,
-				"visible_bounds_height": 3.5,
-				"visible_bounds_offset": [0, 1.25, 0]
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 4.5,
+				"visible_bounds_offset": [0, 1.75, 0]
 			},
 			"bones": [
 				{
@@ -134,7 +134,14 @@
 								"up": {"uv": [64, 8], "uv_size": [-8, -8]},
 								"down": {"uv": [64, 8], "uv_size": [-8, -8]}
 							}
-						},
+						}
+					]
+				},
+				{
+					"name": "halo",
+					"parent": "head",
+					"pivot": [0, 32.5, 5.23],
+					"cubes": [
 						{
 							"origin": [-3.04, 39.07, 5.1],
 							"size": [6.08, 0.26, 0.26],
@@ -149,7 +156,7 @@
 						},
 						{
 							"origin": [-7.38558, 37.27, 5.1],
-							"size": [5.17117, 0.26, 0.26],
+							"size": [5.17116, 0.26, 0.26],
 							"pivot": [-4.8, 37.4, 5.23],
 							"rotation": [0, 0, -45],
 							"uv": {
@@ -177,7 +184,7 @@
 						},
 						{
 							"origin": [-7.38558, 27.47, 5.1],
-							"size": [5.17117, 0.26, 0.26],
+							"size": [5.17116, 0.26, 0.26],
 							"pivot": [-4.8, 27.6, 5.23],
 							"rotation": [0, 0, -135],
 							"uv": {
@@ -205,7 +212,7 @@
 						},
 						{
 							"origin": [2.21442, 27.47, 5.1],
-							"size": [5.17117, 0.26, 0.26],
+							"size": [5.17116, 0.26, 0.26],
 							"pivot": [4.8, 27.6, 5.23],
 							"rotation": [0, 0, 135],
 							"uv": {
@@ -233,7 +240,7 @@
 						},
 						{
 							"origin": [2.21442, 37.27, 5.1],
-							"size": [5.17117, 0.26, 0.26],
+							"size": [5.17116, 0.26, 0.26],
 							"pivot": [4.8, 37.4, 5.23],
 							"rotation": [0, 0, 45],
 							"uv": {

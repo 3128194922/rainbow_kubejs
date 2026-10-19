@@ -1,1 +1,1 @@
-// 功能入口：同目录脚本由 KubeJS 6 按优先级递归加载，保留现有实现文件以维持行为。
+// 旧 Bountiful 副本入口已停用；原实现保存在同目录 .js.back，现用 server_scripts/bounty_system/。

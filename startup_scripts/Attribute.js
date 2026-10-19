@@ -100,6 +100,8 @@ EntityJSEvents.attributes(event => {
         helper.add('caverns_and_chasms:magic_damage', 0.0);
         helper.add('caverns_and_chasms:magic_protection', 1.0);
         helper.add('caverns_and_chasms:stealth', 0.0);
+        // 天元素套装使用原版飞行速度属性；玩家默认属性表没有这一项。
+        helper.add('minecraft:generic.flying_speed', 0.4);
     });
 
 });

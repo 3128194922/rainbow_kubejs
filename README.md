@@ -16,6 +16,9 @@
 | 数据包与资源 | [`data/`](data/)、[`assets/`](assets/) | `/reload` 或资源包重载 |
 | Java 类与全局常量 | [`startup_scripts/CONST.js`](startup_scripts/CONST.js)、[`server_scripts/CONST.js`](server_scripts/CONST.js)、[`client_scripts/CONST.js`](client_scripts/CONST.js) | 按脚本生命周期加载 |
 | ProbeJS 类型参考 | [`probe/generated/`](probe/generated/) | 由当前实例生成 |
+| 功能设计文档 | [`docs/superpowers/`](docs/superpowers/) | 设计 spec + 实现 plan 成对维护 |
+| 模型源文件 | [`model_sources/`](model_sources/) | Blockbench 工程，导出至 assets |
+| 契约测试 | [`tools/tests/`](tools/tests/) | PowerShell 源码断言 |
 
 ### 按需求查找
 
@@ -23,13 +26,17 @@
 - 修改伤害、闪避、盾反、攻击效果：查 [`startup_scripts/ForgeEvents/`](startup_scripts/ForgeEvents/) 与 [`startup_scripts/shield_parry/`](startup_scripts/shield_parry/)。
 - 修改饰品技能：查 [`server_scripts/curios_skill_system/Skillwheel.js`](server_scripts/curios_skill_system/Skillwheel.js) 和 [`client_scripts/tooltips.js`](client_scripts/tooltips.js)。
 - 修改配方、战利品、标签：分别查 [`server_scripts/Recipes.js`](server_scripts/Recipes.js)、[`server_scripts/Loot.js`](server_scripts/Loot.js)、[`server_scripts/Tag.js`](server_scripts/Tag.js)。
+- 修改 CBC 火炮瞄准/炮击标定：查 [`server_scripts/cbc_aim.js`](server_scripts/cbc_aim.js) 与 [`server_scripts/cannon_target/`](server_scripts/cannon_target/)。
+- 查找全局工具函数（冷却反射、翻滚、冻结、Curios 读取等）：见 [全局工具库](#全局工具库)。
 - 修改界面、按键、渲染、提示：查 [`client_scripts/`](client_scripts/) 下对应功能目录。
+- 修改登录/注册/密码/观察者锁定：查 [`server_scripts/login_system/`](server_scripts/login_system/)（账户数据由 sqlitejs 存入 SQLite）。
 
 ### 本地验证
 
 ```text
-node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
-/kubejs errors                             # 游戏内查看 KubeJS 错误
+pwsh tools/tests/power_sword_contract_test.ps1  # 功能契约测试（共 8 个，见「开发辅助与测试」）
+node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血月 / 木剑镶嵌 / 心灵宝石）
+/kubejs errors                                  # 游戏内查看 KubeJS 错误
 ```
 
 > KubeJS、Forge 和附属版本以当前实例为准：Minecraft 1.20.1、Forge 47.4.20、KubeJS 2001.6.5、Rhino 2001.2.3。
@@ -49,9 +56,14 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 - [自定义属性](#自定义属性)
 - [自定义流体](#自定义流体)
 - [核心系统](#核心系统)
+  - [盾反系统](#盾反系统)
   - [饰品技能轮盘系统](#饰品技能轮盘系统)
   - [绝地潜兵 (Helldivers) 系统](#绝地潜兵-helldivers-系统)
   - [迷你Boss系统](#迷你boss系统)
+  - [血月事件（MoonJS）](#血月事件moonjs)
+  - [炮击标定系统 (CBC)](#炮击标定系统-cbc)
+  - [先驱者动力剑](#先驱者动力剑)
+  - [圣遗物镶嵌与元素觉醒](#圣遗物镶嵌与元素觉醒-wooden_sword_inlay)
   - [基因系统](#基因系统)
   - [宠物/佣兵驯服系统](#宠物佣兵驯服系统)
   - [共生徽章系统](#共生徽章系统)
@@ -62,17 +74,27 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
   - [蜂群系统](#蜂群系统)
   - [温度系统](#温度系统)
   - [弓箭系统](#弓箭系统)
+  - [潜行系统 (StealthAPI)](#潜行系统-stealthapi)
   - [伤害系统](#伤害系统)
-  - [盾反系统](#盾反系统)
   - [怪物化系统](#怪物化系统)
+  - [量子密钥与曼德尔砖](#量子密钥与曼德尔砖)
+  - [民主防具](#民主防具)
+  - [原版效果替换 (effectification)](#原版效果替换-effectification)
+  - [伤害指示器系统](#伤害指示器系统)
+  - [Cataclysm Boss 强化](#cataclysm-boss-强化)
+  - [心理卷轴](#心理卷轴)
+  - [小宇宙物品](#小宇宙物品)
+  - [Dyeing 特效管理](#dyeing-特效管理)
+  - [版本检查系统](#版本检查系统)
   - [MBD 机器事件系统](#mbd-机器事件系统)
   - [信标光束能量注入系统](#信标光束能量注入系统)
   - [套装效果系统](#套装效果系统)
-  - [Player 动画系统](#player-动画系统-playeranimator)
+  - [Player 动画系统 (PlayerAnimator)](#player-动画系统-playeranimator)
+  - [登录系统 (SQLiteJS)](#登录系统-sqlitejs)
 - [饰品图鉴](#饰品图鉴)
 - [Curios 自定义渲染](#curios-自定义渲染)
 - [盔甲纹饰祝福系统 (圣经)](#盔甲纹饰祝福系统-圣经)
-- [末影 Docker 系列](#末影-docker-系列)
+- [Docker 通用型系统](#docker-通用型系统)
 - [网关波次挑战](#网关波次挑战)
 - [悬赏车队系统](#悬赏车队系统)
 - [许愿喷泉配方](#许愿喷泉配方)
@@ -86,8 +108,10 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 - [Ponder 场景](#ponder-场景)
 - [声音系统](#声音系统)
 - [全局常量](#全局常量)
+- [全局工具库](#全局工具库)
 - [方块交互机制](#方块交互机制)
 - [杂项机制](#杂项机制)
+- [开发辅助与测试](#开发辅助与测试)
 
 ---
 
@@ -100,11 +124,12 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | 物品ID | 类型 | 说明 | 实现位置 |
 |--------|------|------|----------|
 | ~~`rainbow:biome_of_sword`~~ | 剑 | 群系之刃，右键收集当前群系力量，已收集群系越多越强（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L121](startup_scripts/Registry/Registry_item.js#L121) |
-| `rainbow:duel` | 剑 | 决斗剑，主手 +20% 闪避几率；连续攻击同一 UUID 生物时伤害增加 1.5 倍；被动闪避恢复 4 点生命值，极限闪避获得力量 I 3 秒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，伤害与闪避效果：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)、[startup_scripts/rainbow/duel/main.js](startup_scripts/rainbow/duel/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
-| `rainbow:tyrfing` | 剑 | 提尔锋，对有护甲敌人造成额外伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
-| `rainbow:heavy_axe` | 斧 | 重锤，根据下落加速度造成伤害。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) 配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
+| `rainbow:han_sword` | 剑 | 汉剑，完全由 KubeJS 注册，保留铁剑攻击属性与 Geo 外观，无限耐久；近战命中当前生命低于最大生命 25% 的存活实体时直接斩杀，并触发文字和音效 | 注册与斩杀：[startup_scripts/han_sword/main.js](startup_scripts/han_sword/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)，资源：[assets/rainbow/](assets/rainbow/) |
+| `rainbow:duel` | 剑 | 决斗细剑（Blockbench 元素模型），主手 `attributeslib:dodge_chance` +20%；按目标 UUID 记录连击，连续攻击同一生物伤害 ×1.5；被动闪避恢复 4 点生命值，极限闪避获得力量 I 3 秒 | 注册：[startup_scripts/Registry/Registry_item.js#L128](startup_scripts/Registry/Registry_item.js)，连击增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)、[startup_scripts/rainbow/duel/main.js](startup_scripts/rainbow/duel/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:tyrfing` | 剑 | 提尔锋，主手持有时获得 +50 盔甲穿透 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，属性：[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
+| `rainbow:heavy_axe` | 斧 | 重锤（Blockbench 元素模型），根据下落加速度造成伤害：伤害加成 = 下落距离×0.5 + 动能伤害属性×2，命中后清零下落距离。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)，配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
 | `rainbow:eldritch_pan` | 锅(头部) | 饕餮之锅，攻速极慢但伤害高。右键收集副手食物记录食用种类 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L81-L94](client_scripts/tooltips.js#L81-L94)，渲染：[client_scripts/curios_render.js#L134-L171](client_scripts/curios_render.js#L134-L171) |
-| `rainbow:power_sword` | 剑 | 先驱者动力剑，右键开启持续 10 秒的分解立场；状态与能量存储在同一物品 NBT | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:power_sword` | 剑 | 先驱者动力剑（GeckoLib `anim_sword` 渲染 + 三段动画），右键开启持续 10 秒的分解立场（期间攻击 +12），每次攻击扣减 2 秒持续时间，收场后进入 40 秒冷却；状态与能量存储在同一物品 NBT | 注册：[startup_scripts/Registry/Registry_item.js#L201](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js)，攻击收场：[startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | ~~`rainbow:terasword`~~ | 剑 | 泰拉刃，消耗能量发射 TNT 弹射物（**注册已注释**，ItemProperties 模型与攻击逻辑残留，无效引用） | 注册：[startup_scripts/Registry/Registry_item.js#L192](startup_scripts/Registry/Registry_item.js#L192) |
 | `rainbow:slime_rod` | 剑 | 黏液棒，右键生成粘液块平台，潜行右键生成救生罩，左键脱下实体装备 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体事件：[server_scripts/EntityEvents.js#L12-L25](server_scripts/EntityEvents.js#L12-L25) |
 | `rainbow:frostium_pickaxe` | 镐 | 霜冻金属镐，耐久 1500，加速挖掘 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L258-L261](server_scripts/Recipes.js#L258-L261) |
@@ -131,26 +156,26 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `rainbow:lyre` | 天琴座（子菜单技能），4 种技能：鼓舞/战曲/小奏/终曲 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L551-L592](server_scripts/curios_skill_system/Skillwheel.js#L551-L592) |
 | `rainbow:eye_of_satori` | 觉之瞳，读心标记怪物，增强友军，开关式激活 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L500-L509](server_scripts/curios_skill_system/Skillwheel.js#L500-L509)，tooltip：[client_scripts/tooltips.js#L300-L302](client_scripts/tooltips.js#L300-L302) |
 | `rainbow:lilith_hug` | 莉莉丝之拥，变为吸血鬼 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L293-L296](client_scripts/tooltips.js#L293-L296) |
-| `rainbow:sculk_affinity` | 幽匿亲和，站在幽匿方块上 +20% 移动速度 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L424-L427](client_scripts/tooltips.js#L424-L427) |
+| ~~`rainbow:sculk_affinity`~~ | 幽匿护符（**注册、标签、监守者免仇恨逻辑、tooltip 均已注释停用**）：原效果为站在幽匿方块上 +20% 移动速度、每秒恢复 10 点生命值、监守者不会攻击你 | 注册：[startup_scripts/Registry/Registry_curios.js#L925-L968](startup_scripts/Registry/Registry_curios.js)（注释），监守者逻辑：[startup_scripts/ForgeEvents.js#L84-L90](startup_scripts/ForgeEvents.js)（注释），tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)（注释） |
 | `rainbow:gravity_core` | 重力核心，空中潜行增加重力快速落地，落地造成范围伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L595-L603](server_scripts/curios_skill_system/Skillwheel.js#L595-L603)，tooltip：[client_scripts/tooltips.js#L117-L127](client_scripts/tooltips.js#L117-L127) |
 | `rainbow:giants_ring` | 巨人戒指，体型 x1.5，步高 +1，冲刺踩踏周围生物 | tooltip：[client_scripts/tooltips.js#L95-L105](client_scripts/tooltips.js#L95-L105) |
 | `rainbow:moai_charm` | 石鬼像，生物碰撞箱对你无影响 | tooltip：[client_scripts/tooltips.js#L189-L194](client_scripts/tooltips.js#L189-L194) |
 | `rainbow:chronos` | 发条怀表，记录最近 5 秒的位置/血量/饱食度，右键快速倒带回溯 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L216-L344](server_scripts/curios_skill_system/Skillwheel.js#L216-L344)，tooltip：[client_scripts/tooltips.js#L315-L322](client_scripts/tooltips.js#L315-L322) |
 | `rainbow:mini_moon` | 迷你月球，右键牵引周围生物，潜行右键推开生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L606-L651](server_scripts/curios_skill_system/Skillwheel.js#L606-L651)，tooltip：[client_scripts/tooltips.js#L445-L452](client_scripts/tooltips.js#L445-L452) |
 | `rainbow:sprite` | 雪碧，移动时 +10 护甲 / +3 攻击 / +50% 击退抗性 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L453-L456](client_scripts/tooltips.js#L453-L456) |
-| `rainbow:ancientaegis` | 远古之庇护，加入 TeamJS 小队后右键打开队伍界面；同队伍内佩戴者平均分担伤害，转移部分为魔法伤害；退队后自动卸下 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，队伍与伤害：[server_scripts/rainbow/ancientaegis/main.js](server_scripts/rainbow/ancientaegis/main.js)、[startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:ancientaegis` | 远古之庇护，使用 MineTeam 非白色队伍；白队伍视为默认无队伍；右键提示前往物品栏队伍图标；同一非白色队伍内佩戴者平均分担伤害，转移部分为魔法伤害 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，队伍与伤害：[server_scripts/rainbow/ancientaegis/main.js](server_scripts/rainbow/ancientaegis/main.js)、[startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:oceantooth_necklace` | 海牙吊坠，穿甲 +4，与狱牙吊坠互斥 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L105-L108](server_scripts/Recipes.js#L105-L108)，tooltip：[client_scripts/tooltips.js#L335-L342](client_scripts/tooltips.js#L335-L342) |
 | `rainbow:infernotooth_necklace` | 狱牙吊坠，穿甲 +8，击杀储存灵魂，手持 spectralibur 时每秒转移灵魂 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L350-L352](client_scripts/tooltips.js#L350-L352) |
 | `rainbow:treasure_necklace` | 宝箱吊坠，击杀积累能量，满 100 消耗耐久产出战利品 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L439-L444](client_scripts/tooltips.js#L439-L444) |
 | `rainbow:the_wafer` | 圣饼，减免 10% 所受伤害，延长无敌帧至 3s | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L202-L209](client_scripts/tooltips.js#L202-L209) |
 | `rainbow:the_bible` | 圣经，根据穿戴的纹饰盔甲数量提供伤害抵消（每件 -1，最多 -4，受伤最低为 0） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害抵消：[startup_scripts/ForgeEvents/handleTheBible.js](startup_scripts/ForgeEvents/handleTheBible.js)，tooltip：[client_scripts/tooltips.js#L563-L574](client_scripts/tooltips.js#L563-L574) |
 | `rainbow:dice` | 赌徒骰子，击杀生物概率刷新主副手物品冷却 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体死亡：[server_scripts/EntityEvents.js#L165-L175](server_scripts/EntityEvents.js#L165-L175)，tooltip：[client_scripts/tooltips.js#L148-L155](client_scripts/tooltips.js#L148-L155) |
-| `rainbow:bottled_lightning` | 闪电瓶，主动技能：天气转雨 + 红色矩形警示范围 + 5 秒周期脉冲召唤闪电（半径 10） | 注册：[startup_scripts/Registry/Registry_curios.js#L9](startup_scripts/Registry/Registry_curios.js#L9)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L996-L1067](server_scripts/curios_skill_system/Skillwheel.js#L996-L1067)，tooltip：[client_scripts/tooltips.js#L175-L177](client_scripts/tooltips.js#L175-L177) |
-| `rainbow:soul_diamond` | 心灵宝石，右键在玩家朝向方向召唤念力墙 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L83-L117](server_scripts/curios_skill_system/Skillwheel.js#L83-L117)，tooltip：[client_scripts/tooltips.js#L172-L174](client_scripts/tooltips.js#L172-L174) |
+| ~~`rainbow:bottled_lightning`~~ | 闪电瓶（**注册与技能均已注释停用**）：原为主动技能天气转雨 + 红色矩形警示范围 + 5 秒周期脉冲召唤闪电（半径 10） | 注册：[startup_scripts/Registry/Registry_curios.js#L7-L20](startup_scripts/Registry/Registry_curios.js#L7-L20)（注释），技能：[server_scripts/curios_skill_system/Skillwheel.js#L1195](server_scripts/curios_skill_system/Skillwheel.js)（注释） |
+| `rainbow:soul_diamond` | 心灵宝石（纯被动饰品，原「右键召唤念力墙」主动技能已移除）：佩戴后经验获取 +50%、经验等级上限 100 级；佩戴时把超出 100 级的经验压到正好 100 级并暂存进饰品 NBT（`SoulDiamondStoredXp`），卸下时原样返还 | 注册与属性：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)，测试：[tests/soul_diamond.test.cjs](tests/soul_diamond.test.cjs) |
 | `rainbow:dead_river` | 大师球，击杀储存灵魂，配合莉莉丝之拥可消耗灵魂免死。右键回收被脑控的佣兵生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js#L353-L364](client_scripts/tooltips.js#L353-L364)，灵魂替死：[server_scripts/EntityEvents.js#L110-L134](server_scripts/EntityEvents.js#L110-L134) |
 | `rainbow:fire_magic` | 火遁·豪火灭却（技能腰带槽），持续 40 tick 发射 Scorcher 火焰投射物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Helldivers.js#L108-L121](server_scripts/curios_skill_system/Helldivers.js#L108-L121) |
 | `rainbow:ccb` | 共生徽章（踩踩背），右键生物骑乘并控制移动 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L434-L471](server_scripts/curios_skill_system/Skillwheel.js#L434-L471)，服务器：[server_scripts/SymbiosisBadge_Server.js](server_scripts/SymbiosisBadge_Server.js)，启动：[startup_scripts/SymbiosisBadge_Startup.js](startup_scripts/SymbiosisBadge_Startup.js)，tooltip：[client_scripts/tooltips.js#L428-L436](client_scripts/tooltips.js#L428-L436) |
-| `rainbow:whistle` | 鸦羽骨哨，主动技能：将使用者和使用前半径 8 格内的其他实体传送到使用者的个人维度，冷却 20 秒 | 注册：[startup_scripts/Registry/Registry_curios.js#L1833](startup_scripts/Registry/Registry_curios.js#L1833)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L621-L716](server_scripts/curios_skill_system/Skillwheel.js#L621-L716)，tooltip：[client_scripts/tooltips.js#L752-L762](client_scripts/tooltips.js#L752-L762) |
+| `rainbow:whistle` | 鸦羽骨哨，主动技能：将使用者和使用前半径 8 格内的其他实体传送到使用者的个人维度，10 秒后各自返回进入前的维度和位置，冷却 20 秒 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:purified_cloth` | 净化绢布，长按右键擦除副手物品的诅咒附魔和修复代价 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L309-L311](client_scripts/tooltips.js#L309-L311) |
 | `rainbow:drowned_heart` | 溺尸之心，技能：召唤幼年溺尸佣兵（铁剑+皮革头盔） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
 | `rainbow:frozen_heart` | 霜冻之心，技能：召唤幼年 chilled 佣兵 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L44-L80](server_scripts/curios_skill_system/Skillwheel.js#L44-L80) |
@@ -178,12 +203,18 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `rainbow:wandering_gummy_pack` | 流浪软糖包，攻击概率触发随机软糖食用效果（冷却 2 秒，幸运 8 时最大 25%） | 注册：[startup_scripts/Registry/Registry_curios.js#L2620](startup_scripts/Registry/Registry_curios.js#L2620)，tooltip：[client_scripts/tooltips.js#L1024-L1033](client_scripts/tooltips.js#L1024-L1033) |
 | `rainbow:beast_mask` | 兽性面具，击杀敌人治疗 4 点；每次受伤增加 1 层被动闪避，最高 10 层；触发极限闪避恢复 4 血量 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，受伤：[startup_scripts/ForgeEvents/handleCurioRework.js](startup_scripts/ForgeEvents/handleCurioRework.js) |
 | `rainbow:super_hormone` | 超级激素，主动技能：恢复 1000 血量 + 全局时缓 50%（20 秒）+ 迅捷 II + 客户端金黄视角边框 | 注册：[startup_scripts/Registry/Registry_curios.js#L2673](startup_scripts/Registry/Registry_curios.js#L2673)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L1171-L1192](server_scripts/curios_skill_system/Skillwheel.js#L1171-L1192)，客户端渲染：[client_scripts/super_hormone/main.js](client_scripts/super_hormone/main.js) |
-| `rainbow:the_heart_sutra` | 多心经，佩戴 +10% 冷却缩减（乘算，可叠加） | 注册：[startup_scripts/Registry/Registry_curios.js#L2690](startup_scripts/Registry/Registry_curios.js#L2690)，tooltip：[client_scripts/tooltips.js#L1048-L1056](client_scripts/tooltips.js#L1048-L1056) |
+| `rainbow:the_heart_sutra` | 多心经，佩戴 +10% 冷却缩减（乘算，可叠加）；护甲、保护和其他减伤结算后，单次伤害超过最大生命 10% 时限制为 10%，随后物品冷却 20 秒，冷却中不触发限制 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害限制：[startup_scripts/the_heart_sutra/main.js](startup_scripts/the_heart_sutra/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:fury_mask` | 狂怒面具，累计受到 10 点伤害后进入狂怒 5 秒，触发冷却 5 秒；攻击回血 5 点，非跳劈暴击额外回血 20 点 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，逻辑：[startup_scripts/ForgeEvents/handleCurioRework.js](startup_scripts/ForgeEvents/handleCurioRework.js) |
 | `rainbow:fist_of_seven_wounds` | 葵花宝典，+0.07 当前生命伤害（attributeslib），受到治疗 -100%；主动翻滚后免疫下一次伤害，冷却 5 秒 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js) |
 | `rainbow:sharingan` | 血轮珠 | 注册：[startup_scripts/Registry/Registry_curios.js#L2748](startup_scripts/Registry/Registry_curios.js#L2748) |
+| `rainbow:dismas_scarf` | 强盗围巾，翻滚次数 +2、翻滚充能速度 +25%；极限闪避反击使用自定义伤害类型 `rainbow:dismas_scarf`（无视护甲与效果/保护附魔） | 注册：[startup_scripts/Registry/Registry_curios.js#L2788](startup_scripts/Registry/Registry_curios.js#L2788)，伤害类型：[server_scripts/rainbow/dismas_scarf.js](server_scripts/rainbow/dismas_scarf.js) |
+| `rainbow:the_3000_ways_to_kill` | 要你命3000，爆炸伤害倍率 +2 | 注册：[startup_scripts/Registry/Registry_curios.js#L2825](startup_scripts/Registry/Registry_curios.js#L2825) |
+| `rainbow:pauldron` | 肩甲，骑乘坐骑高速冲锋时对路径生物造成伤害；完全抵消一次大额伤害并进入 20 秒冷却 | 注册：[startup_scripts/Registry/Registry_curios.js#L2843](startup_scripts/Registry/Registry_curios.js#L2843)，伤害抵消：[startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js) |
+| `rainbow:hand_of_scratches` | 扣挠之手，技能轮盘饰品 | 注册：[startup_scripts/Registry/Registry_curios.js#L2946](startup_scripts/Registry/Registry_curios.js#L2946) |
+| `rainbow:kuchiyosenojutsu` | 通灵卷轴，主动技能「口寄用之术」：召唤通灵卷轴实体并展开心理卷轴墙 | 注册：[startup_scripts/Registry/Registry_curios.js#L2963](startup_scripts/Registry/Registry_curios.js#L2963)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L2026](server_scripts/curios_skill_system/Skillwheel.js#L2026) |
+| `rainbow:wicked_package` | 魔术箱，主动技能「烛心套餐」 | 注册：[startup_scripts/Registry/Registry_curios.js#L2980](startup_scripts/Registry/Registry_curios.js#L2980)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L564](server_scripts/curios_skill_system/Skillwheel.js#L564) |
 
-**已注释（不再注册）：** `rainbow:beacon_ball`（L1009）、`rainbow:phantom_body`（L1030）、`rainbow:crow_heart`（L1125）、义体系列 `sandevistan` / `cyber_nerve_cpu` / `subcutaneous_armor` / `biological_monitoring` / `365_exe` / `second_heart` / `german_orthopedics`（L1171-L1444）、`rainbow:power_glove` / `rainbow:fire_gauntlet`（L1995-L2019）
+**已注释（不再注册）：** `rainbow:beacon_ball`（L1009）、`rainbow:phantom_body`（L1030）、`rainbow:crow_heart`（L1125）、义体系列 `sandevistan` / `cyber_nerve_cpu` / `subcutaneous_armor` / `biological_monitoring` / `365_exe` / `second_heart` / `german_orthopedics`（L1171-L1444）、`rainbow:power_glove` / `rainbow:fire_gauntlet`（L1995-L2019）、`rainbow:bottled_lightning`（L7-L20，技能同步停用）、`rainbow:sculk_affinity`（L926-L968，监守者免仇恨逻辑同步停用）
 
 ### 食物
 
@@ -198,6 +229,7 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | 物品ID | 说明 | 实现位置 |
 |--------|------|----------|
 | `rainbow:instance_pass1` ~ `rainbow:instance_pass5` | 副本通行证 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
+| `rainbow:bounty_contract` | 傻子村民悬赏界面接取后获得的专属委托书 | 注册与 GUI：[startup_scripts/bounty_system/](startup_scripts/bounty_system/)，逻辑：[server_scripts/bounty_system/](server_scripts/bounty_system/) |
 | `rainbow:super_mechanism` | 超精密构件，合成材料 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L346-L355](server_scripts/Recipes.js#L346-L355) |
 | `rainbow:rainbow_stone` | 七彩石 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L447](server_scripts/Recipes.js#L447) |
 | `rainbow:miracle` | 奇迹物质 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L361](server_scripts/Recipes.js#L361) |
@@ -212,6 +244,10 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `rainbow:nbt_util` | NBT 工具，右键实体输出 NBT 到日志 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:golden_finger` | 金手指，让两个生物互相骑乘（大象骑村民触发成就） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:aggro_stick` | 索敌棒，右键点击两个实体，让它们互相索敌攻击 | 注册：[startup_scripts/Registry/Registry_item.js#L210](startup_scripts/Registry/Registry_item.js#L210)，交互：[server_scripts/aggro_link/ItemEvents.js](server_scripts/aggro_link/ItemEvents.js) |
+| `rainbow:cannon_targeter` | 炮击标定器（信标球），单炮绑定/电台齐射两种互斥模式，右键投掷炮击目标实体 | 注册：[startup_scripts/Registry/Registry_item.js#L55](startup_scripts/Registry/Registry_item.js#L55)，系统：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，tooltip：[client_scripts/tooltips.js#L1256](client_scripts/tooltips.js#L1256) |
+| `rainbow:mini_world` | 小宇宙，右键进出个人世界（MiniWorldApi），返回点存 persistentData | 注册：[startup_scripts/rainbow/mini_world/main.js](startup_scripts/rainbow/mini_world/main.js)，逻辑：[server_scripts/rainbow/mini_world/main.js](server_scripts/rainbow/mini_world/main.js)，设计文档：[docs/superpowers/specs/2026-09-07-mini-world-item-design.md](docs/superpowers/specs/2026-09-07-mini-world-item-design.md) |
+| `rainbow:quantum_key` | 量子密钥，创建 60 秒后失效，用于解锁曼德尔砖 | 注册：[startup_scripts/quantum_mandel/main.js](startup_scripts/quantum_mandel/main.js) |
+| `rainbow:mandel_brick` | 曼德尔砖，经量子密钥解锁后右键按战利品表发奖 | 注册：[startup_scripts/quantum_mandel/main.js](startup_scripts/quantum_mandel/main.js) |
 
 ### 逻辑数字
 
@@ -238,6 +274,8 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `rainbow:number_computer` | 逻辑计算机 | 注册：[startup_scripts/Registry/Registry_block.js#L98](startup_scripts/Registry/Registry_block.js#L98) |
 | `rainbow:luban_lock` | 鲁班锁，空手右键捕获上方 3×3×3 结构（含方块状态与方块实体），破坏保留结构到物品，放置时自动还原 | 注册：[startup_scripts/Registry/Registry_docker.js#L574](startup_scripts/Registry/Registry_docker.js#L574)，交互：[server_scripts/luban_lock/luban_lock.js](server_scripts/luban_lock/luban_lock.js)，tooltip：[client_scripts/tooltips.js#L680-L688](client_scripts/tooltips.js#L680-L688) |
 | `rainbow:docker_nether_on` | 下界反应堆，收集附近唱片机音乐产生下界之音 | 注册：[startup_scripts/Registry/Registry_docker.js#L460](startup_scripts/Registry/Registry_docker.js#L460) |
+| `rainbow:artillery_radio` | 炮兵电台，每秒扫描 16×1×16 范围内已组装火炮供信标球齐射调度；右键播报范围内火炮数量（无线电静电音效） | 注册：[startup_scripts/Registry/Registry_block.js#L100](startup_scripts/Registry/Registry_block.js#L100)，逻辑：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js) |
+| `rainbow:food_stall_chairs` | 帕瓦椅子（cardinal 朝向方块），右键坐下（隐形盔甲架座位）、潜行右键收回，坐椅玩家无敌 | 注册：[startup_scripts/Registry/Registry_block.js#L47](startup_scripts/Registry/Registry_block.js#L47)，交互：[server_scripts/food_stall/food_stall_chairs.js](server_scripts/food_stall/food_stall_chairs.js) |
 
 > Docker 通用型方块注册：[startup_scripts/docker/main.js](startup_scripts/docker/main.js)
 
@@ -248,7 +286,11 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | 实体ID | 说明 | 实现位置 |
 |--------|------|----------|
 | `rainbow:tnt_arrow` | 延迟 TNT 箭，击中实体即爆，击中方块延迟 40 tick 爆炸 | 注册：[startup_scripts/Registry/Registry_entity.js](startup_scripts/Registry/Registry_entity.js) |
-| `rainbow:apostle` | 使徒：村民变种敌对实体，保持 12–20 格距离，轮换扇形散射与延迟瞄准弹幕 | 注册：[startup_scripts/apostle/main.js](startup_scripts/apostle/main.js)，AI：[server_scripts/apostle/main.js](server_scripts/apostle/main.js) |
+| `rainbow:apostle` | 使徒：村民变种弹幕 Boss（EntityJS + Blockbench 几何/贴图），保持 12–20 格距离，13 式招式状态机（权重随机轮换 + 大招冷却/保底 + 血量召唤 + 30% 狂暴），危险招式带 Dyeing 预警 | 注册：[startup_scripts/apostle/main.js](startup_scripts/apostle/main.js)，AI：[server_scripts/apostle/main.js](server_scripts/apostle/main.js)，行为逻辑：[docs/行为逻辑.md](docs/行为逻辑.md)，设计文档：[docs/superpowers/specs/2026-09-27-apostle-entity-design.md](docs/superpowers/specs/2026-09-27-apostle-entity-design.md) |
+| `rainbow:apostle_bullet` | 使徒弹幕投掷物（entityjs:projectile，独立物品形态），命中目标筛选与结算由 `global.apostle*` 回调驱动 | 注册：[startup_scripts/apostle/main.js](startup_scripts/apostle/main.js)，逻辑：[server_scripts/apostle/main.js](server_scripts/apostle/main.js) |
+| `rainbow:cannon_target_marker` | 炮击目标标记实体（信标球投掷），抛物线物理，落地/停稳后调度绑定火炮开火；客户端 billboard 渲染 | 注册：[startup_scripts/Registry/Registry_entity.js#L119](startup_scripts/Registry/Registry_entity.js#L119)，tick：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js) |
+| `rainbow:psychic_scroll` | 心理卷轴墙实体：拦截/偏转抛射物、推动检测盒内生物（施放者豁免） | 注册：[startup_scripts/Registry/Registry_entity.js#L215](startup_scripts/Registry/Registry_entity.js#L215)，逻辑：[server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
+| `rainbow:kuchiyose_scroll` | 通灵卷轴（entityjs:tamable 可驯服召唤物），「口寄用之术」技能召唤 | 注册：[startup_scripts/Registry/Registry_entity.js#L70](startup_scripts/Registry/Registry_entity.js#L70) |
 
 ---
 
@@ -266,7 +308,7 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 
 ## 自定义效果/药水
 
-> 注册入口：[startup_scripts/Effects.js](startup_scripts/Effects.js)、[startup_scripts/MonsterEffects.js](startup_scripts/MonsterEffects.js)、[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)、[startup_scripts/kjs6_registering_effects_&_potions.js](startup_scripts/kjs6_registering_effects_&_potions.js)
+> 注册入口：[startup_scripts/Effects.js](startup_scripts/Effects.js)、[startup_scripts/MonsterEffects.js](startup_scripts/MonsterEffects.js)、[startup_scripts/kjs6_registering_effects_&_potions.js](startup_scripts/kjs6_registering_effects_&_potions.js)
 
 | 效果ID | 类型 | 说明 |
 |--------|------|------|
@@ -286,6 +328,11 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `rainbow:beast_dodge` | 有益 | 兽性面具被动闪避 |
 | `rainbow:monster` | - | 怪物化，+30% 移速 / +50% 攻击 / +20 最大生命，饥饿归零解除 |
 | `rainbow:monstering` | - | 半怪物化（食物数值 x2，累计 5 分钟转怪物化） |
+| `rainbow:fire_resistance` | 有益 | 火焰免疫（`moreattribute:fire_immunity` +0.8 实现，替换原版抗火） |
+| `rainbow:resistance` | 有益 | 抗性，每级 10% 减伤（原版为 20%/级），尊重 `BYPASSES_RESISTANCE` 标签 |
+| `rainbow:strength` | 有益 | 力量，攻速 >2.4 时每级 +1 伤害，否则每级 +3；移除时清理攻击修饰符防残留 |
+
+> 以上三个效果由 effectification 系统（[startup_scripts/effectification/main.js](startup_scripts/effectification/main.js)）注册，配合 effectification 模组配置将原版抗火/抗性/力量整体替换为 rainbow 自定义效果。
 
 ---
 
@@ -326,7 +373,7 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | 视觉反馈 | 玩家位置闪光、附魔命中、云雾冲击；攻击者位置受击与横扫粒子 |
 | 音效反馈 | 盾牌格挡、暴击、攻击击退音；`shiledattack` 自带铁砧音作为底层反馈 |
 | 兼容联动 | `rainbow:sharingan` 恢复冷却；`rainbow:reload_core` 减少霰弹枪冷却 |
-| 行为测试 | `node tests/shield_parry_knockback.test.js` |
+| 行为测试 | 暂无自动化测试；调整击退常量后需重启游戏实测（契约测试清单见 [开发辅助与测试](#开发辅助与测试)） |
 
 ### 饰品技能轮盘系统
 
@@ -338,32 +385,33 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 
 | 技能饰品 | 效果 | 冷却 | 代码行 |
 |----------|------|------|--------|
-| 心脏系列 x5 | 召唤对应幼年佣兵（铁剑+皮革头盔+消失诅咒） | 20s | L44-L80 |
-| 心灵宝石 | 在玩家朝向方向召唤念力墙 | 30s | L83-L117 |
-| 发条怀表 | 5 秒时间回溯 + 重置最近结构 | - | L216-L344 |
-| 装填核心 | 消耗 100 能量获得装填 Buff | 10s | L397-L406 |
-| 连射核心 | 消耗 100 能量获得连射 Buff | 10s | L409-L418 |
-| 共生徽章 | 5 格射线检测生物并骑乘 | - | L434-L471 |
-| 烟雾弹 `species:smoke_bomb` | 释放烟雾弹 | - | L456 附近 |
-| 皇家法杖 | 触发原版皇家法杖右键效果 | - | L474-L497 |
-| 觉之瞳 | 开关 NBT `is_open` 状态 | - | L500-L509 |
-| 鸦羽骨哨 | 将使用者和使用前半径 8 格内的其他实体传送到使用者的个人维度 | - | L621-L716 |
-| 虚空蠕虫之眼 | 获得虚化效果（免疫伤害） | - | L540-L548 |
-| 天琴座 | 子菜单：鼓舞(抗性)/战曲(力量)/小奏(治疗)/终曲(伤害) | 1s | L551-L592 |
-| 重力核心 | 向上弹射 10 格 | - | L595-L603 |
-| 迷你月球 | 引力场：牵引(右键) / 推开(潜行右键)，附加 6 点伤害 | - | L606-L651 |
-| 韧性注射 `rainbow:resilience_syringe` | 韧性增益注射 | - | 文件内 |
-| 狂怒注射 `rainbow:rage_syringe` | 狂怒增益注射 | - | 文件内 |
-| 圣经 `rainbow:the_bible` | 圣经祈祷 | 90s | L780-L825 |
-| 烟花拳套 `minecraft:firework_rocket` | 烟花拳套冲刺：按 Fireworks Flight 等级冲撞击退，撞墙二次伤害 | - | 冲刺：L843-L925，二次伤害：[startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
-| 死河 `rainbow:dead_river` | 消耗全部灵魂按优先级召唤幽灵（巨硕 3 灵魂 / 骑枪 2 / 普通 1） | 10s | L928-L975 |
-| 捕梦网 `windswept:dream_catcher` | 切换观察者模式 3 秒后返回生存 | 10s | L977-L993 |
-| 闪电瓶 `rainbow:bottled_lightning` | 天气转雨 + 矩形警示范围 + 漂浮 2 秒 + 5 秒脉冲召唤闪电（半径 10） | - | L996-L1067 |
-| 女巫坩埚 `mysticartifacts:witch_pot` | 清空末影箱中的喷溅/滞留药水，每 5 tick 朝准星投掷 1 瓶 | 30s | L1071-L1169 |
-| 超级激素 `rainbow:super_hormone` | 恢复 1000 血量 + 全局时缓 50% + 迅捷 II + 金黄视角边框（20 秒） | - | L1171-L1192 |
-| 邪恶面具 `species:wicked_mask` | 按伪装生物 id 分发技能：灾厄使者(5s 追踪/普通导弹交替)、皇家僵尸(召唤 2 僵尸+chosen_victim)、皇家苦力怕(time_bomb+爆炸)、皇家末影人(凝视压制+末地沉重)、皇家骷髅(trapped)、潜伏者(死亡激光)、巨兽(召唤巨兽释放 OverPower 并观战 4s) | 10-60s | L1242-L1725 |
+| 心脏系列 x5 | 召唤对应幼年佣兵（铁剑+皮革头盔+消失诅咒） | 20s | L53 |
+| 发条怀表 `rainbow:chronos` | 5 秒时间回溯 + 重置最近结构 | - | L125 |
+| 信标球 `rainbow:beacon_ball` | 信标光柱效果 | - | L305 |
+| 装填核心 | 消耗 100 能量获得装填 Buff | 10s | L358 |
+| 连射核心 | 消耗 100 能量获得连射 Buff | 10s | L367 |
+| 共生徽章 | 5 格射线检测生物并骑乘 | - | L392 |
+| 皇家法杖 `royalletiations:royal_staff` | 触发原版皇家法杖右键效果 | - | L432 |
+| 烟雾弹 `species:smoke_bomb` | 释放烟雾弹 | - | L460 |
+| 魔术箱 `rainbow:wicked_package` | 烛心套餐 | - | L532 |
+| 觉之瞳 | 开关 NBT `is_open` 状态 | - | L579 |
+| 鸦羽骨哨 | 将使用者和使用前半径 8 格内的其他实体传送到使用者的个人维度，10 秒后各自返回进入前的位置 | - | L667 |
+| 虚空蠕虫之眼 `alexsmobs:void_worm_eye` | 获得虚化效果（免疫伤害） | - | L705 |
+| 天琴座 | 子菜单：鼓舞(抗性)/战曲(力量)/小奏(治疗)/终曲(伤害) | 1s | L716 |
+| 重力核心 | 向上弹射 10 格 | - | L759 |
+| 迷你月球 | 引力场：牵引(右键) / 推开(潜行右键)，附加 6 点伤害；区域特效 `mini_moon_aura` 期间玩家免疫伤害 | - | L771，护盾：[server_scripts/rainbow/mini_moon/main.js](server_scripts/rainbow/mini_moon/main.js) |
+| 圣经 `rainbow:the_bible` | 圣经祈祷 | 90s | L828 |
+| 烟花拳套 `minecraft:firework_rocket` | 烟花拳套冲刺：按 Fireworks Flight 等级冲撞击退，撞墙二次伤害 | - | 冲刺：L914，二次伤害：[startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
+| 死河 `rainbow:dead_river` | 消耗全部灵魂按优先级召唤幽灵（巨硕 3 灵魂 / 骑枪 2 / 普通 1） | 10s | L1043 |
+| 捕梦网 `windswept:dream_catcher` | 切换观察者模式 3 秒后返回生存 | 10s | L1092 |
+| 冰灯 `windswept:ice_lantern` | 冻结半径 4 格内生物 15 秒（排除施法者） | - | L1114 |
+| 女巫坩埚 `mysticartifacts:witch_pot` | 清空末影箱中的喷溅/滞留药水，每 5 tick 朝准星投掷 1 瓶 | 30s | L1240 |
+| 超级激素 `rainbow:super_hormone` | 恢复 1000 血量 + 全局时缓 50% + 迅捷 II + 金黄视角边框（20 秒） | - | L1340 |
+| 烛心面具 `species:wicked_mask` | 按伪装生物 id 分发技能：灾厄使者(5s 追踪/普通导弹交替)、皇家僵尸(召唤 2 僵尸+chosen_victim)、皇家苦力怕(time_bomb+爆炸)、皇家末影人(凝视压制+末地沉重)、皇家骷髅(trapped)、潜伏者(死亡激光)、巨兽(召唤巨兽释放 OverPower 并观战 4s) | 10-60s | L1839 |
+| 通灵卷轴 `rainbow:kuchiyosenojutsu` | 口寄用之术：召唤通灵卷轴并展开心理卷轴墙（复用 `global.summonPsychicScroll`） | - | L1994 |
+| 紧急预案 `mysticartifacts:emergency_plan` | 吸收 16 格内最近玩家的饰品冷却 | - | L2149 |
 
-> 已注册但技能已注释：`rainbow:phantom_body`（`/* */` 包裹）。技能轮盘标签见 [server_scripts/Tag.js](server_scripts/Tag.js) 的 `skillwheel:skills` / `skillwheel:skills_ui`（28 项）。
+> 已注册但技能已注释：韧性注射/狂怒注射（L88/L96）、幻灵之躯 `phantom_body`（L379）、闪电瓶 `bottled_lightning`（L1163）。技能轮盘标签见 [server_scripts/Tag.js](server_scripts/Tag.js) 的 `skillwheel:skills`（31 项）/ `skillwheel:skills_ui`（35 项）。
 
 ### 绝地潜兵 (Helldivers) 系统
 
@@ -381,9 +429,9 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 
 > 实现：[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)，词条效果：[server_scripts/mini_boss_system/effects.js](server_scripts/mini_boss_system/effects.js)，伤害词条：[startup_scripts/mini_boss_system/damage.js](startup_scripts/mini_boss_system/damage.js)，AI：[server_scripts/mini_boss_system/IA.js](server_scripts/mini_boss_system/IA.js)，战利品：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)
 
-**触发逻辑：** 每次攻击检测幸运值，无条件触发（`1 &&`），随机抽取 1-4 次词条（去重）并为每个词条随机掷等级，生命值 x3。实体添加红色油漆层标识。
+**触发逻辑：** 玩家攻击时检测幸运值，幸运为负时按 `|幸运|/100` 概率把被打实体转化为迷你Boss（驯服生物/真 Boss `fieldguide:bosses` 标签免疫转化），随机抽取 1-4 次词条（去重）并为每个词条随机掷等级，生命值 x3，并施加 `mini_boss_creeper_armor` UV 特效作为红色油漆层标识（Dyeing 清理白名单）。词条由 Jade 信息栏金色标题 + 逐行着色显示（等级 > 1 追加罗马数字，如 挖掘II）
 
-**词条系统（17 种，含等级）：** 等级存储于 `persistentData.POWER_LEVELS`（key→等级）与 `_mb_lvl_<key>`，Jade 信息栏等级 > 1 时显示罗马数字（如 挖掘II）
+**词条系统（17 种，含等级）：** 等级存储于 `persistentData.POWER_LEVELS`（key→等级）与 `_mb_lvl_<key>`，Jade 信息栏显示金色"✦ 迷你Boss ✦"标题 + 逐行词条（专属符号+标签），颜色随等级提升（aqua 低级 → yellow 过半 → red 满级），等级 > 1 追加金色罗马数字；标签/等级范围经 `global` 共享，`/reload` 即可更新显示
 
 | 词条 | 等级 | 效果 |
 |------|------|------|
@@ -395,10 +443,10 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | 演化 (Evolve) | 1 | 按实体类型分化：爬行者远距离弹跳突进（6~40格，2秒冷却）；蜘蛛每15s在目标位置放蜘蛛网；骷髅获得永久速度II；女巫每10s随机投掷额外负面喷溅药水（缓速/虚弱/中毒/剧毒/瞬间伤害）；史莱姆体型+1 且血量随体型增大后再×3 |
 | 吸血 (Drain) | 1 | 造成伤害的 50% 恢复自身（受适应词条免疫的攻击不回血） |
 | 寄生 (Parasite) | 1-3 | 受到攻击时召唤等级数只蠹虫并仇恨攻击者（40 tick 冷却），召唤物不参与迷你Boss转化 |
-| 适应 (Adapt) | 1-3 | 记录伤害类型并对已记录类型免疫；记录容量 = 等级，记录满后不再记录、不覆盖 |
+| 适应 (Adapt) | 1-2 | 记录伤害类型；重复命中已记录类型时将伤害值设为 0；记录容量 = 等级，记录满后不再记录、不覆盖 |
 | 自爆 (Explode) | 1-5 | 死亡后产生强度 等级×5 的爆炸（破坏方块、不点火） |
 | 缴械 (Disarm) | 1-5 | 攻击时按 等级×5% 概率卸载目标盔甲与主副手物品为掉落物（40 tick 拾取延迟，创造/旁观玩家免疫） |
-| 重装 (HeavyArmor) | 1-5 | 转化时获得 等级×10 护甲加成（追加基础值，随 NBT 持久化） |
+| 重装 (HeavyArmor) | 1-5 | 转化时获得 等级×5 护甲加成（追加基础值，随 NBT 持久化） |
 | 驱散 (Dispel) | 1-5 | 攻击时按 等级×5% 概率清除目标的正面药水效果 |
 | 暗影 (Shadow) | 1 | 伤害加成 = 15 - 攻击者所处亮度（全暗 +15，全亮 +0） |
 | 刺客 (Assassin) | 1-5 | 攻击者隐身时伤害加成 = 等级×2（5级 = 10） |
@@ -408,6 +456,60 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 > 等级范围配置：`POWER_LEVEL_RANGE`（[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)），未列出的词条默认 1 级
 
 > 战利品表 `rainbow:mini_boss_extra`：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)（钻石/绿宝石/金锭/铁锭/经验瓶/末影珍珠/黑曜石/超精密构件/奇迹物质/下界合金碎片）
+
+### 血月事件（MoonJS）
+
+主世界每八天的满月夜（世界时间 12000 至次日 0 刻）自动启动血月，天亮结束。MoonJS 同步红月贴图和红色环境染色；血月期间玩家无法睡觉。仅血月时**自然生成**的敌对怪物获得现有迷你 Boss 词条、等级、血量和外观；刷怪笼、命令召唤及存档重新加载的怪物不参与。已有其他 MoonJS 事件时不会覆盖它。
+
+管理员输入 `/bloodmoon` 可立即在主世界手动触发血月（权限等级 2）；正常时间流逝下持续到下一次天亮。从其他维度或控制台执行也作用于主世界，手动触发会替换当前月亮事件。
+
+入口：[startup_scripts/blood_moon/main.js](startup_scripts/blood_moon/main.js)、[server_scripts/blood_moon/main.js](server_scripts/blood_moon/main.js)；贴图：[assets/rainbow/textures/moon/blood.png](assets/rainbow/textures/moon/blood.png)。启用前需重启游戏或服务端，客户端需加载资源贴图；游戏内视觉、睡眠和实体生成行为仍需实测。
+
+### 炮击标定系统 (CBC)
+
+信标球 `rainbow:cannon_targeter` 与炮兵电台 `rainbow:artillery_radio` 组成的 CBC（Create Big Cannons）火炮标定系统。
+
+> 服务端：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)
+> 客户端渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js)
+> 设计文档：[docs/superpowers/specs/2026-09-04-cannon-target-design.md](docs/superpowers/specs/2026-09-04-cannon-target-design.md)
+
+| 模式 | 绑定方式 | 效果 |
+|------|----------|------|
+| 单炮绑定 | 潜行右键 CBC 炮台底座（`createbigcannons:cannon_mount` / `fixed_cannon_mount`） | 一对一绑定，投掷目标后单炮开火 |
+| 电台齐射 | 潜行右键炮兵电台 `rainbow:artillery_radio` | 电台调度 16×1×16 范围内全部已组装火炮齐射 |
+
+- **目标投掷：** 普通右键抛出目标实体 `rainbow:cannon_target_marker`（抛物线物理：0.99 空气阻力 + 0.03/tick 重力），停止移动/落地/碰实体/超时 200 tick 时结算开火
+- **瞄准结算：** `cannonTargetApplyAim` 区分固定底座（±45° 剪切板偏移）与垂直底座（原值），同步 pitch/yaw 后 `tryFiringShot()`
+- **关键全局函数：** `global.cannonTargetMath`（纯数学接口）、`global.cannonRadioTick`（电台每秒扫描）、`global.cannonTargetMarkerTick`（目标实体 tick）
+- **音效：** 电台右键播报火炮数量时播放 `rainbow:voice.artillery_radio` 无线电静电音
+- **配套数据包：** [data/createbigcannons/](data/createbigcannons/) 将 13 种大口径炮弹 entity_damage 改为 10 亿（忽略无敌/护甲、爆炸威力 28，命中秒杀），机炮弹药保留低伤害
+
+### 先驱者动力剑
+
+`rainbow:power_sword` 的单物品技能「分解立场」。
+
+> 实现：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js)
+> 攻击收场：[startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js)
+
+- **开启：** 右键写 NBT `DecompositionField` / `DecompositionFieldUntil`（200 tick），清空 `Power`，播放音效并经 `GeoItem.getOrAssignId` 触发 GeckoLib 三段动画 `decomposition_field_open/loop/close`
+- **维持：** 分解立场期间攻击 +12（[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js)），每次攻击扣减 2 秒持续时间
+- **收场：** 到期（`PlayerEvents.tick` 检查主/副手）或攻击耗尽时移除 NBT 并进入 40 秒冷却，回调 `global.triggerPowerSwordAnimation` 播放收场动画
+
+### 圣遗物镶嵌与元素觉醒 (wooden_sword_inlay)
+
+`rainbow:relic` 在铁砧中每次消耗 1 个 `rainbow:miracle`，最多镶嵌 5 次，每次随机获得 1 条属性加成；木剑不参与。
+
+> 配置：[startup_scripts/wooden_sword_inlay/config.js](startup_scripts/wooden_sword_inlay/config.js)
+> 实现：[startup_scripts/wooden_sword_inlay/main.js](startup_scripts/wooden_sword_inlay/main.js)
+> 物品提示：[client_scripts/tooltips.js](client_scripts/tooltips.js)
+> 觉醒验证：[tests/relic_element_awakening.test.cjs](tests/relic_element_awakening.test.cjs)
+
+- **镶嵌入口：** `AnvilUpdateEvent` 左槽圣遗物 + 右槽奇迹物质 → 产出多一次镶嵌的圣遗物（保留原 NBT/改名），`materialCost = 1`，经验等级默认 5/10/15/20/25
+- **随机规则：** 从 `global.WOODEN_SWORD_INLAY_CONFIG.attributes` 随机抽 1 个属性，并在 `[min, max]` 内按 `step` 取值（9 个属性：暴击率/暴击伤害/护甲/攻击伤害/最大生命/盔甲穿透/受到治疗/经验增益/攻击击退，允许重复叠加）
+- **结果一致性：** 首次镶嵌由服务端写入 `RainbowInlaySeed`；随机值由 `(种子, 槽位下标)` 决定，客户端与服务端预览一致，不会重 roll
+- **元素觉醒：** 第五次镶嵌把五条词条的属性 ID 和数值计算成固定的水/岳/风/雷/泽/火/地/天元素，写入 `RainbowRelicElement`；旧满镶嵌圣遗物缺少该键时可按词条补算
+- **属性生效：** Curios 回调读取 `RainbowInlayCount` / `RainbowInlay{n}Attr` / `RainbowInlay{n}Val`；修饰符 UUID 同时包含 Curios 槽位与词条下标，允许多件圣遗物词条叠加
+- **提示：** 圣遗物 tooltip 显示词条、觉醒元素及同元素 4/5 件加成
 
 ### 基因系统
 
@@ -482,14 +584,19 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 
 ### 副本/悬赏实例系统
 
-> 客户端：[client_scripts/Instance/item_key_tootips.js](client_scripts/Instance/item_key_tootips.js)
-> 服务器：[server_scripts/Instance/inventory_closed_event.js](server_scripts/Instance/inventory_closed_event.js)
+> 配置、凭证与 GUI：[startup_scripts/bounty_system/](startup_scripts/bounty_system/)
+> 接取、地形筛选与触发：[server_scripts/bounty_system/](server_scripts/bounty_system/)
 
-- **悬赏物品：** `bountiful:bounty` 右键领取，生成随机坐标（1000-10000 格范围）
-- **副本类型：** `rainbow1` ~ `rainbow5`（僵尸波/怪物扩展 boss）
-- **启动条件：** 在目标坐标 50 格内右键悬赏物品
-- **完成奖励：** 获得对应副本通行证
-- **坐标提示：** 悬赏物品 tooltip 显示坐标信息
+- **接取：** 主手右键原版傻子村民，在 GUIJS 界面选择悬赏，获得绑定玩家的 `rainbow:bounty_contract`。
+- **定位：** 接取时在当前维度距玩家 1000～10000 格随机寻找位置，排除 `#minecraft:is_ocean`，要求 3×3 实心地面和三格高的空位；手持委托书右键显示维度与坐标。
+- **触发：** 距目标三维距离不超过 16 格时主手右键，复核附近安全位置后生成配置的 GatewaysJS 传送门；成功后消耗委托书，防止重复生成。
+- **随机 GUI：** 每次打开时，从传送门已注册的悬赏中无重复抽取最多 `guiOfferCount` 项（默认 2，最多 6）；“换一批”可重新抽取。即使配置数量变化，也无需增减 GUI 页面。
+- **示例：** [config.js](startup_scripts/bounty_system/config.js) 包含两项内嵌传送门（史莱姆讨伐、蛛网清剿）和一项引用已有复杂传送门（黑夜巡查）。内嵌门由 [gateways.js](server_scripts/bounty_system/gateways.js) 自动注册。
+- **新增悬赏：** 在 `config.js` 的 `bounties` 中复制一个对象，修改唯一 `id` 和界面 `name`。`gateway` 写对象时填写独立门的 `id` 与至少一波 `waves`；写字符串（如 `'gateways:overworldian_nights'`）时直接使用已有复杂传送门，不会覆盖其原配置。
+- **内嵌门可选属性：** `size`、`color`、`tooltipText`、`entityTexture`、`bossBarTexture`、`bossEvent`、`hidePearl`、`finalizeSpawn`；`rules` 支持生成/牵引范围、玩家伤害限定、失败清理等 GatewaysJS 常用规则。每波可设置 `mobs`、`maxTime`、`setupTime`、`rewards`，传送门顶层 `rewards` 为通关奖励，`failures` 为失败惩罚。复杂实体、修饰、奖励与惩罚可使用对应的 `json` 字段，示例见配置注释。
+- **加载：** 编辑 `config.js` 后重启游戏；`biomeBlacklist` 支持群系 ID 或 `#` 标签。
+- **旧委托迁移：** 配置中已删除的悬赏对应的旧委托书会失效，玩家可以直接接取新悬赏。
+- **遗失凭证：** 可再次与傻子村民交互，点击“放弃当前委托”后重新接取；旧委托书随即失效。
 
 ### 蜂群系统
 
@@ -538,7 +645,7 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 |------|------|----------|
 | `customAttributeDamage.js` | 自定义属性伤害计算 | [startup_scripts/ForgeEvents/customAttributeDamage.js](startup_scripts/ForgeEvents/customAttributeDamage.js) |
 | `handleBackstabDamage.js` | 背刺判定（最高优先级）：隐匿状态+背面攻击伤害×2，联动泣血之刃回血 | [startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js) |
-| `handleCuriosEffects.js` | 饰品效果处理 + Bible 纹饰祝福 | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
+| `handleCuriosEffects.js` | 攻击者饰品特效：冰茶/曼巴之力按速度值增伤（其余旧逻辑已注释） | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
 | `handleCoreCharging.js` | 核心充能处理（装填/连射核心 + 狂怒面具 FuryDamage 充能） | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
@@ -566,7 +673,6 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 |------|------|
 | 霜冻镐加速 | 挖掘硬度 > 5 的方块时挖掘速度 x16 |
 | 背刺判定 | 玩家隐匿状态（`global.getStealthState`）+ 复用 FarmersDelight `BackstabbingEnchantment.isLookingBehindTarget`（背面±60°锥形）时伤害×2；装备泣血之刃额外恢复背刺伤害 50% 血量 |
-| 棒球棍能量 | 每次攻击消耗能量，归零变回普通棒球棍 |
 | 决斗剑 | 按目标 UUID 记录当前目标；连续攻击同一目标伤害 ×1.5，被动闪避回血 4 点，极限闪避获得力量 I 3 秒 |
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
 | 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
@@ -583,11 +689,75 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 ### 怪物化系统
 
 > 效果注册：[startup_scripts/MonsterEffects.js](startup_scripts/MonsterEffects.js)
-> 逻辑（旧）：[startup_scripts/YoukaiEffects.js](startup_scripts/YoukaiEffects.js)
 
 - **触发：** 食用 `#rainbow:monster_meat` 标签食物有 30% 概率获得半怪物化
 - **半怪物化（`rainbow:monstering`）：** 食物数值 x2，持续累计超过 5 分钟转化为怪物化
 - **怪物化（`rainbow:monster`）：** 食物数值 x3，+30% 移速 / +50% 攻击 / +20 最大生命（MonsterEffects.js 属性修饰符），饥饿值归零时解除，吃怪肉延长持续时间，怪肉在 tooltip 中显示为"人肉"
+
+### 量子密钥与曼德尔砖
+
+复刻 MysticArtifacts 同名物品机制（不改动其 JAR），注册于 [startup_scripts/quantum_mandel/main.js](startup_scripts/quantum_mandel/main.js)。
+
+- **量子密钥 `rainbow:quantum_key`：** 写入 NBT `CreationTime`，超 1200 tick（60 秒）失效
+- **解锁：** 背包内曼德尔砖悬于光标次级点击量子密钥（`ItemStackedOnOtherEvent`）即解锁，过期播低音、有效播解锁音并消耗密钥
+- **开砖：** 右键已解锁的 `rainbow:mandel_brick`，按 `mysticartifacts:gameplay/mandel_brick_reward` 战利品表发奖并消耗砖
+
+### 民主防具
+
+绝地潜兵风格四件套，注册于 [startup_scripts/democracy_armor/main.js](startup_scripts/democracy_armor/main.js)（rainbow 命名空间，避开 MysticArtifacts 原注册表）。
+
+- **材质：** `rainbow:democracy`（基于 iron，耐久乘数 26，护甲值 6/9/11/6，附魔兼容 25，修复材料 `mysticartifacts:rubber`）
+- **物品：** `rainbow:democracy_helmet/chestplate/leggings/boots`，GeckoLib 动画护甲，四件共用 `rainbow:geo/armor/b01_tactical.geo.json` 战术模型并按槽位裁剪骨骼
+
+### 原版效果替换 (effectification)
+
+注册于 [startup_scripts/effectification/main.js](startup_scripts/effectification/main.js)，配合 effectification 模组配置将原版抗火/抗性/力量替换为 rainbow 自定义效果（详见[自定义效果/药水](#自定义效果药水)表）。
+
+### 伤害指示器系统
+
+ParticleJS 文本粒子与飘字基础设施（priority 4000），注册于 [startup_scripts/damage_indicators/main.js](startup_scripts/damage_indicators/main.js)。
+
+- **粒子类型：** `rainbow:damage_indicator_text`（动态文本粒子）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
+- **分色：** 物理红 / 魔法紫 / 真实伤害白
+- **全局 API：** `global.sendParticleText`、`global.sendParticleTextInFront`、`global.spawnDamageIndicator`
+- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化暴击/闪避、原版跳劈分别飘「暴击！/闪避！/跳劈！」
+
+### Cataclysm Boss 强化
+
+> 实现：[server_scripts/Harbinger.js](server_scripts/Harbinger.js)
+
+下界生成的先驱者（The Harbinger）/徘徊者被升级为「毁灭模式/噩梦绞肉锯」：改名换装调整血量；徘徊者周期召唤浮游炮观测者 I/II 型；先驱者半血 EMP 大招（范围真实伤害 + sundering + 双环爆）、低血冲撞充能与榴弹炮、移动破坏方块；减伤 40%、单次受伤上限 1/3；死亡掉落 `firelight:mech_star` / `witherite_smithing_template`。
+
+### 心理卷轴
+
+`rainbow:psychic_scroll` 实体（参考 DomesticationInnovation 心理墙），实现于 [server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js)。
+
+- **召唤：** `global.summonPsychicScroll(player, seconds)` 在面前 2 格生成（主人 UUID 双通道写入）；测试命令 `/psychicscroll [秒]`
+- **机制：** 位置锚定防推移、寿命 300 tick、检测盒内生物速度改为墙面向 ×2（施放者豁免）、抛射物前瞻平面拦截偏转加速，同实体 15 tick 冷却
+- **复用：** 技能轮盘「口寄用之术」（`rainbow:kuchiyosenojutsu`）召唤通灵卷轴并展开心理墙
+
+### 小宇宙物品
+
+`rainbow:mini_world`，右键进入个人世界（MiniWorldApi 按玩家分配维度），在个人世界内右键返回进入前的位置（返回点写入 persistentData，含维度/坐标/视角）。
+
+> 实现：[server_scripts/rainbow/mini_world/main.js](server_scripts/rainbow/mini_world/main.js)
+> 设计文档：[docs/superpowers/specs/2026-09-07-mini-world-item-design.md](docs/superpowers/specs/2026-09-07-mini-world-item-design.md)
+
+### Dyeing 特效管理
+
+> 清理：[server_scripts/dyeing/main.js](server_scripts/dyeing/main.js)
+> 查询：[server_scripts/dyeing/getDyeingEffects.js](server_scripts/dyeing/getDyeingEffects.js)
+
+- **重启清理：** 服务器加载时清空 Dyeing 模组全部残留特效（paint/uv/areaPaint/areaUV/screenOverlay 五类），防止重启后出现永久覆盖层
+- **白名单：** `PRESERVED_EFFECT_IDS = ["mini_boss_creeper_armor"]`（迷你Boss 红色油漆标识）永久保留
+- **查询 API：** `global.getActiveDyeingEffects(entity)` 返回实体当前全部特效（六类）；迷你月球护盾（`mini_moon_aura` 区域特效）经此判定免疫伤害（[server_scripts/rainbow/mini_moon/main.js](server_scripts/rainbow/mini_moon/main.js)）
+
+### 版本检查系统
+
+> 检测：[startup_scripts/version_check/](startup_scripts/version_check/)
+> 播报：[server_scripts/version_check/main.js](server_scripts/version_check/main.js)
+
+启动时按 `global._VERSION_CHECKS` 配置表检测模组版本（当前要求 `entityjs 0.6.6-1.20.1`），不匹配或缺失时写入 `global._VERSION_WARNINGS`，玩家登录时逐条红色播报。
 
 ### MBD 机器事件系统
 
@@ -644,6 +814,16 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `iron_armor_example` | 2件 / 4件 | +4 最大生命 / +4 护甲 + 力量 I（永久） |
 | `oreganized:electrum` | 2件 / 4件 | +1 动能伤害 / 额外 +2 动能伤害 |
 | `royalvariations:royal_knight` | 2件 / 4件 | +1 宠物伤害 / 额外 +2 宠物伤害 |
+| `relic_water` 水 | 4件 / 5件 | 每阶段 +5% 闪避率，5 件共 +10% |
+| `relic_mountain` 岳 | 4件 / 5件 | 每阶段 +10% 击退抗性，5 件共 +20% |
+| `relic_wind` 风 | 4件 / 5件 | 每阶段 +10% 移动速度，5 件共 +20% |
+| `relic_thunder` 雷 | 4件 / 5件 | 每阶段 +5% 暴击率，5 件共 +10% |
+| `relic_marsh` 泽 | 4件 / 5件 | 每阶段 +15% 暴击伤害，5 件共 +30% |
+| `relic_fire` 火 | 4件 / 5件 | 每阶段 +2 攻击伤害，5 件共 +4 |
+| `relic_earth` 地 | 4件 / 5件 | 每阶段 +4 最大生命，5 件共 +8 |
+| `relic_heaven` 天 | 4件 / 5件 | 每阶段 +10% 飞行速度属性，5 件共 +20% |
+
+元素套装只统计 Curios 中已佩戴、满五条词条且元素相同的圣遗物。当前配置有 4 个 charm 槽；按现有规划不改槽数，5 件阶段需以后由其他槽位来源实现。`minecraft:generic.flying_speed` 已挂到玩家属性表，但它对玩家实际飞行速度的影响须在游戏中验证。
 
 > 新增套装在 [server_scripts/set_system/SetEffect.js](server_scripts/set_system/SetEffect.js) 的「套装定义区域」调用 `registerSet()` 即可
 
@@ -690,12 +870,46 @@ node tests/shield_parry_knockback.test.js  # 盾反击退换算行为测试
 | `/stopanim [fadeTicks] [ease]` | 停止自己的动画 |
 | `/playanimwave` | 快捷播放挥手动画（= `/playanim kubejs_playeranim:wave 10 EASEINOUTQUAD`） |
 
+### 登录系统 (SQLiteJS)
+
+玩家进入世界时若为生存模式会被切换为观察者模式并锁定，输入密码登录成功后恢复原模式并传送回「进入世界时记录的位置」。账户名固定为玩家 ID，账户数据存入 SQLite（sqlitejs 模组提供的全局对象 `SQLite`），密码只保存「随机盐 + SHA-256 摘要」。
+
+| 项目 | 说明 |
+|------|------|
+| 主入口 | [`server_scripts/login_system/main.js`](server_scripts/login_system/main.js)（登录事件 + 指令注册） |
+| 状态机 | [`server_scripts/login_system/Login.js`](server_scripts/login_system/Login.js)（模式锁定、进入点记录、内存会话、业务逻辑） |
+| 数据层 | [`server_scripts/login_system/Database.js`](server_scripts/login_system/Database.js)（建表、加盐哈希、失败计数） |
+| 数据库文件 | `<gameDir>/kubejs/sqlite/login.db`，表 `accounts`（目录由 `config/sqlitejs-common.toml` 的 `dbFolder` 决定） |
+
+**指令：**
+
+| 命令 | 权限 | 说明 |
+|------|------|------|
+| `/register <密码>` | 0 | 注册（4~32 位、不能含空格），成功后自动登录并回到进入点 |
+| `/login <密码>` | 0 | 登录；成功后恢复原游戏模式并传送回进入点 |
+| `/changepassword <旧密码> <新密码>` | 0 | 修改密码 |
+| `/logout` | 0 | 退出登录并重新锁定为观察者（登出点记为新的进入点） |
+| `/loginadmin reset <玩家> <新密码>` | 2 | 管理员重置密码并解除锁定，支持离线玩家 |
+
+**规则：**
+
+| 规则 | 实现 |
+|------|------|
+| 进入世界记录起点 | `loginRecordEntry` → 玩家 persistentData 的 `login_entry_dim/x/y/z/yaw/pitch` |
+| 生存 → 观察者 | `loginHandleJoin` → `loginLock`；需要登录的模式名单见 `LOGIN_LOCK_MODES`（默认仅 `survival`） |
+| 创造模式静默 | `LOGIN_SILENT_MODES`（默认 `creative`）内的模式不锁定、不发送注册/登录提示；仅当 `login_locked=true`（上次未登录就退出）时继续登录流程 |
+| 30 分钟免登录 | `global.loginSessions`（纯内存，服务器重启失效），时长常量 `LOGIN_SESSION_MS` |
+| 连续 5 次密码错误 | `LOGIN_MAX_FAIL` 次后写入 `lock_until` 并踢出，锁定时长 `LOGIN_LOCK_MS`（5 分钟） |
+| 数据库不可用 | 直接放行、不锁定，避免玩家被永久困在观察者模式 |
+
+> 注意：密码通过聊天栏指令输入，会留在客户端聊天记录与服务器日志中；本系统只保证数据库侧不落明文。
+
 ---
 
 ## 饰品图鉴
 
 ### 护符槽 (Charm)
-荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限证章、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶、心灵宝石、大师球、共生徽章、鸦羽骨哨、净化绢布、心脏系列 x5、黏液棒、泣血之刃、寻友护符、混沌核心、七阳之戒、日曜石、箭袋、快速箭袋、诅咒王冠、末影之握、生灵之触、点金手套、被诅咒的骨头、末地空气、神射手、天秤座、云靴、吐根酊、图鉴百科、图鉴四篇、流浪软糖包、兽性面具、超级激素、多心经、狂怒面具、葵花宝典、血轮珠
+荷鲁斯之爪、血战沙场之证、暴食之符、贪咀护符、大胃袋、武器大师勋章、幸运符文、猎宝者护符、怪物猎人勋章、曙旼始灵、极限证章、装填核心、连射核心、天琴座、觉之瞳、莉莉丝之拥、幽匿亲和（停用）、重力核心、巨人戒指、石鬼像、发条怀表、迷你月球、雪碧、远古之庇护、海牙吊坠、狱牙吊坠、宝箱吊坠、圣经、赌徒骰子、闪电瓶（停用）、心灵宝石、大师球、共生徽章、鸦羽骨哨、净化绢布、心脏系列 x5、黏液棒、泣血之刃、寻友护符、混沌核心、七阳之戒、日曜石、箭袋、快速箭袋、诅咒王冠、末影之握、生灵之触、点金手套、被诅咒的骨头、末地空气、神射手、天秤座、云靴、吐根酊、图鉴百科、图鉴四篇、流浪软糖包、兽性面具、超级激素、多心经、狂怒面具、葵花宝典、血轮珠、强盗围巾、要你命3000、肩甲、扣挠之手、通灵卷轴、魔术箱
 
 ### 背部 (Back)
 TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mysticartifacts:artifact_spirit`）、皇家法杖、所有旗帜（16 种）、create 背罐（铜/下界合金）
@@ -839,8 +1053,9 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 ## 灵魂火系统
 
 > 配置：[data/soul_fire_d/fires/](data/soul_fire_d/fires/)
+> 火焰定义兼容：[server_scripts/morefire_compat.js](server_scripts/morefire_compat.js)
 
-自定义灵魂火配方，覆盖原版、下界扩展、末地扩展、地下城美食。
+自定义灵魂火配方与火焰伤害定义，覆盖原版、下界扩展、末地扩展、地下城美食；MoreFire 兼容脚本统一配置原版火/灵魂火/dungeonsdelight 活体火/endergetic 末影火/netherexp 远古火/caverns_and_chasms 铜火的颜色、伤害与雨中熄灭规则。
 
 ---
 
@@ -869,15 +1084,17 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 ## 命令系统
 
-> 实现：[server_scripts/PlayerEvents.js](server_scripts/PlayerEvents.js)
-
-| 命令 | 说明 |
-|------|------|
-| `/tpa <玩家名>` | 传送到指定玩家（禁止传送到后室） |
-| `/back` | 返回死亡地点 |
-| `/playanim <animationId> [fadeTicks] [ease]` | 为自己播放玩家动画（需 OP2） |
-| `/stopanim [fadeTicks] [ease]` | 停止自己的玩家动画（需 OP2） |
-| `/playanimwave` | 快捷播放挥手动画（需 OP2） |
+| 命令 | 说明 | 实现位置 |
+|------|------|----------|
+| `/tpa <玩家名>` | 发起传送请求，`/tpaccept` / `/tpdeny` 响应（60 秒有效、30 秒冷却，后室维度内禁用） | [server_scripts/Plugins.js](server_scripts/Plugins.js) |
+| `/back` | 返回死亡地点（无冷却、一次性使用，死亡记录存 `PlayerPersisted.back_record`，后室维度内禁用） | [server_scripts/Plugins.js](server_scripts/Plugins.js) |
+| `/playanim <animationId> [fadeTicks] [ease]` | 为自己播放玩家动画（需 OP2） | [server_scripts/player_animator/commands.js](server_scripts/player_animator/commands.js) |
+| `/stopanim [fadeTicks] [ease]` | 停止自己的玩家动画（需 OP2） | [server_scripts/player_animator/commands.js](server_scripts/player_animator/commands.js) |
+| `/playanimwave` | 快捷播放挥手动画（需 OP2） | [server_scripts/player_animator/commands.js](server_scripts/player_animator/commands.js) |
+| `/fgreader <玩家>` / `check <entry>` / `stats` | 查询 Field-Guide 图鉴收集进度（导出 `global.FieldGuideReader`） | [server_scripts/fieldguide_reader.js](server_scripts/fieldguide_reader.js) |
+| `/psychicscroll [秒]` | 召唤测试心理卷轴 | [server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
+| `/getblock` / `/getplayer` | 调试命令：查询方块/玩家信息 | [server_scripts/Utils.js](server_scripts/Utils.js) |
+| `/getattributes` / `/gethostilemobs` | 列出全部注册属性 / MONSTER 类别实体（需 OP2） | [server_scripts/get_attributes.js](server_scripts/get_attributes.js)、[server_scripts/get_hostile_mobs.js](server_scripts/get_hostile_mobs.js) |
 
 ### CBC 火炮瞄准计算工具
 
@@ -929,8 +1146,8 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 - **食物自动提示：** `#rainbow:food_tooltip` 标签物品自动显示食物效果（名称+等级+时长），使用 `MobEffectUtil.formatDuration` 格式化
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
 - **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
-- **NBT 信息显示：** 装填/连射核心能量值、强力棒球棍能量、饕餮之锅已食用数、信标球绑定坐标、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
-- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死）、荷鲁斯之爪（生物盯上时暴击加成）
+- **NBT 信息显示：** 连射核心能量值、饕餮之锅已食用数、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
+- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标）
 
 ### JEI 修改
 > 实现：[client_scripts/jei.js](client_scripts/jei.js)
@@ -938,23 +1155,38 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 - 隐藏物品：结构方块、拼图方块、屏障、调试棒、命令方块
 
 ### 背包界面
-> 打开菜单按钮客户端：[client_scripts/open_menu_button_client.js](client_scripts/open_menu_button_client.js)
-> 打开菜单按钮服务器：[server_scripts/open_menu_button_server.js](server_scripts/open_menu_button_server.js)
+> 打开菜单按钮服务器：[server_scripts/open_menu_button_server.js](server_scripts/open_menu_button_server.js)（客户端脚本 `open_menu_button_client.js.back` 已停用）
 > 引导提示：[client_scripts/keytips/invScreen.js](client_scripts/keytips/invScreen.js)
 
 - 左下角"文本显示"按钮（切换引导提示开关 `global.isEnabled`）
 - 引导提示高亮饰品栏、属性栏、时装栏，显示半透明遮罩和指示线
 
 ### 悬赏物品提示
-> 实现：[client_scripts/Instance/item_key_tootips.js](client_scripts/Instance/item_key_tootips.js)
+> 实现：[client_scripts/tooltips.js](client_scripts/tooltips.js)
 
-- `bountiful:bounty` 显示副本坐标和"右键开启"
+- `rainbow:bounty_contract` 显示悬赏名称和右键操作说明；具体坐标在手持右键时由服务器发送。
 
 ### 弓蓄力进度条
 > 服务端：[server_scripts/bow/PlayerTick.js](server_scripts/bow/PlayerTick.js)
 > 客户端：[client_scripts/bow/render.js](client_scripts/bow/render.js)
 
 - 屏幕中央下方渲染渐变色进度条（红→黄→绿）
+
+### 末影箱按钮
+> 实现：[client_scripts/ender_chest_button/main.js](client_scripts/ender_chest_button/main.js)
+
+生存背包 GUI 的图鉴按钮左侧挂载原生 `ImageButton`，点击经 `server` 通道（`open_menu: "enderchest"`）打开末影箱；位置自适应跟随图鉴按钮、跨 resize 重挂，兼容 Quark 背包界面。
+
+### 套装 tooltip
+> 实现：[client_scripts/set_system/SetTooltip.js](client_scripts/set_system/SetTooltip.js)
+
+`SetDisplayRegistry` 注册表（`name`/`items`/`desc`）在套装物品名下方插入 `[套装]` 金色标题与介绍行；当前注册琥珀金（`oreganized:electrum`）与皇家骑士（`royalvariations:royal_knight`）两套，与[套装效果系统](#套装效果系统)联动。
+
+### 物品冷却蒙版同步
+> 客户端：[client_scripts/cooldown_mask_sync.js](client_scripts/cooldown_mask_sync.js)
+> 服务端反射工具：[startup_scripts/Utils.js](startup_scripts/Utils.js)
+
+服务端减少物品冷却时不重置蒙版，而是前移冷却窗口并经 `kubejs_cd_shift` 通道同步客户端，保证冷却蒙版进度瞬间前跳且总时长基准不漂移。
 
 ---
 
@@ -1087,8 +1319,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 | `rainbow:oldbook` | 古籍（`quark:ancient_tome`） |
 | `rainbow:food_tooltip` | 自动提示标签（atmospheric/cavedelight/dungeonsdelight/species） |
 | `rainbow:pika` | 回旋镖（pickarang/flamerang） |
-| `offhandattack:is_duel` | 刀具 |
-| `offhandattack:is_hands` | 棒球棍/斩首剑/强力棒球棍 |
+| ~~`offhandattack:is_duel` / `offhandattack:is_hands`~~ | 已注释停用；双持武器改由 [data/offhandattack/](data/offhandattack/) 的 `is_dual` 标签控制（铁/钻石/下界合金剑与斧） |
 | `rainbow:venison` | 鹿肉（raw_venison/venison） |
 
 ### 方块标签
@@ -1103,9 +1334,9 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 ## Ponder 场景
 
-> 实现：[client_scripts/ponder.js](client_scripts/ponder.js)
+> 脚本已停用：`client_scripts/ponder.js.back`
 
-- 衣壳体（`alexsmobs:capsid`）的思索场景——展示如何右键放入物品
+- 衣壳体（`alexsmobs:capsid`）的思索场景——展示如何右键放入物品（当前未启用）
 
 ---
 
@@ -1113,39 +1344,68 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 > 实现：[startup_scripts/sound.js](startup_scripts/sound.js)
 
-自定义声音注册，包括：
+自定义声音注册（16 个，全部为 `rainbow:voice.*` 前缀）：
+
 - `rainbow:voice.skillwheel` - 技能轮盘通用音效
 - `rainbow:voice.eye_of_satori` - 觉之瞳音效
 - `rainbow:voice.whistle` - 战壕哨音效
 - `rainbow:voice.null` - 空音效（天琴座）
-- `rainbow:voice.inspiration` - 天琴座·鼓舞
-- `rainbow:voice.improvement` - 天琴座·战曲
-- `rainbow:voice.sonatina` - 天琴座·小奏
-- `rainbow:voice.the_end` - 天琴座·终曲
+- `rainbow:voice.inspiration` / `improvement` / `sonatina` / `the_end` - 天琴座·鼓舞/战曲/小奏/终曲
 - `rainbow:voice.tenshi` - 迷你月球音效
+- `rainbow:voice.man` - 曼巴之力音效
+- `rainbow:voice.warning` - 警告音效
+- `rainbow:voice.prayer` - 圣经祈祷音效
+- `rainbow:voice.super_hormone` - 超级激素音效
+- `rainbow:voice.kuchiyosenojutsu` - 口寄用之术音效
+- `rainbow:voice.animals` - 动物音效
+- `rainbow:voice.artillery_radio` - 炮兵电台无线电静电噪声（对应 [assets/rainbow/sounds/artillery_radio.ogg](assets/rainbow/sounds/artillery_radio.ogg)）
 
 ---
 
 ## 全局常量
 
-> 启动常量：[startup_scripts/CONST.js](startup_scripts/CONST.js)
+> 启动常量：[startup_scripts/CONST.js](startup_scripts/CONST.js)（priority 20000）
 > 服务器常量：[server_scripts/CONST.js](server_scripts/CONST.js)
 > 客户端常量：[client_scripts/CONST.js](client_scripts/CONST.js)
 
-- `global.foodlist` - 所有食物 ID 列表
+- `global.foodlist` - 所有食物 ID 列表（server CONST.js 遍历全部物品填充）
 - `global.swordlist` - 所有剑 ID 列表
 - `global.attributes` - 所有属性 key 列表
-- `global.deathRecords` - 死亡记录
-- `global.isEnabled` - UI 引导提示开关
-- `global.SUPER_MECHAISM` - 超精密构件合成成功率
-- `global.GeneEffectMap` - 基因效果映射表
-- `global.CURIONUMBER` - 饰品栏数量
+- `global.deathRecords` - 死亡记录（[server_scripts/Plugins.js](server_scripts/Plugins.js)，供 `/back` 使用）
+- `global.isEnabled` - UI 引导提示开关（[client_scripts/keytips/](client_scripts/keytips/)）
+- `global.GeneEffectMap` - 基因效果映射表（[startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js)）
+- `global.CURIONUMBER = 4` - 饰品栏数量
 - `global.CURSES` - 诅咒附魔列表（消失诅咒 + 绑定诅咒）
 - `global.NEWFILENUMBER` - 新文件计数器
-- `global.MAX_STORAGE` - 最大存储量
+- `global.MAX_STORAGE = 20` - 最大存储量
 - `global.biomelist` - 群系列表（60+ 群系，UTF+ 引用）
-- `global.COLORS` - 颜色映射（包括 16 种标准色 + link/aqua 等扩展色）
+- `global.SUPER_MECHAISM` - 超精密构件合成成功率
+- `global.COLORS` - 彩虹九色颜色映射
 - `global.allEnchantments` - 全部附魔注册表导出
+- `global.MATH_PI` - 硬编码 π 常量（Rhino 下 Math.PI 为 undefined，见 AGENTS.md 规范）
+- `global._VERSION_CHECKS` / `global._VERSION_WARNINGS` - 模组版本检查配置与警告（[startup_scripts/version_check/](startup_scripts/version_check/)）
+- `global.tpaRequests` - TPA 传送请求表（[server_scripts/Plugins.js](server_scripts/Plugins.js)）
+
+> 各端 CONST.js 还集中加载 Java 类（含 tryLoadClass 容错，如 CombatRoll、FieldGuide、Tide、Cataclysm 系列类），规范见 AGENTS.md：`Java.loadClass` 只允许写在 CONST.js。
+
+---
+
+## 全局工具库
+
+跨系统共享的工具函数（同文件夹内可直接调用，跨脚本经 `global.*` 访问）。
+
+| 文件 | 主要导出 | 说明 |
+|------|----------|------|
+| [server_scripts/Utils.js](server_scripts/Utils.js) | `everyTicks`、`randomBool`、`randomInRange`、`SecoundToTick`、`isEnemy`、`nbtToJs`、船/矿车转化、结构与群系查询 | 通用工具库，含调试命令 `/getblock`、`/getplayer` |
+| [startup_scripts/Utils.js](startup_scripts/Utils.js) | `getMaterialJS` 材质表、GLFW 键值表、按键查询、原版物品冷却反射工具链 | 冷却窗口前移（`global.shiftCooldownWindowById` 等）保持总时长基准，经 `kubejs_cd_shift` 通道同步客户端蒙版 |
+| [server_scripts/Utils_Curios.js](server_scripts/Utils_Curios.js) | `hasCurios`、`listCurios*`、`getCuriosItem*`、槽位增删锁 `CuriosSlotMethod` | Curios 只读/管理封装 |
+| [startup_scripts/Utils_Curios.js](startup_scripts/Utils_Curios.js) | 同上 + `canUnequipNotOnCooldown` | 通用卸下判定，被全包 Capability 构建器复用 |
+| [server_scripts/combatroll_util.js](server_scripts/combatroll_util.js) | `combatRollCanRoll`、`combatRollTrigger`、`combatRollPerfectDodge`、`getCombatRollInfo` | CombatRoll 翻滚服务端复刻（含翻滚无敌窗口反射；真实翻滚状态由客户端独占） |
+| [server_scripts/fieldguide_reader.js](server_scripts/fieldguide_reader.js) | `global.FieldGuideReader`（`/fgreader` 命令） | Field-Guide 图鉴收集进度读取 |
+| [server_scripts/freeze_util.js](server_scripts/freeze_util.js) | `global.freezeEntity`、`global.isFrozen`、`global.unfreezeEntity` 等 | Tide `FreezableMob` 冻结封装 |
+| [server_scripts/MobEffectsVFX_Helper.js](server_scripts/MobEffectsVFX_Helper.js) | `global.MobEffectsVFX.spawnEffectParticles` | 按药水效果逻辑生成上升/下降彩色粒子 |
+| [server_scripts/morefire_compat.js](server_scripts/morefire_compat.js) | `configureFire` | MoreFire 各模组火焰定义（原版/灵魂火/活体火/末影火/远古火/铜火） |
+| [client_scripts/camera_utils.js](client_scripts/camera_utils.js) | `global.setCameraEntity`、`global.resetCamera` | 视角切换公共封装（觉之瞳附身视角等使用） |
 
 ---
 
@@ -1283,10 +1543,10 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 
 获得迷你月球。
 
-### 赏金任务物品检测
-> [server_scripts/PlayerEvents.js#L46-L50](server_scripts/PlayerEvents.js#L46-L50)
+### 悬赏委托书校验
+> [server_scripts/bounty_system/main.js](server_scripts/bounty_system/main.js)
 
-物品栏变更时自动检测赏金任务物品 `BountyItemEvent(player)`。
+委托书与玩家持久数据中的悬赏 ID、玩家 UUID、随机令牌和维度共同校验，避免他人使用或重复触发。
 
 ### 下界音之器
 > tooltip：[client_scripts/tooltips.js#L411-L413](client_scripts/tooltips.js#L411-L413)
@@ -1337,3 +1597,54 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 > [server_scripts/Recipes.js#L209](server_scripts/Recipes.js#L209)
 
 `missingno` + `plus` + `plus` → 创造性闪耀蛋糕。
+
+### 月光捕捉彩蛋
+> [server_scripts/moon_capture/main.js](server_scripts/moon_capture/main.js)
+
+夜晚（主世界、视线无遮挡）按太阳角反推月亮方位，pitch 误差 ≤2.825° 且方位在时间窗口内判定「看月亮成功」：
+- 手持木棍右键看月亮 → 消耗木棍获得 `rainbow:mini_moon`
+- 手持迷你月球右键 → 执行 `/clanginghowl meteor_shower start` 召唤流星雨并消耗
+
+### 食物摊椅子
+> [server_scripts/food_stall/food_stall_chairs.js](server_scripts/food_stall/food_stall_chairs.js)
+
+帕瓦椅子 `rainbow:food_stall_chairs`：右键生成隐形标记盔甲架作为座位并骑乘坐下，坐椅玩家无敌；再次右键下车，潜行右键收回方块归还物品；破坏拦截（创造模式除外），`PlayerEvents.tick` 每 10 tick 校验座位生命周期。
+
+### 实体生成黑名单 (inControl)
+> [server_scripts/inControl/main.js](server_scripts/inControl/main.js)
+
+`EntityEvents.spawned` 拦截黑名单实体（当前仅 `species:treeper`）禁止生成。
+
+### 虚空蠕虫传送门补丁 (IA)
+> [server_scripts/IA/IA_void.js](server_scripts/IA/IA_void.js)
+
+Alex's Mobs 虚空蠕虫体节经传送门时（`PortalTicks==5`）自动施加 `rainbow:void` 效果（头部除外），沿体节链遍历并用 persistentData 防止重复施加。
+
+### 饰品槽位重置
+> [server_scripts/curios_initialization/main.js](server_scripts/curios_initialization/main.js)
+
+玩家登录时强制头部槽位为 1，并遍历槽位类型移除历史遗留的旧自定义饰品槽，防止饰品栏混乱。
+
+### 第三方物品 Curios 挂载
+> [startup_scripts/ItemEvents.js](startup_scripts/ItemEvents.js)
+
+为其他模组物品挂载 Curios 能力与属性：锡纸/鞍背蛋韧性、魔术硬币闪避、滴水兽护甲、动能核心限戴、百鱼全书按 Tide 图鉴进度给幸运、铜套/银套/防爆套属性、Cataclysm 饰品 charm 栏补属性、新手腰带翻滚强化等。
+
+---
+
+## 开发辅助与测试
+
+| 目录/文件 | 说明 |
+|-----------|------|
+| [tools/tests/](tools/tests/) | 8 个 PowerShell 契约测试，对脚本源码做正则断言（输出 PASS / 抛出失败）：`ancientaegis`（组队逻辑）、`dyeing_const`（Dyeing 类真实加载）、`ice_lantern`（冰灯冻结技能）、`power_sword`（分解立场 + 旧 baseball 物品已清除）、`rainbow_duel`（UUID 连击 + 闪避属性）、`stealth_system`（CompoundTag 读取）、`whistle_personal_world`（个人维度传送）、`wooden_sword_inlay`（木剑镶嵌接线与规范） |
+| [tests/](tests/) | `node --test "tests/*.test.cjs"` 事件替身逻辑测试：`blood_moon.test.cjs`（血月调度与迷你 Boss 路径）、`wooden_sword_inlay.test.cjs`（执行真实 config/main，覆盖铁砧镶嵌、随机一致性、属性写入与边界）、`soul_diamond.test.cjs`（执行真实 Registry_curios，覆盖心灵宝石越级经验暂存与返还、参数顺序、异常场景） |
+| [docs/superpowers/](docs/superpowers/) | 功能设计文档，specs（设计）与 plans（实现）成对维护：炮击标定器（2026-09-04）、小宇宙物品（2026-09-07）、使徒实体（2026-09-27） |
+| [model_sources/](model_sources/) | Blockbench 工程源文件（`apostle/` 使徒实体含改版备份与渲染图），最终导出到 `assets/rainbow/geo` 与 `textures` |
+| [probe/](probe/) | ProbeJS 生成的 TypeScript 类型（`probe/generated/`），配合 [jsconfig.json](jsconfig.json) 与 [.vscode/settings.json](.vscode/settings.json) 提供编辑器补全 |
+| [config-manager/](config-manager/) / [default-config-manager/](default-config-manager/) | 各模组配置的受管备份与默认配置（含 `createbigcannons-server.toml` 中文注释版） |
+| [startup_scripts/ForgeEvents/README.md](startup_scripts/ForgeEvents/README.md) | 战斗事件目录自述：主入口调用顺序契约、新增伤害功能六步流程、编码约定与验证清单 |
+| 杂项 | [startup_scripts/Title.js](startup_scripts/Title.js)（模组显示名改为 Crafty Core Builders）、[startup_scripts/Modification.js](startup_scripts/Modification.js)（火盆匣挖掘速度 / 隐匿腰带潜行属性）、[client_scripts/utils/getUI.js](client_scripts/utils/getUI.js)（GUI 调试，默认关闭） |
+
+测试命令：`pwsh tools/tests/<名称>_contract_test.ps1`（源码契约）、`node --test "tests/*.test.cjs"`（事件替身逻辑）。
+
+> 数据包补充：[data/createbigcannons/](data/createbigcannons/) 大口径炮弹秒杀属性、[data/create/](data/create/) 土豆炮自定义弹药 `rainbow:shit`（粘附+缓慢）、[data/dialog/](data/dialog/) 对话示例（垃圾桶按钮触发 `/dialog show hello_world`）、[data/rainbow/](data/rainbow/) 另含虚空矿/始冰矿世界生成与宝箱吊坠战利品表、[data/offhandattack/](data/offhandattack/) 可双持武器标签。

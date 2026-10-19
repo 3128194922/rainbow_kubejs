@@ -52,8 +52,8 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           let pd = e.persistentData
           let t = (pd.getInt('_mb_regen_t') || 0) + 1
           if (t >= 20) {
-            // 等级影响回血量：每秒回血 2.0 × 等级（1级=2.0，5级=10.0）
-            e.heal(2.0 * getPowerLevel(e, 'Regenerate'))
+            // 等级影响回血量：每秒回血 1.0 × 等级（1级=1.0，5级=5.0）
+            e.heal(1.0 * getPowerLevel(e, 'Regenerate'))
             t = 0
           }
           pd.putInt('_mb_regen_t', t)

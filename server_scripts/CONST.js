@@ -48,6 +48,8 @@ const DEFAULT_IGNORE_TAG = TagKey.create(Registries.ENTITY_TYPE, new ResourceLoc
 
 const Spectre = Java.loadClass('com.ninni.species.server.entity.mob.update_3.Spectre');
 const BlockPos = Java.loadClass('net.minecraft.core.BlockPos');
+// 悬赏安全坐标：读取不把树叶当落脚地面的高度图类型。
+const HeightmapTypes = Java.loadClass('net.minecraft.world.level.levelgen.Heightmap$Types')
 const DoubleArgumentType = Java.loadClass('com.mojang.brigadier.arguments.DoubleArgumentType')
 const Component = Java.loadClass('net.minecraft.network.chat.Component')
 const CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
@@ -64,6 +66,8 @@ const DyeingMod = Java.loadClass('com.dyeing.DyeingMod')
 
 // 通灵卷轴技能: 可投掷物判定类（弹射体类层次）
 const ThrowableItemProjectile = Java.loadClass('net.minecraft.world.entity.projectile.ThrowableItemProjectile')
+// 使徒冲刺撞击: 实体碰撞移动类型（SELF 模式，冲刺位移自动处理撞墙停止）
+const MoverType = Java.loadClass('net.minecraft.world.entity.MoverType')
 const AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.AbstractArrow')
 const Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Projectile')
 // 先驱者动力剑：服务端触发 GeckoJS 物品动画时使用的接口。
@@ -105,6 +109,12 @@ const LevelExplosionInteraction = Java.loadClass('net.minecraft.world.level.Leve
 const MobEffectCategory = Java.loadClass('net.minecraft.world.effect.MobEffectCategory')
 // 迷你Boss词条系统：方块注册表（演化蜘蛛词条放置蜘蛛网）
 const Blocks = Java.loadClass('net.minecraft.world.level.block.Blocks')
+
+// 登录系统（login_system）：游戏模式枚举（生存↔观察者切换）用于锁定/恢复玩家模式。
+// 密码哈希本体是 java.security.MessageDigest（不在 KubeJS 类过滤器禁用名单内），
+// 用 tryLoadClass 兜底：万一被拦截也不会让 CONST.js 整体加载失败。
+const GameType = Java.loadClass('net.minecraft.world.level.GameType')
+const MessageDigest = Java.tryLoadClass('java.security.MessageDigest')
 
 // 可选模组类：用 tryLoadClass 保持原脚本的缺失模组容错行为。
 const CombatRoll = Java.tryLoadClass('net.combatroll.CombatRoll')

@@ -1,0 +1,43 @@
+{
+  "parent": "builtin/entity",
+  "gui_light": "front",
+  "textures": {
+    "particle": "rainbow:item/han_sword"
+  },
+  "display": {
+    "gui": {
+      "rotation": [0, 0, -45],
+      "translation": [-5, -4.5, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, -90, 0],
+      "translation": [0, -6, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, 90, 0],
+      "translation": [0, -6, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "rotation": [0, -90, 0],
+      "translation": [0, -6, 1.75],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, 90, 0],
+      "translation": [0, -6, 1.75],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "translation": [0, 7, 0],
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "rotation": [0, 0, 45],
+      "translation": [5.25, -6.25, 0],
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}

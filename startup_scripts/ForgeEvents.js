@@ -81,12 +81,12 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingChangeTargetEv
             }
         }
 
-        // 监守者不会攻击带有幽匿亲和的玩家
-        if (entity_A.getType().equals("minecraft:warden") && entity_B.isPlayer()) {
-            if (getCuriosItem(entity_B, 'rainbow:sculk_affinity') !== null) {
-                event.setNewTarget(null)
-            }
-        }
+        // 监守者不会攻击带有幽匿亲和的玩家（已停用：幽匿护符已注释）
+        //if (entity_A.getType().equals("minecraft:warden") && entity_B.isPlayer()) {
+        //    if (getCuriosItem(entity_B, 'rainbow:sculk_affinity') !== null) {
+        //        event.setNewTarget(null)
+        //    }
+        //}
 
         if(entity_B.isLiving() && entity_B.isPlayer() && entity_B.hasEffect('rainbow:invisible'))
         {
@@ -269,11 +269,12 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remov
     }
 })
 
-// 监听睡觉事件
+// 监听睡觉事件；血月已禁止入睡时不再显示噩梦提示。
 ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerSleepInBedEvent', event => {
     try {
         let player = event.getEntity();
         if (!player.isPlayer()) return;
+        if (typeof global.bloodMoonIsActive == 'function' && global.bloodMoonIsActive(player.level)) return;
         // 10% 概率做噩梦
         if (randomBool(0.1)) {
             player.tell("你做了个噩梦")

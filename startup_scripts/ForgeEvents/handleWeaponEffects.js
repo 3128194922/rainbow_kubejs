@@ -16,10 +16,10 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
     let damageType = context != null ? context.damageType : String(source.getType());
     let isRangeDamage = context != null ? context.isRangeDamage : range_damage.indexOf(damageType) != -1;
     
-    // 提尔锋：按目标护甲值增加伤害
-    if (mainHand.id == "rainbow:tyrfing" && !isRangeDamage) {
+    // 提尔锋原护甲增伤机制已停用，改为主手装备时提供盔甲穿透属性。
+    /*if (mainHand.id == "rainbow:tyrfing" && !isRangeDamage) {
         event.setAmount(event.getAmount() + event.getAmount() * victim.getArmorValue());
-    }
+    }*/
 
     // 重锤：下落动能增伤（根据下落距离和动能伤害属性）
     if (mainHand.id == "rainbow:heavy_axe" && !isRangeDamage) {

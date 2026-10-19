@@ -11,19 +11,8 @@
  * @param {string[]} boom_damage 爆炸伤害
  */
 function onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
-    // --- 神射手护符（距离越远伤害越高，每格+10%，最高+200%） ---
-    if (attacker && hasContextCurio(context, "attacker", attacker, "rainbow:sharpshooter_charm")) {
-        let damageType = context != null ? context.damageType : String(source.getType());
-        let isRangeDamage = context != null ? context.isRangeDamage : range_damage.indexOf(damageType) != -1;
-        if (victim instanceof LivingEntity && victim.isAlive() && isRangeDamage) {
-            var dx = attacker.getX() - victim.getX();
-            var dy = attacker.getY() - victim.getY();
-            var dz = attacker.getZ() - victim.getZ();
-            var distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            var multiplier = 1 + Math.min(distance * 0.1, 2.0);
-            event.setAmount(event.getAmount() * multiplier);
-        }
-    }
+    // --- 神射手护符：弹幕爆头后按射手距离计算伤害倍率（实现见 sharpshooter_charm/main.js） ---
+    applySharpshooterDamage(event, attacker, victim, source, context);
 
     // --- 毒系药水效果伤害增幅（相乘叠乘，仅限 魔法/毒液/凋零 伤害类型） ---
     // 实体受伤时，若拥有 毒/凋零/流血/毒液 效果，本次伤害乘以 该效果(等级+1) 倍

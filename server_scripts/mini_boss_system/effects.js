@@ -2,8 +2,8 @@
 // ============================================================
 // 迷你Boss词条系统 - 事件驱动词条效果
 // ============================================================
-// 本文件实现 4 个事件驱动的词条：缴械(Disarm)、寄生(Parasite)、
-// 适应(Adapt)、自爆(Explode)；Goal 驱动的词条（挖掘/自愈/援军/领袖/隐匿）在 IA.js。
+// 本文件实现事件驱动的词条：缴械(Disarm)、驱散(Dispel)、寄生(Parasite)、
+// 适应(Adapt)、吸血(Drain)、自爆(Explode)；Goal 驱动的词条在 IA.js。
 // 复用共享作用域中 IA.js 定义的 hasPower / getPowerLevel / findSafeSpawnPos。
 // 词条等级由 main.js 转化时写入 _mb_lvl_<key>，词条标记为 _mb_p_<key>。
 //
@@ -120,39 +120,8 @@ function mbParasite(entity, source) {
 }
 
 /**
- * 适应记录：迷你Boss记录伤害类型（容量=等级，记录满后不再记录、不覆盖）
- * 只做记录与判定，不直接 cancel —— event.cancel() 会抛 EventExit 控制流异常，
- * 必须由外层 handler 在所有 try-catch 之外调用
- * @param {Object} entity - 受击的迷你Boss
- * @param {Object} source - 伤害来源
- * @returns {boolean} 该伤害类型是否已被记录（已记录则免疫）
- */
-function mbAdaptRecord(entity, source) {
-    if (!entity.persistentData.getBoolean('_mb_p_Adapt')) return false;
-    // 1.20.1 DamageSource.getType() 返回类型名（player/arrow/explosion/fall 等）
-    let dmgType = source.getType();
-    if (!dmgType) return false;
-    let pd = entity.persistentData;
-    let types = [];
-    let str = pd.getString('_mb_adapt_types');
-    if (str) {
-        try { types = JSON.parse(str); } catch (e) { types = []; }
-    }
-    if (!Array.isArray(types)) types = [];
-    // 已记录的类型 → 免疫（由外层 cancel）
-    if (types.indexOf(dmgType) >= 0) return true;
-    // 新类型 → 容量未满则记录，记录满后不再记录、不覆盖
-    let cap = getPowerLevel(entity, 'Adapt');
-    if (types.length < cap) {
-        types.push(dmgType);
-        pd.putString('_mb_adapt_types', JSON.stringify(types));
-    }
-    return false;
-}
-
-/**
  * 吸血：迷你Boss造成伤害后按伤害的 50% 恢复自身（固定1级）
- * 必须放在 handler 末尾：若受击方适应词条免疫本次攻击（event.cancel 中断执行），则不回血
+ * 已被适应记录的伤害类型不会回血，因为 Forge LivingHurtEvent 会把该次伤害设为0
  * @param {Object} event - EntityEvents.hurt 事件
  */
 function mbDrain(event) {
@@ -161,6 +130,27 @@ function mbDrain(event) {
     // 无效攻击者、自伤、攻击者非迷你Boss直接返回
     if (!attacker || attacker == entity || !attacker.isAlive()) return;
     if (!hasPower(attacker, 'Drain')) return;
+    // EntityEvents.hurt 先触发；已记录的适应类型随后会被 Forge 伤害管线归零，因此这里跳过吸血。
+    if (entity.persistentData.getBoolean('_mb_p_Adapt')) {
+        let damageType = source.getType();
+        let pd = entity.persistentData;
+        let savedTypes = pd.getString('_mb_adapt_types');
+        if (savedTypes) {
+            try {
+                let types = JSON.parse(savedTypes);
+                if (!Array.isArray(types)) types = [];
+                let cap = Math.min(getPowerLevel(entity, 'Adapt'), 2);
+                // 旧存档可能已有3种已适应类型；这里先应用新上限，再判断是否该跳过吸血。
+                if (types.length > cap) {
+                    types = types.slice(0, cap);
+                    pd.putString('_mb_adapt_types', JSON.stringify(types));
+                }
+                if (damageType && types.indexOf(damageType) >= 0) return;
+            } catch (er) {
+                console.log('[MiniBoss 适应] 吸血前读取记录失败: ' + er);
+            }
+        }
+    }
     let amount = event.damage;
     if (!amount || amount <= 0) return;
     try {
@@ -171,7 +161,7 @@ function mbDrain(event) {
     }
 }
 
-// ==================== 受击事件：缴械 / 驱散 / 寄生 / 适应 ====================
+// ==================== 受击事件：缴械 / 驱散 / 寄生 / 吸血 ====================
 EntityEvents.hurt(event => {
     let entity = event.entity;
     if (!entity || !entity.isAlive()) return;
@@ -179,16 +169,15 @@ EntityEvents.hurt(event => {
     try { mbDisarm(event); } catch (er) { console.log('[MiniBoss 缴械] ' + er); }
     // 驱散：攻击方视角，按概率清除目标正面药水效果
     try { mbDispel(event); } catch (er) { console.log('[MiniBoss 驱散] ' + er); }
-    // 被打方视角：寄生/适应仅对迷你Boss生效
-    if (!entity.persistentData.getBoolean('isMiniBoss')) return;
+    // 普通受击目标不会进入迷你Boss被打方效果；先结算攻击方吸血再返回。
+    // miniboss 目标则继续执行寄生与攻击方吸血；适应归零在 Forge 伤害管线中处理。
+    if (!entity.persistentData.getBoolean('isMiniBoss')) {
+        try { mbDrain(event); } catch (er) { console.log('[MiniBoss 吸血] ' + er); }
+        return;
+    }
     // 寄生：受到攻击召唤蠹虫（免疫的攻击也算受到攻击）
     try { mbParasite(entity, event.source); } catch (er) { console.log('[MiniBoss 寄生] ' + er); }
-    // 适应：最后判定免疫（规则11：event.cancel() 直接中断执行，必须放在 handler 末尾，
-    // 且不能被外层 try-catch 包裹，否则 EventExit 控制流异常被吞、取消不生效）
-    let immune = false;
-    try { immune = mbAdaptRecord(entity, event.source); } catch (er) { console.log('[MiniBoss 适应] ' + er); }
-    if (immune) event.cancel();
-    // 吸血：攻击方造成伤害 50% 回血（cancel 中断时不会执行到这里，免疫攻击不回血）
+    // 吸血：攻击方造成伤害50%回血；已适应的重复伤害类型在 mbDrain 中跳过。
     try { mbDrain(event); } catch (er) { console.log('[MiniBoss 吸血] ' + er); }
 });
 

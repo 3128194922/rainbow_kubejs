@@ -79,42 +79,9 @@ Object.keys(heartEntityMap).forEach(heartId => {
     });
 });
 
-// --- 念力墙 ---
-registerSkill('rainbow:soul_diamond', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (player.cooldowns.isOnCooldown("rainbow:soul_diamond")) return;
-
-    let yaw = player.getYaw();
-    let pitch = player.getPitch();
-    let dx = 0, dy = 0, dz = 0;
-    let wallDirection = "";
-
-    if (pitch < -60) {
-        dy = 2; wallDirection = "down";
-    } else if (pitch > 60) {
-        dy = -2; wallDirection = "up";
-    } else {
-        let yaw360 = yaw < 0 ? yaw + 360 : yaw;
-        if (yaw360 >= 45 && yaw360 < 135) { dx = -2; wallDirection = "east"; }
-        else if (yaw360 >= 135 && yaw360 < 225) { dz = -2; wallDirection = "south"; }
-        else if (yaw360 >= 225 && yaw360 < 315) { dx = 2; wallDirection = "west"; }
-        else { dz = 2; wallDirection = "north"; }
-    }
-    wallDirection = reverseDirection(wallDirection);
-
-    let summonX = Math.floor(player.x) + dx;
-    let summonY = Math.floor(player.y) + dy;
-    let summonZ = Math.floor(player.z) + dz;
-
-    let directionMap = { "down": 0, "up": 1, "north": 2, "south": 3, "west": 4, "east": 5 };
-    let wallDirVal = directionMap[wallDirection];
-
-    event.server.runCommandSilent(
-        `execute as ${player.displayName.getString()} at @s run summon domesticationinnovation:psychic_wall ${summonX} ${summonY} ${summonZ} ` +
-        `{Lifespan:1200, BlockWidth:5, WallDirection:${wallDirVal}}`
-    );
-
-    player.cooldowns.addCooldown("rainbow:soul_diamond", SecoundToTick(30));
-});
+// --- 念力墙（已移除）---
+// rainbow:soul_diamond 已改为纯被动饰品（经验获取 +50%、经验等级上限 100 级），
+// 不再属于技能饰品，故删除原主动技能注册；同时已从 Tag.js 的 skillwheel:skills / skillwheel:skills_ui 标签移除。
 /*
 // --- 韧性注射器 ---
 registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
@@ -619,12 +586,135 @@ registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, sub
 });
 
 // --- 鸦羽骨哨 ---
-// 机制：将使用者和使用前半径 8 格内的所有其他实体传送到使用者的个人维度。
+// 机制：将使用者和使用前半径 8 格内的其他实体送入个人维度，10 秒后各自返回进入前的位置。
 const WHISTLE_PERSONAL_WORLD_RADIUS = 8;
+const WHISTLE_PERSONAL_WORLD_DURATION_TICKS = 10 * 20;
 const WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS = 20 * 20;
 const WHISTLE_PERSONAL_WORLD_X = 8.5;
 const WHISTLE_PERSONAL_WORLD_Y = -63;
 const WHISTLE_PERSONAL_WORLD_Z = 8.5;
+const WHISTLE_PERSONAL_WORLD_RETURN_KEY = 'WhistlePersonalWorldReturn';
+
+function whistleDimensionId(level) {
+    try {
+        if (level == null || level.dimension == null) return null;
+        let dimension = level.dimension;
+        if (typeof dimension.location === 'function') return String(dimension.location());
+        let value = String(dimension);
+        let separator = value.lastIndexOf(' / ');
+        if (value.indexOf('ResourceKey[') === 0 && separator >= 0) {
+            value = value.substring(separator + 3);
+            if (value.endsWith(']')) value = value.substring(0, value.length - 1);
+        }
+        return value;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 获取维度 ID 失败: ' + error);
+        return null;
+    }
+}
+
+// 返回点写入实体持久数据，避免 /reload 清除定时任务后丢失原维度和坐标。
+function whistleCaptureReturn(entity, ownerId, endTick) {
+    try {
+        let dimensionId = whistleDimensionId(entity.level);
+        if (dimensionId == null || entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return null;
+        let point = new CompoundTag();
+        point.putString('dimension', dimensionId);
+        point.putDouble('x', entity.getX());
+        point.putDouble('y', entity.getY());
+        point.putDouble('z', entity.getZ());
+        point.putFloat('yaw', entity.getYRot());
+        point.putFloat('pitch', entity.getXRot());
+        point.putString('owner', ownerId);
+        point.putLong('endTick', endTick);
+        return point;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 保存实体返回点失败: ' + error);
+        return null;
+    }
+}
+
+function whistleReturnEntity(entity) {
+    try {
+        if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return false;
+        let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        // 持续期间即使实体自行换维度，到期仍按技能记录返回原位置。
+        entity.persistentData.remove(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        try {
+            // KubeJS 6 的 EntityKJS.teleportTo 同时处理玩家和普通实体的跨维度传送。
+            entity.teleportTo(point.getString('dimension'), point.getDouble('x'), point.getDouble('y'), point.getDouble('z'), point.getFloat('yaw'), point.getFloat('pitch'));
+            return true;
+        } catch (teleportError) {
+            entity.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, point);
+            throw teleportError;
+        }
+    } catch (error) {
+        console.log('[鸦羽骨哨] 实体返回原位置失败: ' + error);
+        return false;
+    }
+}
+
+function whistleRestoreGroup(server, ownerId, endTick) {
+    try {
+        let ordinaryEntities = [];
+        let otherPlayers = [];
+        let owner = null;
+        for (let level of server.getAllLevels()) {
+            for (let entity of level.getAllEntities()) {
+                if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) continue;
+                let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+                if (point.getString('owner') !== ownerId || point.getLong('endTick') !== endTick) continue;
+                if (!entity.isPlayer()) ordinaryEntities.push(entity);
+                else if (String(entity.getUuid()) === ownerId) owner = entity;
+                else otherPlayers.push(entity);
+            }
+        }
+        // miniWorld 会在最后一名玩家离开时卸载维度，先送走普通实体，最后送走使用者。
+        for (let entity of ordinaryEntities) whistleReturnEntity(entity);
+        for (let entity of otherPlayers) whistleReturnEntity(entity);
+        if (owner != null) whistleReturnEntity(owner);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 批量返回原位置失败: ' + error);
+    }
+}
+
+// /reload 会丢失 scheduleInTicks 队列；每秒扫描已加载的个人维度补做过期返回。
+ServerEvents.tick(event => {
+    try {
+        let server = event.server;
+        if (server.getTickCount() % 20 !== 0) return;
+        let now = server.overworld().getTime();
+        let expired = {};
+        for (let level of server.getAllLevels()) {
+            let dimensionId = whistleDimensionId(level);
+            if (dimensionId == null || dimensionId.indexOf('miniworld:player_') !== 0) continue;
+            for (let entity of level.getAllEntities()) {
+                if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) continue;
+                let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+                if (point.getLong('endTick') > now) continue;
+                let ownerId = point.getString('owner');
+                if (ownerId.length > 0) expired[ownerId + ':' + point.getLong('endTick')] = [ownerId, point.getLong('endTick')];
+            }
+        }
+        for (let key of Object.keys(expired)) whistleRestoreGroup(server, expired[key][0], expired[key][1]);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 持续事件检查失败: ' + error);
+    }
+});
+
+// 玩家主动离开个人维度后仍保留返回记录；到期时连同同组实体一起送回。
+PlayerEvents.tick(event => {
+    try {
+        let player = event.player;
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        if (!player.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return;
+        let point = player.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        if (player.server.overworld().getTime() < point.getLong('endTick')) return;
+        whistleRestoreGroup(player.server, point.getString('owner'), point.getLong('endTick'));
+    } catch (error) {
+        console.log('[鸦羽骨哨] 玩家持续事件检查失败: ' + error);
+    }
+});
 
 function createWhistlePersonalTeleporter() {
     try {
@@ -680,18 +770,18 @@ function collectWhistleNearbyEntities(player) {
 
 function sendWhistleEntityToPersonalWorld(entity, owner, destination, teleporter) {
     try {
-        if (entity == null || destination == null || teleporter == null || entity.isRemoved()) return false;
+        if (entity == null || destination == null || teleporter == null || entity.isRemoved()) return null;
         if (entity.isPlayer()) {
-            return MiniWorldApi.enter(entity, owner.getUuid(), true);
+            return MiniWorldApi.enter(entity, owner.getUuid(), true) ? entity : null;
         }
         let movedEntity = entity.changeDimension(destination, teleporter);
-        if (movedEntity == null) return false;
+        if (movedEntity == null) return null;
         movedEntity.setPos(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z);
         movedEntity.setDeltaMovement(0, 0, 0);
-        return true;
+        return movedEntity;
     } catch (error) {
         console.log('[鸦羽骨哨] 传送实体失败: ' + error);
-        return false;
+        return null;
     }
 }
 
@@ -701,20 +791,13 @@ registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIn
     if (!itemStack) return;
     if (player.cooldowns.isOnCooldown('rainbow:whistle')) return;
     try {
+        let ownerId = String(player.getUuid());
+        let endTick = player.server.overworld().getTime() + WHISTLE_PERSONAL_WORLD_DURATION_TICKS;
+        let ownerReturn = whistleCaptureReturn(player, ownerId, endTick);
+        if (ownerReturn == null) return;
         let nearbyEntities = collectWhistleNearbyEntities(player);
         if (!ensureWhistlePersonalWorld(player)) {
             player.tell(Text.red('鸦羽骨哨无法建立个人维度。'));
-            return;
-        }
-        let ownerEntered = MiniWorldApi.enter(player);
-        if (!ownerEntered) {
-            player.tell(Text.red('鸦羽骨哨传送失败。'));
-            return;
-        }
-        // 玩家已由 MiniWorldApi.enter 传送到个人维度，直接复用当前 ServerLevel，避免 Rhino 解析 getLevel(ResourceKey) 重载歧义。
-        let destination = player.level;
-        if (destination == null) {
-            player.tell(Text.red('鸦羽骨哨无法获取个人维度。'));
             return;
         }
         let teleporter = createWhistlePersonalTeleporter();
@@ -722,11 +805,34 @@ registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIn
             player.tell(Text.red('鸦羽骨哨无法创建实体传送器。'));
             return;
         }
+        let ownerEntered = MiniWorldApi.enter(player);
+        if (!ownerEntered) {
+            player.tell(Text.red('鸦羽骨哨传送失败。'));
+            return;
+        }
+        player.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, ownerReturn);
+        // 玩家已由 MiniWorldApi.enter 传送到个人维度，直接复用当前 ServerLevel，避免 Rhino 解析 getLevel(ResourceKey) 重载歧义。
+        let destination = player.level;
+        if (destination == null) {
+            whistleReturnEntity(player);
+            player.tell(Text.red('鸦羽骨哨无法获取个人维度。'));
+            return;
+        }
+        // 先安排返回，避免后续某个实体传送报错时使用者被留在个人维度。
+        player.server.scheduleInTicks(WHISTLE_PERSONAL_WORLD_DURATION_TICKS, () => {
+            whistleRestoreGroup(player.server, ownerId, endTick);
+        });
         let movedCount = 0;
         for (let entity of nearbyEntities) {
-            if (sendWhistleEntityToPersonalWorld(entity, player, destination, teleporter)) movedCount++;
+            let returnPoint = whistleCaptureReturn(entity, ownerId, endTick);
+            if (returnPoint == null) continue;
+            let movedEntity = sendWhistleEntityToPersonalWorld(entity, player, destination, teleporter);
+            if (movedEntity == null) continue;
+            movedEntity.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, returnPoint);
+            movedCount++;
         }
-        player.tell(Text.aqua('鸦羽骨哨已将你和附近 ' + movedCount + ' 个实体传送进个人维度。'));
+        // 正常情况下按 200 tick 准时返回；持久数据与上方 tick 检查负责热重载后的恢复。
+        player.tell(Text.aqua('鸦羽骨哨已将你和附近 ' + movedCount + ' 个实体传送进个人维度，10 秒后返回原位置。'));
         player.cooldowns.addCooldown('rainbow:whistle', WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS);
     } catch (error) {
         console.log('[鸦羽骨哨] 个人维度传送失败: ' + error);
@@ -1140,7 +1246,7 @@ registerSkill('windswept:dream_catcher', (event, player, itemStack, isSubmenu, s
 // --- 冰灯 ---
 // 主动技能：冻结半径4格内除施法者外的所有实体15秒，冷却15秒。
 const ICE_LANTERN_RADIUS = 4;
-const ICE_LANTERN_FREEZE_TICKS = 15 * 20;
+const ICE_LANTERN_FREEZE_TICKS = 15 * 200;
 const ICE_LANTERN_COOLDOWN_TICKS = SecoundToTick(15);
 
 registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
@@ -1189,13 +1295,12 @@ registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, sub
     }
 });
 
-// 已停用：闪电瓶主动技能及其技能音效。
-/*
-registerSkillSound('rainbow:bottled_lightning', 'rainbow:voice.null');
-registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
-    if (player.cooldowns.isOnCooldown("rainbow:bottled_lightning")) return;
+// 闪电瓶主动技能
+registerSkillSound('mysticartifacts:lightning_bottle', 'rainbow:voice.null');
+registerSkill('mysticartifacts:lightning_bottle', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("mysticartifacts:lightning_bottle")) return;
     if (player.level.clientSide) return;
-    //if (!hasCurios(player, "rainbow:bottled_lightning")) return;
+    //if (!hasCurios(player, "mysticartifacts:lightning_bottle")) return;
 
     let playerUuid = player.getUuid().toString();
     let durationTicks = 100; // 5 秒
@@ -1265,7 +1370,6 @@ registerSkill('rainbow:bottled_lightning', (event, player, itemStack, isSubmenu,
 
     player.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(30));
 });
-*/
 
 // --- 女巫坩埚 ---
 registerSkillSound('mysticartifacts:witch_pot', 'rainbow:voice.null');
@@ -2230,6 +2334,30 @@ registerSkill('mysticartifacts:emergency_plan', (event, player, itemStack, isSub
 // ==========================================
 // 主入口逻辑
 // ==========================================
+
+// 奥数法典：射线命中 32 格内的非玩家 Mob 后，转化为猪并在 10 秒后恢复。
+registerSkill('rainbow:arcane_codex', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    try {
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        let hit = player.rayTrace(32, false);
+        if (hit == null || hit.entity == null) {
+            player.tell(Text.gray('奥数法典：射线没有命中生物。'));
+            return;
+        }
+        let target = hit.entity;
+        if (target == null || !target.isAlive()) {
+            player.tell(Text.gray('奥数法典：目标当前无法变身。'));
+            return;
+        }
+        if (!arcaneCodexTransformToPig(target)) {
+            player.tell(Text.gray('奥数法典：该目标无法变成猪。'));
+            return;
+        }
+        player.tell(Text.green('奥数法典：目标已变成猪，持续 10 秒。'));
+    } catch (e) {
+        console.log('[奥数法典] 主动技能执行失败: ' + e);
+    }
+});
 
 NetworkEvents.dataReceived('skillwheel', event => {
     let player = event.player;

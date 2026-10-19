@@ -91,8 +91,8 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     // 核心充能逻辑（仅保留连射核心等仍使用旧充能表的饰品）
     handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
 
-    // 迷你Boss词条伤害（暗影/刺客/狂怒/刚性，乘区最后结算，实现在 mini_boss_system/damage.js）
-    handleMiniBossPowers(event, attacker, victim);
+    // 迷你Boss词条伤害（含适应伤害归零），在常规伤害修正后结算。
+    handleMiniBossPowers(event, attacker, victim, source);
     }
     catch(e)
     {
@@ -170,13 +170,25 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
         console.log(e)
     }
 })
+
+// 动能核心：成功触发 Apothic 闪避时释放固定 6 点基础伤害的范围爆破。
+ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
+    try {
+        onPlayerKineticCoreDodge(event);
+    } catch (e) {
+        console.log('[动能核心] 闪避事件处理入口出错：' + e);
+        console.log(e);
+    }
+});
+
 //物品动态属性修改事件 主入口
 ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
     let item = event.getItemStack();
     let slotType = event.getSlotType();
 
     try {
-        if (!item || item.getNbt() == null) return;
+        // 无 NBT 的普通物品也需要进入处理器，以便读取提尔锋的主手属性。
+        if (!item) return;
 
         handleItemAttributeModifier(event);
     } catch (e) {

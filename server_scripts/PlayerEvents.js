@@ -42,12 +42,7 @@ PlayerEvents.tick((event) => {
     if (!everyTicks(player, 200)) return;
 });
 
-// 玩家物品栏变更事件
-PlayerEvents.inventoryChanged((event) => {
-    let { item, player, slot } = event;
-    // 检查赏金任务物品
-    BountyItemEvent(player)
-})
+// 悬赏委托书现由 bounty_system 的村民交互与右键事件管理，无需扫描玩家背包。
 
 
 // 传送门挑战 (已注释)

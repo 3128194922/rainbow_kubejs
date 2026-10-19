@@ -96,7 +96,15 @@ function hashFromEquipped(eq) {
         parts.push(s + ':' + (st && !st.isEmpty() ? st.getId().toString() : '0'))
     }
     for (let c of eq.curios) {
-        parts.push('C:' + c.type + '#' + c.index + ':' + (c.stack && !c.stack.isEmpty() ? c.stack.getId().toString() : '0'))
+        let stack = c.stack
+        let id = stack && !stack.isEmpty() ? stack.getId().toString() : '0'
+        // 圣遗物套装依赖物品 NBT；同一槽替换为不同元素时也必须重新评估。
+        let element = ''
+        if (id === 'rainbow:relic') {
+            try { element = global.getRelicAwakeningElement(stack.getNbt()) || '' }
+            catch (e) { console.log('[套装系统] 圣遗物元素快照失败: ' + e) }
+        }
+        parts.push('C:' + c.type + '#' + c.index + ':' + id + ':' + element)
     }
     return parts.join('|')
 }
@@ -105,7 +113,7 @@ function hashFromEquipped(eq) {
 // 🧩 槽位条件匹配与阶段判定
 // ==========================================
 
-// 单个槽位条件匹配：cond 可含 item('modid:item') 或 tag('modid:tag')，二者皆无则匹配任意物品
+// 单个槽位条件匹配：可同时要求物品 ID、标签与圣遗物觉醒元素。
 function matchesSlotCondition(stack, cond) {
     if (!stack || stack.isEmpty()) return false
     if (cond.tag) {
@@ -113,6 +121,14 @@ function matchesSlotCondition(stack, cond) {
         catch (e) { return false }
     } else if (cond.item) {
         if (stack.getId().toString() !== cond.item) return false
+    }
+    if (cond.relicElement) {
+        try {
+            if (global.getRelicAwakeningElement(stack.getNbt()) !== cond.relicElement) return false
+        } catch (e) {
+            console.log('[套装系统] 圣遗物元素匹配失败: ' + e)
+            return false
+        }
     }
     return true
 }
@@ -131,7 +147,10 @@ function isPhaseActive(eq, phase, setSlots) {
     for (let cond of setSlots) {
         // 确定该条件的候选槽位
         let candidates = []
-        if (cond.slot) {
+        if (cond.curios) {
+            // 元素圣遗物仅计入实际佩戴的 Curios 槽位，兼容后续新增的槽位类型。
+            for (let k of slotKeys) if (k.key.indexOf('curios:') === 0) candidates.push(k)
+        } else if (cond.slot) {
             if (cond.slot.indexOf('curios:') === 0) {
                 let type = cond.slot.substring(7)
                 for (let k of slotKeys) if (k.key.indexOf('curios:' + type + '#') === 0) candidates.push(k)
@@ -524,6 +543,27 @@ registerSet('royalvariations:royal_knight', {
         }
     ]
 })
+
+// 八种觉醒元素：4 件与 5 件各加一份相同属性，两个阶段叠加即双倍。
+try {
+    let cfg = global.WOODEN_SWORD_INLAY_CONFIG
+    if (cfg == null || cfg.elements == null) throw new Error('缺少圣遗物元素配置')
+    for (let elementId of Object.keys(cfg.elements)) {
+        let def = cfg.elements[elementId]
+        let slots = []
+        for (let i = 0; i < 5; i++) slots.push({ curios: true, item: cfg.relicId, relicElement: elementId })
+        registerSet('relic_' + elementId, {
+            name: def.name + '元素圣遗物',
+            slots: slots,
+            phases: [
+                { requiredCount: 4, name: '4件套', effects: [{ type: 'attribute', attribute: def.attribute, amount: def.amount, operation: def.operation }] },
+                { requiredCount: 5, name: '5件套', effects: [{ type: 'attribute', attribute: def.attribute, amount: def.amount, operation: def.operation }] }
+            ]
+        })
+    }
+} catch (e) {
+    console.log('[套装系统] 注册圣遗物元素套装失败: ' + e)
+}
 
 /* ───────── 完整效果类型参考模板（复制改用）─────────
 registerSet('my_set', {

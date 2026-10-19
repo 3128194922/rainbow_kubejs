@@ -14,7 +14,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
     if (!victim.isPlayer()) return;
 
     // --- 远古之庇护 ---
-    // A 方案：受伤者与同队伍内其他在线佩戴者平均承担本次伤害。
+    // 仅非白 MineTeam 队伍生效；受伤者与同队伍内其他在线佩戴者平均承担本次伤害。
     // 转移部分使用魔法伤害，并由 global 标记阻止转移事件再次递归分摊。
     if (hasContextCurio(context, "victim", victim, "rainbow:ancientaegis")
         && !global.ancientAegisRedirecting
@@ -28,7 +28,7 @@ function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_dama
                 try {
                     for (let target of targets) {
                         if (target == null || target.getId() === victim.getId()) continue;
-                        target.hurt(target.damageSources().magic(), sharedAmount);
+                        target.attack(target.damageSources().magic(), sharedAmount);
                     }
                 } finally {
                     global.ancientAegisRedirecting = false;

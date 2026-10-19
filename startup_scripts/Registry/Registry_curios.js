@@ -17,7 +17,150 @@ StartupEvents.registry('item', event => {
 })
 */
 
+// ==========================================
+// 💎 心灵宝石：越级经验暂存
+// ==========================================
+// 佩戴时若玩家已超过 100 级：把经验压到正好 100 级（进度归零），超出的经验点数存入饰品 NBT；
+// 卸下饰品时把暂存的经验原样返还给玩家。
+// 实现要点：直接读写 Player 的 experienceLevel / experienceProgress / totalExperience，
+// 不调用 giveExperiencePoints()，否则返还的经验会被 moreattribute:max_experience_level 的
+// PlayerXpEvent 上限逻辑裁掉；ServerPlayer 每 tick 检测 totalExperience 变化并向客户端同步经验条。
+const SOUL_DIAMOND_MAX_LEVEL = 100;
+const SOUL_DIAMOND_STORED_XP = 'SoulDiamondStoredXp';
+
+// 圣遗物：第五次镶嵌觉醒元素；允许同时佩戴多件以激活同元素 4/5 件套。
+StartupEvents.registry('item', event => {
+    event.create('rainbow:relic')
+        .displayName('圣遗物')
+        .texture('rainbow:item/super_mechanism')
+        .rarity('epic')
+        .maxStackSize(1)
+        .tag('curios:charm')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .modifyAttribute(attributeEvent => {
+                    applyRelicInlayAttributes(attributeEvent);
+                })
+        )
+})
+
+// 升到下一级所需经验，与原版 Player#getXpNeededForNextLevel() 一致
+function soulDiamondXpNeededForNextLevel(level) {
+    if (level >= 30) return 112 + (level - 30) * 9;
+    if (level >= 15) return 37 + (level - 15) * 5;
+    return 7 + level * 2;
+}
+
+// 从 0 级升到 level 级的累计经验，与 Moreattribute ExperienceLevelAttributeHandler#xpToReachLevel 一致
+function soulDiamondXpToReachLevel(level) {
+    if (level <= 15) return level * (level + 6);
+
+    if (level <= 30) {
+        let levelsAbove15 = level - 15;
+        return 315 + Math.floor(5 * (level + 14) * levelsAbove15 / 2) - 38 * levelsAbove15;
+    }
+
+    let levelsAbove30 = level - 30;
+    return 1395 + Math.floor(9 * (level + 29) * levelsAbove30 / 2) - 158 * levelsAbove30;
+}
+
+// 玩家当前总经验点数（等级 + 级内进度，与 Moreattribute 判断上限的口径一致）
+function soulDiamondGetTotalXp(player) {
+    let level = player.experienceLevel;
+    return soulDiamondXpToReachLevel(level) + Math.round(player.experienceProgress * soulDiamondXpNeededForNextLevel(level));
+}
+
+// 按总经验点数直接写回等级、级内进度与经验总量（不触发 PlayerXpEvent）
+function soulDiamondSetTotalXp(player, totalXp) {
+    let remaining = Math.max(0, Math.floor(totalXp));
+    let level = 0;
+    let needed = soulDiamondXpNeededForNextLevel(0);
+
+    while (remaining >= needed && level < 32767) {
+        remaining -= needed;
+        level++;
+        needed = soulDiamondXpNeededForNextLevel(level);
+    }
+
+    player.experienceLevel = level;
+    player.experienceProgress = remaining / needed;
+    player.totalExperience = Math.min(2147483647, soulDiamondXpToReachLevel(level) + remaining);
+}
+
+// KubeJS-Curios 的 onEquip / onUnequip 传参顺序不同，按物品 id 取出心灵宝石本体最稳妥
+function soulDiamondPickStack(firstStack, secondStack) {
+    if (firstStack != null && firstStack.id == 'rainbow:soul_diamond') return firstStack;
+    if (secondStack != null && secondStack.id == 'rainbow:soul_diamond') return secondStack;
+    return null;
+}
+
+// 佩戴：把超过 100 级的经验搬进饰品 NBT
+function soulDiamondOnEquip(slotContext, firstStack, secondStack) {
+    try {
+        let player = slotContext.entity();
+        if (player == null || !player.isPlayer()) return;
+        if (player.level.isClientSide()) return;
+
+        let stack = soulDiamondPickStack(firstStack, secondStack);
+        if (stack == null) return;
+
+        if (stack.nbt == null) stack.nbt = {};
+
+        let holdXp = soulDiamondXpToReachLevel(SOUL_DIAMOND_MAX_LEVEL);
+        let excess = soulDiamondGetTotalXp(player) - holdXp;
+        let stored = stack.nbt.getInt(SOUL_DIAMOND_STORED_XP);
+
+        // 取较大值：既存下本次越级经验，也不会因为经验已被清空（例如死亡后重新佩戴）
+        // 而抹掉宝石里原本暂存的经验
+        if (excess > stored) {
+            stored = excess;
+            stack.nbt.putInt(SOUL_DIAMOND_STORED_XP, stored);
+        }
+
+        if (excess <= 0) return;
+
+        // 回读校验：确认经验确实写进饰品 NBT 之后才压缩玩家等级，
+        // 避免写入异常时玩家的越级经验凭空消失
+        if (stack.nbt.getInt(SOUL_DIAMOND_STORED_XP) != stored) {
+            console.log('[心灵宝石] 暂存经验写入 NBT 失败，已放弃本次等级压缩（经验保留在玩家身上）');
+            return;
+        }
+
+        soulDiamondSetTotalXp(player, holdXp);
+    } catch (err) {
+        console.log('[心灵宝石] 佩戴压缩经验失败：' + err);
+    }
+}
+
+// 卸下：把饰品 NBT 中暂存的经验返还玩家
+function soulDiamondOnUnequip(slotContext, firstStack, secondStack) {
+    try {
+        let player = slotContext.entity();
+        if (player == null || !player.isPlayer()) return;
+        if (player.level.isClientSide()) return;
+
+        let stack = soulDiamondPickStack(firstStack, secondStack);
+        if (stack == null || stack.nbt == null) return;
+
+        let stored = stack.nbt.getInt(SOUL_DIAMOND_STORED_XP);
+        if (stored <= 0) return;
+
+        // 先清空暂存再返还，避免重复返还
+        stack.nbt.putInt(SOUL_DIAMOND_STORED_XP, 0);
+        soulDiamondSetTotalXp(player, soulDiamondGetTotalXp(player) + stored);
+    } catch (err) {
+        console.log('[心灵宝石] 卸下返还经验失败：' + err);
+    }
+}
+
 // 心灵宝石
+// 已改造为纯被动饰品：原「右键召唤念力墙」主动技能已移除（Skillwheel.js 技能注册、Tag.js 技能饰品标签同步删除）
+// 佩戴加成：
+//   1. 经验获取 +50%（attributeslib:experience_gained，multiply_total 0.5 → 总倍率 ×1.5）
+//   2. 经验等级上限 100 级（moreattribute:max_experience_level）
+//      注意：该属性基础值为 -1（-1 = 不限制经验等级），属性修饰器叠加在基础值之上，
+//      因此 addition 取 101，最终属性值 = -1 + 101 = 100；卸下饰品后修饰器移除，恢复为无上限。
+//   3. 佩戴时超出 100 级的经验暂存到饰品 NBT（SoulDiamondStoredXp），卸下时返还（见上方函数）
 StartupEvents.registry('item', event => {
     event.create('rainbow:soul_diamond')
         .rarity("epic")
@@ -25,6 +168,22 @@ StartupEvents.registry('item', event => {
         .tag("curios:charm")
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .addAttribute("attributeslib:experience_gained", "soul_diamond_experience", 0.5, "multiply_total")
+                .addAttribute("moreattribute:max_experience_level", "soul_diamond_experience_level", 101, "addition")
+                // 越级经验的暂存与返还
+                .onEquip(soulDiamondOnEquip)
+                .onUnequip(soulDiamondOnUnequip)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+
+                    if (entity == null) return false;
+
+                    // 禁止重复佩戴
+                    if (hasCurios(entity, 'rainbow:soul_diamond')) {
+                        return false;
+                    }
+                    return true;
+                })
         )
 })
 
@@ -638,9 +797,9 @@ StartupEvents.registry('item', event => {
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create()
                 .canUnequip(canUnequipNotOnCooldown)
-                // 未加入 TeamJS 队伍时禁止佩戴；退队后的已装备饰品由服务器脚本自动卸下。
+                // 未加入 MineTeam 非白色队伍时禁止佩戴；白队伍按默认无队伍处理。
                 .canEquip(ancientAegisCanEquip)
-                // 右键用途固定为打开 TeamJS 队伍 GUI，禁止 Curios 默认的右键自动装备。
+                // 右键提示 MineTeam 物品栏队伍入口，禁止 Curios 默认的右键自动装备。
                 .canEquipFromUse((slotContext, stack) => false)
         )
 })
@@ -918,11 +1077,13 @@ StartupEvents.registry('item', event => {
                     if (player == null) return;
                     if (!everyTicks(player, 20)) return;
                     player.potionEffects.add("species:bloodlust", 60, 0, false, false);
+                    player.potionEffects.add("caverns_and_chasms:vampirism", 60, 0, false, false);
                 })
         )
 })
 
-// 幽匿亲和
+// 幽匿亲和（已停用）
+/*
 StartupEvents.registry('item', event => {
     event.create('rainbow:sculk_affinity')
         .rarity("epic")
@@ -964,7 +1125,7 @@ StartupEvents.registry('item', event => {
                     }
                 })
         )
-})
+})*/
 /*
 // 信标球
 StartupEvents.registry('item', event => {
@@ -2988,6 +3149,29 @@ StartupEvents.registry('item', event => {
                     if (entity == null) return;
                     if (hasCurios(entity, 'rainbow:wicked_package')) return false;
                     return true;
+                })
+        )
+})
+
+// 奥数法典：Curios charm 主动技能饰品，由 Skillwheel.js 调用射线变猪技能。
+StartupEvents.registry('item', event => {
+    event.create('rainbow:arcane_codex')
+        .displayName('奥数法典')
+        .texture('minecraft:item/enchanted_book')
+        .rarity('epic')
+        .maxStackSize(1)
+        .tag('curios:charm')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    try {
+                        let entity = slotContext.entity();
+                        if (entity == null) return false;
+                        return !hasCurios(entity, 'rainbow:arcane_codex');
+                    } catch (e) {
+                        console.log('[奥数法典] 检查佩戴条件失败: ' + e);
+                        return false;
+                    }
                 })
         )
 })

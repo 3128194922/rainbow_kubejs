@@ -10,7 +10,7 @@ ServerEvents.tags("item", event => {
     })
 
     // 饰品相关标签
-    event.add("curios:charm",['mysticartifacts:lightning_bottle','mysticartifacts:emergency_plan','mysticartifacts:demonic_gestation','mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
+    event.add("curios:charm",['windswept:ice_lantern','mysticartifacts:lightning_bottle','mysticartifacts:emergency_plan','mysticartifacts:demonic_gestation','mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
     ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket','caverns_and_chasms:tinplate','caverns_and_chasms:saddled_egg','species:wicked_swapper',
     'oreganized:gargoyle','species:kinetic_core','windswept:dream_catcher','mysticartifacts:witch_pot','species:smoke_bomb','mysticartifacts:trail_sight'])
     //event.add('rainbow:venison',['youkaisfeasts:raw_venison','environmental:venison'])
@@ -19,20 +19,26 @@ ServerEvents.tags("item", event => {
     //event.add('offhandattack:can_hands_use',[''])
 
     // 技能饰品
-    event.add('skillwheel:skills',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
+    event.add('skillwheel:skills',['windswept:ice_lantern','rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','mysticartifacts:emergency_plan',
+    /* 已移除：'rainbow:soul_diamond'（改为纯被动饰品，无主动技能） */'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:whistle','mysticartifacts:emergency_plan',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket',
-    'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','windswept:ice_lantern',/* 已停用：'rainbow:bottled_lightning', */'mysticartifacts:witch_pot','species:smoke_bomb'])
+    /* 已停用：'rainbow:sculk_affinity', */'mysticartifacts:lightning_bottle','rainbow:dead_river','windswept:dream_catcher','windswept:ice_lantern',/* 已停用：'rainbow:bottled_lightning', */'mysticartifacts:witch_pot','species:smoke_bomb','rainbow:arcane_codex'])
 
-    event.add('skillwheel:skills_ui',['rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
+    event.add('skillwheel:skills_ui',['windswept:ice_lantern','rainbow:drowned_heart', 'rainbow:eye_of_satori','rainbow:super_hormone','rainbow:fury_mask','rainbow:kuchiyosenojutsu',
     'rainbow:frozen_heart', 'rainbow:gritty_heart', 'rainbow:gunk_heart', 'rainbow:rotten_heart','rainbow:chronos','rainbow:phantom_body','rainbow:wicked_package','mysticartifacts:emergency_plan',
-    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb','rainbow:soul_diamond','rainbow:whistle','rainbow:pauldron','rainbow:dice',
+    'rainbow:beacon_ball','royalvariations:royal_staff','rainbow:reload_core','rainbow:short_core','rainbow:ccb',/* 已移除：'rainbow:soul_diamond'（改为纯被动饰品，无主动技能） */'rainbow:whistle','rainbow:pauldron','rainbow:dice',
     'alexsmobs:void_worm_eye','species:wicked_mask','rainbow:lyre','rainbow:gravity_core','rainbow:mini_moon','rainbow:the_bible','minecraft:firework_rocket','rainbow:wandering_gummy_pack',
-    'rainbow:sculk_affinity','rainbow:dead_river','windswept:dream_catcher','windswept:ice_lantern',/* 已停用：'rainbow:bottled_lightning', */'mysticartifacts:witch_pot','species:smoke_bomb','rainbow:hand_of_scratches'])
+    /* 已停用：'rainbow:sculk_affinity', */'mysticartifacts:lightning_bottle','rainbow:dead_river','windswept:dream_catcher','windswept:ice_lantern',/* 已停用：'rainbow:bottled_lightning', */'mysticartifacts:witch_pot','species:smoke_bomb','rainbow:hand_of_scratches','rainbow:arcane_codex'])
 
     //技能饰品二级菜单
     event.add('skillwheel:submenu',['rainbow:lyre'])
+
+    //双手武器标签
+    //event.add('offhandattack:is_hands',['minecraft:wooden_sword'])
+
+    //双持武器
+    //event.add('offhandattack:is_duel',['minecraft:wooden_sword'])
     
     // 批量添加饰品标签 (护符/项链/手镯等)
     /*retagItem(event,["chromaticarsenal:thunderguard", "chromaticarsenal:advancing_heart", "chromaticarsenal:glass_shield",

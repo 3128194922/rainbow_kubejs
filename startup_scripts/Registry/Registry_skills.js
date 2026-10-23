@@ -1,5 +1,5 @@
 // priority: 1000
-StartupEvents.registry('item', event => {
+/*StartupEvents.registry('item', event => {
     event.create('rainbow:fire_magic', 'basic')
         .rarity("epic")
         .maxStackSize(1)
@@ -16,4 +16,4 @@ StartupEvents.registry('item', event => {
                     }
                 })
         )
-})
+})*/

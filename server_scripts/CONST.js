@@ -122,6 +122,11 @@ const CombatRollEnchantments = Java.tryLoadClass('net.combatroll.api.Enchantment
 const FieldGuideProgressManager = Java.tryLoadClass('com.evandev.fieldguide.server.progress.FieldGuideProgressManager')
 const FieldGuidePlayerProgress = Java.tryLoadClass('com.evandev.fieldguide.server.progress.PlayerFieldGuideProgress')
 const FieldGuideServerManager = Java.tryLoadClass('com.evandev.fieldguide.server.ServerFieldGuideManager')
+// 后室追猎者：读取正式模组的本局记录；缺少模组时不阻断其他服务端脚本。
+const BackroomRunData = Java.tryLoadClass('com.servermod.backroomroguelike.session.BackroomRunData')
+// 后室追猎者：走 Forge 出生初始化事件，保留突变生物的原生装备和第三方生成钩子。
+const ForgeEventFactory = Java.loadClass('net.minecraftforge.event.ForgeEventFactory')
+const MobSpawnType = Java.loadClass('net.minecraft.world.entity.MobSpawnType')
 const TideUtils = Java.tryLoadClass('com.li64.tide.util.TideUtils')
 const ThermometerItem = Java.tryLoadClass('galena.oreganized.content.item.ThermometerItem')
 //const FireManager = Java.loadClass('it.crystalnest.soul_fire_d.api.FireManager')

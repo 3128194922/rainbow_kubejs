@@ -5,11 +5,11 @@
 StartupEvents.registry("item", event => {
 
     // 副本通行证
-    for (let i = 1; i <= 5; i++) {
+    /*for (let i = 1; i <= 5; i++) {
         event.create(`rainbow:instance_pass${i}`, 'basic')
             .texture('rainbow:item/instance_pass')
             .tag('rainbow:instance_pass');
-    }
+    }*/
 
     // 牢大饮料 (冰红茶)
     event.create('rainbow:ice_tea', 'basic')
@@ -155,7 +155,6 @@ StartupEvents.registry("item", event => {
 
     // 提尔锋：对有护甲敌人造成额外伤害
     event.create("rainbow:tyrfing", "sword").unstackable().attackDamageBonus(3.0).attackDamageBaseline(0.0).maxDamage(511)
-        .tooltip("§6对有护甲的敌人造成额外伤害")
 
     // 重锤：根据下落速度造成伤害
     event.create("rainbow:heavy_axe", "axe").unstackable().attackDamageBonus(3.0).attackDamageBaseline(0.0).maxDamage(501)

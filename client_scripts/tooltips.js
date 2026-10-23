@@ -165,7 +165,8 @@ ItemEvents.tooltip((event) => {
     })*/
     event.addAdvanced('rainbow:mining_charm', (item, advanced, text) => {
         text.add(1, Text.aqua("+3时运"));
-        text.add(2, Text.aqua("高亮显示附近的战利品箱子"));
+        // 世界坐标矩形油漆标记 Lootr 箱子，透墙常亮，停止探测后由 Dyeing 计时器清除。
+        text.add(2, Text.aqua("以透墙常亮矩形油漆标记附近的战利品箱子"));
     })
     event.addAdvanced('rainbow:wind', (item, advanced, text) => {
         text.add(1, Text.aqua("获取灵魂汲取buff"));
@@ -780,8 +781,8 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("穿戴盔甲且进入隐匿状态"));
-            text.add(2, Text.aqua("隐匿时每件盔甲提供 4% 伤害加成"));
+            text.add(1, Text.aqua("不穿戴盔甲且进入隐匿状态"));
+            text.add(2, Text.aqua("隐匿状态没不穿一件盔甲+4%伤害"));
             text.add(3, Text.darkGray("据说闻起来像葡萄汁"));
         }
     })
@@ -798,9 +799,7 @@ ItemEvents.tooltip((event) => {
         }
     })
     event.addAdvanced('rainbow:tyrfing', (item, advanced, text) => {
-        // 提示提尔锋主手持有时提供的盔甲穿透属性。
         text.add(Text.aqua("主手持有：+50 盔甲穿透"));
-        text.add(Text.darkGray("美术资源：Embers Rekindled"))
     })
     event.addAdvanced('rainbow:hand_of_scratches', (item, advanced, text) => {
         text.add(Text.aqua("攻击额外触发最大生命值5%伤害，冷却5s"))
@@ -1401,13 +1400,13 @@ ItemEvents.tooltip(event => {
         }
     });
 })
-// 悬赏委托书：任务从傻子村民处接取，右键定位并在 16 格内触发 GatewaysJS 传送门。
+// 巨龙讨伐委托书：从傻子村民处接取，显示本次 Boss 名称，右键定位并在 16 格内触发 GatewaysJS 传送门。
 ItemEvents.tooltip(event => {
     event.addAdvanced('rainbow:bounty_contract', (item, advanced, text) => {
         try {
             let nbt = item.nbt;
             if (nbt == null || !nbt.contains('RainbowBounty')) {
-                text.add('§7与傻子村民交互领取悬赏');
+                text.add('§7与傻子村民交互领取巨龙讨伐悬赏');
                 return;
             }
             let bounty = nbt.getCompound('RainbowBounty');

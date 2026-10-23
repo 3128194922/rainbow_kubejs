@@ -30,23 +30,36 @@ function harness() {
   return context;
 }
 
-function level({ ocean = [], water = [], blocked = [], flowers = [], heights = {} } = {}) {
+function level({ ocean = [], water = [], blocked = [], flowers = [], heights = {}, surfaceY = 65 } = {}) {
   const key = (x, z) => `${x},${z}`;
   return {
     dimension: { location: () => 'minecraft:overworld' },
-    getHeightmapPos(_type, pos) { return new Pos(pos.x, heights[key(pos.x, pos.z)] ?? 65, pos.z); },
+    // 模拟当前世界的动态群系注册表，标签成员通过 HolderSet.contains 查询。
+    registryAccess: () => ({ registryOrThrow: () => ({
+      getTag(tag) {
+        const members = tag === '#minecraft:is_ocean' ? new Set(['minecraft:ocean']) : null;
+        return {
+          isPresent: () => members !== null,
+          get: () => ({ contains: holder => members.has(holder.unwrapKey().orElse(null).location()) }),
+        };
+      },
+    }) }),
+    // 默认区块已加载；远处未加载区块的回归用例会覆盖这两个接口。
+    getChunkAt() { return {}; },
+    getHeightmapPos(_type, pos) { return new Pos(pos.x, heights[key(pos.x, pos.z)] ?? surfaceY, pos.z); },
     getBiome(pos) {
       const id = ocean.includes(key(pos.x, pos.z)) ? 'minecraft:ocean' : 'minecraft:plains';
       return {
-        is: tag => tag === '#minecraft:is_ocean' && id === 'minecraft:ocean',
+        // 复现 Rhino 无法解析 Holder.is(TagKey/ResourceLocation)，禁止回归到歧义调用。
+        is() { throw new Error('Holder.is overload is ambiguous'); },
         unwrapKey: () => ({ orElse: () => ({ location: () => id }) }),
       };
     },
     getBlockState(pos) {
       if (water.includes(key(pos.x, pos.z))) return WATER;
-      if (pos.y === 65 && flowers.includes(key(pos.x, pos.z))) return FLOWER;
-      if (pos.y === 64 && !blocked.includes(key(pos.x, pos.z))) return STONE;
-      if (pos.y === 65 && blocked.includes(key(pos.x, pos.z))) return STONE;
+      if (pos.y === surfaceY && flowers.includes(key(pos.x, pos.z))) return FLOWER;
+      if (pos.y === surfaceY - 1 && !blocked.includes(key(pos.x, pos.z))) return STONE;
+      if (pos.y === surfaceY && blocked.includes(key(pos.x, pos.z))) return STONE;
       return AIR;
     },
     getMinBuildHeight: () => -64,
@@ -80,6 +93,37 @@ test('候选点全部不安全时不发放坐标', () => {
   const config = { minDistance: 10, maxDistance: 10, maxAttempts: 2, biomeBlacklist: ['#minecraft:is_ocean'] };
   const world = level({ ocean: ['10,0'] });
   assert.equal(ctx.rainbowBountyFindTarget(world, { x: 0, z: 0 }, config, () => 0), null);
+});
+
+test('未加载的远处超平坦区块先加载再取高度，负高度地表可正常接取和复核', () => {
+  const ctx = harness();
+  const world = level({ surfaceY: -60 });
+  const loaded = new Set();
+  const chunkKey = pos => `${Math.floor(pos.x / 16)},${Math.floor(pos.z / 16)}`;
+  const originalHeight = world.getHeightmapPos.bind(world);
+  // Minecraft 1.20.1 对未加载区块返回最低高度；加载后才返回真实地表。
+  world.getHeightmapPos = (type, pos) => loaded.has(chunkKey(pos))
+    ? originalHeight(type, pos) : new Pos(pos.x, -64, pos.z);
+  world.getChunkAt = pos => { loaded.add(chunkKey(pos)); return {}; };
+  const config = { minDistance: 1608, maxDistance: 1608, maxAttempts: 1, biomeBlacklist: ['#minecraft:is_ocean'] };
+  const target = ctx.rainbowBountyFindTarget(world, { x: 0, z: 8 }, config, () => 0);
+  assert.ok(target);
+  assert.deepEqual([target.x, target.y, target.z], [1608, -60, 8]);
+  assert.equal(loaded.size, 1);
+  // 模拟接取后卸载，再在委托书触发时重新读取候选区块。
+  loaded.clear();
+  const spawn = ctx.rainbowBountyFindSpawn(world, target, config.biomeBlacklist, 4);
+  assert.ok(spawn);
+  assert.deepEqual([spawn.x, spawn.y, spawn.z], [1608, -60, 8]);
+});
+
+test('群系黑名单兼容标签和直接 ID，未定义标签不误拦截', () => {
+  const ctx = harness();
+  const world = level({ ocean: ['1,0'] });
+  assert.equal(ctx.rainbowBountyBiomeAllowed(world, 1, 65, 0, ['#minecraft:is_ocean']), false);
+  assert.equal(ctx.rainbowBountyBiomeAllowed(world, 0, 65, 0, ['#minecraft:is_ocean']), true);
+  assert.equal(ctx.rainbowBountyBiomeAllowed(world, 0, 65, 0, ['minecraft:plains']), false);
+  assert.equal(ctx.rainbowBountyBiomeAllowed(world, 0, 65, 0, ['#test:missing']), true);
 });
 
 test('候选中心不能站立时改用同一片区域附近的安全位置', () => {
@@ -172,6 +216,8 @@ test('内嵌传送门按属性注册，单独指定的复杂传送门不重复�
     } },
   };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'startup_scripts/bounty_system/config.js'), 'utf8'), context);
+  // 当前配置全部为 Boss 内嵌门；用独立引用样例继续验证复杂传送门不会被重复注册。
+  context.global.RAINBOW_BOUNTY_CONFIG.bounties.push({ id: 'test:external', gateway: 'test:existing_gateway' });
   vm.runInNewContext(fs.readFileSync(path.join(root, 'server_scripts/bounty_system/gateways.js'), 'utf8'), context);
   context.rainbowBountyRegisterGateways();
   const bounties = context.global.RAINBOW_BOUNTY_CONFIG.bounties;
@@ -201,15 +247,18 @@ test('内嵌传送门按属性注册，单独指定的复杂传送门不重复�
   assert.ok(bounties.some(bounty => typeof bounty.gateway === 'string'));
 });
 
-test('打开 GUI 时按可用传送门动态显示随机悬赏并提供刷新按钮', () => {
+test('GUI 在五项以内全部展示，超过五项随机展示五项并提供刷新按钮', () => {
   const screens = [];
   const store = {};
+  const logs = [];
+  let interactHandler;
   let buttonHandler;
   let nextToken = 0;
   const context = {
-    global: {}, console,
+    global: {}, console: { log: message => logs.push(message) },
     rainbowBountyRegisterGateways() {},
-    ItemEvents: { entityInteracted() {}, firstRightClicked() {} },
+    ItemEvents: { entityInteracted(callback) { interactHandler = callback; }, firstRightClicked() {} },
+    ForgeRegistries: { VILLAGER_PROFESSIONS: { getKey: profession => profession } },
     GUIJSEvents: { button(callback) { buttonHandler = callback; } },
     Gateway: { exists: id => id !== 'gate:disabled' },
     UUID: { randomUUID: () => 'session-' + ++nextToken },
@@ -227,27 +276,37 @@ test('打开 GUI 时按可用传送门动态显示随机悬赏并提供刷新按
     },
   };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'startup_scripts/bounty_system/config.js'), 'utf8'), context);
-  context.global.RAINBOW_BOUNTY_CONFIG.guiOfferCount = 3;
+  // 使用实际配置验证五项全展示，再检查不足五项、超过五项和不可用传送门。
   context.global.RAINBOW_BOUNTY_CONFIG.bounties.push({ id: 'disabled', name: '不可用', gateway: 'gate:disabled' });
   vm.runInNewContext(fs.readFileSync(path.join(root, 'server_scripts/bounty_system/logic.js'), 'utf8'), context);
   vm.runInNewContext(fs.readFileSync(path.join(root, 'server_scripts/bounty_system/main.js'), 'utf8'), context);
   const player = {
     getUuid: () => 'player-uuid',
-    level: { getTime: () => 100 },
+    level: { getTime: () => 100, isClientSide: () => false },
     persistentData: {
       putString(key, value) { store[key] = value; },
       putInt(key, value) { store[key] = value; },
       putLong(key, value) { store[key] = value; },
+      putDouble(key, value) { store[key] = value; },
       getString(key) { return store[key] || ''; },
       getInt(key) { return store[key] || 0; },
     },
   };
-  context.rainbowBountyOpenBoard(player);
+  // cancel 在 KubeJS 6 中抛出正常退出信号，必须交回事件框架而非误记为打开失败。
+  const exit = new Error('EventExit: result');
+  const interaction = {
+    getLevel: () => player.level, getHand: () => 'MAIN_HAND', getPlayer: () => player,
+    getTarget: () => ({ getType: () => 'minecraft:villager', x: 0, y: 65, z: 0,
+      getVillagerData: () => ({ getProfession: () => 'minecraft:nitwit' }) }),
+    cancel() { throw exit; },
+  };
+  assert.throws(() => interactHandler(interaction), error => error === exit);
+  assert.deepEqual(logs, []);
   const first = screens.at(-1);
-  assert.equal(first.buttons.filter(button => button.id.startsWith('accept:')).length, 3);
+  assert.equal(first.buttons.filter(button => button.id.startsWith('accept:')).length, 5);
   assert.ok(first.buttons.some(button => button.id.startsWith('reroll:')));
   assert.ok(first.buttons.every(button => button.label !== '不可用'));
-  assert.equal(store.RainbowBountyOfferCount, 3);
+  assert.equal(store.RainbowBountyOfferCount, 5);
   context.rainbowBountyBoardNearby = () => true;
   const oldToken = store.RainbowBountyBoardToken;
   buttonHandler({ guiId: first.id, player, buttonId: 'reroll:' + oldToken });
@@ -255,7 +314,30 @@ test('打开 GUI 时按可用传送门动态显示随机悬赏并提供刷新按
   assert.notEqual(store.RainbowBountyBoardToken, oldToken);
   buttonHandler({ guiId: first.id, player, buttonId: first.buttons.find(button => button.id.startsWith('accept:')).id });
   assert.equal(screens.length, 2);
+  const availableGateways = context.global.RAINBOW_BOUNTY_CONFIG.bounties.slice(0, 3).map(bounty => bounty.gateway.id);
+  context.Gateway.exists = id => availableGateways.includes(id);
+  context.rainbowBountyOpenBoard(player);
+  assert.equal(screens.at(-1).buttons.filter(button => button.id.startsWith('accept:')).length, 3);
+  assert.equal(store.RainbowBountyOfferCount, 3);
+  context.global.RAINBOW_BOUNTY_CONFIG.bounties.push(
+    { id: 'test:extra1', name: '额外悬赏1', gateway: 'test:gate1' },
+    { id: 'test:extra2', name: '额外悬赏2', gateway: 'test:gate2' },
+  );
+  context.Gateway.exists = id => id !== 'gate:disabled';
+  context.global.RAINBOW_BOUNTY_CONFIG.guiOfferCount = 99;
+  context.rainbowBountyOpenBoard(player);
+  const selected = screens.at(-1).buttons.filter(button => button.id.startsWith('accept:'));
+  assert.equal(selected.length, 5);
+  assert.equal(new Set(selected.map(button => button.label)).size, 5);
+  assert.ok(selected.every(button => button.label !== '不可用'));
+  assert.equal(store.RainbowBountyOfferCount, 5);
   context.Gateway.exists = () => false;
   context.rainbowBountyOpenBoard(player);
   assert.equal(screens.at(-1).buttons.filter(button => button.id.startsWith('accept:')).length, 0);
+  // 真正的 GUI 错误仍需记录，且不能取消未成功打开界面的村民交互。
+  context.rainbowBountyOpenBoard = () => { throw new Error('GUI unavailable'); };
+  let canceled = false;
+  interactHandler({ ...interaction, cancel() { canceled = true; } });
+  assert.equal(canceled, false);
+  assert.ok(logs.some(message => message.includes('打开村民界面失败') && message.includes('GUI unavailable')));
 });

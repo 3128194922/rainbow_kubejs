@@ -57,7 +57,10 @@ function rainbowBountyBiomeAllowed(level, x, y, z, blacklist) {
     for (let entry of blacklist) {
         if (entry.charAt(0) == '#') {
             let tag = TagKey.create(Registries.BIOME, new ResourceLocation(entry.substring(1)));
-            if (holder.is(tag)) return false;
+            // 群系来自当前世界动态注册表；用标签集合查询，避开 Rhino 的 Holder.is 重载歧义。
+            let biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
+            let members = biomeRegistry.getTag(tag);
+            if (members.isPresent() && members.get().contains(holder)) return false;
         } else if (entry == biomeId) {
             return false;
         }
@@ -82,9 +85,16 @@ function rainbowBountyCanStand(level, x, y, z) {
     return true;
 }
 
+// 远处区块未加载时 Level.getHeight 会返回世界最低高度；先读取区块，再查询真实地表。
+// 接取与触发复核共用此入口，不添加永久强加载票据，也不放宽安全地形要求。
+function rainbowBountySurfaceHeight(level, x, z) {
+    let pos = new BlockPos(x, 0, z);
+    level.getChunkAt(pos);
+    return level.getHeightmapPos(HeightmapTypes.MOTION_BLOCKING_NO_LEAVES, pos).getY();
+}
+
 function rainbowBountySurface(level, x, z, blacklist) {
-    let surface = level.getHeightmapPos(HeightmapTypes.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
-    let y = surface.getY();
+    let y = rainbowBountySurfaceHeight(level, x, z);
     if (!rainbowBountyBiomeAllowed(level, x, y, z, blacklist)) return null;
     if (!rainbowBountyCanStand(level, x, y, z)) return null;
     return { x: x, y: y, z: z };
@@ -96,9 +106,9 @@ function rainbowBountyFindTarget(level, player, config, random) {
         let angle = random() * 2 * RAINBOW_BOUNTY_PI;
         let x = Math.round(player.x + Math.cos(angle) * distance);
         let z = Math.round(player.z + Math.sin(angle) * distance);
-        let top = level.getHeightmapPos(HeightmapTypes.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
-        if (!rainbowBountyBiomeAllowed(level, x, top.getY(), z, config.biomeBlacklist)) continue;
-        let surface = rainbowBountyFindSpawn(level, { x: x, y: top.getY(), z: z }, config.biomeBlacklist, 3);
+        let y = rainbowBountySurfaceHeight(level, x, z);
+        if (!rainbowBountyBiomeAllowed(level, x, y, z, config.biomeBlacklist)) continue;
+        let surface = rainbowBountyFindSpawn(level, { x: x, y: y, z: z }, config.biomeBlacklist, 3);
         if (surface != null) {
             surface.dimension = rainbowBountyDimension(level);
             return surface;

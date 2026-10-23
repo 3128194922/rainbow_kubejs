@@ -623,8 +623,9 @@ function whistleCaptureReturn(entity, ownerId, endTick) {
         point.putDouble('x', entity.getX());
         point.putDouble('y', entity.getY());
         point.putDouble('z', entity.getZ());
-        point.putFloat('yaw', entity.getYRot());
-        point.putFloat('pitch', entity.getXRot());
+        // KubeJS 6 将原版朝向 getter 映射为 getYaw/getPitch，保存返回点时使用脚本方法名。
+        point.putFloat('yaw', entity.getYaw());
+        point.putFloat('pitch', entity.getPitch());
         point.putString('owner', ownerId);
         point.putLong('endTick', endTick);
         return point;
@@ -638,16 +639,37 @@ function whistleReturnEntity(entity) {
     try {
         if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return false;
         let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
-        // 持续期间即使实体自行换维度，到期仍按技能记录返回原位置。
-        entity.persistentData.remove(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
-        try {
-            // KubeJS 6 的 EntityKJS.teleportTo 同时处理玩家和普通实体的跨维度传送。
+        let dimensionId = String(point.getString('dimension'));
+        let returnedEntity = entity;
+        // 普通实体使用与拉入时相同的 Forge 传送路径，拿到跨维度重建后的实体，避免 void teleportTo 静默失败后丢失返回点。
+        if (!entity.isPlayer() && whistleDimensionId(entity.level) !== dimensionId) {
+            let destination = null;
+            for (let candidate of entity.server.getAllLevels()) {
+                if (whistleDimensionId(candidate) === dimensionId) {
+                    destination = candidate;
+                    break;
+                }
+            }
+            if (destination == null) throw new Error('原维度未加载: ' + dimensionId);
+            let teleporter = createWhistlePersonalTeleporter(point);
+            if (teleporter == null) return false;
+            returnedEntity = entity.changeDimension(destination, teleporter);
+            if (returnedEntity == null) throw new Error('普通实体跨维度返回被拒绝');
+            // Forge 1.20.1 的默认 placeEntity 不采用 PortalInfo.xRot，重建后显式恢复完整朝向。
+            returnedEntity.setPositionAndRotation(point.getDouble('x'), point.getDouble('y'), point.getDouble('z'), point.getFloat('yaw'), point.getFloat('pitch'));
+        } else {
+            // 玩家及同维度实体仍使用 KubeJS 6 的坐标与朝向包装。
             entity.teleportTo(point.getString('dimension'), point.getDouble('x'), point.getDouble('y'), point.getDouble('z'), point.getFloat('yaw'), point.getFloat('pitch'));
-            return true;
-        } catch (teleportError) {
-            entity.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, point);
-            throw teleportError;
         }
+        // Forge 返回的新实体包含原持久数据；确认维度和坐标后才删除记录，失败时保留供到期扫描重试。
+        if (whistleDimensionId(returnedEntity.level) !== dimensionId
+            || Math.abs(returnedEntity.getX() - point.getDouble('x')) > 0.01
+            || Math.abs(returnedEntity.getY() - point.getDouble('y')) > 0.01
+            || Math.abs(returnedEntity.getZ() - point.getDouble('z')) > 0.01) {
+            throw new Error('返回后维度或位置不匹配: ' + dimensionId);
+        }
+        returnedEntity.persistentData.remove(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        return true;
     } catch (error) {
         console.log('[鸦羽骨哨] 实体返回原位置失败: ' + error);
         return false;
@@ -670,7 +692,12 @@ function whistleRestoreGroup(server, ownerId, endTick) {
             }
         }
         // miniWorld 会在最后一名玩家离开时卸载维度，先送走普通实体，最后送走使用者。
-        for (let entity of ordinaryEntities) whistleReturnEntity(entity);
+        let ordinaryReturned = true;
+        for (let entity of ordinaryEntities) {
+            if (!whistleReturnEntity(entity)) ordinaryReturned = false;
+        }
+        // 有普通实体返回失败时保留玩家，防止 miniWorld 卸载维度使待返回实体无法重试。
+        if (!ordinaryReturned) return;
         for (let entity of otherPlayers) whistleReturnEntity(entity);
         if (owner != null) whistleReturnEntity(owner);
     } catch (error) {
@@ -692,7 +719,8 @@ ServerEvents.tick(event => {
                 if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) continue;
                 let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
                 if (point.getLong('endTick') > now) continue;
-                let ownerId = point.getString('owner');
+                // Rhino 将 NBT getString 返回值包装为 Java String，先转 JS 字符串再检查 length，否则到期扫描会静默跳过返回。
+                let ownerId = String(point.getString('owner'));
                 if (ownerId.length > 0) expired[ownerId + ':' + point.getLong('endTick')] = [ownerId, point.getLong('endTick')];
             }
         }
@@ -710,22 +738,27 @@ PlayerEvents.tick(event => {
         if (!player.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return;
         let point = player.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
         if (player.server.overworld().getTime() < point.getLong('endTick')) return;
+        // 传送受阻后最多每秒重试，避免玩家 tick 每帧触发同一批实体返回及重复报错。
+        if (player.server.getTickCount() % 20 !== 0) return;
         whistleRestoreGroup(player.server, point.getString('owner'), point.getLong('endTick'));
     } catch (error) {
         console.log('[鸦羽骨哨] 玩家持续事件检查失败: ' + error);
     }
 });
 
-function createWhistlePersonalTeleporter() {
+function createWhistlePersonalTeleporter(returnPoint) {
     try {
         // KubeJS 6 的 JavaWrapper 不提供该继承辅助方法，使用 Rhino 原生 JavaAdapter 延迟创建接口实现。
         return new JavaAdapter(ITeleporter, {
             getPortalInfo: function(entity, destination, defaultPortalInfo) {
+                // 拉入时使用个人维度出生点，返回时使用每个实体单独保存的坐标与朝向。
                 return new PortalInfo(
-                    new Vec3(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z),
+                    returnPoint == null
+                        ? new Vec3(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z)
+                        : new Vec3(returnPoint.getDouble('x'), returnPoint.getDouble('y'), returnPoint.getDouble('z')),
                     Vec3.ZERO,
-                    entity.getYRot(),
-                    entity.getXRot()
+                    returnPoint == null ? entity.getYaw() : returnPoint.getFloat('yaw'),
+                    returnPoint == null ? entity.getPitch() : returnPoint.getFloat('pitch')
                 );
             }
         });

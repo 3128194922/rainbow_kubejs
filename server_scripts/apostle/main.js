@@ -122,7 +122,8 @@ function apostleUpdateSpacing(entity, target, age) {
             radialX = dx / length;
             radialZ = dz / length;
         } else {
-            let radians = entity.getYRot() * APOSTLE_DEG;
+            // KubeJS EntityMixin 将 getYRot 重映射为 getYaw，Rhino 只暴露后者。
+            let radians = entity.getYaw() * APOSTLE_DEG;
             radialX = Math.sin(radians);
             radialZ = Math.cos(radians);
         }
@@ -612,12 +613,12 @@ function apostleMoveWall(entity, data, t) {
     }
 }
 
-// 招式7 双臂螺旋：先把 Minecraft yaw 转换成弹幕平面角，两条相对弹臂每 tick 转 3°。
+// 招式7 双臂螺旋：通过 KubeJS getYaw 读取朝向再转为弹幕平面角，两条相对弹臂每 tick 转 3°。
 function apostleMoveSpiral(entity, data, t) {
     try {
         if (t == 0) {
-            let facingRadians = entity.getYRot() * APOSTLE_DEG;
-            data.putDouble('apostleAngle', Math.atan2(Math.cos(facingRadians), -Math.sin(facingRadians)) / APOSTLE_DEG);
+            let initialYaw = entity.getYaw() * APOSTLE_DEG;
+            data.putDouble('apostleAngle', Math.atan2(Math.cos(initialYaw), -Math.sin(initialYaw)) / APOSTLE_DEG);
         }
         let angle = data.getDouble('apostleAngle') + 3.0;
         data.putDouble('apostleAngle', angle);
@@ -704,8 +705,9 @@ function apostleMoveDash(entity, data, t) {
             let movedX = entity.getX() - preX;
             let movedZ = entity.getZ() - preZ;
             if (movedX * movedX + movedZ * movedZ < 0.09) {
-                // 实际位移不足说明撞墙，直接跳到硬直阶段
+                // 撞墙提前进入硬直并停止冲刺姿态，避免实体停下后仍播放向前冲刺。
                 data.putLong('apostleMoveTick', 19);
+                apostleStopCastAnimation(entity, 9);
             }
 
             // 冲刺接触伤害 4 点：同一目标 1 秒内只结算一次
@@ -957,15 +959,23 @@ function apostleBeginCast(entity, data, moveId) {
         data.putLong('apostleMove', moveId);
         data.putLong('apostleMoveTick', 0);
         entity.getNavigation().stop();
-        if (moveId == 13) {
-            try {
-                entity.triggerAnim('apostle_summon_controller', 'summon_danmaku');
-            } catch (e) {
-                console.log('[使徒] 召唤动画触发异常: ' + e);
-            }
+        // 全部 13 式在开招时同步一次动作，不在每颗弹幕生成时重复触发。
+        try {
+            entity.triggerAnim('apostle_move_' + moveId, 'cast');
+        } catch (e) {
+            console.log('[使徒] 招式 ' + moveId + ' 动画触发异常: ' + e);
         }
     } catch (e) {
         console.log('[使徒] 施法开始异常: ' + e);
+    }
+}
+
+// GeckoLib 4.8.4 的服务端停止接口会同步给追踪客户端；目标失效或招式结束时清理动作。
+function apostleStopCastAnimation(entity, moveId) {
+    try {
+        entity.stopTriggeredAnimation('apostle_move_' + moveId, 'cast');
+    } catch (e) {
+        console.log('[使徒] 招式 ' + moveId + ' 动画停止异常: ' + e);
     }
 }
 
@@ -1118,6 +1128,7 @@ global.apostleTick = function (entity) {
             // 施法中：目标失效立即收招（同步清理冲刺预警油漆），短暂间隔后重新索敌
             let target = entity.getTarget();
             if (!global.apostleIsValidTarget(target)) {
+                apostleStopCastAnimation(entity, data.getLong('apostleMove'));
                 data.putLong('apostleState', 0);
                 data.putLong('apostleGapUntil', age + 20);
                 apostlePaintRemove(apostleLevel, entity, 'apostle_dash_warn');
@@ -1132,6 +1143,7 @@ global.apostleTick = function (entity) {
             let duration = APOSTLE_MOVE_DURATION[moveId];
             if (duration == null) duration = 10;
             if (moveTick >= duration) {
+                apostleStopCastAnimation(entity, moveId);
                 data.putLong('apostleState', 0);
                 let gap = data.getLong('apostleEnrage') == 1 ? APOSTLE_ENRAGE_GAP : APOSTLE_IDLE_GAP;
                 data.putLong('apostleGapUntil', age + gap);

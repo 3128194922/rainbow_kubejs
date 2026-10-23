@@ -147,7 +147,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:big_stomach` | 大胃袋，每2个游戏日想吃一种食物：吃下指定食物后生效（食用/饮用速度+50%、饱食度满仍可进食、击退抗性随连击递增），未完成则全部失效且连击清零；任务源数据在玩家 persistentData，多个大胃袋共享同一任务，卸下饰品周期也照常轮换；`PlayerTick.js` 顶部 `BIG_STOMACH_BLACKLIST` 数组可配置想吃食物黑名单（随机命中时自动重选，预置腐肉/蜘蛛眼/毒马铃薯/河豚） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，任务轮询：[server_scripts/big_stomach/PlayerTick.js](server_scripts/big_stomach/PlayerTick.js)，任务完成检测：[server_scripts/big_stomach/ItemEvents.js](server_scripts/big_stomach/ItemEvents.js)，tooltip：[client_scripts/tooltips.js#L170-L235](client_scripts/tooltips.js#L170-L235) |
 | `rainbow:hero_charm` | 武器大师勋章，根据手持武器攻速提供不同加成 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L166-L168](client_scripts/tooltips.js#L166-L168) |
 | `rainbow:lucky_charm` | 幸运符文，获得幸运 III 效果，时运 +3 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
-| `rainbow:mining_charm` | 猎宝者护符，时运 +1，触手距离 +2.15，高亮显示附近 Lootr 战利品箱子 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L159-L162](client_scripts/tooltips.js#L159-L162) |
+| `rainbow:mining_charm` | 猎宝者护符，时运 +3，触手距离 +2.15，挖掘速度 +10%；每 5 秒以 Dyeing 世界坐标矩形油漆标记附近 Lootr 箱子，透墙常亮，6 秒未刷新时由 Dyeing 自带计时器移除 | 注册与探测：[startup_scripts/mining_charm/main.js](startup_scripts/mining_charm/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:monster_charm` | 怪物猎人勋章，每 10 秒获得吸收，按键召唤 EasyNPC 佣兵（复制玩家皮肤） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L157-L213](server_scripts/curios_skill_system/Skillwheel.js#L157-L213)，tooltip：[client_scripts/tooltips.js#L228-L236](client_scripts/tooltips.js#L228-L236) |
 | `rainbow:daawnlight_spirit_origin` | 曙旼始灵，每 10 秒标记周围敌对生物，被标记生物受远程伤害翻倍 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L156-L158](client_scripts/tooltips.js#L156-L158) |
 | `rainbow:despair_insignia` | 极限证章，幸运 -25、抢夺 +1、时运 +1、经验获取 +400%，护甲和护甲韧性 -50%，造成伤害 -50% | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害：[startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js](startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js) |
@@ -189,8 +189,8 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:shiny_stone` | 日曜石，站立不动时每秒恢复 2 点生命 | 注册：[startup_scripts/Registry/Registry_curios.js#L1789](startup_scripts/Registry/Registry_curios.js#L1789) |
 | `rainbow:quiver` / `rainbow:fast_quiver` | 箭袋 / 快速箭袋 | 注册：[startup_scripts/Registry/Registry_curios.js#L1852](startup_scripts/Registry/Registry_curios.js#L1852) / [#L1874](startup_scripts/Registry/Registry_curios.js#L1874) |
 | `rainbow:curse_crown` | 诅咒王冠，统计装备上诅咒附魔数量：每个 +4% 暴击率 / +8% 暴击伤害 / -1 幸运（与荷鲁斯之爪互斥） | 注册：[startup_scripts/Registry/Registry_curios.js#L1938](startup_scripts/Registry/Registry_curios.js#L1938) |
-| `rainbow:ender_glove` | 末影之握，攻击附加末影火 3 秒 | 注册：[startup_scripts/Registry/Registry_curios.js#L2042](startup_scripts/Registry/Registry_curios.js#L2042)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
-| `rainbow:living_gauntlet` | 生灵之触，攻击附加生灵火 3 秒，+1 攻击 / +0.1 攻速 | 注册：[startup_scripts/Registry/Registry_curios.js#L2064](startup_scripts/Registry/Registry_curios.js#L2064)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `rainbow:ender_glove` | 末影之握，攻击附加末影火 3 秒（MoreFire `endergetic:ender_fire`，伤害 3.0） | 注册：[startup_scripts/Registry/Registry_curios.js#L2175](startup_scripts/Registry/Registry_curios.js#L2175)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `rainbow:living_gauntlet` | 生灵之触，攻击附加生灵火 3 秒（MoreFire `dungeonsdelight:living_fire`，伤害 2.0），+1 攻击 / +0.1 攻速 | 注册：[startup_scripts/Registry/Registry_curios.js#L2214](startup_scripts/Registry/Registry_curios.js#L2214)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
 | `rainbow:gold_glove` | 点金手套 | 注册：[startup_scripts/Registry/Registry_curios.js#L2087](startup_scripts/Registry/Registry_curios.js#L2087) |
 | `rainbow:cursed_bones` | 被诅咒的骨头 | 注册：[startup_scripts/Registry/Registry_curios.js#L2110](startup_scripts/Registry/Registry_curios.js#L2110) |
 | `rainbow:ender_air` | 末地空气，隐匿时每件盔甲 +4% 伤害加成 | 注册：[startup_scripts/Registry/Registry_curios.js#L2173](startup_scripts/Registry/Registry_curios.js#L2173)，tooltip：[client_scripts/tooltips.js#L689-L696](client_scripts/tooltips.js#L689-L696) |
@@ -291,6 +291,8 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:cannon_target_marker` | 炮击目标标记实体（信标球投掷），抛物线物理，落地/停稳后调度绑定火炮开火；客户端 billboard 渲染 | 注册：[startup_scripts/Registry/Registry_entity.js#L119](startup_scripts/Registry/Registry_entity.js#L119)，tick：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js) |
 | `rainbow:psychic_scroll` | 心理卷轴墙实体：拦截/偏转抛射物、推动检测盒内生物（施放者豁免） | 注册：[startup_scripts/Registry/Registry_entity.js#L215](startup_scripts/Registry/Registry_entity.js#L215)，逻辑：[server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
 | `rainbow:kuchiyose_scroll` | 通灵卷轴（entityjs:tamable 可驯服召唤物），「口寄用之术」技能召唤 | 注册：[startup_scripts/Registry/Registry_entity.js#L70](startup_scripts/Registry/Registry_entity.js#L70) |
+
+使徒 2026-10-23 更新：修复命中回调与属性注册的 Rhino 局部 `const` 错误，螺旋/退避朝向统一使用 `getYaw()`；保留原外形，补齐 13 招动作，加上待机/移动共 15 段动画。动作随开招、结束、目标丢失和冲刺撞墙同步切换。已通过专项脚本与实际 Rhino 引擎检查，游戏内伤害和多人动画同步仍待重启后验证，详见 [使徒验证记录](docs/apostle-validation.md)。
 
 ---
 
@@ -561,26 +563,20 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 
 ### 后室 (Backrooms) 系统
 
-**进入方式：** 背包界面按 `W W S S A A D D B A B A`
+**当前接入：** BackroomRoguelike 1.0.0，正式维度 `backroomroguelike:backroom`。进入、20 分钟结算、死亡惩罚和撤离由模组负责；旧 KubeJS 后室入口和维度脚本已移除。
 
-> 客户端：[client_scripts/backroom/tobackroom.js](client_scripts/backroom/tobackroom.js)
-> 网络事件：[server_scripts/backroom/NetworkEvents.js](server_scripts/backroom/NetworkEvents.js)
-> 突变系统：[server_scripts/backroom/mutant.js](server_scripts/backroom/mutant.js)
-> 战利品：[server_scripts/backroom/loot.js](server_scripts/backroom/loot.js)
-> 启动：[startup_scripts/backrooms/ForgeEvents.js](startup_scripts/backrooms/ForgeEvents.js) + [startup_scripts/backrooms/item.js](startup_scripts/backrooms/item.js)
+> 追猎者入口与配置：[server_scripts/backroom/main.js](server_scripts/backroom/main.js)
+> 行为测试：[tests/backroom_hunters.test.cjs](tests/backroom_hunters.test.cjs)
 
-- **传送：** 传入后室维度 `backroom:backroom`，Y=-62，冒险模式
-- **逃出：** 再次输入秘籍，传送回主世界，生存模式，所有物品掉落并清空
-- **死亡：** 死后室时所有物品掉落在后室
+- **生成：** 默认按玩家本局独立计时，进入满 5 分钟后首次检查，之后每 5 分钟检查一次；每人最多 1 只突变凋灵骷髅。失败的生成检查到下个周期再重试。
+- **追踪：** 每个 5 分钟周期前 3 分钟为袭击期，每秒寻路；其余时间每 30 秒寻路，速度 1.2。平静期保留原生近距离战斗 AI，不代表无敌或停战。
+- **安全与清理：** 在玩家水平距离 32～40 格的已加载区块内，按实体完整碰撞箱和脚底支撑寻找生成点；仅管理本功能标记实体。撤离、死亡、超时和离线后清理，未加载的旧实体在重新加载时验证并拒绝入场。
+- **持久化：** `/reload` 和正常存档重启保留本局状态；未加载的追猎者继续占用名额，防止重复生成。不强制加载追猎者所在区块。
+- **配置：** 本功能参数集中在入口顶部 `BACKROOM_HUNTERS`；`clock: 'run'` 与模组真实时间倒计时一致，改为 `'dimension'` 可使用旧版共享维度 tick 时钟。创造/旁观模式和无有效本局的玩家不触发。
+- **调试日志：** 将入口顶部的 `debug: false` 改为 `debug: true`，执行 `/reload` 后在 `logs/kubejs/server.log` 搜索 `[后室追猎者][调试]`。记录脚本加载、每秒运行与玩家计时、跳过原因、生成及安全检查结果、阶段切换、寻路返回值、实体入场、死亡和离线清理；`false` 关闭这些运行日志，异常日志仍按原有限流规则输出。
+- **验证：** `node --test tests/backroom_hunters.test.cjs` 仅验证事件替身行为；修改后执行 `/reload`、`/kubejs errors`，并在游戏中验证生成、寻路、原生攻击、两玩家错开开局、区块卸载及撤离/重连。尚无游戏实测结果。
 
-**战利品房间：**
-
-| 房间类型 | 战利品 | 实现位置 |
-|----------|--------|----------|
-| 普通房 | 藤椒面条 + 32 个矿物 | [server_scripts/backroom/loot.js](server_scripts/backroom/loot.js) |
-| 高级房 | 藤椒面条/橡胶 + 陶片 + 矿物 | [server_scripts/backroom/loot.js](server_scripts/backroom/loot.js) |
-| 隐藏房 | 陶片 + 随机附魔书 + 锻造模板 | [server_scripts/backroom/loot.js](server_scripts/backroom/loot.js) |
-| 密码房 | 神器/饰品 + 陶片 + 附魔书 + 锻造模板 | [server_scripts/backroom/loot.js](server_scripts/backroom/loot.js) |
+**战利品房间：** 由模组房间模板中的箱子提供；此追猎者脚本不注册旧版战利品表。
 
 ### 副本/悬赏实例系统
 
@@ -588,10 +584,10 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 > 接取、地形筛选与触发：[server_scripts/bounty_system/](server_scripts/bounty_system/)
 
 - **接取：** 主手右键原版傻子村民，在 GUIJS 界面选择悬赏，获得绑定玩家的 `rainbow:bounty_contract`。
-- **定位：** 接取时在当前维度距玩家 1000～10000 格随机寻找位置，排除 `#minecraft:is_ocean`，要求 3×3 实心地面和三格高的空位；手持委托书右键显示维度与坐标。
+- **定位：** 接取时在当前维度距玩家 1000～10000 格随机寻找位置，先读取候选区块再查询真实地表高度（兼容未加载区域及超平坦负高度地表），排除 `#minecraft:is_ocean`，要求 3×3 实心地面和三格高的空位；手持委托书右键显示维度与坐标。
 - **触发：** 距目标三维距离不超过 16 格时主手右键，复核附近安全位置后生成配置的 GatewaysJS 传送门；成功后消耗委托书，防止重复生成。
-- **随机 GUI：** 每次打开时，从传送门已注册的悬赏中无重复抽取最多 `guiOfferCount` 项（默认 2，最多 6）；“换一批”可重新抽取。即使配置数量变化，也无需增减 GUI 页面。
-- **示例：** [config.js](startup_scripts/bounty_system/config.js) 包含两项内嵌传送门（史莱姆讨伐、蛛网清剿）和一项引用已有复杂传送门（黑夜巡查）。内嵌门由 [gateways.js](server_scripts/bounty_system/gateways.js) 自动注册。
+- **随机 GUI：** 每次打开时，可用悬赏不超过 5 项则全部展示，超过 5 项则无重复随机抽取 5 项（`guiOfferCount` 默认为 5，硬上限为 5）；“换一批”可重新抽取。即使配置数量变化，也无需增减 GUI 页面。
+- **讨伐对象：** [config.js](startup_scripts/bounty_system/config.js) 配置 Monster Expansion v0.7.6 的 Skrythe、Ignathos、Rhyza、Leivekilth、Rakoth 共五项独立悬赏；每项单波生成 1 只 Boss 本体，准备 5 秒、限时 30 分钟，生成半径 24 格、牵引距离 128 格，保留 Boss 自身掉落，无额外通关奖励。五个内嵌门由 [gateways.js](server_scripts/bounty_system/gateways.js) 自动注册。
 - **新增悬赏：** 在 `config.js` 的 `bounties` 中复制一个对象，修改唯一 `id` 和界面 `name`。`gateway` 写对象时填写独立门的 `id` 与至少一波 `waves`；写字符串（如 `'gateways:overworldian_nights'`）时直接使用已有复杂传送门，不会覆盖其原配置。
 - **内嵌门可选属性：** `size`、`color`、`tooltipText`、`entityTexture`、`bossBarTexture`、`bossEvent`、`hidePearl`、`finalizeSpawn`；`rules` 支持生成/牵引范围、玩家伤害限定、失败清理等 GatewaysJS 常用规则。每波可设置 `mobs`、`maxTime`、`setupTime`、`rewards`，传送门顶层 `rewards` 为通关奖励，`failures` 为失败惩罚。复杂实体、修饰、奖励与惩罚可使用对应的 `json` 字段，示例见配置注释。
 - **加载：** 编辑 `config.js` 后重启游戏；`biomeBlacklist` 支持群系 ID 或 `#` 标签。
@@ -649,7 +645,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
 | `handleCoreCharging.js` | 核心充能处理（装填/连射核心 + 狂怒面具 FuryDamage 充能） | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
-| `handleAttackCurios.js` | 攻击饰品效果：末影之握（末影火 3s）/ 生灵之触（生灵火 3s）/ 天秤座（交换双方药水效果） | [startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
+| `handleAttackCurios.js` | 攻击饰品效果：末影之握（MoreFire 末影火 `endergetic:ender_fire` 3s）/ 生灵之触（MoreFire 生灵火 `dungeonsdelight:living_fire` 3s）/ 天秤座（交换双方药水效果） | [startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
 | `handleAttackWeapon.js` | 攻击武器效果：泰拉刃（power 1-4）/ 动力剑（分解立场中 Power 消耗与 40s 冷却） | [startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js) |
 | `handleBigStomach.js` | 大胃袋：任务完成（bs_done）后消耗饱和度抵消伤害 | [startup_scripts/ForgeEvents/handleBigStomach.js](startup_scripts/ForgeEvents/handleBigStomach.js) |
 | `handleDespairInsigniaDeath.js` | 极限证章：佩戴者造成的全部伤害降低50% | [startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js](startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js) |
@@ -1056,6 +1052,8 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 > 火焰定义兼容：[server_scripts/morefire_compat.js](server_scripts/morefire_compat.js)
 
 自定义灵魂火配方与火焰伤害定义，覆盖原版、下界扩展、末地扩展、地下城美食；MoreFire 兼容脚本统一配置原版火/灵魂火/dungeonsdelight 活体火/endergetic 末影火/netherexp 远古火/caverns_and_chasms 铜火的颜色、伤害与雨中熄灭规则。
+
+末影之握、生灵之触的攻击附火通过 `MoreFire.ignite(entity, fireId, ticks)` 实现，分别使用本项目设定的 `endergetic:ender_fire`（末影火）与 `dungeonsdelight:living_fire`（生灵火）火焰定义。
 
 ---
 

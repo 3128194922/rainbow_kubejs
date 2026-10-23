@@ -453,94 +453,6 @@ StartupEvents.registry("item", (event) => {
                 })
         )
 });
-
-
-function hasMiningCharmHighlight(level, x, y, z, blockKey) {
-    let checkBox = new AABB(x, y, z, x + 1, y + 1, z + 1)
-    let entities = level.getEntitiesWithin(checkBox)
-
-  for (let i = 0; i < entities.size(); i++) {
-    let entity = entities.get(i)
-    let entityId = String(ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()))
-
-    if (entityId !== 'domesticationinnovation:highlighted_block') continue
-
-    let data = entity.getPersistentData()
-    if (data.contains('rainbow_mining_charm_target') && data.getString('rainbow_mining_charm_target') === blockKey) {
-      return true
-    }
-  }
-
-  return false
-}
-
-// 猎宝者护符
-StartupEvents.registry('item', event => {
-  event.create('rainbow:mining_charm')
-    .rarity('epic')
-    .maxStackSize(1)
-    .tag('curios:charm')
-    .attachCuriosCapability(
-      CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
-        .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
-        .addAttribute('forge:entity_reach', 'mining_charm', 2.15, 'addition')
-        .addAttribute('attributeslib:mining_speed', 'mining_charm', 0.1, 'multiply_base')
-        .canEquip((slotContext, stack) => {
-          const entity = slotContext.entity()
-          if (entity == null) return false
-
-          if (hasCurios(entity, 'rainbow:mining_charm')) {
-            return false
-          }
-
-          return true
-        })
-        .curioTick((slotContext, stack) => {
-            let player = slotContext.entity()
-          if (player == null) return
-          if (player.level.isClientSide()) return
-
-          // 5s 冷却
-          if (!everyTicks(player, 100)) return
-
-          let level = player.level;
-          if (level.isClientSide()) return
-        
-          let scanBox = new AABB(
-            player.getX() - 10, player.getY() - 5, player.getZ() - 10,
-            player.getX() + 10, player.getY() + 5, player.getZ() + 10
-          )
-        
-          let minX = Math.floor(scanBox.minX)
-          let maxX = Math.floor(scanBox.maxX)
-          let minY = Math.floor(scanBox.minY)
-          let maxY = Math.floor(scanBox.maxY)
-          let minZ = Math.floor(scanBox.minZ)
-          let maxZ = Math.floor(scanBox.maxZ)
-        
-          for (let x = minX; x <= maxX; x++) {
-            for (let y = minY; y <= maxY; y++) {
-              for (let z = minZ; z <= maxZ; z++) {
-                let block = level.getBlock(x, y, z)
-                if (block.id !== 'lootr:lootr_chest') continue
-        
-                let blockKey = `${x},${y},${z}`
-                if (hasMiningCharmHighlight(level, x, y, z, blockKey)) continue
-        
-                let highlight = level.createEntity('domesticationinnovation:highlighted_block')
-                if (highlight == null) continue
-        
-                highlight.setPosition(x + 0.5, y, z + 0.5)
-                highlight.getPersistentData().putString('rainbow_mining_charm_target', blockKey)
-                highlight.setLifespan(100)
-                highlight.spawn()
-              }
-            }
-          }
-        })
-    )
-})
-
 // 曙旼始灵
 /*StartupEvents.registry('item', event => {
     event.create('rainbow:daawnlight_spirit_origin')
@@ -2369,9 +2281,10 @@ StartupEvents.registry('item', event => {
                     let isStealth = global.getStealthState(player) ? 1 : 0;
                     // 护甲数量由 curioTick 每 tick 同步
                     let armorCount = stack.getOrCreateTag().getInt("armorCount");
+                    let count = 4 - armorCount; 
 
                     // 隐匿时根据护甲数量提供伤害加成
-                    e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * armorCount * isStealth, "multiply_total");
+                    e.modify("generic.attack_damage", "ender_air_armor_damage", 0.04 * count * isStealth, "multiply_total");
                 })
                 .curioTick((slotContext, stack) => {
                     if (!stack.nbt) stack.nbt = {};

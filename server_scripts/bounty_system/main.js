@@ -61,11 +61,11 @@ function rainbowBountyBoardNearby(player) {
     return dx * dx + dy * dy + dz * dz <= 64;
 }
 
-// 每次抽取最多 guiOfferCount 项已注册悬赏，为该玩家重建 GUIJS 布局并同步给客户端。
+// GUI 上限为 5 项；可用悬赏不足时全部展示，超过时无重复随机抽取并同步给客户端。
 function rainbowBountyOpenBoard(player) {
     let desired = RAINBOW_BOUNTY_CFG.guiOfferCount;
-    if (desired == null || desired < 1) desired = 2;
-    let offerCount = Math.max(1, Math.min(6, Math.floor(desired)));
+    if (desired == null || desired < 1) desired = 5;
+    let offerCount = Math.max(1, Math.min(5, Math.floor(desired)));
     let data = player.persistentData;
     let previous = [];
     for (let i = 0; i < data.getInt('RainbowBountyOfferCount'); i++) {
@@ -112,10 +112,12 @@ ItemEvents.entityInteracted(event => {
         data.putDouble('RainbowBountyBoardY', target.y);
         data.putDouble('RainbowBountyBoardZ', target.z);
         rainbowBountyOpenBoard(player);
-        event.cancel();
     } catch (error) {
         console.log('[悬赏] 打开村民界面失败: ' + error);
+        return;
     }
+    // KubeJS 6 的 cancel() 会抛出 EventExit；放在 try/catch 外，由事件框架正常处理。
+    event.cancel();
 });
 
 GUIJSEvents.button(event => {

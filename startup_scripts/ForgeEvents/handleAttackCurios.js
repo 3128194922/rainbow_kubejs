@@ -31,6 +31,26 @@ function getGummyList() {
     }
 }*/
 
+/**
+ * 为目标实体附着本项目 MoreFire 设定的自定义火焰。
+ * MoreFire 的火焰定义按已注册的火焰方块建立，颜色/伤害/熄灭规则见 server_scripts/morefire_compat.js。
+ * @param {Internal.Entity} target 目标实体
+ * @param {string} fireId MoreFire 火焰 ID，如 endergetic:ender_fire
+ * @param {number} ticks 燃烧 tick 数
+ */
+function igniteProjectFire(target, fireId, ticks) {
+    try {
+        if (target == null) return;
+        if (!MoreFire.exists(fireId)) {
+            console.log("[攻击饰品] 未找到火焰定义: " + fireId);
+            return;
+        }
+        MoreFire.ignite(target, fireId, ticks);
+    } catch (err) {
+        console.log("[攻击饰品] 附着火焰失败(" + fireId + "): " + err);
+    }
+}
+
 function handleAttackCurios(event, entity, target, context) {
     // 第三阶段：复用攻击事件内的饰品索引，避免每个饰品判断都重新扫描 Curios 槽位。
     let curioIndex = null;
@@ -52,17 +72,14 @@ function handleAttackCurios(event, entity, target, context) {
         return curioIndex != null && curioCodes != null && curioCodes[itemId] === code && curioIndex[itemId] != null;
     };
 
-    // 末影手套：攻击时为目标附着末影火 3秒
+    // 末影之握：攻击时为目标附着末影火 3秒（60 tick）
+    // 末影火、生灵火的颜色/伤害/熄灭规则统一由 server_scripts/morefire_compat.js 设定。
     if (hasAttackCurio('rainbow:ender_glove', 1)) {
-        if (global.SFire) {
-            global.SFire.setOnFire(target, 3, "endergetic:ender");
-        }
+        igniteProjectFire(target, 'endergetic:ender_fire', SecoundToTick(3));
     }
-    // 生灵手套：攻击时为目标附着生灵火 3秒
+    // 生灵之触：攻击时为目标附着生灵火 3秒（60 tick）
     if (hasAttackCurio('rainbow:living_gauntlet', 2)) {
-        if (global.SFire) {
-            global.SFire.setOnFire(target, 3, "dungeonsdelight:living");
-        }
+        igniteProjectFire(target, 'dungeonsdelight:living_fire', SecoundToTick(3));
     }
     // 天秤座：攻击时交换双方药水效果
     if (hasAttackCurio('rainbow:libra', 3)) {

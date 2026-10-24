@@ -685,6 +685,17 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("不移动时每秒恢复4点生命值"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
+    // 木人桩
+    // 机制：静止不动时暴击率 +15%、暴击伤害 +30%（Registry_curios.js 每 20 tick 判定位移）
+    event.addAdvanced('rainbow:wooden_dummy', (item, advanced, text) => {
+        text.add(1, Text.gray("按[SHIFT]查看详细"));
+        if (event.shift) {
+            text.remove(1)
+            text.add(1, Text.aqua("▸ 静止不动时暴击率 +15%"));
+            text.add(2, Text.aqua("▸ 静止不动时暴击伤害 +30%"));
+            text.add(3, Text.gray("  移动后加成消失"));
+        }
+    })
     // 心之项链（功能见 startup_scripts/Registry/Registry_curios.js）
     event.addAdvanced('rainbow:necklace_of_heart', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
@@ -738,7 +749,8 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("碰撞体积变大 1.5 倍"));
-            text.add(2, Text.aqua("冲刺时对比自己小的生物造成踩踏伤害"));
+            text.add(2, Text.aqua("冲刺时对周围生物造成踩踏伤害"));
+            text.add(3, Text.aqua("践踏伤害 = 10 + 动能伤害 + 最大生命10%"));
         }
         text.add(Text.darkGray("美术资源：Demi's Enigmatic Dice"));
     })
@@ -1260,6 +1272,55 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("触发极限闪避时进行").append(Text.gold("反击")));
         text.add(2, Text.gold("反击").append(Text.aqua("：对攻击者造成 12点")).append(Text.white("真实伤害")));
         text.add(3, Text.red("素材版权警告，需要验证版权问题"));
+    })
+    // 亵渎十字架
+    // 机制：佩戴者造成伤害后额外造成一次 1 点真实伤害（startup_scripts/ForgeEvents/handleUnholyCross.js）
+    event.addAdvanced('rainbow:unholy_cross', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 造成伤害后额外造成 1 点真实伤害"));
+        text.add(2, Text.gray("  独立伤害，无视护甲、抗性与保护附魔"));
+    })
+    // 魔法戒指
+    event.addAdvanced('rainbow:magic_ring', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 暴击率 +20%"));
+    })
+    // 撒旦圣歌
+    // 机制：每 2% 暴击率增加 1% 暴击效果（暴击率÷2），动态修饰符见 Registry_curios.js 的 updateSatanHymnCritDamage
+    event.addAdvanced('rainbow:satan_hymn', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 每 2% 暴击率增加 1% 暴击效果"));
+        let chance = 0;
+        try {
+            if (Client.player != null) {
+                let chanceAttr = Client.player.getAttribute('attributeslib:crit_chance');
+                if (chanceAttr != null) chance = chanceAttr.getValue();
+            }
+        } catch (e) {
+            console.log("[撒旦圣歌提示] 读取暴击率出错: " + e);
+        }
+        let cappedChance = Math.max(0, Math.min(1, chance));
+        let bonus = cappedChance * 0.5;
+        text.add(2, Text.of(`▸ 当前暴击率 §e${(chance * 100).toFixed(1)}%§r → 暴击效果 §b+${(bonus * 100).toFixed(1)}%`));
+    })
+    // 护额
+    // 机制：每 1% 移速加成增加 5% 被动闪避，移速低于 100% 时同比例降低闪避；动态修饰符见 Registry_curios.js 的 updateForeheadGuardDodge
+    event.addAdvanced('rainbow:forehead_guard', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 每 1% 移速加成增加 5% 被动闪避"));
+        text.add(2, Text.gray("  移速低于 100% 时同比例降低闪避"));
+        let speedRatio = 1;
+        try {
+            if (Client.player != null) {
+                let speedAttr = Client.player.getAttribute('minecraft:generic.movement_speed');
+                if (speedAttr != null) {
+                    let baseSpeed = speedAttr.getBaseValue();
+                    if (baseSpeed > 0) speedRatio = speedAttr.getValue() / baseSpeed;
+                }
+            }
+        } catch (e) {
+            console.log("[护额提示] 读取移速出错: " + e);
+        }
+        let dodgeBonus = (speedRatio - 1) * 5;
+        if (dodgeBonus > 1) dodgeBonus = 1;
+        let sign = dodgeBonus >= 0 ? "+" : "";
+        text.add(3, Text.of(`▸ 当前移速 §e${(speedRatio * 100).toFixed(1)}%§r → 闪避 §b${sign}${(dodgeBonus * 100).toFixed(1)}%`));
     })
     // 忍具袋
     event.addAdvanced('rainbow:ninja_tools', (item, advanced, text) => {

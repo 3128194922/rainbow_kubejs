@@ -17,7 +17,13 @@ const MAGIC_DAMAGE_TYPES = [
     'wither', 'wither_skull', 'freeze', 'sting'
 ];
 const TRUE_DAMAGE_TYPES = [
-    'out_of_world', 'generic', 'bad_respawn_point', 'starve', 'dry_out', 'sonic_boom'
+    'out_of_world', 'generic', 'bad_respawn_point', 'starve', 'dry_out', 'sonic_boom',
+    // 亵渎十字架的追加真实伤害：message_id 为 player，需同时按注册表 ID 识别
+    'rainbow:unholy_cross'
+];
+// 自定义伤害类型注册表 ID：用于修正 message_id 不为类型名时的真实伤害显示
+const TRUE_DAMAGE_TYPE_IDS = [
+    'rainbow:unholy_cross'
 ];
 const MELEE_DAMAGE_TYPES = [
     'player_attack', 'mob_attack', 'mob_attack_no_player'
@@ -130,6 +136,40 @@ function getDamageType(source) {
     return '';
 }
 
+// 按伤害类型注册表 ID 识别真实伤害：自定义伤害的 message_id 可能只是 'player'，
+// 此时 getType() 无法区分普通攻击与自定义真实伤害。
+let trueDamageTypeIdErrorLogged = false;
+
+function isTrueDamageTypeId(source) {
+    if (source == null) return false;
+    // 优先用 DamageSource#is(ResourceKey) 精确比较，失败时退回 Holder#is(ResourceLocation)
+    for (let i = 0; i < TRUE_DAMAGE_TYPE_IDS.length; i++) {
+        let id = TRUE_DAMAGE_TYPE_IDS[i];
+        try {
+            if (source.is != null && source.is(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(id)))) {
+                return true;
+            }
+        } catch (e) {
+            if (!trueDamageTypeIdErrorLogged) {
+                console.log('[ParticleJS] 按ResourceKey识别伤害类型失败: ' + e);
+                trueDamageTypeIdErrorLogged = true;
+            }
+        }
+        try {
+            if (source.typeHolder != null) {
+                let holder = source.typeHolder();
+                if (holder != null && holder.is(new ResourceLocation(id))) return true;
+            }
+        } catch (e) {
+            if (!trueDamageTypeIdErrorLogged) {
+                console.log('[ParticleJS] 按Holder识别伤害类型失败: ' + e);
+                trueDamageTypeIdErrorLogged = true;
+            }
+        }
+    }
+    return false;
+}
+
 function spawnDamageIndicator(entity, difference, source) {
     try {
         if (entity == null || entity.level == null || difference == null) return false;
@@ -139,7 +179,7 @@ function spawnDamageIndicator(entity, difference, source) {
         let damageType = getDamageType(source);
         let textColor = 0xFF0000;
         let outlineColor = 0x330000;
-        if (TRUE_DAMAGE_TYPES.indexOf(damageType) >= 0) {
+        if (TRUE_DAMAGE_TYPES.indexOf(damageType) >= 0 || isTrueDamageTypeId(source)) {
             textColor = 0xFFFFFF;
             outlineColor = 0x333333;
         } else if (MAGIC_DAMAGE_TYPES.indexOf(damageType) >= 0) {

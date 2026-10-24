@@ -1609,14 +1609,8 @@ StartupEvents.registry('item', event => {
                         if (!entity.isLiving() || !entity.isAlive()) return;
                         if(entity.isPlayer()) return;
 
-                        let playerVolume = player.getBoundingBox().getXsize() * player.getBoundingBox().getYsize() * player.getBoundingBox().getZsize();
-                        let victimVolume = entity.getBoundingBox().getXsize() * entity.getBoundingBox().getYsize() * entity.getBoundingBox().getZsize();
-
-                        let ADD = 0;
-                        if(playerVolume>victimVolume)
-                            {
-                                let ADD = 10;
-                            }
+                        // 践踏伤害 = 基础10 + 动能伤害 + 佩戴者最大生命10%的额外伤害
+                        let ADD = player.getMaxHealth() * 0.1;
                         let DAMAGE = 10 + ADD + kineticDamage;
 
                         entity.attack(player.damageSources().playerAttack(player),DAMAGE);
@@ -1882,6 +1876,102 @@ StartupEvents.registry('item', event => {
                     if (!moving) {
                         player.heal(4);
                     }
+                })
+        )
+})
+
+// 木人桩
+// 功能：静止不动时暴击率 +15%、暴击伤害 +30%。
+// 静止判定沿用日曜石：每 20 tick 与上一秒位置比较，一秒内水平位移 ≤ 0.5 格视为静止。
+// 属性使用临时修饰符，移动后移除，卸下时由 onUnequip 兜底移除。
+const WOODEN_DUMMY_MOVE_TOLERANCE = 0.5;
+const WOODEN_DUMMY_CRIT_CHANCE = 0.15;
+const WOODEN_DUMMY_CRIT_DAMAGE = 0.30;
+const WOODEN_DUMMY_CRIT_CHANCE_UUID = UUID.fromString('8a1f3c2e-5b7d-4e9a-9c4f-2d6b8e0a1c03');
+const WOODEN_DUMMY_CRIT_DAMAGE_UUID = UUID.fromString('3c7e9f1b-4a2d-4b8e-8f6a-1e5c7d9b2a04');
+
+function removeWoodenDummyCritBonus(player) {
+    try {
+        if (player == null) return;
+        let chanceAttr = player.getAttribute('attributeslib:crit_chance');
+        if (chanceAttr != null) chanceAttr.removeModifier(WOODEN_DUMMY_CRIT_CHANCE_UUID);
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (damageAttr != null) damageAttr.removeModifier(WOODEN_DUMMY_CRIT_DAMAGE_UUID);
+    } catch (e) {
+        console.log("[木人桩] 移除暴击修饰符失败: " + e);
+    }
+}
+
+function setWoodenDummyCritBonus(player, active) {
+    try {
+        if (player == null) return;
+        let chanceAttr = player.getAttribute('attributeslib:crit_chance');
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (chanceAttr == null || damageAttr == null) return;
+
+        let existingChance = chanceAttr.getModifier(WOODEN_DUMMY_CRIT_CHANCE_UUID);
+        let existingDamage = damageAttr.getModifier(WOODEN_DUMMY_CRIT_DAMAGE_UUID);
+
+        if (active) {
+            if (existingChance == null) {
+                chanceAttr.addTransientModifier(new AttributeModifier(WOODEN_DUMMY_CRIT_CHANCE_UUID, 'wooden_dummy_crit_chance', WOODEN_DUMMY_CRIT_CHANCE, AttributeModifierOperation.ADDITION));
+            }
+            if (existingDamage == null) {
+                damageAttr.addTransientModifier(new AttributeModifier(WOODEN_DUMMY_CRIT_DAMAGE_UUID, 'wooden_dummy_crit_damage', WOODEN_DUMMY_CRIT_DAMAGE, AttributeModifierOperation.ADDITION));
+            }
+        } else {
+            if (existingChance != null) chanceAttr.removeModifier(WOODEN_DUMMY_CRIT_CHANCE_UUID);
+            if (existingDamage != null) damageAttr.removeModifier(WOODEN_DUMMY_CRIT_DAMAGE_UUID);
+        }
+    } catch (e) {
+        console.log("[木人桩] 刷新暴击修饰符失败: " + e);
+    }
+}
+
+StartupEvents.registry('item', event => {
+    event.create('rainbow:wooden_dummy')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (!entity) return false;
+                    if (hasCurios(entity, 'rainbow:wooden_dummy')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    if (!everyTicks(player, 20)) return;
+
+                    let tag = stack.getOrCreateTag();
+                    // 首次判定只记录位置，避免默认坐标 0,0 被误判为静止
+                    if (!tag.contains("lastX") || !tag.contains("lastZ")) {
+                        tag.putDouble("lastX", player.x);
+                        tag.putDouble("lastZ", player.z);
+                        tag.putBoolean("isStill", false);
+                        setWoodenDummyCritBonus(player, false);
+                        return;
+                    }
+
+                    let lastX = tag.getDouble("lastX");
+                    let lastZ = tag.getDouble("lastZ");
+                    let dx = player.x - lastX;
+                    let dz = player.z - lastZ;
+                    // 一秒内位移不超过宽容度 → 视为静止（忽略轻微漂移）
+                    let still = (dx * dx + dz * dz) <= WOODEN_DUMMY_MOVE_TOLERANCE * WOODEN_DUMMY_MOVE_TOLERANCE;
+
+                    tag.putDouble("lastX", player.x);
+                    tag.putDouble("lastZ", player.z);
+                    tag.putBoolean("isStill", still);
+                    setWoodenDummyCritBonus(player, still);
+                })
+                .onUnequip((slotContext, newStack, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    removeWoodenDummyCritBonus(player);
                 })
         )
 })
@@ -2873,6 +2963,185 @@ StartupEvents.registry('item', event => {
                 })
                 .addAttribute('combatroll:count', 'dismas_scarf', 2, 'addition')
                 .addAttribute('combatroll:recharge', 'dismas_scarf', 0.25, 'multiply_total')
+        )
+})
+
+//亵渎十字架
+// 功能：佩戴者造成伤害后额外造成一次 1 点真实伤害（独立伤害实例，自定义伤害类型 rainbow:unholy_cross，无视护甲/抗性/保护附魔）
+// 伤害逻辑位于 startup_scripts/ForgeEvents/handleUnholyCross.js，由 ForgeEvents/main.js 的 LivingDamageEvent 主入口调用
+StartupEvents.registry('item', event => {
+    event.create('rainbow:unholy_cross')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:unholy_cross')) return false;
+                    return true;
+                })
+        )
+})
+
+//魔法戒指
+// 功能：佩戴时暴击率 +20%（attributeslib:crit_chance 为百分比属性，0.20 = 20%）
+StartupEvents.registry('item', event => {
+    event.create('rainbow:magic_ring')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .addAttribute('attributeslib:crit_chance', 'magic_ring_crit_chance', 0.20, 'addition')
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:magic_ring')) return false;
+                    return true;
+                })
+        )
+})
+
+//撒旦圣歌
+// 功能：每 2% 暴击率增加 1% 暴击效果（连续比例：暴击效果加成 = 暴击率 × 0.5）
+// 暴击率会随装备/药水效果实时变化，因此 curioTick 每 tick 按当前暴击率刷新暴击伤害临时修饰符；
+// 临时修饰符不写入玩家存档，卸下时由 onUnequip 立即移除。
+const SATAN_HYMN_CRIT_DAMAGE_UUID = UUID.fromString('4b7d1e2a-6c3f-4a9b-8d5e-2f1a3c7b9d10');
+const SATAN_HYMN_CRIT_DAMAGE_NAME = 'satan_hymn_crit_damage';
+
+function removeSatanHymnCritDamage(player) {
+    try {
+        if (player == null) return;
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (damageAttr == null) return;
+        damageAttr.removeModifier(SATAN_HYMN_CRIT_DAMAGE_UUID);
+    } catch (e) {
+        console.log("[撒旦圣歌] 移除暴击效果修饰符失败: " + e);
+    }
+}
+
+function updateSatanHymnCritDamage(player) {
+    try {
+        if (player == null) return;
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (damageAttr == null) return;
+
+        let chanceAttr = player.getAttribute('attributeslib:crit_chance');
+        let chance = chanceAttr == null ? 0 : chanceAttr.getValue();
+        if (!(chance > 0)) chance = 0;
+        if (chance > 1) chance = 1;
+
+        // 0.02 暴击率（2%）→ 0.01 暴击效果（1%），即暴击率 ÷ 2；保留 4 位小数避免浮点抖动反复写入
+        let bonus = Math.round(chance * 0.5 * 10000) / 10000;
+        let existing = damageAttr.getModifier(SATAN_HYMN_CRIT_DAMAGE_UUID);
+        if (existing != null && Math.abs(existing.getAmount() - bonus) < 0.0001) return;
+
+        damageAttr.removeModifier(SATAN_HYMN_CRIT_DAMAGE_UUID);
+        if (bonus > 0) {
+            damageAttr.addTransientModifier(new AttributeModifier(SATAN_HYMN_CRIT_DAMAGE_UUID, SATAN_HYMN_CRIT_DAMAGE_NAME, bonus, AttributeModifierOperation.ADDITION));
+        }
+    } catch (e) {
+        console.log("[撒旦圣歌] 刷新暴击效果修饰符失败: " + e);
+    }
+}
+
+StartupEvents.registry('item', event => {
+    event.create('rainbow:satan_hymn')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:satan_hymn')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    updateSatanHymnCritDamage(player);
+                })
+                .onUnequip((slotContext, newStack, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    removeSatanHymnCritDamage(player);
+                })
+        )
+})
+
+//护额
+// 功能：每 1% 移速加成增加 5% 被动闪避；玩家初始移速 0.1 = 100%，低于 100% 时同比例减少闪避
+// 例：移速 120% → 闪避 +100%；移速 90% → 闪避 -50%
+// 移速会随装备/药水效果实时变化，因此 curioTick 每 tick 刷新 attributeslib:dodge_chance 临时修饰符；
+// 临时修饰符不写入玩家存档，卸下时由 onUnequip 立即移除。
+const FOREHEAD_GUARD_DODGE_UUID = UUID.fromString('5e9c1b7a-2d4f-4a8b-b3c6-7f0d9e1a2b4c');
+const FOREHEAD_GUARD_DODGE_NAME = 'forehead_guard_dodge';
+const PLAYER_BASE_MOVEMENT_SPEED = 0.1;
+
+function removeForeheadGuardDodge(player) {
+    try {
+        if (player == null) return;
+        let dodgeAttr = player.getAttribute('attributeslib:dodge_chance');
+        if (dodgeAttr == null) return;
+        dodgeAttr.removeModifier(FOREHEAD_GUARD_DODGE_UUID);
+    } catch (e) {
+        console.log("[护额] 移除闪避修饰符失败: " + e);
+    }
+}
+
+function updateForeheadGuardDodge(player) {
+    try {
+        if (player == null) return;
+        let dodgeAttr = player.getAttribute('attributeslib:dodge_chance');
+        if (dodgeAttr == null) return;
+        let speedAttr = player.getAttribute('minecraft:generic.movement_speed');
+        if (speedAttr == null) return;
+
+        let baseSpeed = speedAttr.getBaseValue();
+        if (!(baseSpeed > 0)) baseSpeed = PLAYER_BASE_MOVEMENT_SPEED;
+        // 当前移速比例：1.0 = 100%
+        let speedRatio = speedAttr.getValue() / baseSpeed;
+        // 每 1% 移速（0.01 比例）对应 5% 闪避（0.05），即 (移速比例 - 1) × 5；保留 4 位小数避免浮点抖动反复写入
+        let bonus = Math.round((speedRatio - 1) * 5 * 10000) / 10000;
+        let existing = dodgeAttr.getModifier(FOREHEAD_GUARD_DODGE_UUID);
+        if (existing != null && Math.abs(existing.getAmount() - bonus) < 0.0001) return;
+
+        dodgeAttr.removeModifier(FOREHEAD_GUARD_DODGE_UUID);
+        if (bonus != 0) {
+            dodgeAttr.addTransientModifier(new AttributeModifier(FOREHEAD_GUARD_DODGE_UUID, FOREHEAD_GUARD_DODGE_NAME, bonus, AttributeModifierOperation.ADDITION));
+        }
+    } catch (e) {
+        console.log("[护额] 刷新闪避修饰符失败: " + e);
+    }
+}
+
+StartupEvents.registry('item', event => {
+    event.create('rainbow:forehead_guard')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:forehead_guard')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    updateForeheadGuardDodge(player);
+                })
+                .onUnequip((slotContext, newStack, stack) => {
+                    let player = slotContext.entity();
+                    if (player == null || player.level.isClientSide()) return;
+                    removeForeheadGuardDodge(player);
+                })
         )
 })
 

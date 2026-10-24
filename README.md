@@ -158,7 +158,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:lilith_hug` | 莉莉丝之拥，变为吸血鬼 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L293-L296](client_scripts/tooltips.js#L293-L296) |
 | ~~`rainbow:sculk_affinity`~~ | 幽匿护符（**注册、标签、监守者免仇恨逻辑、tooltip 均已注释停用**）：原效果为站在幽匿方块上 +20% 移动速度、每秒恢复 10 点生命值、监守者不会攻击你 | 注册：[startup_scripts/Registry/Registry_curios.js#L925-L968](startup_scripts/Registry/Registry_curios.js)（注释），监守者逻辑：[startup_scripts/ForgeEvents.js#L84-L90](startup_scripts/ForgeEvents.js)（注释），tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)（注释） |
 | `rainbow:gravity_core` | 重力核心，空中潜行增加重力快速落地，落地造成范围伤害 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L595-L603](server_scripts/curios_skill_system/Skillwheel.js#L595-L603)，tooltip：[client_scripts/tooltips.js#L117-L127](client_scripts/tooltips.js#L117-L127) |
-| `rainbow:giants_ring` | 巨人戒指，体型 x1.5，步高 +1，冲刺踩踏周围生物 | tooltip：[client_scripts/tooltips.js#L95-L105](client_scripts/tooltips.js#L95-L105) |
+| `rainbow:giants_ring` | 巨人戒指，体型 x1.5，步高 +1，冲刺踩踏周围生物；践踏伤害 = 10 + 动能伤害 + 佩戴者最大生命 10% | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:moai_charm` | 石鬼像，生物碰撞箱对你无影响 | tooltip：[client_scripts/tooltips.js#L189-L194](client_scripts/tooltips.js#L189-L194) |
 | `rainbow:chronos` | 发条怀表，记录最近 5 秒的位置/血量/饱食度，右键快速倒带回溯 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L216-L344](server_scripts/curios_skill_system/Skillwheel.js#L216-L344)，tooltip：[client_scripts/tooltips.js#L315-L322](client_scripts/tooltips.js#L315-L322) |
 | `rainbow:mini_moon` | 迷你月球，右键牵引周围生物，潜行右键推开生物 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js#L606-L651](server_scripts/curios_skill_system/Skillwheel.js#L606-L651)，tooltip：[client_scripts/tooltips.js#L445-L452](client_scripts/tooltips.js#L445-L452) |
@@ -187,6 +187,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:chaos_core` | 混沌核心，受伤倍率 ×[0.0~2.0]，概率反弹伤害，均受幸运值影响 | 注册：[startup_scripts/Registry/Registry_curios.js#L1773](startup_scripts/Registry/Registry_curios.js#L1773)，tooltip：[client_scripts/tooltips.js#L670-L679](client_scripts/tooltips.js#L670-L679) |
 | `rainbow:dark_sun_ring` | 七阳之戒 | 注册：[startup_scripts/Registry/Registry_curios.js#L1781](startup_scripts/Registry/Registry_curios.js#L1781) |
 | `rainbow:shiny_stone` | 日曜石，站立不动时每秒恢复 2 点生命 | 注册：[startup_scripts/Registry/Registry_curios.js#L1789](startup_scripts/Registry/Registry_curios.js#L1789) |
+| `rainbow:wooden_dummy` | 木人桩，静止不动时暴击率 +15%、暴击伤害 +30%；静止判定沿用日曜石（每秒位移 ≤0.5 格），移动后加成消失 | 注册/逻辑：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:quiver` / `rainbow:fast_quiver` | 箭袋 / 快速箭袋 | 注册：[startup_scripts/Registry/Registry_curios.js#L1852](startup_scripts/Registry/Registry_curios.js#L1852) / [#L1874](startup_scripts/Registry/Registry_curios.js#L1874) |
 | `rainbow:curse_crown` | 诅咒王冠，统计装备上诅咒附魔数量：每个 +4% 暴击率 / +8% 暴击伤害 / -1 幸运（与荷鲁斯之爪互斥） | 注册：[startup_scripts/Registry/Registry_curios.js#L1938](startup_scripts/Registry/Registry_curios.js#L1938) |
 | `rainbow:ender_glove` | 末影之握，攻击附加末影火 3 秒（MoreFire `endergetic:ender_fire`，伤害 3.0） | 注册：[startup_scripts/Registry/Registry_curios.js#L2175](startup_scripts/Registry/Registry_curios.js#L2175)，攻击处理：[startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
@@ -208,6 +209,10 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:fist_of_seven_wounds` | 葵花宝典，+0.07 当前生命伤害（attributeslib），受到治疗 -100%；主动翻滚后免疫下一次伤害，冷却 5 秒 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，技能：[server_scripts/curios_skill_system/Skillwheel.js](server_scripts/curios_skill_system/Skillwheel.js) |
 | `rainbow:sharingan` | 血轮珠 | 注册：[startup_scripts/Registry/Registry_curios.js#L2748](startup_scripts/Registry/Registry_curios.js#L2748) |
 | `rainbow:dismas_scarf` | 强盗围巾，翻滚次数 +2、翻滚充能速度 +25%；极限闪避反击使用自定义伤害类型 `rainbow:dismas_scarf`（无视护甲与效果/保护附魔） | 注册：[startup_scripts/Registry/Registry_curios.js#L2788](startup_scripts/Registry/Registry_curios.js#L2788)，伤害类型：[server_scripts/rainbow/dismas_scarf.js](server_scripts/rainbow/dismas_scarf.js) |
+| `rainbow:unholy_cross` | 亵渎十字架，佩戴者造成伤害后额外造成一次 1 点真实伤害（独立伤害实例，自定义伤害类型 `rainbow:unholy_cross`，无视护甲/抗性/保护附魔） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害逻辑：[startup_scripts/ForgeEvents/handleUnholyCross.js](startup_scripts/ForgeEvents/handleUnholyCross.js)，伤害类型：[server_scripts/rainbow/unholy_cross.js](server_scripts/rainbow/unholy_cross.js) |
+| `rainbow:magic_ring` | 魔法戒指，佩戴时暴击率 +20%（`attributeslib:crit_chance`，0.20 = 20%） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:satan_hymn` | 撒旦圣歌，每 2% 暴击率增加 1% 暴击效果（连续比例：暴击率÷2；curioTick 按当前暴击率动态刷新暴击伤害修饰符） | 注册/逻辑：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:forehead_guard` | 护额，每 1% 移速加成增加 5% 被动闪避（`attributeslib:dodge_chance`；移速 0.1=100%，低于 100% 时同比例降低闪避；curioTick 动态刷新闪避修饰符） | 注册/逻辑：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:the_3000_ways_to_kill` | 要你命3000，爆炸伤害倍率 +2 | 注册：[startup_scripts/Registry/Registry_curios.js#L2825](startup_scripts/Registry/Registry_curios.js#L2825) |
 | `rainbow:pauldron` | 肩甲，骑乘坐骑高速冲锋时对路径生物造成伤害；完全抵消一次大额伤害并进入 20 秒冷却 | 注册：[startup_scripts/Registry/Registry_curios.js#L2843](startup_scripts/Registry/Registry_curios.js#L2843)，伤害抵消：[startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js) |
 | `rainbow:hand_of_scratches` | 扣挠之手，技能轮盘饰品 | 注册：[startup_scripts/Registry/Registry_curios.js#L2946](startup_scripts/Registry/Registry_curios.js#L2946) |
@@ -653,6 +658,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `handleFreezeEffects.js` | 冻结机制：冻结超阈值 → `/dyeing uv add static freeze_ice` 蓝冰视觉 + `global.freezeEntity`（durationTicks/6） | [startup_scripts/ForgeEvents/handleFreezeEffects.js](startup_scripts/ForgeEvents/handleFreezeEffects.js) |
 | `handleItemAttributeModifier.js` | 饕餮之锅：已食用食物数（foodnumber）→ 攻击伤害 | [startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
 | `handleProjectileIFrame.js` | 弹射物无敌帧重置（EXCLUDE_PLAYER=true，三类黑名单） | [startup_scripts/ForgeEvents/handleProjectileIFrame.js](startup_scripts/ForgeEvents/handleProjectileIFrame.js) |
+| `handleUnholyCross.js` | 亵渎十字架：佩戴者造成伤害后额外造成一次 1 点真实伤害（自定义伤害类型 `rainbow:unholy_cross`，独立伤害实例） | [startup_scripts/ForgeEvents/handleUnholyCross.js](startup_scripts/ForgeEvents/handleUnholyCross.js) |
 | `onPlayerDamaged.js` | 玩家受伤：动能核心（species:kinetic_core）受伤时 AOE 半径 7 | [startup_scripts/ForgeEvents/onPlayerDamaged.js](startup_scripts/ForgeEvents/onPlayerDamaged.js) |
 | `onNonPlayerDamaged.js` | 非玩家受伤：驯服马受到的伤害传导给主人 | [startup_scripts/ForgeEvents/onNonPlayerDamaged.js](startup_scripts/ForgeEvents/onNonPlayerDamaged.js) |
 | `onPlayerHurt.js` | 玩家受伤事件 | [startup_scripts/ForgeEvents/onPlayerHurt.js](startup_scripts/ForgeEvents/onPlayerHurt.js) |
@@ -714,7 +720,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 ParticleJS 文本粒子与飘字基础设施（priority 4000），注册于 [startup_scripts/damage_indicators/main.js](startup_scripts/damage_indicators/main.js)。
 
 - **粒子类型：** `rainbow:damage_indicator_text`（动态文本粒子）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
-- **分色：** 物理红 / 魔法紫 / 真实伤害白
+- **分色：** 物理红 / 魔法紫 / 真实伤害白；`rainbow:unholy_cross` 等自定义伤害类型按注册表 ID 判定为真实伤害（`message_id` 为 player 时不会误判为普通攻击）
 - **全局 API：** `global.sendParticleText`、`global.sendParticleTextInFront`、`global.spawnDamageIndicator`
 - **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化暴击/闪避、原版跳劈分别飘「暴击！/闪避！/跳劈！」
 

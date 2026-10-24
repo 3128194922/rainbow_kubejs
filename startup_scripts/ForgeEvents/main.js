@@ -163,6 +163,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
         handleBigStomach(event, victim, context);
     }
 
+    // 亵渎十字架：佩戴者造成伤害后额外造成一次 1 点真实伤害（自定义伤害类型 rainbow:unholy_cross）
+    handleUnholyCrossDamage(event, attacker, victim, context);
+
     }
     catch(e)
     {

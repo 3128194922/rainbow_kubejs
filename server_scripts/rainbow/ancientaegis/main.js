@@ -54,7 +54,7 @@ global.ancientAegisIsInTeam = function (player) {
     return ancientAegisGetMineTeamName(player) != null;
 };
 
-// 只收集受伤者同一个非白 MineTeam 队伍内，在线且佩戴远古之庇护的玩家。
+// 收集同一非白队伍的其他在线存活队友，无需佩戴；允许跨维度分摊。
 global.getAncientAegisDamageTargets = function (player) {
     try {
         let teamName = ancientAegisGetMineTeamName(player);
@@ -65,7 +65,7 @@ global.getAncientAegisDamageTargets = function (player) {
         for (let member of onlinePlayers) {
             if (member == null || !member.isAlive()) continue;
             if (ancientAegisGetMineTeamName(member) !== teamName) continue;
-            if (hasCurios(member, ANCIENT_AEGIS_ID)) targets.push(member);
+            if (String(member.getUuid()) != String(player.getUuid())) targets.push(member);
         }
         return targets;
     } catch (e) {

@@ -121,7 +121,7 @@ function mbParasite(entity, source) {
 
 /**
  * 吸血：迷你Boss造成伤害后按伤害的 50% 恢复自身（固定1级）
- * 已被适应记录的伤害类型不会回血，因为 Forge LivingHurtEvent 会把该次伤害设为0
+ * 已适应类型按25%/50%/75%减伤后估算吸血，不再把命中视为完全免疫
  * @param {Object} event - EntityEvents.hurt 事件
  */
 function mbDrain(event) {
@@ -130,7 +130,8 @@ function mbDrain(event) {
     // 无效攻击者、自伤、攻击者非迷你Boss直接返回
     if (!attacker || attacker == entity || !attacker.isAlive()) return;
     if (!hasPower(attacker, 'Drain')) return;
-    // EntityEvents.hurt 先触发；已记录的适应类型随后会被 Forge 伤害管线归零，因此这里跳过吸血。
+    // EntityEvents.hurt早于Forge减伤；此处对已记录类型应用相同的适应倍率。
+    let adaptMultiplier = 1;
     if (entity.persistentData.getBoolean('_mb_p_Adapt')) {
         let damageType = source.getType();
         let pd = entity.persistentData;
@@ -139,19 +140,19 @@ function mbDrain(event) {
             try {
                 let types = JSON.parse(savedTypes);
                 if (!Array.isArray(types)) types = [];
-                let cap = Math.min(getPowerLevel(entity, 'Adapt'), 2);
-                // 旧存档可能已有3种已适应类型；这里先应用新上限，再判断是否该跳过吸血。
+                let cap = Math.min(getPowerLevel(entity, 'Adapt'), 3);
+                // 旧存档可能已有3种已适应类型；这里应用3级上限，再按等级调整吸血基数。
                 if (types.length > cap) {
                     types = types.slice(0, cap);
                     pd.putString('_mb_adapt_types', JSON.stringify(types));
                 }
-                if (damageType && types.indexOf(damageType) >= 0) return;
+                if (damageType && types.indexOf(damageType) >= 0) adaptMultiplier = 1 - cap * 0.25;
             } catch (er) {
                 console.log('[MiniBoss 适应] 吸血前读取记录失败: ' + er);
             }
         }
     }
-    let amount = event.damage;
+    let amount = event.damage * adaptMultiplier;
     if (!amount || amount <= 0) return;
     try {
         // 恢复造成伤害的 50%
@@ -177,7 +178,7 @@ EntityEvents.hurt(event => {
     }
     // 寄生：受到攻击召唤蠹虫（免疫的攻击也算受到攻击）
     try { mbParasite(entity, event.source); } catch (er) { console.log('[MiniBoss 寄生] ' + er); }
-    // 吸血：攻击方造成伤害50%回血；已适应的重复伤害类型在 mbDrain 中跳过。
+    // 吸血：攻击方造成伤害50%回血；已适应的重复伤害类型按减伤后基数计算。
     try { mbDrain(event); } catch (er) { console.log('[MiniBoss 吸血] ' + er); }
 });
 

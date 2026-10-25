@@ -34,11 +34,11 @@ function mbGetPowerLevel(entity, power) {
 }
 
 /**
- * 适应记录伤害类型：首次记录放行，重复类型由 LivingHurtEvent 将伤害设为0。
- * 每级记录一种类型，旧存档的等级同样受2级新上限约束。
+ * 适应记录伤害类型：首次记录放行，重复类型按词条等级减少25%/50%/75%。
+ * 每级记录一种类型，旧存档的等级同样受3级新上限约束。
  * @param {Object} entity - 持有适应词条的受击迷你Boss
  * @param {Object} source - 当前伤害来源
- * @returns {boolean} 已记录的伤害类型是否应归零
+ * @returns {boolean} 当前伤害类型是否已被记录
  */
 function mbRecordAdaptDamage(entity, source) {
     try {
@@ -53,8 +53,8 @@ function mbRecordAdaptDamage(entity, source) {
             try { types = JSON.parse(saved); } catch (e) { types = []; }
         }
         if (!Array.isArray(types)) types = [];
-        let cap = Math.min(mbGetPowerLevel(entity, 'Adapt'), 2);
-        // 旧存档可能已有3种已适应类型；按新上限保留最先记录的两种。
+        let cap = Math.min(mbGetPowerLevel(entity, 'Adapt'), 3);
+        // 旧存档可能已有3种已适应类型；按新上限保留最先记录的三种。
         if (types.length > cap) {
             types = types.slice(0, cap);
             pd.putString('_mb_adapt_types', JSON.stringify(types));
@@ -90,7 +90,7 @@ function mbLightLevel(entity) {
 }
 
 /**
- * 迷你Boss伤害类词条（含适应的伤害归零），由 LivingHurtEvent 主入口调用
+ * 迷你Boss伤害类词条（含适应的分级减伤），由 LivingHurtEvent 主入口调用
  * @param {Object} event - LivingHurtEvent（可 setAmount 修改伤害）
  * @param {Object} attacker - 攻击者（环境伤害时为 null）
  * @param {Object} victim - 受击者
@@ -139,9 +139,9 @@ function handleMiniBossPowers(event, attacker, victim, source) {
         // 恰好等于15点：不增不减
     }
 
-    // 所有增减伤计算完成后才处理适应，重复类型只把伤害数值归零，不取消事件。
+    // 保留类型记忆，已记录类型按当前等级减伤，最多75%，不再完全免疫。
     if (mbRecordAdaptDamage(victim, source)) {
-        event.setAmount(0);
+        event.setAmount(amount * (1 - Math.min(mbGetPowerLevel(victim, 'Adapt'), 3) * 0.25));
         return;
     }
 

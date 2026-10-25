@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "waterlogged=false": { "model": "rainbow:block/soul_flame" },
+        "waterlogged=true": { "model": "rainbow:block/soul_flame" }
+    }
+}

@@ -97,7 +97,11 @@
   "item.rainbow.infernotooth_necklace": "狱牙项链",
   "item.rainbow.the_bible": "圣经",
   "item.rainbow.the_wafer": "圣饼",
-  "item.rainbow.mini_moon": "异星碎片",
+  "item.rainbow.mini_moon": "异星陨石",
+  "item.rainbow.holy_blood": "圣主之血",
+  "item.rainbow.holy_cross": "神圣十字架",
+  "effect.rainbow.fire_vulnerability": "火焰易伤",
+  "effect.rainbow.fire_vulnerability.description": "火焰抗性降低25%，最低降至0",
   "item.rainbow.treasure_necklace": "宝藏项链",
   "item.rainbow.dead_river": "死河",
   "item.rainbow.lyre": "天琴座",
@@ -160,7 +164,8 @@
   "item.rainbow.sharingan": "写轮珠",
   "item.rainbow.dismas_scarf": "强盗围巾",
   "item.rainbow.unholy_cross": "亵渎十字架",
-  "item.rainbow.magic_ring": "魔法戒指",
+  "item.rainbow.ancient_skull": "古圣头骨",
+  "item.rainbow.demon_parchment": "恶魔羊皮纸",
   "item.rainbow.satan_hymn": "撒旦圣歌",
   "item.rainbow.forehead_guard": "护额",
   "item.rainbow.the_3000_ways_to_kill": "要你命3000",
@@ -195,5 +200,7 @@
   "sounds.rainbow.artillery_radio": "炮兵电台：无线电静电通信",
   "entity.rainbow.apostle": "使徒",
   "item.rainbow.apostle": "使徒刷怪蛋",
-  "item.rainbow.apostle_bullet": "使徒弹幕"
+  "item.rainbow.apostle_bullet": "使徒弹幕",
+  "death.attack.ancient_skull": "%1$s 被古圣头骨吞噬",
+  "block.rainbow.soul_flame": "魂火"
 }

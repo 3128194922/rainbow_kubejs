@@ -142,7 +142,7 @@ const BackstabbingEnchantment = Java.tryLoadClass('vectorwing.farmersdelight.com
 const DyeingMod = Java.loadClass('com.dyeing.DyeingMod')
 const PaintData = Java.loadClass('com.dyeing.data.PaintData')
 
-// ParticleJS 通用文本粒子已迁移到 startup_scripts/damage_indicators/main.js；不再加载已删除的旧文本类。
+// ParticleJS 文本粒子与武士刀切割粒子在 startup_scripts/damage_indicators 注册。
 // MysticArtifacts 武士刀格挡粒子读取的完美格挡窗口配置；粒子脚本会在类缺失时回退默认值。
 const MysticArtifactsConfig = Java.tryLoadClass('com.uniye.mysticartifacts.Config')
 
@@ -174,3 +174,14 @@ global.allEnchantments = []
 ForgeRegistries.ENCHANTMENTS.getKeys().forEach(id => {
   global.allEnchantments.push(new ResourceLocation(id.toString()))
 })
+
+
+// 强制脱索覆盖普通Mob与Brain攻击记忆，不依赖错误的Monster类别名。
+const TargetingMob = Java.loadClass('net.minecraft.world.entity.Mob');
+const MemoryModuleType = Java.loadClass('net.minecraft.world.entity.ai.memory.MemoryModuleType');
+
+// MineTeam死亡Clone完整复制与自带同步入口。
+const MineTeamCapability = Java.tryLoadClass('com.xiaohunao.mine_team.common.capability.TeamCapability');
+
+// 魂火喷火器：NeighborNotifyEvent 的 getLevel() 返回 LevelAccessor，需用 ServerLevel 判定后取玩家列表。
+const ServerLevel = Java.loadClass('net.minecraft.server.level.ServerLevel')

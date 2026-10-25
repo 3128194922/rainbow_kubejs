@@ -206,6 +206,7 @@ test('blood moon conversion and existing negative luck conversion use the same m
     TamableAnimal: class {},
     EntityEvents: { hurt: callback => { hurt = callback; } },
   };
+  loadScript('server_scripts/mini_boss_system/blacklist.js', context);
   loadScript('server_scripts/mini_boss_system/main.js', context);
   function mob() {
     const tags = new Map();
@@ -244,4 +245,87 @@ test('blood moon conversion and existing negative luck conversion use the same m
   const realBoss = mob();
   assert.equal(context.convertToMiniBoss(realBoss.entity), false);
   assert.equal(realBoss.tags.has('isMiniBoss'), false);
+});
+
+// 黑名单专项：blacklist.js 的 MB_ENTITY_BLACKLIST / MB_POWER_BLACKLIST 在共用转化路径生效。
+// blacklistSource 非空时以此源码注入替代真实 blacklist.js 的 const 声明（同一 context 词法作用域）。
+function minibossContext(blacklistSource) {
+  let hurt;
+  const context = {
+    global: {},
+    console: { log: () => {} },
+    Math: Object.assign(Object.create(Math), { random: () => 0.5 }),
+    TagKey: { create: () => ({}) },
+    Registries: { ENTITY_TYPE: {} },
+    ResourceLocation: function () {},
+    ResourceKey: { create: (registry, id) => ({ registry, id }) },
+    BuiltInRegistries: { ENTITY_TYPE: {
+      getHolder: () => ({ isPresent: () => true, get: () => ({}) }),
+      getTag: () => ({ isPresent: () => false, get: () => ({ contains: () => false }) }),
+    } },
+    TamableAnimal: class {},
+    EntityEvents: { hurt: callback => { hurt = callback; } },
+  };
+  if (blacklistSource) {
+    vm.runInNewContext(blacklistSource, context, { filename: 'injected blacklist.js' });
+  } else {
+    loadScript('server_scripts/mini_boss_system/blacklist.js', context);
+  }
+  loadScript('server_scripts/mini_boss_system/main.js', context);
+  return { context, getHurt: () => hurt };
+}
+
+function minibossMob(id) {
+  const tags = new Map();
+  const dyeCalls = [];
+  const entity = {
+    persistentData: {
+      getBoolean: key => tags.get(key) === true,
+      putBoolean: (key, value) => tags.set(key, value),
+      putString: (key, value) => tags.set(key, value),
+      putInt: (key, value) => tags.set(key, value),
+    },
+    server: { runCommandSilent: command => dyeCalls.push(command) },
+    getUuid: () => 'uuid',
+    getAttribute: () => ({ getValue: () => 20 }),
+    isAlive: () => true,
+    isPlayer: () => false,
+    getType: () => id,
+    setAttributeBaseValue: (key, value) => { entity.maxHealth = value; },
+    getMaxHealth: () => entity.maxHealth,
+    setHealth: value => { entity.health = value; },
+  };
+  return { entity, tags, dyeCalls };
+}
+
+test('miniboss entity and power blacklists are enforced on the shared conversion path', () => {
+  const { context } = minibossContext(`
+    const MB_ENTITY_BLACKLIST = ['minecraft:villager', 'blockedmod:*'];
+    const MB_POWER_BLACKLIST = { 'minecraft:zombie': ['Explode'] };
+  `);
+  // 实体黑名单：精确 id 与命名空间通配均拒绝转化，不写标记、不执行 Dyeing 外观命令
+  const villager = minibossMob('minecraft:villager');
+  const blocked = minibossMob('blockedmod:golem');
+  assert.equal(context.convertToMiniBoss(villager.entity), false);
+  assert.equal(context.convertToMiniBoss(blocked.entity), false);
+  assert.equal(villager.tags.has('isMiniBoss'), false);
+  assert.equal(villager.dyeCalls.length, 0);
+  // 词条黑名单：僵尸仍转化成功，但抽不到被禁的 Explode（固定随机 0.5 时抽中 Disarm）
+  const zombie = minibossMob('minecraft:zombie');
+  assert.equal(context.convertToMiniBoss(zombie.entity), true);
+  assert.equal(zombie.tags.get('isMiniBoss'), true);
+  assert.equal(zombie.tags.get('POWER'), '["Disarm"]');
+  assert.equal(zombie.tags.get('POWER_LEVELS'), '{"Disarm":3}');
+});
+
+test('entity whose powers are all blacklisted skips miniboss conversion entirely', () => {
+  // '*' 全局禁用 POWER 当前全部 17 个词条 → 可用池为空 → 视同实体黑名单
+  const { context } = minibossContext(`
+    const MB_ENTITY_BLACKLIST = [];
+    const MB_POWER_BLACKLIST = { '*': ['Dig','Regenerate','Reinforce','Leader','Stealth','Evolve','Parasite','Adapt','Explode','Disarm','HeavyArmor','Dispel','Shadow','Assassin','Rigidity','Fury','Drain'] };
+  `);
+  const mob = minibossMob('minecraft:zombie');
+  assert.equal(context.convertToMiniBoss(mob.entity), false);
+  assert.equal(mob.tags.has('isMiniBoss'), false);
+  assert.equal(mob.dyeCalls.length, 0);
 });

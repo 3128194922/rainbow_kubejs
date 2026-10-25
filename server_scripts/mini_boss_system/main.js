@@ -41,7 +41,7 @@ const POWER = {
 
 // 词条等级范围：key → [最小等级, 最大等级]
 // 等级影响：挖掘=挖掘速度(耗时÷等级)、自愈=回血量(1.0×等级/秒)、援军=援军数量(=等级)
-//           寄生=蠹虫数量(=等级)、适应=伤害类型记录容量(=等级，最高2级)、自爆=爆炸强度(等级×5)
+//           寄生=蠹虫数量(=等级)、适应=伤害类型记录容量(=等级，最高3级，每级对已记录类型减伤25%)、自爆=爆炸强度(等级×5)
 //           缴械=卸甲概率(等级×0.05)、重装=护甲加成(等级×5)、驱散=驱散概率(等级×0.05)
 //           刺客=隐身攻击加成(等级×2)、吸血=造成伤害50%回血(固定1级)
 // 暗影/刚性/狂怒/吸血 固定 1 级（算法与等级无关）；领袖/隐匿 固定 1 级；
@@ -55,7 +55,7 @@ const POWER_LEVEL_RANGE = {
     Stealth: [1, 1],
     Evolve: [1, 1],
     Parasite: [1, 3],
-    Adapt: [1, 2],
+    Adapt: [1, 3],
     Explode: [1, 5],
     Disarm: [1, 5],
     HeavyArmor: [1, 5],
@@ -90,11 +90,16 @@ function rollPowerLevel(key) {
 }
 
 /**
- * 从 POWER 对象中随机返回一个词条 key
- * @returns {string} 随机的词条 key（如 "Dig"）
+ * 从 POWER 对象中随机返回一个未被禁用的词条 key
+ * @param {string[]} [banned] - 该实体被禁用的词条 key 数组（blacklist.js 配置）
+ * @returns {string|null} 随机的词条 key；可用池为空返回 null
  */
-function getRandomPower() {
+function getRandomPower(banned) {
     let keys = Object.keys(POWER);
+    if (banned && banned.length > 0) {
+        keys = keys.filter(k => banned.indexOf(k) < 0);
+    }
+    if (keys.length == 0) return null;
     return keys[Math.floor(Math.random() * keys.length)];
 }
 
@@ -108,13 +113,16 @@ function getRandomDrawCount() {
 
 /**
  * 按随机次数抽取 POWER 词条，抽到相同的仅消耗次数不重复添加
- * @returns {string[]} 去重后的词条 key 数组
+ * @param {string[]} [banned] - 该实体被禁用的词条 key 数组（blacklist.js 配置）
+ * @returns {string[]|null} 去重后的词条 key 数组；可用词条被全部禁用时返回 null
  */
-function rollPowers() {
+function rollPowers(banned) {
     let count = getRandomDrawCount();
     let result = [];
     for (let i = 0; i < count; i++) {
-        let power = getRandomPower();
+        let power = getRandomPower(banned);
+        // 可用池为空：由调用方放弃转化
+        if (power == null) return null;
         if (!result.includes(power)) {
             result.push(power);
         }
@@ -143,19 +151,77 @@ function isBossEntity(entity) {
     }
 }
 
+// ==================== 黑名单判定 ====================
+// 配置位于同目录 blacklist.js（负幸运受击与血月生成共用）：
+// MB_ENTITY_BLACKLIST 实体黑名单、MB_POWER_BLACKLIST 词条黑名单。
+
+/**
+ * 黑名单 id 模式匹配：精确匹配，或 '命名空间:*' 通配该命名空间全部实体
+ * @param {string} pattern - 配置的 id 模式（如 'minecraft:creeper' / 'create:*'）
+ * @param {string} id - 实体完整 id（如 'minecraft:creeper'）
+ * @returns {boolean} 是否命中
+ */
+function mbIdMatches(pattern, id) {
+    if (pattern == id) return true;
+    return pattern.endsWith(':*') && id.startsWith(pattern.slice(0, -1));
+}
+
+/**
+ * 实体黑名单判定：命中 id 模式的实体不参与 miniboss 机制
+ * @param {Object} entity - 待判定实体
+ * @returns {boolean} 是否在实体黑名单中
+ */
+function isEntityBlacklisted(entity) {
+    try {
+        let id = String(entity.getType());
+        for (let i = 0; i < MB_ENTITY_BLACKLIST.length; i++) {
+            if (mbIdMatches(MB_ENTITY_BLACKLIST[i], id)) return true;
+        }
+    } catch (er) {
+        console.log('[MiniBoss] 实体黑名单判断失败: ' + er);
+    }
+    return false;
+}
+
+/**
+ * 词条黑名单读取：合并全局 '*' 禁用项与该实体自身命中的禁用项
+ * @param {Object} entity - 待转化实体
+ * @returns {string[]} 该实体被禁用的词条 key 数组
+ */
+function getPowerBlacklist(entity) {
+    let banned = [];
+    try {
+        let id = String(entity.getType());
+        let globalBanned = MB_POWER_BLACKLIST['*'];
+        if (globalBanned) banned = banned.concat(globalBanned);
+        for (let pattern in MB_POWER_BLACKLIST) {
+            if (pattern == '*') continue;
+            if (mbIdMatches(pattern, id)) banned = banned.concat(MB_POWER_BLACKLIST[pattern]);
+        }
+    } catch (er) {
+        console.log('[MiniBoss] 词条黑名单读取失败: ' + er);
+    }
+    return banned;
+}
+
 // 负幸运攻击与血月自然生成共用这套转化，避免词条/等级/外观规则分叉。
 function convertToMiniBoss(entity) {
     if (entity == null || entity instanceof TamableAnimal || !entity.isAlive() || entity.isPlayer()) return false;
     if (entity.persistentData.getBoolean("isMiniBoss") || entity.persistentData.getBoolean("_mb_reinforce_spawned") || entity.persistentData.getBoolean("_mb_parasite_spawned")) return false;
     // 真正的 boss（Field-Guide fieldguide:bosses 标签）不参与 miniboss 转化/词条。
     if (isBossEntity(entity)) return false;
+    // 实体黑名单（blacklist.js 配置）：命中 id 模式的实体不参与 miniboss 转化/词条。
+    if (isEntityBlacklisted(entity)) return false;
     let uuid = entity.getUuid().toString();
+    // 词条黑名单（blacklist.js 配置）：先合并禁用项抽取词条；可用词条被全部禁用时
+    // 在写入外观/标记/血量之前放弃转化（返回 false，不留 Dyeing 特效与属性残留）。
+    let powers = rollPowers(getPowerBlacklist(entity));
+    if (powers == null) return false;
     let Health = entity.getAttribute("generic.max_health").getValue();
             //entity.server.runCommandSilent(`/dyeing paint add static mini_boss ${uuid} 80FF0000`)
             // 特效 id 使用 mini_boss_ 专属前缀，dyeing/main.js 清理时据此永久保留该特效（不依赖实体是否已加载）
             entity.server.runCommandSilent(`/dyeing uv add scroll mini_boss_creeper_armor ${uuid} rainbow:textures/miniboss/miniboss_armor.png 0.01 0.01 1`)
             entity.persistentData.putBoolean("isMiniBoss", true);
-            let powers = rollPowers();
             entity.persistentData.putString("POWER", JSON.stringify(powers));
             powers.forEach(p => entity.persistentData.putBoolean('_mb_p_' + p, true));
             // 词条等级系统：为每个词条掷等级，存 POWER_LEVELS（key→等级 JSON，供 Jade 显示）

@@ -1,0 +1,2437 @@
+// priority: 0
+// ==========================================
+// 🖱️ 饰品技能UI交互脚本
+// ==========================================
+
+// 技能注册表
+let SkillRegistry = {};
+let SkillSoundRegistry = {};
+
+/**
+ * 注册技能音效
+ * @param {string} itemId 饰品ID
+ * @param {string} soundId 音效ID
+ */
+function registerSkillSound(itemId, soundId) {
+    SkillSoundRegistry[itemId] = soundId;
+}
+
+/**
+ * 注册技能处理函数
+ * @param {string} itemId 饰品ID
+ * @param {function} handler 处理函数 (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => void
+ */
+function registerSkill(itemId, handler) {
+    SkillRegistry[itemId] = handler;
+}
+
+function getPacketItemStack(player, sourceType, slotIndex, slotName, itemId) {
+    if (sourceType === "curios") {
+        let s = slotName != null ? getCuriosIndex(player, String(slotName), slotIndex) : null;
+        if (!s || s.isEmpty() || (itemId && s.id != itemId)) {
+            s = getCuriosItem(player, String(itemId));
+        }
+        return s;
+    }
+    return getVanillaItem(player, sourceType, slotIndex, slotName);
+}
+
+// ==========================================
+// 技能逻辑定义区域
+// ==========================================
+
+// --- 心脏系列 ---
+let heartEntityMap = {
+    'rainbow:rotten_heart': 'minecraft:zombie',
+    'rainbow:drowned_heart': 'minecraft:drowned',
+    'rainbow:gunk_heart': 'dungeonsdelight:rotten_zombie',
+    'rainbow:gritty_heart': 'minecraft:husk',
+    'rainbow:frozen_heart': 'windswept:chilled'
+};
+
+Object.keys(heartEntityMap).forEach(heartId => {
+    registerSkill(heartId, (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+        if (player.cooldowns.isOnCooldown(heartId)) return;
+
+        let COOLDOWN = SecoundToTick(20);
+        let entityId = heartEntityMap[heartId];
+
+        let entity = player.level.createEntity(entityId);
+        if (entity) {
+            entity.setNbt('{IsBaby:1b}');
+            entity.persistentData.OwnerName = player.getUuid().toString();
+            entity.persistentData.putBoolean("CanTake", false);
+            
+            let pos = player.getBlock().pos;
+            entity.setPos(pos.x + 0.5, pos.y, pos.z + 0.5);
+            
+            let sword = Item.of("minecraft:iron_sword").enchant("minecraft:vanishing_curse", 1);
+            let helmet = Item.of("minecraft:leather_helmet").enchant("minecraft:vanishing_curse", 1);
+            
+            entity.setItemSlot("mainhand", sword);
+            entity.setItemSlot("head", helmet);
+            
+            entity.spawn();
+            entity.potionEffects.add("rainbow:off_work_time", COOLDOWN / 2, 0, false, false);
+            
+            player.cooldowns.addCooldown(heartId, COOLDOWN);
+        }
+    });
+});
+
+// --- 念力墙（已移除）---
+// rainbow:soul_diamond 已改为纯被动饰品（经验获取 +50%、经验等级上限 100 级），
+// 不再属于技能饰品，故删除原主动技能注册；同时已从 Tag.js 的 skillwheel:skills / skillwheel:skills_ui 标签移除。
+/*
+// --- 韧性注射器 ---
+registerSkill('rainbow:resilience_syringe', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (player.persistentData.getInt("resilience") >= 100) {
+        player.potionEffects.add("rainbow:resilience", SecoundToTick(7), 0, false, false);
+        player.persistentData.putInt("resilience", 99);
+    }
+});
+
+// --- 狂暴注射器 ---
+registerSkill('rainbow:rage_syringe', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (!player.cooldowns.isOnCooldown("rainbow:damage_num")) {
+        player.potionEffects.add("rainbow:damage_num", SecoundToTick(5), 0, false, false);
+        player.cooldowns.addCooldown("rainbow:damage_num", SecoundToTick(10));
+    }
+});
+*/
+
+function uuidToIntArray(uuidString) {
+    // 去掉横杠
+    let hex = uuidString.replace(/-/g, "").toLowerCase()
+    
+    // 分成 4 段，每段 8 个十六进制字符
+    let part1 = parseInt(hex.substring(0, 8), 16)
+    let part2 = parseInt(hex.substring(8, 16), 16)
+    let part3 = parseInt(hex.substring(16, 24), 16)
+    let part4 = parseInt(hex.substring(24, 32), 16)
+    
+    // 转换为有符号 32 位整数（超过 2147483647 的减去 4294967296）
+    part1 = part1 > 2147483647 ? part1 - 4294967296 : part1
+    part2 = part2 > 2147483647 ? part2 - 4294967296 : part2
+    part3 = part3 > 2147483647 ? part3 - 4294967296 : part3
+    part4 = part4 > 2147483647 ? part4 - 4294967296 : part4
+    
+    // 返回 NBT IntArray 格式
+    return `[I;${part1},${part2},${part3},${part4}]`
+}
+
+// --- 时间怀表 ---
+registerSkill('rainbow:chronos', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if(player.cooldowns.isOnCooldown("rainbow:chronos")) return;
+
+    // 按下：区域时间停止（时停，半径 8 格，持续 10 秒）
+    if (!shiftDown) {
+        if (player.isClientSide) return;
+        try {
+            let server = player.server;
+            let radius = 8;
+            let uuid = player.uuid.toString();
+            let paintId = "chronos_slow_effect";
+            let rangeId = "chronos_slow_range";
+            let slowTicks = 10 * 20; // 持续 10 秒
+
+            // 时缓API必须用玩家自身指令源执行：TimeController 会把时缓绑定到指令源所在维度，
+            // 用 server 控制台源会固定绑定主世界，导致其他维度（后室/副本等）时缓完全无效
+            player.runCommandSilent("/timecontroller sphere_follow " + player.username + " 100 " + slowTicks + " " + radius);
+
+            // Dyeing 低透明度深蓝紫脉动旋转场显示时停影响范围（以玩家为中心，跟随玩家移动）
+            server.runCommandSilent(
+                "/dyeing area add scale " + rangeId + " " + uuid + " " +
+                (-radius) + " " + (-radius) + " " + (-radius) + " " +
+                radius + " " + radius + " " + radius + " " +
+                "402A3DFF 0.95 1.0 0.65 1.0 40 -60 -1"
+            );
+            // 施法者使用 1 倍冰蓝半透明染色，避免旧效果放大模型干扰时停范围
+            server.runCommandSilent("/dyeing paint add static " + paintId + " " + uuid + " 80B8D8FF 1.0");
+
+            server.scheduleInTicks(slowTicks, function() {
+                try {
+                    server.runCommandSilent("/dyeing paint remove " + uuid + " " + paintId);
+                } catch (err) {
+                    console.log("[chronos] 移除油漆层错误: " + err);
+                }
+            });
+            server.scheduleInTicks(slowTicks, function() {
+                try {
+                    server.runCommandSilent("/dyeing area remove " + uuid + " " + rangeId);
+                } catch (err) {
+                    console.log("[chronos] 移除时停范围矩形错误: " + err);
+                }
+            });
+
+            player.tell(Text.gray("发条怀表·时停领域：10 秒内半径 8 格区域时间停止"));
+            player.cooldowns.addCooldown("rainbow:chronos", 120 * 20); // 时停冷却 120 秒
+        } catch (err) {
+            console.log("[chronos] 时停领域错误: " + err);
+        }
+        return;
+    }
+
+    if (!itemStack || !itemStack.nbt || !itemStack.nbt.history || itemStack.nbt.history.length <= 0) {
+        player.tell(Text.gray("发条怀表尚未记录到足够的时间信息。"));
+        return;
+    }
+    if (player.persistentData.getBoolean("ChronosRewinding")) return;
+
+    let history = [];
+    let rawHistory = itemStack.nbt.history;
+    let maxCount = Math.min(rawHistory.length, 5);
+    // 先把 NBT ListTag 拷贝成纯 JS 对象数组，后续插值时就不用直接操作 NBT 容器。
+    for (let i = 0; i < maxCount; i++) {
+        let snapshot = rawHistory[i];
+        if (!snapshot) continue;
+        history.push({
+            secondsAgo: snapshot.secondsAgo,
+            x: snapshot.x,
+            y: snapshot.y,
+            z: snapshot.z,
+            hp: snapshot.hp,
+            maxHp: snapshot.maxHp,
+            food: snapshot.food,
+            saturation: snapshot.saturation,
+            dimension: String(snapshot.dimension),
+            yaw: snapshot.yaw,
+            pitch: snapshot.pitch
+        });
+    }
+    if (history.length <= 0) {
+        player.tell(Text.gray("发条怀表尚未记录到可回溯的位置。"));
+        return;
+    }
+
+    // 每个历史点之间用 4 tick 线性插值，形成“快速倒带”观感。
+    let ticksPerSegment = 4;
+
+    let lerpAngle = (from, to, progress) => {
+        let delta = ((to - from + 540) % 360) - 180;
+        return from + delta * progress;
+    };
+
+    let applyChronosState = snapshot => {
+        if (!snapshot) return;
+        // 每 tick 都用传送强制覆盖玩家位置和朝向，避免玩家输入打断回溯。
+        player.teleportTo(String(snapshot.dimension), snapshot.x, snapshot.y, snapshot.z, snapshot.yaw, snapshot.pitch);
+        player.setDeltaMovement(new Vec3d(0, 0, 0));
+        player.hurtMarked = true;
+
+        // 到达历史点后同步生命和饱食度，让状态也回到该时刻。
+        if (snapshot.hp != null) {
+            player.setHealth(Math.min(snapshot.hp, player.maxHealth));
+        }
+        if (player.foodData) {
+            if (snapshot.food != null) player.foodData.setFoodLevel(snapshot.food);
+            if (snapshot.saturation != null) player.foodData.setSaturation(snapshot.saturation);
+        }
+    };
+
+    let finishChronos = () => {
+        player.persistentData.remove("ChronosRewinding");
+        player.setDeltaMovement(new Vec3d(0, 0, 0));
+        player.hurtMarked = true;
+    };
+
+    let rewindToIndex = index => {
+        if (!player || !player.isAlive()) {
+            finishChronos();
+            return;
+        }
+        if (index >= history.length) {
+            finishChronos();
+            return;
+        }
+
+        let target = history[index];
+        let previous = index == 0 ? {
+            dimension: player.level.dimension.toString(),
+            x: player.x,
+            y: player.y,
+            z: player.z,
+            yaw: player.getYaw(),
+            pitch: player.getPitch()
+        } : history[index - 1];
+
+        // 跨维度时不做插值，直接跳到目标维度，再继续后续历史点。
+        if (String(previous.dimension) != String(target.dimension)) {
+            applyChronosState(target);
+            event.server.scheduleInTicks(1, () => rewindToIndex(index + 1));
+            return;
+        }
+
+        let tick = 0;
+        let moveStep = () => {
+            if (!player || !player.isAlive()) {
+                finishChronos();
+                return;
+            }
+
+            tick++;
+            let progress = tick / ticksPerSegment;
+            // 当前位置到目标历史点做线性插值，分多 tick 推进，制造连续倒带的轨迹。
+            let x = previous.x + (target.x - previous.x) * progress;
+            let y = previous.y + (target.y - previous.y) * progress;
+            let z = previous.z + (target.z - previous.z) * progress;
+            let yaw = lerpAngle(previous.yaw, target.yaw, progress);
+            let pitch = previous.pitch + (target.pitch - previous.pitch) * progress;
+
+            player.teleportTo(String(target.dimension), x, y, z, yaw, pitch);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+
+            if (tick >= ticksPerSegment) {
+                applyChronosState(target);
+                // 当前历史点完成后，链式调度下一个历史点，直到 5s 前全部回放结束。
+                event.server.scheduleInTicks(1, () => rewindToIndex(index + 1));
+            } else {
+                event.server.scheduleInTicks(1, moveStep);
+            }
+        };
+
+        event.server.scheduleInTicks(1, moveStep);
+    };
+
+    player.persistentData.putBoolean("ChronosRewinding", true);
+    event.server.runCommandSilent(`/execute at ${player.getDisplayName().getString()} run respawningstructures respawnClosestStructure`);
+    rewindToIndex(0);
+    player.cooldowns.addCooldown("rainbow:chronos", 20 * 20) // 回溯冷却 20 秒
+});
+/*
+// --- 信标球 ---
+registerSkill('rainbow:beacon_ball', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:beacon_ball")) return;
+
+    if (!itemStack.nbt || !itemStack.nbt.contains("X")) {
+        player.tell(Text.gray("该信标球尚未绑定任何机器。"));
+        return;
+    }
+
+    let hit = player.rayTrace(32);
+    if (hit && hit.block) {
+        let x = hit.block.x;
+        let y = hit.block.y;
+        let z = hit.block.z;
+
+        let bx = itemStack.nbt.getInt("X");
+        let by = itemStack.nbt.getInt("Y");
+        let bz = itemStack.nbt.getInt("Z");
+
+        let boundBlock = player.level.getBlock(bx, by, bz);
+        let boundBlockId = boundBlock.id;
+
+        if (itemStack.nbt.getString("MACHINE") != boundBlockId) {
+            player.tell(Text.gray("绑定机器不对应！"));
+        } else {
+            switch (boundBlockId) {
+                case 'mbd2:nuke_machine':
+                    let data = boundBlock.getEntityData();
+                    let state = data ? data.getString("machineState") : "";
+                    if (state == "formed" && boundBlock.inventory.getStackInSlot(0).id == "alexscaves:nuclear_bomb") {
+                        event.server.runCommandSilent(`/summon alexscaves:nuclear_bomb ${x} ${y + 1} ${z}`);
+                        event.server.runCommandSilent(`/particle minecraft:explosion ${bx} ${by} ${bz} 10 3 10 0.5 200`);
+                        event.server.runCommandSilent(`/playsound alexscaves:large_nuclear_explosion voice @a ${bx} ${by} ${bz}`);
+                        event.server.runCommandSilent(`/playsound alexscaves:nuclear_siren voice @a ${x} ${y} ${z}`);
+                        boundBlock.inventory.getStackInSlot(0).shrink(1);
+                        event.server.runCommandSilent(`/photon fx photon:blue_laser block ${x} ${y} ${z}`);
+                        event.server.scheduleInTicks(100, () => {
+                            event.server.runCommandSilent(`/photon fx remove block ${x} ${y} ${z}`);
+                        });
+
+                        player.cooldowns.addCooldown('rainbow:beacon_ball', SecoundToTick(5));
+                    } else {
+                        player.tell(Text.gray(`该核装置未组装完成或没有核弹！`));
+                    }
+                    break;
+            }
+        }
+    }
+});
+*/
+// --- 装填核心 ---
+// 主动技能：10秒内霰弹枪每次进入冷却立即取消，最多3次
+// 剩余次数存 player.persistentData['reload_core_charges']，由 Effects.js 的 rainbow:reload_buff effectTick 消耗
+// 被动（盾反时霰弹枪冷却 -33%）见 startup_scripts/ForgeEvents.js 的 ShieldParriedEvent
+registerSkill('rainbow:reload_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:reload_core")) return;
+    player.persistentData.putInt('reload_core_charges', 3);
+    player.potionEffects.add("rainbow:reload_buff", SecoundToTick(10), 0, false, false);
+    player.cooldowns.addCooldown("rainbow:reload_core", SecoundToTick(30));
+    event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
+});
+
+// --- 连射核心 ---
+registerSkill('rainbow:short_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    let shortEnergy = itemStack.nbt ? (itemStack.nbt.getFloat("Energy") || 0) : 0;
+    if (shortEnergy >= 100 && !player.cooldowns.isOnCooldown("rainbow:short_core")) {
+        player.potionEffects.add("rainbow:short_buff", 200, 0, false, false);
+        if (!itemStack.nbt) itemStack.nbt = {};
+        itemStack.nbt.putDouble("Energy", 0);
+        player.cooldowns.addCooldown("rainbow:short_core", 200);
+        event.server.runCommandSilent(`/playsound minecraft:entity.experience_orb.pickup player @p ${player.x} ${player.y} ${player.z} 1 1`);
+    }
+});
+
+// --- 幻影之躯 ---
+/*registerSkill('rainbow:phantom_body', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    let headItem = player.getItemBySlot("head");
+    if (headItem && headItem.nbt) {
+        let maskId = headItem.nbt.getString("id");
+        switch (maskId) {
+            case "minecraft:iron_golem":
+                player.tell("触发幻影之躯效果");
+                break;
+        }
+    }
+});*/
+
+// --- 共生徽章 ---
+registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    let ccbHit = player.rayTrace(5, false);
+    if (ccbHit && ccbHit.entity && ccbHit.entity.isLiving()) {
+        let target = ccbHit.entity;
+        let BLACKLIST = ['minecraft:wither', 'minecraft:ender_dragon'];
+
+        if (BLACKLIST.includes(target.type.toString())) {
+            player.tell(Text.red("该生物无法被寄生！"));
+        } else {
+            let lastUUID = player.persistentData.getString("SymbiosisLastVehicleUUID");
+            let HEALTH_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c801");
+            let ARMOR_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c802");
+            let DAMAGE_UUID = UUID.fromString("c8c8c8c8-c8c8-c8c8-c8c8-c8c8c8c8c803");
+
+            if (lastUUID) {
+                try {
+                    let oldTarget = player.level.getEntity(UUID.fromString(lastUUID));
+                    if (oldTarget && oldTarget.isLiving()) {
+                        let hAttr = oldTarget.getAttribute("minecraft:generic.max_health");
+                        if (hAttr) hAttr.removeModifier(HEALTH_UUID);
+                        let aAttr = oldTarget.getAttribute("minecraft:generic.armor");
+                        if (aAttr) aAttr.removeModifier(ARMOR_UUID);
+                        let dAttr = oldTarget.getAttribute("minecraft:generic.attack_damage");
+                        if (dAttr) dAttr.removeModifier(DAMAGE_UUID);
+                    }
+                } catch (e) { }
+            }
+
+            player.persistentData.putString("SymbiosisLastVehicleUUID", target.getUuid().toString());
+
+            event.server.scheduleInTicks(1, callback => {
+                if (player.isAlive() && target.isAlive()) {
+                    player.startRiding(target, true);
+                }
+            });
+        }
+    }
+});
+
+// --- 皇家法杖 ---
+registerSkill('royalletiations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack) {
+        let hand = InteractionHand.MAIN_HAND;
+        let src = event.data ? event.data.getString("sourceType") : "";
+        if (src === "vanilla_offhand") {
+            hand = InteractionHand.OFF_HAND;
+        }
+        let slotName = hand === InteractionHand.OFF_HAND ? "offhand" : "mainhand";
+        let prev = player.getItemBySlot(slotName);
+        let needTempEquip = (!prev || prev.isEmpty() || prev.id !== itemStack.id);
+        if (needTempEquip) {
+            let temp = Item.of(itemStack.id, itemStack.count, itemStack.nbt);
+            player.setItemSlot(slotName, temp);
+        }
+        try {
+            let result = itemStack.use(player.level, player, hand);
+        } finally {
+            if (needTempEquip) {
+                player.setItemSlot(slotName, prev);
+            }
+        }
+    }
+});
+
+// --- 烟雾弹 ---
+// 参考 Species SmokeBombItem 源码：use() 仅开始蓄力，releaseUsing() 才有烟雾/隐身/加速效果。
+// 饰品格右键无法让玩家真的按住0.5秒，故模拟"强制蓄力成功"，点击即触发全部效果。
+registerSkillSound('species:smoke_bomb', 'species:item.smoke_bomb.charge');
+registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    try{
+            if (!itemStack || itemStack.isEmpty()) return;
+    if (player.cooldowns.isOnCooldown("species:smoke_bomb")) return;
+    player.potionEffects.add("rainbow:invisible",60,0,false,false)
+    // 1. 模拟右键：临时将该物品装备到主/副手，调用物品 use()（内部播放蓄力音效并启动使用流程）
+    let hand = InteractionHand.MAIN_HAND;
+    let src = event.data ? event.data.getString("sourceType") : "";
+    if (src === "vanilla_offhand") {
+        hand = InteractionHand.OFF_HAND;
+    }
+    let slotName = hand === InteractionHand.OFF_HAND ? "offhand" : "mainhand";
+    let prev = player.getItemBySlot(slotName);
+    let needTempEquip = (!prev || prev.isEmpty() || prev.id !== itemStack.id);
+    if (needTempEquip) {
+        let temp = Item.of(itemStack.id, itemStack.count, itemStack.nbt);
+        player.setItemSlot(slotName, temp);
+    }
+    try {
+        let result = itemStack.use(player.level, player, hand);
+    } finally {
+        // 立即停止蓄力使用状态，避免玩家残留"正在使用"状态
+        player.stopUsingItem();
+        if (needTempEquip) {
+            player.setItemSlot(slotName, prev);
+        }
+    }
+
+    // 2. 判定蓄力成功（原版要求 >= 10 tick），播放释放音效并执行整套烟雾弹效果
+    let x = player.getX();
+    let y = player.getY();
+    let z = player.getZ();
+    player.level.playSound(null, x, y, z, "species:item.smoke_bomb.use", "players", 1.0, 1.0);
+
+    // 3. 粒子：species 专属 poof（身体下沿）+ 原版 poof 大团烟雾（头上方）
+    event.server.runCommandSilent(`/particle species:poof ${x} ${y + 0.01} ${z} 0 0 0 0.5 1`);
+    event.server.runCommandSilent(`/particle minecraft:poof ${x} ${y + 1} ${z} 0 0 0 0.15 100`);
+
+    // 4. 效果加成：隐身 15 秒（300 tick）+ 移速 III 2 秒（40 tick），与 SmokeBombItem 的一致
+    player.potionEffects.add("minecraft:invisibility", 20 * 15, 0, true, true);
+    player.potionEffects.add("minecraft:speed", 20 * 2, 2, true, true);
+
+    // 5. 烟雾笼罩：清除 36 格范围内所有实体的索敌目标（setTarget(null)），使其迷失目标（排除非活实体与玩家）
+    let smokeAABB = player.boundingBox.inflate(36);
+    player.level.getEntitiesWithin(smokeAABB).forEach(targetEntity => {
+        if (!targetEntity) return;
+        if (!targetEntity.isLiving() || !targetEntity.isAlive()) return;
+        if (targetEntity.isPlayer()) return;
+        try { targetEntity.setTarget(null);
+            targetEntity.setNoAI(true); // 禁用 AI，避免被玩家攻击后立刻重新锁定目标
+            targetEntity.setNoAI(false);
+         } catch (e) { console.log("烟雾弹清索敌失败:", e); }
+    });
+
+    // 6. 非创造模式消耗 1 个烟雾弹
+    if (!player.isCreative()) {
+        itemStack.shrink(1);
+    }
+
+    // 7. 冷却 2 秒（40 tick），与原版 releaseUsing 一致
+    player.cooldowns.addCooldown("species:smoke_bomb", 40);
+    }catch(e){
+        console.error("烟雾弹技能执行异常:", e);
+    }
+});
+
+// --- 烛心套餐 ---
+// 主动技能：释放烟雾弹整套效果（隐身+加速+清索敌，同 species:smoke_bomb 技能）
+// + 代码进食 3 次怪物小食（参考 wandering_gummy_pack 的"代码进食"模式，不消耗背包物品）。
+// 怪物小食的"随机心烛效果"来自 Species 物品逻辑而非纯食物属性，
+// 故直接调用 finishUsingItem 让玩家完整走一遍进食流程（食物属性+物品特效均生效）。
+registerSkillSound('rainbow:wicked_package', 'species:item.smoke_bomb.charge');
+registerSkill('rainbow:wicked_package', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    try {
+        if (!itemStack || itemStack.isEmpty()) return;
+        if (player.cooldowns.isOnCooldown('rainbow:wicked_package')) return;
+
+        player.potionEffects.add("rainbow:invisible",60,0,false,false)
+        // 1. 烟雾弹效果（同 species:smoke_bomb 技能）
+        var x = player.getX();
+        var y = player.getY();
+        var z = player.getZ();
+        player.level.playSound(null, x, y, z, 'species:item.smoke_bomb.use', 'players', 1.0, 1.0);
+        event.server.runCommandSilent(`/particle species:poof ${x} ${y + 0.01} ${z} 0 0 0 0.5 1`);
+        event.server.runCommandSilent(`/particle minecraft:poof ${x} ${y + 1} ${z} 0 0 0 0.15 100`);
+        player.potionEffects.add('minecraft:invisibility', 20 * 15, 0, true, true);
+        player.potionEffects.add('minecraft:speed', 20 * 2, 2, true, true);
+
+        // 2. 烟雾笼罩：清除 36 格范围内所有实体的索敌目标（排除非活实体与玩家）
+        var smokeAABB = player.boundingBox.inflate(36);
+        player.level.getEntitiesWithin(smokeAABB).forEach(targetEntity => {
+            if (!targetEntity) return;
+            if (!targetEntity.isLiving() || !targetEntity.isAlive()) return;
+            if (targetEntity.isPlayer()) return;
+            try {
+                targetEntity.setTarget(null);
+                targetEntity.setNoAI(true);
+                targetEntity.setNoAI(false);
+            } catch (e) { console.log('烛心套餐清索敌失败:', e); }
+        });
+
+        // 3. 代码进食 3 次怪物小食：临时构造物品栈并 finishUsingItem，不消耗真实物品
+        for (var i = 0; i < 3; i++) {
+            var meal = Item.of('species:monster_meal');
+            if (meal && !meal.isEmpty()) {
+                meal.finishUsingItem(player.level, player);
+            }
+        }
+        player.level.playSound(null, x, y, z, 'species:item.monster_meal.apply', 'players', 1.0, 1.0);
+
+        // 4. 冷却 30 秒（饰品不消耗物品，冷却长于原版烟雾弹的 2 秒）
+        player.cooldowns.addCooldown('rainbow:wicked_package', SecoundToTick(30));
+    } catch (e) {
+        console.error('烛心套餐技能执行异常:', e);
+    }
+});
+
+// --- 觉之瞳 ---
+registerSkillSound('rainbow:eye_of_satori', 'rainbow:voice.eye_of_satori');
+registerSkill('rainbow:eye_of_satori', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack) {
+        let Nbt = itemStack.nbt;
+        if(Nbt)
+            {
+                itemStack.nbt.putBoolean("is_open",!itemStack.nbt.getBoolean("is_open"))
+            }
+    }
+});
+
+// --- 鸦羽骨哨 ---
+// 机制：将使用者和使用前半径 8 格内的其他实体送入个人维度，10 秒后各自返回进入前的位置。
+const WHISTLE_PERSONAL_WORLD_RADIUS = 8;
+const WHISTLE_PERSONAL_WORLD_DURATION_TICKS = 10 * 20;
+const WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS = 20 * 20;
+const WHISTLE_PERSONAL_WORLD_X = 8.5;
+const WHISTLE_PERSONAL_WORLD_Y = -63;
+const WHISTLE_PERSONAL_WORLD_Z = 8.5;
+const WHISTLE_PERSONAL_WORLD_RETURN_KEY = 'WhistlePersonalWorldReturn';
+
+function whistleDimensionId(level) {
+    try {
+        if (level == null || level.dimension == null) return null;
+        let dimension = level.dimension;
+        if (typeof dimension.location === 'function') return String(dimension.location());
+        let value = String(dimension);
+        let separator = value.lastIndexOf(' / ');
+        if (value.indexOf('ResourceKey[') === 0 && separator >= 0) {
+            value = value.substring(separator + 3);
+            if (value.endsWith(']')) value = value.substring(0, value.length - 1);
+        }
+        return value;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 获取维度 ID 失败: ' + error);
+        return null;
+    }
+}
+
+// 返回点写入实体持久数据，避免 /reload 清除定时任务后丢失原维度和坐标。
+function whistleCaptureReturn(entity, ownerId, endTick) {
+    try {
+        let dimensionId = whistleDimensionId(entity.level);
+        if (dimensionId == null || entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return null;
+        let point = new CompoundTag();
+        point.putString('dimension', dimensionId);
+        point.putDouble('x', entity.getX());
+        point.putDouble('y', entity.getY());
+        point.putDouble('z', entity.getZ());
+        // KubeJS 6 将原版朝向 getter 映射为 getYaw/getPitch，保存返回点时使用脚本方法名。
+        point.putFloat('yaw', entity.getYaw());
+        point.putFloat('pitch', entity.getPitch());
+        point.putString('owner', ownerId);
+        point.putLong('endTick', endTick);
+        return point;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 保存实体返回点失败: ' + error);
+        return null;
+    }
+}
+
+function whistleReturnEntity(entity) {
+    try {
+        if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return false;
+        let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        let dimensionId = String(point.getString('dimension'));
+        let returnedEntity = entity;
+        // 普通实体使用与拉入时相同的 Forge 传送路径，拿到跨维度重建后的实体，避免 void teleportTo 静默失败后丢失返回点。
+        if (!entity.isPlayer() && whistleDimensionId(entity.level) !== dimensionId) {
+            let destination = null;
+            for (let candidate of entity.server.getAllLevels()) {
+                if (whistleDimensionId(candidate) === dimensionId) {
+                    destination = candidate;
+                    break;
+                }
+            }
+            if (destination == null) throw new Error('原维度未加载: ' + dimensionId);
+            let teleporter = createWhistlePersonalTeleporter(point);
+            if (teleporter == null) return false;
+            returnedEntity = entity.changeDimension(destination, teleporter);
+            if (returnedEntity == null) throw new Error('普通实体跨维度返回被拒绝');
+            // Forge 1.20.1 的默认 placeEntity 不采用 PortalInfo.xRot，重建后显式恢复完整朝向。
+            returnedEntity.setPositionAndRotation(point.getDouble('x'), point.getDouble('y'), point.getDouble('z'), point.getFloat('yaw'), point.getFloat('pitch'));
+        } else {
+            // 玩家及同维度实体仍使用 KubeJS 6 的坐标与朝向包装。
+            entity.teleportTo(point.getString('dimension'), point.getDouble('x'), point.getDouble('y'), point.getDouble('z'), point.getFloat('yaw'), point.getFloat('pitch'));
+        }
+        // Forge 返回的新实体包含原持久数据；确认维度和坐标后才删除记录，失败时保留供到期扫描重试。
+        if (whistleDimensionId(returnedEntity.level) !== dimensionId
+            || Math.abs(returnedEntity.getX() - point.getDouble('x')) > 0.01
+            || Math.abs(returnedEntity.getY() - point.getDouble('y')) > 0.01
+            || Math.abs(returnedEntity.getZ() - point.getDouble('z')) > 0.01) {
+            throw new Error('返回后维度或位置不匹配: ' + dimensionId);
+        }
+        returnedEntity.persistentData.remove(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        return true;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 实体返回原位置失败: ' + error);
+        return false;
+    }
+}
+
+function whistleRestoreGroup(server, ownerId, endTick) {
+    try {
+        let ordinaryEntities = [];
+        let otherPlayers = [];
+        let owner = null;
+        for (let level of server.getAllLevels()) {
+            for (let entity of level.getAllEntities()) {
+                if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) continue;
+                let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+                if (point.getString('owner') !== ownerId || point.getLong('endTick') !== endTick) continue;
+                if (!entity.isPlayer()) ordinaryEntities.push(entity);
+                else if (String(entity.getUuid()) === ownerId) owner = entity;
+                else otherPlayers.push(entity);
+            }
+        }
+        // miniWorld 会在最后一名玩家离开时卸载维度，先送走普通实体，最后送走使用者。
+        let ordinaryReturned = true;
+        for (let entity of ordinaryEntities) {
+            if (!whistleReturnEntity(entity)) ordinaryReturned = false;
+        }
+        // 有普通实体返回失败时保留玩家，防止 miniWorld 卸载维度使待返回实体无法重试。
+        if (!ordinaryReturned) return;
+        for (let entity of otherPlayers) whistleReturnEntity(entity);
+        if (owner != null) whistleReturnEntity(owner);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 批量返回原位置失败: ' + error);
+    }
+}
+
+// /reload 会丢失 scheduleInTicks 队列；每秒扫描已加载的个人维度补做过期返回。
+ServerEvents.tick(event => {
+    try {
+        let server = event.server;
+        if (server.getTickCount() % 20 !== 0) return;
+        let now = server.overworld().getTime();
+        let expired = {};
+        for (let level of server.getAllLevels()) {
+            let dimensionId = whistleDimensionId(level);
+            if (dimensionId == null || dimensionId.indexOf('miniworld:player_') !== 0) continue;
+            for (let entity of level.getAllEntities()) {
+                if (entity == null || !entity.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) continue;
+                let point = entity.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+                if (point.getLong('endTick') > now) continue;
+                // Rhino 将 NBT getString 返回值包装为 Java String，先转 JS 字符串再检查 length，否则到期扫描会静默跳过返回。
+                let ownerId = String(point.getString('owner'));
+                if (ownerId.length > 0) expired[ownerId + ':' + point.getLong('endTick')] = [ownerId, point.getLong('endTick')];
+            }
+        }
+        for (let key of Object.keys(expired)) whistleRestoreGroup(server, expired[key][0], expired[key][1]);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 持续事件检查失败: ' + error);
+    }
+});
+
+// 玩家主动离开个人维度后仍保留返回记录；到期时连同同组实体一起送回。
+PlayerEvents.tick(event => {
+    try {
+        let player = event.player;
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        if (!player.persistentData.contains(WHISTLE_PERSONAL_WORLD_RETURN_KEY)) return;
+        let point = player.persistentData.getCompound(WHISTLE_PERSONAL_WORLD_RETURN_KEY);
+        if (player.server.overworld().getTime() < point.getLong('endTick')) return;
+        // 传送受阻后最多每秒重试，避免玩家 tick 每帧触发同一批实体返回及重复报错。
+        if (player.server.getTickCount() % 20 !== 0) return;
+        whistleRestoreGroup(player.server, point.getString('owner'), point.getLong('endTick'));
+    } catch (error) {
+        console.log('[鸦羽骨哨] 玩家持续事件检查失败: ' + error);
+    }
+});
+
+function createWhistlePersonalTeleporter(returnPoint) {
+    try {
+        // KubeJS 6 的 JavaWrapper 不提供该继承辅助方法，使用 Rhino 原生 JavaAdapter 延迟创建接口实现。
+        return new JavaAdapter(ITeleporter, {
+            getPortalInfo: function(entity, destination, defaultPortalInfo) {
+                // 拉入时使用个人维度出生点，返回时使用每个实体单独保存的坐标与朝向。
+                return new PortalInfo(
+                    returnPoint == null
+                        ? new Vec3(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z)
+                        : new Vec3(returnPoint.getDouble('x'), returnPoint.getDouble('y'), returnPoint.getDouble('z')),
+                    Vec3.ZERO,
+                    returnPoint == null ? entity.getYaw() : returnPoint.getFloat('yaw'),
+                    returnPoint == null ? entity.getPitch() : returnPoint.getFloat('pitch')
+                );
+            }
+        });
+    } catch (error) {
+        console.log('[鸦羽骨哨] 创建实体传送器失败: ' + error);
+        return null;
+    }
+}
+
+function ensureWhistlePersonalWorld(player) {
+    try {
+        if (player == null || player.server == null) return false;
+        let dimensionKey = MiniWorldApi.ensureWorld(player.server, player.getUuid());
+        return dimensionKey != null;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 创建个人维度失败: ' + error);
+        return false;
+    }
+}
+
+function collectWhistleNearbyEntities(player) {
+    try {
+        let nearby = [];
+        let area = player.getBoundingBox().inflate(WHISTLE_PERSONAL_WORLD_RADIUS);
+        let entities = player.level.getEntitiesWithin(area);
+        let radiusSquared = WHISTLE_PERSONAL_WORLD_RADIUS * WHISTLE_PERSONAL_WORLD_RADIUS;
+
+        for (let entity of entities) {
+            if (entity == null || entity.getId() === player.getId()) continue;
+            let dx = entity.getX() - player.getX();
+            let dy = entity.getY() - player.getY();
+            let dz = entity.getZ() - player.getZ();
+            if (dx * dx + dy * dy + dz * dz > radiusSquared) continue;
+            nearby.push(entity);
+        }
+        return nearby;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 获取附近实体失败: ' + error);
+        return [];
+    }
+}
+
+function sendWhistleEntityToPersonalWorld(entity, owner, destination, teleporter) {
+    try {
+        if (entity == null || destination == null || teleporter == null || entity.isRemoved()) return null;
+        if (entity.isPlayer()) {
+            return MiniWorldApi.enter(entity, owner.getUuid(), true) ? entity : null;
+        }
+        let movedEntity = entity.changeDimension(destination, teleporter);
+        if (movedEntity == null) return null;
+        movedEntity.setPos(WHISTLE_PERSONAL_WORLD_X, WHISTLE_PERSONAL_WORLD_Y, WHISTLE_PERSONAL_WORLD_Z);
+        movedEntity.setDeltaMovement(0, 0, 0);
+        return movedEntity;
+    } catch (error) {
+        console.log('[鸦羽骨哨] 传送实体失败: ' + error);
+        return null;
+    }
+}
+
+registerSkillSound('rainbow:whistle', 'rainbow:voice.whistle');
+registerSkill('rainbow:whistle', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player == null || player.level == null || player.level.isClientSide()) return;
+    if (!itemStack) return;
+    if (player.cooldowns.isOnCooldown('rainbow:whistle')) return;
+    try {
+        let ownerId = String(player.getUuid());
+        let endTick = player.server.overworld().getTime() + WHISTLE_PERSONAL_WORLD_DURATION_TICKS;
+        let ownerReturn = whistleCaptureReturn(player, ownerId, endTick);
+        if (ownerReturn == null) return;
+        let nearbyEntities = collectWhistleNearbyEntities(player);
+        if (!ensureWhistlePersonalWorld(player)) {
+            player.tell(Text.red('鸦羽骨哨无法建立个人维度。'));
+            return;
+        }
+        let teleporter = createWhistlePersonalTeleporter();
+        if (teleporter == null) {
+            player.tell(Text.red('鸦羽骨哨无法创建实体传送器。'));
+            return;
+        }
+        let ownerEntered = MiniWorldApi.enter(player);
+        if (!ownerEntered) {
+            player.tell(Text.red('鸦羽骨哨传送失败。'));
+            return;
+        }
+        player.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, ownerReturn);
+        // 玩家已由 MiniWorldApi.enter 传送到个人维度，直接复用当前 ServerLevel，避免 Rhino 解析 getLevel(ResourceKey) 重载歧义。
+        let destination = player.level;
+        if (destination == null) {
+            whistleReturnEntity(player);
+            player.tell(Text.red('鸦羽骨哨无法获取个人维度。'));
+            return;
+        }
+        // 先安排返回，避免后续某个实体传送报错时使用者被留在个人维度。
+        player.server.scheduleInTicks(WHISTLE_PERSONAL_WORLD_DURATION_TICKS, () => {
+            whistleRestoreGroup(player.server, ownerId, endTick);
+        });
+        let movedCount = 0;
+        for (let entity of nearbyEntities) {
+            let returnPoint = whistleCaptureReturn(entity, ownerId, endTick);
+            if (returnPoint == null) continue;
+            let movedEntity = sendWhistleEntityToPersonalWorld(entity, player, destination, teleporter);
+            if (movedEntity == null) continue;
+            movedEntity.persistentData.put(WHISTLE_PERSONAL_WORLD_RETURN_KEY, returnPoint);
+            movedCount++;
+        }
+        // 正常情况下按 200 tick 准时返回；持久数据与上方 tick 检查负责热重载后的恢复。
+        player.tell(Text.aqua('鸦羽骨哨已将你和附近 ' + movedCount + ' 个实体传送进个人维度，10 秒后返回原位置。'));
+        player.cooldowns.addCooldown('rainbow:whistle', WHISTLE_PERSONAL_WORLD_COOLDOWN_TICKS);
+    } catch (error) {
+        console.log('[鸦羽骨哨] 个人维度传送失败: ' + error);
+    }
+});
+
+// --- 虚空之眼 ---
+registerSkill('alexsmobs:void_worm_eye', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack) 
+    {
+        if(player.isClientSide) return;
+    
+        player.potionEffects.add("rainbow:void",20,0,false,false)
+    }
+});
+
+// --- 天琴座 ---
+registerSkillSound('rainbow:lyre', 'rainbow:voice.null');
+registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    player.tell(submenuIndex)
+    if (itemStack && isSubmenu) 
+    {
+        if(player.cooldowns.isOnCooldown(itemStack.id))
+            return;
+        let nbt = itemStack.nbt;
+        let cooldowns = [20*1,20*1,20*1,20*1];
+        let lyreSkill= {
+            1:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("minecraft:resistance",20*10,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.inspiration", "voice", 0.3, 1)
+            },
+            2:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("runiclib:lesser_strength",20*10,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.improvement", "voice", 0.3, 1)
+            },
+            3:(player,entity,nbt)=>{
+                if(!entity.potionEffects) return;
+                entity.potionEffects.add("minecraft:instant_health",1,0,false,false);
+                nbt.putInt("the_end",nbt.getInt("the_end")+1);
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.sonatina", "voice", 0.3, 1)
+            },
+            4:(player,entity,nbt)=>{
+                if(!entity.isAlive()) return;
+                if(entity == player) return;
+                entity.attack(player.damageSources().playerAttack(player),(nbt.getInt("the_end")+1)*10)
+                player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.the_end", "voice", 0.3, 1)
+            }
+        };
+        let AABB = player.boundingBox.inflate(16)
+        player.level.getEntitiesWithin(AABB).forEach(entity => {
+            lyreSkill[submenuIndex](player,entity,nbt);
+        })
+        player.cooldowns.addCooldown(itemStack.id,cooldowns[submenuIndex-1])
+    }
+});
+
+// --- 重力符文 ---
+registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack) 
+    {
+        if(player.isClientSide) return;
+    
+        player.setDeltaMovement(new Vec3d(0,10,0))
+        player.hurtMarked = true;
+    }
+});
+
+// --- 迷你月球 ---
+registerSkillSound('rainbow:mini_moon', 'rainbow:voice.tenshi');
+registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+    if (itemStack && !player.cooldowns.isOnCooldown("rainbow:mini_moon"))
+    {
+        if(player.isClientSide) return;
+
+        // 释放技能时播放玩家动画 (server_scripts/player_animator/main.js 封装):
+        // 按下shift = 吸引模式 → 播放 assets/rainbow/player_animation/attract.json (rainbow:attract)
+        // 未按下shift = 排斥模式 → 播放 assets/rainbow/player_animation/repel.json (rainbow:repel)
+        let animId = shiftDown ? "rainbow:attract" : "rainbow:repel";
+        let animOk = global.playPlayerAnim(player, animId);
+        console.log(`[Skillwheel] mini_moon 释放: 播放动画 ${animId} 结果=${animOk} (shiftDown=${shiftDown}, player=${player.username || "?"})`);
+
+        let radius = 5;
+        let centerX = player.getX();
+        let centerY = player.getY() + 0.5;
+        let centerZ = player.getZ();
+        let area = player.boundingBox.inflate(radius);
+        let playerUuid = player.getUuid().toString();
+        let areaColor = "80FFFFFF";
+
+        if (shiftDown) {
+            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 1.0 0.2 1.0 1.0 12 1 remove`);
+        } else {
+            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 0.2 1.0 1.0 1.0 12 1 remove`);
+        }
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity) return;
+            if (!entity.isLiving() || !entity.isAlive()) return;
+            if (entity == player) return;
+
+            let dx = entity.getX() - centerX;
+            let dy = entity.getY() - centerY;
+            let dz = entity.getZ() - centerZ;
+            let distanceSq = dx * dx + dy * dy + dz * dz;
+            if (distanceSq <= 0 || distanceSq > radius * radius) return;
+
+            let distance = Math.sqrt(distanceSq);
+            let motionX = dx / distance;
+            let motionY = dy / distance;
+            let motionZ = dz / distance;
+
+            if (shiftDown) {
+                entity.setDeltaMovement(new Vec3d(-motionX * 1.2, 0.2 - motionY * 0.2, -motionZ * 1.2));
+            } else {
+                entity.setDeltaMovement(new Vec3d(motionX * 1.4, 0.35 + Math.max(motionY * 0.15, 0), motionZ * 1.4));
+                entity.attack(player.damageSources().playerAttack(player), 6);
+            }
+            entity.hurtMarked = true;
+        })
+
+        player.cooldowns.addCooldown("rainbow:mini_moon", SecoundToTick(15));
+    }
+});
+
+// --- 圣经 ---
+registerSkillSound('rainbow:the_bible', 'rainbow:voice.prayer');
+registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('rainbow:the_bible')) return;
+    if (player.level.clientSide) return;
+
+    let playerUuid = player.getUuid().toString();
+    let durationTicks = 200; // 10 秒持续时间
+    let pulseInterval = 15; // 每次脉冲间隔 tick
+
+    // 1. 金色油漆层（组合动画：金色呼吸光效）
+    event.server.runCommandSilent(`/dyeing paint add combo bible_glow ${playerUuid} 80FFD700 80FFFF00 1.0 1.3 0.8 1.0 20 20 -1 end -1 end`);
+
+    // 2. 向外快速扩散的矩形区域（无限循环，每次回到起点重新扩散）
+    event.server.runCommandSilent(`/dyeing area add scale bible_wave ${playerUuid} -4 0 -4 4 3 4 80FFD700 0.3 2.5 0.6 0.0 15 -1 start`);
+
+    // 3. 周期性脉冲：推开实体 + 恢复血量
+    let elapsed = 0;
+    let pulse = () => {
+        if (!player || !player.isAlive()) {
+            event.server.runCommandSilent(`/dyeing paint remove ${playerUuid} bible_glow`);
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bible_wave`);
+            return;
+        }
+
+        if (elapsed >= durationTicks) {
+            event.server.runCommandSilent(`/dyeing paint remove ${playerUuid} bible_glow`);
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bible_wave`);
+            return;
+        }
+
+        // 推开周围实体（类似 mini_moon 机制）
+        let radius = 7;
+        let centerX = player.getX();
+        let centerY = player.getY() + 0.5;
+        let centerZ = player.getZ();
+        let area = player.boundingBox.inflate(radius);
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity || !entity.isLiving() || !entity.isAlive() || entity == player) return;
+
+            let dx = entity.getX() - centerX;
+            let dy = entity.getY() - centerY;
+            let dz = entity.getZ() - centerZ;
+            let distanceSq = dx * dx + dy * dy + dz * dz;
+            if (distanceSq <= 0 || distanceSq > radius * radius) return;
+
+            let distance = Math.sqrt(distanceSq);
+            entity.setDeltaMovement(new Vec3d(
+                (dx / distance) * 2.0,
+                0.5 + Math.max(dy / distance * 0.15, 0),
+                (dz / distance) * 2.0
+            ));
+            entity.hurtMarked = true;
+        });
+
+        // 播放音效（复用 mini_moon 的音效）
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.prayer", "voice", 1, 1);
+
+        // 每次触发推开恢复 100 血量
+        player.heal(100);
+
+        elapsed += pulseInterval;
+        event.server.scheduleInTicks(pulseInterval, pulse);
+    };
+
+    event.server.scheduleInTicks(pulseInterval, pulse);
+
+    player.cooldowns.addCooldown('rainbow:the_bible', SecoundToTick(120));
+});
+
+// --- 烟花拳套 ---
+// 常量定义（需与 handleFireworkDash.js 一致）
+const FW_DASH_SPEED = 1.6;
+const FW_DASH_TICKS_TAG = "FireworkDashTicks";
+const FW_DASH_FLIGHT_TAG = "FireworkDashFlight";
+const FW_DASH_X_TAG = "FireworkDashX";
+const FW_DASH_Y_TAG = "FireworkDashY";
+const FW_DASH_Z_TAG = "FireworkDashZ";
+
+function clearFireworkDashData(data) {
+    data.remove(FW_DASH_TICKS_TAG);
+    data.remove(FW_DASH_FLIGHT_TAG);
+    data.remove(FW_DASH_X_TAG);
+    data.remove(FW_DASH_Y_TAG);
+    data.remove(FW_DASH_Z_TAG);
+}
+
+registerSkill('minecraft:firework_rocket', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:firework_dash")) return;
+    //if (player.level.isClientSide()) return;
+    //console.log("firework dash skill triggered");
+    let existingTicks = player.persistentData.getInt(FW_DASH_TICKS_TAG);
+    //console.log("firework dash existing ticks: " + existingTicks);
+    if (existingTicks > 0) {
+        console.log("firework dash blocked by existing ticks, clearing stale data");
+        clearFireworkDashData(player.persistentData);
+    }
+    //console.log("firework dash skill triggered2");
+    if (!itemStack || itemStack.isEmpty()) return;
+    //console.log("firework dash skill triggered3");
+    // 读取自身 Flight 值（1-3），默认 3
+    let flight = 3;
+    try {
+        let tag = itemStack.getNbt();
+        if (tag && tag.contains("Fireworks", 10)) {
+            let fireworks = tag.getCompound("Fireworks");
+            if (fireworks.contains("Flight", 1)) {
+                let rawFlight = fireworks.getByte("Flight");
+                if (rawFlight > 0) {
+                    flight = Math.max(1, rawFlight);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("firework dash read nbt error: " + e);
+    }
+
+    let dashTicks = flight * 20;
+
+    // 获取冲刺方向（视线方向）
+    let look = player.getLookAngle();
+    if (!look) return;
+    let lx = look.x();
+    let ly = look.y();
+    let lz = look.z();
+
+    // 存储冲刺状态
+    let data = player.persistentData;
+    data.putInt(FW_DASH_TICKS_TAG, dashTicks);
+    data.putInt(FW_DASH_FLIGHT_TAG, flight);
+    data.putDouble(FW_DASH_X_TAG, lx);
+    data.putDouble(FW_DASH_Y_TAG, ly);
+    data.putDouble(FW_DASH_Z_TAG, lz);
+
+    // 消耗 1 个烟花火箭（放最后，避免干扰状态设置）
+    itemStack.shrink(1);
+
+    // 立即应用第一帧速度
+    let speed = FW_DASH_SPEED;
+    player.setDeltaMovement(new Vec3d(lx * speed, ly * speed + 0.1, lz * speed));
+    player.fallDistance = 0.0;
+    player.hurtMarked = true;
+
+    // 播放音效
+    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.firework_rocket.launch", "players", 1.0, 1.0);
+    player.cooldowns.addCooldown("rainbow:firework_dash", SecoundToTick(6));
+
+    // 后续每 tick 继续冲刺
+    let tickDash = () => {
+        if (!player || !player.isAlive()) {
+            clearFireworkDashData(player.persistentData);
+            return;
+        }
+
+        let currentTicks = player.persistentData.getInt(FW_DASH_TICKS_TAG);
+        if (currentTicks <= 0) {
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        if (player.horizontalCollision) {
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        // 应用冲刺速度
+        let dx = player.persistentData.getDouble(FW_DASH_X_TAG);
+        let dy = player.persistentData.getDouble(FW_DASH_Y_TAG);
+        let dz = player.persistentData.getDouble(FW_DASH_Z_TAG);
+        player.setDeltaMovement(new Vec3d(dx * speed, dy * speed + 0.1, dz * speed));
+        player.fallDistance = 0.0;
+        player.hurtMarked = true;
+
+        // 检测碰撞实体
+        let collideBox = player.boundingBox.inflate(0.6, 0.3, 0.6);
+        let targets = player.level.getEntitiesWithin(collideBox);
+
+        for (let i = 0; i < targets.size(); i++) {
+            let target = targets.get(i);
+            if (!target) continue;
+            if (!target.isLiving() || !target.isAlive()) continue;
+            if (target.equals(player)) continue;
+
+            let damage = 4.0 * player.persistentData.getInt(FW_DASH_FLIGHT_TAG);
+            target.attack(player.damageSources().playerAttack(player), damage);
+
+            // 初始击飞速度
+            target.setDeltaMovement(new Vec3d(dx * 2.5, 0.5, dz * 2.5));
+            target.hurtMarked = true;
+
+            let targetData = target.persistentData;
+            targetData.putInt("FireworkDashImpactTicks", 10);
+            targetData.putDouble("FireworkDashImpactDx", dx);
+            targetData.putDouble("FireworkDashImpactDz", dz);
+            targetData.putFloat("FireworkDashImpactDamage", damage);
+            targetData.putInt("FireworkDashImpactSrcId", player.getId());
+
+            clearFireworkDashData(player.persistentData);
+            player.setDeltaMovement(new Vec3d(0, 0, 0));
+            player.hurtMarked = true;
+            return;
+        }
+
+        player.persistentData.putInt(FW_DASH_TICKS_TAG, currentTicks - 1);
+        event.server.scheduleInTicks(1, tickDash);
+    };
+
+    event.server.scheduleInTicks(1, tickDash);
+});
+
+// --- 死河 ---
+registerSkillSound('rainbow:dead_river', 'rainbow:voice.null');
+registerSkill('rainbow:dead_river', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("rainbow:dead_river")) return;
+    if (player.level.clientSide) return;
+    //if (!hasCurios(player, "rainbow:lilith_hug")) return;
+
+    let nbt = itemStack.nbt;
+    if (!nbt) return;
+
+    let souls = nbt.getInt("Souls") || 0;
+    if (souls <= 0) {
+        player.tell(Text.gray("死河中没有任何灵魂。"));
+        return;
+    }
+
+    let pos = player.getBlock().pos;
+    let serverLevel = player.level;
+    let totalConsumed = 0;
+
+    // 优先召唤高消耗变种，花光所有灵魂
+    // HULKING_SPECTRE (消耗 3) > JOUSTING_SPECTRE (消耗 2) > SPECTRE (消耗 1)
+    while (souls >= 3) {
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.HULKING_SPECTRE, true);
+        souls -= 3;
+        totalConsumed += 3;
+    }
+
+    while (souls >= 2) {
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.JOUSTING_SPECTRE, true);
+        souls -= 2;
+        totalConsumed += 2;
+    }
+
+    while (souls >= 1) {
+        let bp = new BlockPos(pos.x + 0.5 + (Math.random() * 2 - 1), pos.y + 1, pos.z + 0.5 + (Math.random() * 2 - 1));
+        Spectre.spawnSpectre(serverLevel, player, bp, Spectre.Type.SPECTRE, true);
+        souls -= 1;
+        totalConsumed += 1;
+    }
+
+    // 消耗所有灵魂
+    nbt.putInt("Souls", 0);
+    player.tell(Text.aqua("死河释放了 " + totalConsumed + " 个灵魂。"));
+    player.cooldowns.addCooldown("rainbow:dead_river", SecoundToTick(10));
+});
+
+// --- 捕梦网 ---
+registerSkillSound('windswept:dream_catcher', 'rainbow:voice.null');
+registerSkill('windswept:dream_catcher', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("windswept:dream_catcher")) return;
+    if (player.level.clientSide) return;
+    //if (!hasCurios(player, "windswept:dream_catcher")) return;
+
+    // 切换为观察者模式，3 秒后返回生存模式
+    player.runCommandSilent(`gamemode spectator`);
+    event.server.scheduleInTicks(60, function() {
+        if (player && player.isAlive()) {
+            player.runCommandSilent(`gamemode survival`);
+        }
+    });
+
+    player.cooldowns.addCooldown("windswept:dream_catcher", SecoundToTick(10));
+});
+
+// --- 冰灯 ---
+// 主动技能：冻结半径4格内除施法者外的所有实体15秒，冷却15秒。
+const ICE_LANTERN_RADIUS = 4;
+const ICE_LANTERN_FREEZE_TICKS = 15 * 200;
+const ICE_LANTERN_COOLDOWN_TICKS = SecoundToTick(15);
+
+registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player == null || player.level == null || player.level.isClientSide()) return;
+    if (!itemStack || itemStack.isEmpty()) return;
+    if (player.cooldowns.isOnCooldown('windswept:ice_lantern')) return;
+
+    try {
+        let radius = ICE_LANTERN_RADIUS;
+        let radiusSquared = radius * radius;
+        let centerX = player.getX();
+        let centerY = player.getY();
+        let centerZ = player.getZ();
+        let area = player.getBoundingBox().inflate(radius);
+        let affectedCount = 0;
+        let playerId = player.getId();
+        let playerUuid = player.getUuid().toString();
+
+        // Dyeing 区域缩放特效：蓝白冰霜光环播放一次后自动移除。
+        event.server.runCommandSilent(
+            `/dyeing area add scale ice_lantern_freeze ${playerUuid} -4 0 -4 4 2 4 80DDF5FF 0.2 1.4 0.2 1.0 8 1 remove`
+        );
+
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            try {
+                if (!entity || entity.getId() === playerId || entity == player) return;
+
+                let dx = entity.getX() - centerX;
+                let dy = entity.getY() - centerY;
+                let dz = entity.getZ() - centerZ;
+                let distanceSquared = dx * dx + dy * dy + dz * dz;
+                if (distanceSquared > radiusSquared) return;
+
+                // 不缩短目标已有的更长原版冻结时间。
+                entity.setTicksFrozen(Math.max(entity.getTicksFrozen(), ICE_LANTERN_FREEZE_TICKS));
+                affectedCount++;
+            } catch (targetError) {
+                console.log('[冰灯] 设置实体冻结时间失败: ' + targetError);
+            }
+        });
+
+        player.cooldowns.addCooldown('windswept:ice_lantern', ICE_LANTERN_COOLDOWN_TICKS);
+        console.log('[冰灯] 释放完成，冻结实体数量: ' + affectedCount);
+    } catch (error) {
+        console.log('[冰灯] 主动技能执行失败: ' + error);
+    }
+});
+
+// 闪电瓶主动技能
+registerSkillSound('mysticartifacts:lightning_bottle', 'rainbow:voice.null');
+registerSkill('mysticartifacts:lightning_bottle', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown("mysticartifacts:lightning_bottle")) return;
+    if (player.level.clientSide) return;
+    //if (!hasCurios(player, "mysticartifacts:lightning_bottle")) return;
+
+    let playerUuid = player.getUuid().toString();
+    let durationTicks = 100; // 5 秒
+    let pulseInterval = 15;  // 每次脉冲间隔 tick
+    let radius = 10;
+
+    // 0. 调整天气为雨天
+    event.server.runCommandSilent(`weather rain`);
+
+    // 1. Dyeing 矩形警示范围（静态满尺寸，仅Y轴旋转）
+    event.server.runCommandSilent(
+        `/dyeing area add static bottled_lightning_warn ${playerUuid} -${radius} 0 -${radius} ${radius} 4 ${radius} 4040C0FF 1.0 12 -1`
+    );
+
+    // 2. 给予玩家 2 秒漂浮效果
+    player.potionEffects.add("minecraft:levitation", 100, 0, false, false);
+    //player.potionEffects.add("delighto_flight:arc", 100, 0, false, false);
+
+    // 3. 周期性脉冲：AABB 扫荡召唤闪电
+    let elapsed = 0;
+    let pulse = () => {
+        if (!player || !player.isAlive()) {
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bottled_lightning_warn`);
+            return;
+        }
+
+        if (elapsed >= durationTicks) {
+            event.server.runCommandSilent(`/dyeing area remove ${playerUuid} bottled_lightning_warn`);
+            return;
+        }
+
+        // AABB 检测周围实体
+        let area = player.boundingBox.inflate(radius);
+        player.level.getEntitiesWithin(area).forEach(entity => {
+            if (!entity) return;
+            if (!entity.isLiving() || !entity.isAlive()) return;
+            if (entity == player) return;
+
+            // 跳过友军（已驯服宠物/佣兵）
+            let OwnerName = entity.persistentData.OwnerName;
+            if (OwnerName && OwnerName == playerUuid) return;
+            if (entity.owner && entity.owner == player) return;
+
+            // 给敌方实体 5 秒漂浮
+            entity.potionEffects.add("minecraft:levitation", 20, 0, false, false);
+
+            // 在非友军位置召唤闪电
+            try {
+                let lightning = player.level.createEntity("minecraft:lightning_bolt");
+                if (lightning) {
+                    lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+                    lightning.spawn();
+                }
+            } catch(e) {
+                console.error("闪电瓶召唤闪电失败: " + e);
+            }
+        });
+
+        // 播放雷声
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.lightning_bolt.thunder", "weather", 1.0, 1.0);
+
+        elapsed += pulseInterval;
+        event.server.scheduleInTicks(pulseInterval, pulse);
+    };
+
+    event.server.scheduleInTicks(pulseInterval, pulse);
+
+    player.cooldowns.addCooldown("rainbow:bottled_lightning", SecoundToTick(30));
+});
+
+// --- 女巫坩埚 ---
+registerSkillSound('mysticartifacts:witch_pot', 'rainbow:voice.null');
+registerSkill('mysticartifacts:witch_pot', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('mysticartifacts:witch_pot')) return;
+    if (player.level.clientSide) return;
+
+    // 获取玩家末影箱
+    let enderChest = player.enderChestInventory;
+    if (!enderChest) return;
+
+    // 获取玩家准心方向向量
+    let look = player.getLookAngle();
+    if (!look) return;
+    let lx = look.x();
+    let ly = look.y();
+    let lz = look.z();
+
+    let speed = 1.5;
+    let INTERVAL_TICKS = 5; // 0.25s
+
+    // 第一步：收集每格药水数据（按格存储剩余数量），清空末影箱
+    let slots = [];
+    for (let i = 0; i < 27; i++) {
+        let stack = enderChest.getItem(i);
+        if (!stack || stack.isEmpty()) continue;
+
+        let id = stack.getId();
+        if (id !== 'minecraft:splash_potion' && id !== 'minecraft:lingering_potion') continue;
+
+        let count = stack.getCount();
+        let potionNbt = stack.getNbt();
+
+        slots.push({ id: id, nbt: potionNbt, remaining: count });
+        enderChest.setItem(i, ItemStack.EMPTY);
+    }
+
+    if (slots.length <= 0) {
+        player.tell(Text.gray('末影箱中没有喷溅型或滞留型药水。'));
+        return;
+    }
+
+    let total = slots.reduce(function(sum, s) { return sum + s.remaining; }, 0);
+    let thrownCount = 0;
+    let slotIndex = 0;
+
+    // 第二步：每 5 tick 轮询各格，每格每次只丢 1 瓶
+    let throwNext = function() {
+        if (!player || !player.isAlive()) return;
+
+        // 找下一个还有剩余药水的格子
+        let tries = 0;
+        while (tries < slots.length) {
+            let s = slots[slotIndex];
+            if (s.remaining > 0) break;
+            slotIndex = (slotIndex + 1) % slots.length;
+            tries++;
+        }
+
+        if (tries >= slots.length) {
+            player.tell(Text.aqua('女巫坩埚从末影箱中投掷了 ' + thrownCount + ' 瓶药水！'));
+            return;
+        }
+
+        let data = slots[slotIndex];
+        data.remaining--;
+        thrownCount++;
+
+        try {
+            let thrownPotion = player.level.createEntity('minecraft:potion');
+            if (thrownPotion) {
+                thrownPotion.setPos(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
+
+                let itemData = { id: data.id, Count: 1 };
+                if (data.nbt) {
+                    itemData.tag = data.nbt;
+                }
+                thrownPotion.mergeNbt({ Item: itemData });
+
+                let spread = 0.05;
+                let dx = lx + (Math.random() - 0.5) * spread;
+                let dy = ly + (Math.random() - 0.5) * spread;
+                let dz = lz + (Math.random() - 0.5) * spread;
+                thrownPotion.setDeltaMovement(new Vec3d(dx * speed, dy * speed, dz * speed));
+
+                thrownPotion.spawn();
+            }
+        } catch (e) {
+            console.error('女巫坩埚投掷药水失败: ' + e);
+        }
+
+        // 移到下一格，继续调度
+        slotIndex = (slotIndex + 1) % slots.length;
+        event.server.scheduleInTicks(INTERVAL_TICKS, throwNext);
+    };
+
+    event.server.scheduleInTicks(1, throwNext);
+
+    player.cooldowns.addCooldown('mysticartifacts:witch_pot', SecoundToTick(30));
+});
+
+// --- 超级激素 ---
+registerSkillSound('rainbow:super_hormone', 'rainbow:voice.super_hormone');
+registerSkill('rainbow:super_hormone', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.isClientSide) return;
+    if (player.cooldowns.isOnCooldown("rainbow:super_hormone")) return;
+    try {
+        // 恢复 1000 血量
+        player.heal(1000);
+
+        // 当前维度全局时间减缓 80%（使用 TimeController 的 global 模式）
+        // 时缓API必须用玩家自身指令源执行：TimeController 会把时缓绑定到指令源所在维度，
+        // 用 server 控制台源会固定绑定主世界，导致其他维度（后室/副本等）时缓完全无效
+        let durationTicks = 20 * 10;
+        player.runCommandSilent("/timecontroller global " + player.username + " 80 " + durationTicks);
+
+        // 迅捷效果（与时缓同步持续 10 秒，等级 2，环境粒子，无粒子显示）
+        player.potionEffects.add("minecraft:speed", durationTicks, 2, true, false);
+
+        // 通知客户端渲染黄色视角边框（与潜行黑边互斥，超级激素优先）
+        player.sendData("super_hormone_sync", { duration: durationTicks });
+
+        player.cooldowns.addCooldown("rainbow:super_hormone", 50 * 20); // 冷却 50 秒
+    } catch (err) {
+        console.log("[超级激素] 错误: " + err);
+    }
+});
+
+// --- 烛心面具 ---
+// 伪装 id → 技能处理函数映射表（参考心脏系列 heartEntityMap 结构）
+// 每个处理函数签名：(ctx) => void，ctx 包含 event/player/itemStack/isSubmenu/submenuIndex/shiftDown
+let wickedMaskSkillMap = {
+    'cataclysm:the_harbinger': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        // 加载 Cataclysm 抛射体类（构造函数均为 public，可直接 new）
+        let HOMING_MISSILE_DAMAGE = 12.0;
+        let MISSILE_DAMAGE = 10.0;
+        let DURATION_TICKS = SecoundToTick(5); // 持续 5 秒火力输出
+        let INTERVAL_TICKS = 4;                // 每 0.2 秒发射一次
+        let elapsed = 0;
+        let homingCount = 0;                   // 追踪导弹已发射次数（决定 eyeX 偏移交替）
+        let missileCount = 0;                  // 导弹已发射次数（决定 eyeX 偏移交替）
+
+        // 递归计时：每次发射后调度下一帧，直到持续时长耗尽
+        let fireShot = () => {
+            if (!player || !player.isAlive()) return;
+            if (elapsed >= DURATION_TICKS) return;
+
+            // 每次重新读取视角方向，允许玩家在火力输出期间转动视角
+            let dir = player.getLookAngle();
+            if (dir) {
+                let baseX = player.getX();
+                let baseY = player.getEyeY() + 1;
+                let baseZ = player.getZ();
+                let dx = dir.x(), dy = dir.y(), dz = dir.z();
+                let horizDist = Math.sqrt(dx * dx + dz * dz);
+                // cataclysm 抛射体的渲染朝向约定与原版 shoot() 不同：
+                // rotateTowardsMovement 用 yRot=atan2(z,x)+90, xRot=atan2(horizDist,y)-90
+                // 而原版 shoot() 用 yRot=atan2(x,z), xRot=atan2(y,horizDist)，两者数值不同
+                // 必须手动用 cataclysm 的公式设置朝向，否则第一帧渲染朝向错误
+                let yRot = Math.atan2(dz, dx) * (180 / MATH_PI) + 90;
+                let xRot = Math.atan2(horizDist, dy) * (180 / MATH_PI) - 90;
+                try {
+                    // 追踪导弹与普通导弹交替发射
+                    let isHomingTurn = (homingCount + missileCount) % 2 === 0;
+                    if (isHomingTurn) {
+                        // 追踪导弹：必须有 LivingEntity 目标，否则会立即自爆
+                        // 优先用准心射线找目标，找不到则用视线方向 AABB 搜索最近敌对生物
+                        let target = null;
+                        let rayHit = player.rayTrace(64, false);
+                        if (rayHit && rayHit.entity && rayHit.entity.isLiving() && rayHit.entity.isAlive() && rayHit.entity != player) {
+                            target = rayHit.entity;
+                        } else {
+                            // AABB 搜索视线方向上的最近 LivingEntity
+                            let eyePos = player.getEyePosition();
+                            let searchBox = player.boundingBox.inflate(64);
+                            let nearestDist = Double.MAX_VALUE;
+                            player.level.getEntitiesWithin(searchBox).forEach(e => {
+                                if (!e || !e.isLiving() || !e.isAlive()) return;
+                                if (e == player) return;
+                                try {
+                                    if (!(e instanceof LivingEntity)) return;
+                                } catch (err) { return; }
+                                // 判断实体是否在视线方向附近（投影到视线上的距离 + 垂直距离）
+                                let toEntity = e.position().subtract(eyePos);
+                                let projDist = toEntity.dot(dir);
+                                if (projDist <= 0 || projDist > 64) return;
+                                let perpendicular = toEntity.subtract(dir.scale(projDist));
+                                let perpDist = perpendicular.length();
+                                if (perpDist > 3) return;
+                                let dist = Math.sqrt(projDist * projDist + perpDist * perpDist);
+                                if (dist < nearestDist) {
+                                    nearestDist = dist;
+                                    target = e;
+                                }
+                            });
+                        }
+
+                        if (target) {
+                            // 追踪导弹：基础点 (getX, getEyeY+1, getZ)，eyeX ±1，首次 +1，之后交替
+                            let offsetX = (homingCount % 2 === 0) ? 1.5 : -1.5;
+                            let homing = new WitherHomingMissile(player, dir, player.level, HOMING_MISSILE_DAMAGE, target);
+                            homing.setPositionAndRotation(baseX, baseY, baseZ + offsetX, yRot, xRot);
+                            player.level.addFreshEntity(homing);
+                            player.level.playSound(null, baseX + offsetX, baseY, baseZ, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
+                            homingCount++;
+                        }
+                        // 无目标时跳过本次发射，不消耗计数
+                    } else {
+                        // 导弹：基础点 (getX, getEyeY+1, getZ+1)，eyeX ±1，首次 -1，之后交替
+                        let offsetX = (missileCount % 2 === 0) ? -1 : 1;
+                        let missile = new WitherMissile(player, dir, player.level, MISSILE_DAMAGE);
+                        missile.setPositionAndRotation(baseX + 1, baseY, baseZ + offsetX, yRot, xRot);
+                        player.level.addFreshEntity(missile);
+                        player.level.playSound(null, baseX + offsetX, baseY + 1, baseZ + 1, "cataclysm:rocket_launch", "hostile", 1.0, 1.0);
+                        missileCount++;
+                    }
+                } catch (e) {
+                    console.error("[烛心面具] 发射抛射体失败: " + e);
+                }
+            }
+
+            elapsed += INTERVAL_TICKS;
+            if (elapsed < DURATION_TICKS) {
+                event.server.scheduleInTicks(INTERVAL_TICKS, fireShot);
+            }
+        };
+
+        fireShot();
+        player.cooldowns.addCooldown("species:wicked_mask", SecoundToTick(10));
+    },
+    // 皇家僵尸：召唤 2 名僵尸（参考心脏系列 heartEntityMap 的 minecraft:zombie 召唤方法）
+    'royalletiations:royal_zombie': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let COOLDOWN = SecoundToTick(60);
+        // 循环召唤 2 名僵尸
+        for (let i = 0; i < 2; i++) {
+            let entity = player.level.createEntity("minecraft:zombie");
+            if (entity) {
+                //entity.setNbt('{IsBaby:1b}');
+                entity.persistentData.OwnerName = player.getUuid().toString();
+                //entity.persistentData.putBoolean("CanTake", false);
+
+                let pos = player.getBlock().pos;
+                // 第二只错开 1 格，避免重叠
+                let offsetX = (i === 1) ? 1 : 0;
+                entity.setPos(pos.x + 0.5 + offsetX, pos.y, pos.z + 0.5);
+
+                let sword = Item.of("minecraft:iron_sword").enchant("minecraft:vanishing_curse", 1);
+                // 皇家骑士头盔护甲
+                let helmet = Item.of("royalletiations:royal_knight_helmet").enchant("minecraft:vanishing_curse", 1);
+
+                entity.setItemSlot("mainhand", sword);
+                entity.setItemSlot("head", helmet);
+
+                entity.spawn();
+                // 下线时间：字符串ID调用KubeJS add()不可靠，改为解析MobEffect对象后添加
+                let offWorkEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("rainbow", "off_work_time"));
+                if (offWorkEffect) {
+                    entity.potionEffects.add(offWorkEffect, COOLDOWN / 2, 0, false, false);
+                }
+            }
+        }
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+
+        // 额外效果：为 16 格范围内敌方实体（Monster 类别）添加 chosen_victim 药水效果
+        let RANGE = 16;                   // 影响范围 16 格
+        let DURATION = SecoundToTick(10); // 持续 10 秒
+        let playerUuid = player.getUuid().toString();
+        let affectedCount = 0;
+        let area = player.boundingBox.inflate(RANGE);
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let chosenVictimEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "chosen_victim"));
+                if (chosenVictimEffect) {
+                    entity.potionEffects.add(chosenVictimEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家僵尸 chosen_victim 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家僵尸召唤技能执行异常: " + e);
+        }
+    },
+    // 皇家苦力怕：为 16 格范围内敌方实体（MONSTER 类别）添加 time_bomb 药水效果，并在玩家位置生成来源玩家的不破坏方块爆炸
+    'royalletiations:royal_creeper': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let RADIUS = 4.0;                  // 爆炸强度（半径）
+        let playerUuid = player.getUuid().toString();
+
+        // 1. 为范围内敌方实体添加 time_bomb 药水效果
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let timeBombEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "time_bomb"));
+                if (timeBombEffect) {
+                    entity.potionEffects.add(timeBombEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家苦力怕 time_bomb 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家苦力怕药水效果执行异常: " + e);
+        }
+
+        // 2. 玩家位置生成来源玩家的不破坏方块爆炸
+        try {
+            player.level.createExplosion(player.getX(), player.getY(), player.getZ())
+                .strength(RADIUS)
+                .causesFire(false)
+                .exploder(player)
+                .explosionMode("none")
+                .explode();
+        } catch (e) {
+            console.error("[烛心面具] 皇家苦力怕爆炸执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 皇家末影人：为 16 格范围内敌方实体（MONSTER 类别）添加 pressing_gaze 与 heaviness_of_the_end 药水效果
+    'royalletiations:royal_enderman': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let playerUuid = player.getUuid().toString();
+
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof Monster)) return;
+                } catch (err) { return; }
+
+                // 同时施加 凝视压制 与 末地沉重 两种药水效果（解析 MobEffect 对象后添加）
+                let gazeEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "pressing_gaze"));
+                let heavinessEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "heaviness_of_the_end"));
+                if (gazeEffect) {
+                    entity.potionEffects.add(gazeEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+                if (heavinessEffect) {
+                    entity.potionEffects.add(heavinessEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家末影人 药水效果影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家末影人技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 皇家骷髅：为 16 格范围内敌方实体（MONSTER 类别）添加 trapped 陷阱药水效果
+    'royalletiations:royal_skeleton': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let RANGE = 16;                    // 影响范围 16 格
+        let DURATION = SecoundToTick(10);  // 陷阱持续 10 秒
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+        let playerUuid = player.getUuid().toString();
+
+        let area = player.boundingBox.inflate(RANGE);
+        let affectedCount = 0;
+        try {
+            player.level.getEntitiesWithin(area).forEach(entity => {
+                if (!entity) return;
+                if (!entity.isLiving() || !entity.isAlive()) return;
+                if (entity == player) return;
+                if (entity.isPlayer()) return;
+                // 跳过友军（已驯服宠物/佣兵）
+                if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
+                if (entity.owner && entity.owner == player) return;
+                // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
+                try {
+                    if (!(entity instanceof Monster)) return;
+                } catch (err) { return; }
+
+                // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
+                let trappedEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "trapped"));
+                if (trappedEffect) {
+                    entity.potionEffects.add(trappedEffect, DURATION, 0, false, false);
+                    affectedCount++;
+                }
+            });
+            console.log("[烛心面具] 皇家骷髅 trapped 影响实体数: " + affectedCount);
+        } catch (e) {
+            console.error("[烛心面具] 皇家骷髅技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 灾难潜伏者（cataclysm:the_prowler）：从玩家视角发射同款死亡激光（Death_Laser_Beam_Entity），并播放激光音效
+    'cataclysm:the_prowler': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let DURATION = 28;      // 激光持续 tick（与 Prowler 同款 28，发射后约 0.4 秒开始结算伤害、共约 2.4 秒）
+        let DAMAGE = 5.0;       // 激光基础伤害（与 Prowler 默认配置一致，可按需调整）
+        let HP_DAMAGE = 0.05;   // 激光最大生命百分比伤害（同款默认 5%，可按需调整）
+        let COOLDOWN = SecoundToTick(20);  // 冷却 20 秒
+
+        try {
+            // 1. 解析激光实体类型（cataclysm:death_laser_beam，mod 已注册客户端渲染器，可直接渲染）
+            let laserType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "death_laser_beam"));
+            if (!laserType) {
+                console.error("[烛心面具] 死亡激光实体类型不存在: cataclysm:death_laser_beam");
+                return;
+            }
+
+            // 2. 从玩家视角计算激光朝向（注意：KubeJS 环境下 player.getXRot()/getYHeadRot() 不可用，
+            //    改用 getLookAngle() 换算）。实体源码 calculateEndPos：
+            //    endPos = pos + 30*(cos(pitch)cos(yaw), sin(pitch), sin(pitch)sin(yaw))，
+            //    令该方向恰好沿线向量 => yaw = atan2(lookZ, lookX)、pitch = asin(lookY)。
+            //    与 Prowler 源码传入的 yaw=(yHeadRot+90)*PI/180、pitch=-xRot*PI/180 严格等价
+            //    （atan2(lookZ,lookX) 本身已等于 yHeadRot+90°，此前误加了一次 PI/2，
+            //    导致数据驱动姿态与运动向量恒偏 90°，只能靠 tick 隐式同步的渲染姿态掩盖）
+            let dir = player.getLookAngle();
+            let yaw = Math.atan2(dir.z(), dir.x());
+            let pitch = Math.asin(dir.y());
+
+            // 3. 构造死亡激光实体（完整构造函数，caster 为玩家），从玩家眼睛高度向视角方向发射
+            let beam = new DeathLaserBeam(laserType, player.level, player,
+                player.getX(), player.getEyeY(), player.getZ(),
+                yaw, pitch, DURATION, DAMAGE, HP_DAMAGE);
+
+            // 3.1 生成前显式对齐渲染姿态：构造函数只写同步数据 YAW/PITCH（服务端射线/伤害方向），
+            //     而渲染器读取的 renderYaw/renderPitch 是普通字段，构造时默认 0，原版依赖 tick() 中
+            //     renderYaw=(caster.yHeadRot+90)*PI/180 的隐式同步在首 tick 补齐，存在生成初期
+            //     姿态-运动不一致窗口。此处在 addFreshEntity 前用发射方向直接初始化姿态字段，
+            //     并同步赋值 prevYaw/prevPitch，避免首帧渲染从 0 开始插值产生扫掠残影
+            beam.renderYaw = yaw;
+            beam.renderPitch = pitch;
+            beam.prevYaw = yaw;
+            beam.prevPitch = pitch;
+            player.level.addFreshEntity(beam);
+
+            // 4. 播放激光音效（与 Prowler 发射同款 cataclysm:death_laser）
+            player.level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("cataclysm", "death_laser")),
+                SoundSource.PLAYERS, 1.0, 1.0);
+        } catch (e) {
+            console.error("[烛心面具] 潜伏者激光技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    },
+    // 灾难巨兽（cataclysm:netherite_monstrosity）：在玩家位置召唤巨兽并释放原版 OverPower 扇形冲击波技能，
+    // 期间玩家切观察者模式并从巨兽第三人称视角观战；技能结束（约 4 秒）后巨兽消失、玩家恢复原模式
+    'cataclysm:netherite_monstrosity': (ctx) => {
+        let { event, player, itemStack } = ctx;
+
+        let COOLDOWN = SecoundToTick(60);  // 冷却 60 秒（Boss 级大招，可按需调整）
+
+        let oldGameMode = 'survival';
+        let monstrosity = null;
+        try {
+            // 0. 记录玩家当前游戏模式（技能结束后恢复；读取失败默认 survival）
+            try {
+                oldGameMode = player.gameMode.getGameModeForPlayer().getName();
+            } catch (e) {
+                oldGameMode = 'survival';
+            }
+
+            // 1. 解析巨兽实体类型
+            let type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("cataclysm", "netherite_monstrosity"));
+            if (!type) {
+                console.error("[烛心面具] 巨兽实体类型不存在: cataclysm:netherite_monstrosity");
+                return;
+            }
+
+            // 2. 玩家先切观察者模式（避免被巨兽生成时碰撞挤开，也免疫巨兽技能自身伤害）
+            try {
+                player.server.runCommandSilent("gamemode spectator " + player.username);
+            } catch (e) {
+                console.error("[烛心面具] 切换观察者模式失败: " + e);
+            }
+
+            // 3. 在玩家位置召唤巨兽，朝向玩家视线方向
+            //    （createEntity 仅创建不加入世界，需 spawn() 加入；参考心脏系列 entity.spawn() 用法）
+            //    注意：KubeJS Rhino 对 Entity 的 setYRot()/getXRot() 等方法查找失败（受 KubeJS mixin 影响），
+            //    改用 public 字段直接赋值（yRot/yBodyRot 均为 public 字段，字段访问不受影响）
+            monstrosity = player.level.createEntity(type);
+            monstrosity.setPos(player.getX(), player.getY(), player.getZ());
+            monstrosity.yRot = player.yRot;
+            monstrosity.yBodyRot = player.yRot;  // 扇形冲击波朝玩家视线方向（原版 StompDamage 用 yBodyRot 计算朝向）
+            monstrosity.setIsAwaken(true);       // 标记已唤醒：防止睡眠 AI（NMDoNothingGoal）打断技能（唤醒动画由 setAttackState 触发，此处仅置标志）
+            monstrosity.spawn();
+
+            // 4. 直接触发原版 OverPower 技能（攻击状态 9）：
+            //    attackTicks 由基类 tick() 自动每 tick 推进，aiStep() 会在 31~41 tick 自动释放 6 波
+            //    扇形冲击波（StompDamage：108° 扇形、逐层扩散、击退+破地形+音效粒子全由原版处理）
+            monstrosity.setAttackState(9);
+
+            // 5. 玩家观战巨兽（第三人称视角由客户端脚本 mask/monstrosity_camera.js 强制切换）
+            try {
+                player.setCamera(monstrosity);
+            } catch (e) {
+                console.error("[烛心面具] 观战巨兽失败（不影响技能释放）: " + e);
+            }
+
+            // 6. 递归计时：技能持续 5 秒（100 tick），每 tick 推进一次；5 秒到点后取消巨兽并恢复玩家
+            let MONSTROSITY_DURATION_TICKS = SecoundToTick(4);
+            let elapsedTicks = 0;
+            let finishSkill = () => {
+                if (elapsedTicks >= MONSTROSITY_DURATION_TICKS) {
+                    // 5 秒到点：移除巨兽（先清 BossBar 观众避免残留）并恢复玩家模式/视角
+                    try {
+                        if (monstrosity != null) {
+                            // 逐个移除 BossBar 观众（实体移除不会自动清理 BossBar）
+                            try {
+                                let viewers = player.server.getPlayerList().getPlayers();
+                                for (let p of viewers) {
+                                    try { monstrosity.stopSeenByPlayer(p); } catch (e) { }
+                                }
+                            } catch (e) { }
+                            try { monstrosity.setAttackState(0); } catch (e) { }
+                            try { monstrosity.discard(); } catch (e) { }
+                        }
+                        if (player.isAlive()) {
+                            try { player.setCamera(player); } catch (e) { }
+                            try { player.server.runCommandSilent("gamemode " + oldGameMode + " " + player.username); } catch (e) { }
+                        }
+                    } catch (e) {
+                        console.error("[烛心面具] 巨兽技能收尾异常: " + e);
+                    }
+                    return;
+                }
+                // 玩家中途死亡/掉线：提前取消巨兽（玩家恢复逻辑交给服务端玩家管理）
+                if (!player.isAlive() && monstrosity != null && monstrosity.isAlive()) {
+                    try { monstrosity.discard(); } catch (e) { }
+                    return;
+                }
+                elapsedTicks++;
+                event.server.scheduleInTicks(1, finishSkill);
+            };
+            event.server.scheduleInTicks(1, finishSkill);
+        } catch (e) {
+            // 执行异常：立即清理巨兽并恢复玩家模式/视角
+            try {
+                if (monstrosity != null && monstrosity.isAlive()) {
+                    monstrosity.discard();
+                }
+            } catch (e2) { }
+            try {
+                if (player != null && player.isAlive()) {
+                    player.setCamera(player);
+                    player.server.runCommandSilent("gamemode " + oldGameMode + " " + player.username);
+                }
+            } catch (e2) { }
+            console.error("[烛心面具] 巨兽技能执行异常: " + e);
+        }
+
+        player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
+    }
+    // 未来新增伪装类型在此追加，例如：
+    // 'minecraft:zombie': (ctx) => { ... },
+};
+
+registerSkillSound('species:wicked_mask', 'rainbow:voice.eye_of_satori');
+registerSkill('species:wicked_mask', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (!itemStack) return;
+    let Nbt = itemStack.nbt;
+    if (!Nbt) return;
+    if (player.level.clientSide) return;
+
+    // 主进程统一检测面具全局冷却
+    if (player.cooldowns.isOnCooldown("species:wicked_mask")) return;
+
+    // 根据伪装生物 id 分发到对应技能处理函数
+    let disguiseId = Nbt.getString("id");
+    if (!disguiseId) return;
+
+    let handler = wickedMaskSkillMap[disguiseId];
+    if (!handler) return;
+
+    handler({ event: event, player: player, itemStack: itemStack, isSubmenu: isSubmenu, submenuIndex: submenuIndex, shiftDown: shiftDown });
+});
+
+// ==========================================
+// 📜 通灵卷轴（rainbow:kuchiyosenojutsu）
+// ==========================================
+// 主动技能：召唤通灵卷轴实体（rainbow:kuchiyose_scroll，见 Registry_entity.js），
+// 实体悬浮于玩家面前 2 格视线高度、朝向玩家使用技能的方向，存在 5 秒（100 tick）。
+// 实体完全自治：技能只负责召唤 + 驯服绑定（主人=召唤玩家）+ 把施放时视线向量
+// 写入 persistentData；之后每 5 tick 的取物投掷（末影箱）与 100 tick 自毁
+// 全部由实体自身 tick 驱动（Registry_entity.js → global.kuchiyoseScrollTick），
+// 不依赖服务端计划任务，/reload 安全。
+// 可投掷物判定：原版特殊映射表 + 同名实体探测（物品ID == 实体ID 且实体为弹射体类），
+// 兼容雪球/蛋/末影珍珠/附魔之瓶及大多数模组 ThrowableItemProjectile 类投掷物。
+
+// 原版特殊投掷物映射（物品ID与实体ID不一致，或需要附加NBT）
+let KUCHIYOSE_SPECIAL_THROWABLES = {
+    'minecraft:arrow':          { kind: 'arrow',        entity: 'minecraft:arrow' },
+    'minecraft:tipped_arrow':   { kind: 'tipped_arrow', entity: 'minecraft:arrow' },
+    'minecraft:spectral_arrow': { kind: 'arrow',        entity: 'minecraft:spectral_arrow' },
+    'minecraft:splash_potion':    { kind: 'potion',   entity: 'minecraft:potion' },
+    'minecraft:lingering_potion': { kind: 'potion',   entity: 'minecraft:potion' },
+    'minecraft:fire_charge':      { kind: 'fireball', entity: 'minecraft:small_fireball' },
+    'minecraft:firework_rocket':  { kind: 'firework', entity: 'minecraft:firework_rocket' }
+};
+
+// 同名实体探测结果缓存（物品ID → 投掷方案或 null）
+let KuchiyoseThrowableCache = {};
+
+// 解析物品是否可投掷：返回 {kind, entity} 或 null
+function resolveKuchiyoseThrowable(level, itemId) {
+    if (typeof KuchiyoseThrowableCache[itemId] !== 'undefined') return KuchiyoseThrowableCache[itemId];
+
+    let plan = null;
+    let special = KUCHIYOSE_SPECIAL_THROWABLES[itemId];
+    if (special) {
+        plan = special;
+    } else {
+        // 通用探测：物品与实体同ID（如 minecraft:snowball/egg/ender_pearl/experience_bottle
+        // 及大量模组投掷物均为同名注册），再按实体类判断是否为弹射体
+        try {
+            let probe = level.createEntity(itemId);
+            if (probe != null) {
+                if (probe instanceof ThrowableItemProjectile) {
+                    plan = { kind: 'item_projectile', entity: itemId };
+                } else if (probe instanceof AbstractArrow) {
+                    plan = { kind: 'arrow', entity: itemId };
+                } else if (probe instanceof Projectile) {
+                    plan = { kind: 'projectile', entity: itemId };
+                }
+                probe.discard();
+            }
+        } catch (e) {
+            plan = null;
+        }
+    }
+
+    KuchiyoseThrowableCache[itemId] = plan;
+    return plan;
+}
+
+// 从末影箱按格位顺序取出 1 件可投掷物（消耗 1 个），返回 {plan, single} 或 null
+function takeKuchiyoseThrowable(player) {
+    let enderChest = player.enderChestInventory;
+    if (!enderChest) return null;
+
+    for (let i = 0; i < 27; i++) {
+        let stack = enderChest.getItem(i);
+        if (!stack || stack.isEmpty()) continue;
+
+        let plan = resolveKuchiyoseThrowable(player.level, stack.getId());
+        if (!plan) continue;
+
+        // 复制一份数量为1的物品（保留NBT）用于生成投掷物
+        let single = stack.copy();
+        single.setCount(1);
+
+        let count = stack.getCount();
+        if (count > 1) {
+            stack.setCount(count - 1);
+            enderChest.setItem(i, stack);
+        } else {
+            enderChest.setItem(i, ItemStack.EMPTY);
+        }
+        return { plan: plan, single: single };
+    }
+    return null;
+}
+
+// 生成并发射投掷物（伤害归属玩家）
+function launchKuchiyoseThrowable(level, player, plan, single, ox, oy, oz, look) {
+    let proj = null;
+    try {
+        proj = level.createEntity(plan.entity);
+        if (!proj) return;
+
+        proj.setPos(ox, oy, oz);
+        try { proj.setOwner(player); } catch (e) {}
+
+        if (plan.kind == 'potion') {
+            let itemData = { id: single.getId(), Count: 1 };
+            let potionNbt = single.getNbt();
+            if (potionNbt) itemData.tag = potionNbt;
+            proj.mergeNbt({ Item: itemData });
+        } else if (plan.kind == 'firework') {
+            let fw = { id: 'minecraft:firework_rocket', Count: 1 };
+            let fwNbt = single.getNbt();
+            if (fwNbt) fw.tag = fwNbt;
+            proj.mergeNbt({ LifeTime: 30, FireworksItem: fw });
+        } else if (plan.kind == 'tipped_arrow') {
+            let arrowNbt = single.getNbt();
+            if (arrowNbt) {
+                let potionId = arrowNbt.getString('Potion');
+                if (potionId && potionId.length > 0) proj.mergeNbt({ potion: potionId });
+            }
+        } else if (plan.kind == 'item_projectile') {
+            proj.setItem(single);
+        }
+
+        if (plan.kind == 'arrow' || plan.kind == 'tipped_arrow') {
+            // shoot() 会一并设置初始旋转，避免箭矢初帧朝向错误
+            proj.shoot(look.x(), look.y(), look.z(), 3.0, 1.0);
+        } else {
+            let spread = 0.06;
+            let dx = look.x() + (Math.random() - 0.5) * spread;
+            let dy = look.y() + (Math.random() - 0.5) * spread;
+            let dz = look.z() + (Math.random() - 0.5) * spread;
+            proj.setDeltaMovement(new Vec3d(dx * 1.5, dy * 1.5, dz * 1.5));
+        }
+
+        proj.spawn();
+    } catch (e) {
+        console.error('[通灵卷轴] 投掷物生成失败: ' + e);
+        if (proj) { try { proj.discard(); } catch (e2) {} }
+    }
+}
+
+//通灵卷轴
+registerSkillSound('rainbow:kuchiyosenojutsu', 'rainbow:voice.null');
+registerSkill('rainbow:kuchiyosenojutsu', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    // console.log('[Kuchiyose] 技能触发, player=' + player.username);
+    if (player.cooldowns.isOnCooldown('rainbow:kuchiyosenojutsu')) {
+        // console.log('[Kuchiyose] 阶段1-冷却中, 直接返回');
+        return;
+    }
+    if (player.level.clientSide) {
+        // console.log('[Kuchiyose] 阶段1-客户端侧, 直接返回');
+        return;
+    }
+
+    let level = player.level;
+    let look = player.getLookAngle();
+    if (!look) {
+        // console.log('[Kuchiyose] 阶段2-look 为空, 直接返回');
+        return;
+    }
+    let yaw = player.getYaw();
+    let pitch = player.getPitch();
+    // console.log('[Kuchiyose] 阶段2-朝向获取 OK, yaw=' + yaw + ', pitch=' + pitch);
+
+    // shiftDown 分支：召唤心理卷轴（rainbow:psychic_scroll，心理墙变体）
+    // 复用 global.summonPsychicScroll（server_scripts/psychic_scroll.js）的完整
+    // 召唤逻辑（位置/朝向/主人双通道/物品渲染/音效粒子），默认存在 15 秒
+    if (shiftDown) {
+        var wall = global.summonPsychicScroll(player, 15);
+        if (wall == null) {
+            player.tell(Text.red('心理卷轴召唤失败，查看服务器日志。'));
+        }
+        return;
+    }
+
+    // 预检：末影箱中是否存在可投掷物，没有则不进入冷却
+    let hasThrowable = false;
+    let ec = player.enderChestInventory;
+    if (ec) {
+        for (let ci = 0; ci < 27; ci++) {
+            let s = ec.getItem(ci);
+            if (!s || s.isEmpty()) continue;
+            if (resolveKuchiyoseThrowable(level, s.getId())) { hasThrowable = true; break; }
+        }
+    }
+    if (!hasThrowable) {
+        // console.log('[Kuchiyose] 阶段3-末影箱无可投掷物, 返回 (ec=' + (ec ? '存在' : 'null') + ')');
+        player.tell(Text.gray('末影箱中没有可投掷物（雪球、箭、投掷药水等）。'));
+        return;
+    }
+    // console.log('[Kuchiyose] 阶段3-末影箱预检通过');
+
+    // 召唤位置：玩家面前 2 格、视线高度；朝向玩家使用技能的方向
+    let sx = player.getX() + look.x() * 2;
+    let sy = player.getY() + player.getEyeHeight();
+    let sz = player.getZ() + look.z() * 2;
+    // console.log('[Kuchiyose] 阶段4-召唤坐标: ' + sx.toFixed(2) + ', ' + sy.toFixed(2) + ', ' + sz.toFixed(2));
+
+    let scroll = level.createEntity('rainbow:kuchiyose_scroll');
+    // console.log('[Kuchiyose] 阶段5-createEntity 结果: ' + (scroll ? '成功 type=' + scroll.type : 'null (实体未注册?)'));
+    if (!scroll) return;
+    // 注意：不能用 setNbt 设置属性 —— setNbt 内部调用 Entity.load() 会把已 setPos 的坐标重置为 0,0,0
+    // 改用直接方法设置无敌/静音/无重力
+    try {
+        scroll.setInvulnerable(true);
+        scroll.setSilent(true);
+        scroll.setNoGravity(true);
+    } catch (e) {
+        // console.log('[Kuchiyose] 阶段5-属性设置异常: ' + e);
+    }
+    scroll.setPos(sx, sy, sz);
+    scroll.setYaw(yaw);
+    scroll.setPitch(pitch);
+    try { scroll.setYBodyRot(yaw); } catch (e) {
+        // console.log('[Kuchiyose] 阶段5-setYBodyRot 异常: ' + e);
+    }
+    // 驯服绑定 + 自治数据：召唤玩家自动成为主人（getOwner() 可反查）；
+    // 投掷方向（施放技能时的视线向量）存入 persistentData，供实体自身 tick
+    // 驱动的投掷逻辑读取（persistentData 随实体 NBT 持久化，/reload 后仍有效）
+    try {
+        scroll.setTame(true);
+        scroll.setOwnerUUID(player.uuid);
+        var kuchiyoseData = scroll.getPersistentData();
+        kuchiyoseData.putDouble('kuchiyoseLookX', look.x());
+        kuchiyoseData.putDouble('kuchiyoseLookY', look.y());
+        kuchiyoseData.putDouble('kuchiyoseLookZ', look.z());
+    } catch (e) {
+        // console.log('[Kuchiyose] 阶段5-驯服绑定异常: ' + e);
+    }
+    // console.log('[Kuchiyose] 阶段5.5-setPos 后位置: ' + scroll.getX().toFixed(2) + ',' + scroll.getY().toFixed(2) + ',' + scroll.getZ().toFixed(2));
+    // 主手物品 = 卷轴本体，客户端通过物品渲染层直接显示其物品模型
+    scroll.setItemSlot('mainhand', Item.of('rainbow:kuchiyosenojutsu'));
+    scroll.spawn();
+    // console.log('[Kuchiyose] 阶段6-spawn() 返回: ' + spawnOk
+    //     + ', id=' + scroll.id + ', uuid=' + scroll.uuid
+    //     + ', pos=' + scroll.getX().toFixed(2) + ',' + scroll.getY().toFixed(2) + ',' + scroll.getZ().toFixed(2)
+    //     + ', removed=' + scroll.isRemoved());
+
+    // 召唤音效与粒子（与投掷发射时一致：施法语音 + TNT 爆炸粒子）
+    level.playSound(null, sx, sy, sz, 'rainbow:voice.kuchiyosenojutsu', 'players', 1.0, 1.0);
+    level.spawnParticles('minecraft:explosion', true, sx, sy, sz, 3, 0.1, 0.1, 0.1, 0.0);
+    // console.log('[Kuchiyose] 阶段7-音效与粒子已发出');
+
+    // 投掷与回收：完全由实体自身 tick 驱动（Registry_entity.js 委托调用
+    // global.kuchiyoseScrollTick），不依赖服务端计划任务，/reload 安全
+
+    //player.cooldowns.addCooldown('rainbow:kuchiyosenojutsu', SecoundToTick(30));
+});
+
+// ==========================================
+// 通灵卷轴实体自治投掷（由实体自身 tick 每次调用，见 Registry_entity.js）
+// 通过 global 挂载：global 是跨脚本类型共享的 Map，startup 脚本的实体 tick
+// 可以取到此函数；/reload 后 server 脚本重载会重新挂载，实体自动使用新逻辑
+// tickNum：实体 tick 维护的 persistentData 计数器（kuchiyoseTicks），每 tick +1
+// ==========================================
+global.kuchiyoseScrollTick = function (scroll, tickNum) {
+    try {
+        // 每 5 tick 投掷一次
+        if (tickNum % 5 != 0) return;
+
+        // 主人：驯服绑定的召唤玩家（getOwner() 主人离线时返回 null，则本周期停火）
+        var owner = scroll.getOwner();
+        if (owner == null || !owner.isAlive()) return;
+
+        // 投掷方向：施放技能时存入 persistentData 的视线向量
+        var data = scroll.getPersistentData();
+        var lx = data.getDouble('kuchiyoseLookX');
+        var ly = data.getDouble('kuchiyoseLookY');
+        var lz = data.getDouble('kuchiyoseLookZ');
+        if (lx == 0 && ly == 0 && lz == 0) return; // 无方向数据（异常/旧实体兜底）
+
+        // 兼容 launchKuchiyoseThrowable 的 look 接口（look.x()/y()/z() 方法调用）
+        var look = { x: function () { return lx; }, y: function () { return ly; }, z: function () { return lz; } };
+
+        var level = scroll.getLevel();
+        var taken = takeKuchiyoseThrowable(owner);
+        if (taken) {
+            // 起点在卷轴前方 0.6 格，避免投掷物撞到卷轴本体
+            var ox = scroll.getX() + lx * 0.6;
+            var oy = scroll.getY() + 0.3;
+            var oz = scroll.getZ() + lz * 0.6;
+            launchKuchiyoseThrowable(level, owner, taken.plan, taken.single, ox, oy, oz, look);
+            // 发射音效：卷轴施法语音
+            level.playSound(null, ox, oy, oz, 'rainbow:voice.kuchiyosenojutsu', 'players', 1.0, 1.0);
+            // 发射粒子：卷轴位置 TNT 爆炸烟雾
+            level.spawnParticles('minecraft:explosion', true, ox, oy, oz, 3, 0.1, 0.1, 0.1, 0.0);
+        }
+    } catch (e) {
+        console.error('[Kuchiyose] 自治投掷异常: ' + e);
+    }
+};
+
+
+// ==========================================
+// 应急方案：吸收最近玩家饰品的冷却
+// 剩余冷却读取使用 server_scripts/Utils.js 的 getItemCooldownRemaining
+// ==========================================
+
+registerSkill('mysticartifacts:emergency_plan', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (player.cooldowns.isOnCooldown('mysticartifacts:emergency_plan')) return;
+    if (player.level.clientSide) return;
+
+    // AABB 查询周围16格内离自己最近的玩家（排除自己）
+    let searchBox = player.boundingBox.inflate(16);
+    let nearestPlayer = null;
+    let nearestDistSq = Infinity;
+    player.level.getEntitiesWithin(searchBox).forEach(entity => {
+        if (!entity || !entity.isPlayer() || !entity.isAlive()) return;
+        if (entity.getUuid().toString() == player.getUuid().toString()) return;
+        let dx = entity.getX() - player.getX();
+        let dy = entity.getY() - player.getY();
+        let dz = entity.getZ() - player.getZ();
+        let distSq = dx * dx + dy * dy + dz * dz;
+        if (distSq < nearestDistSq) {
+            nearestDistSq = distSq;
+            nearestPlayer = entity;
+        }
+    });
+
+    if (!nearestPlayer) {
+        player.tell(Text.gray('周围16格内没有其他玩家。'));
+        return;
+    }
+
+    // 遍历目标玩家 Curios 所有饰品栏，清除冷却中的饰品并把剩余冷却转移（取最大值）
+    let curiosStacks = listCuriosStack(nearestPlayer);
+    let maxRemaining = 0;
+    let clearedCount = 0;
+    curiosStacks.forEach(stack => {
+        let remaining = getItemCooldownRemaining(nearestPlayer, stack);
+        if (remaining <= 0) return; // -1=读取失败 0=无冷却
+        nearestPlayer.cooldowns.removeCooldown(stack.getItem());
+        clearedCount++;
+        if (remaining > maxRemaining) maxRemaining = remaining;
+    });
+
+    if (clearedCount <= 0) {
+        player.tell(Text.gray(nearestPlayer.username + ' 的饰品均未处于冷却。'));
+        return;
+    }
+
+    // 把剩余冷却转移到本物品
+    player.cooldowns.addCooldown('mysticartifacts:emergency_plan', maxRemaining);
+    player.tell(Text.green('已吸收 ' + nearestPlayer.username + ' 的 ' + clearedCount + ' 件饰品冷却，本物品进入 ' + Math.ceil(maxRemaining / 20) + ' 秒冷却。'));
+    nearestPlayer.tell(Text.yellow(player.username + ' 吸收了你饰品的冷却！'));
+});
+
+// ==========================================
+// 主入口逻辑
+// ==========================================
+
+// 奥数法典：射线命中 32 格内的非玩家 Mob 后，转化为猪并在 10 秒后恢复。
+registerSkill('rainbow:arcane_codex', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    try {
+        if (player == null || player.level == null || player.level.isClientSide()) return;
+        let hit = player.rayTrace(32, false);
+        if (hit == null || hit.entity == null) {
+            player.tell(Text.gray('奥数法典：射线没有命中生物。'));
+            return;
+        }
+        let target = hit.entity;
+        if (target == null || !target.isAlive()) {
+            player.tell(Text.gray('奥数法典：目标当前无法变身。'));
+            return;
+        }
+        if (!arcaneCodexTransformToPig(target)) {
+            player.tell(Text.gray('奥数法典：该目标无法变成猪。'));
+            return;
+        }
+        player.tell(Text.green('奥数法典：目标已变成猪，持续 10 秒。'));
+    } catch (e) {
+        console.log('[奥数法典] 主动技能执行失败: ' + e);
+    }
+});
+
+NetworkEvents.dataReceived('skillwheel', event => {
+    let player = event.player;
+    let packetItem = event.data.item;
+    let isSubmenu = event.data.getBoolean("isSubmenu");
+    let submenuIndex = event.data.getInt("submenuIndex");
+    let shiftDown = event.data.getBoolean("shiftDown");
+
+    //console.log(event.data)
+
+    if (!packetItem) return;
+
+    // 获取物品ID
+    let itemId = packetItem.id;
+
+    // 播放音效
+    let soundId = SkillSoundRegistry[itemId] || "rainbow:voice.skillwheel";
+    player.level.playSound(null, player.getX(), player.getY(), player.getZ(), soundId, "voice", 1, 1)
+
+    // 从发包数据获取 source 类型和 slot 索引
+    let sourceType = event.data.getString("sourceType");
+    let slotIndex = event.data.getInt("slotIndex");
+    let slotName = event.data.getString("slotName");
+
+    let itemStack = null;
+    if (sourceType === "vanilla_armor") {
+        itemStack = player.getInventory().armor[slotIndex];
+    } else {
+        itemStack = getPacketItemStack(player, sourceType, slotIndex, slotName, itemId);
+    }
+
+    if (!itemStack || itemStack.isEmpty() || (itemId && itemStack.id != itemId)) {
+        return;
+    }
+
+    let handler = SkillRegistry[itemId];
+    if (!handler) return;
+    try {
+        handler(event, player, itemStack, isSubmenu, submenuIndex,shiftDown);
+    } catch (error) {
+        console.error(`Error executing skill for ${itemId}: ${error}`);
+        player.tell(Text.red(`技能执行出错: ${error}`));
+    }
+});

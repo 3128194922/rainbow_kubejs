@@ -13,12 +13,12 @@ StartupEvents.registry("mob_effect", event => {
         .beneficial()
         .color(0xFF0000)
         .displayName("怪物化")
-        // +30% 速度
-        .modifyAttribute("minecraft:generic.movement_speed", "monster_speed", 0.3, "multiply_base")
-        // +50% 攻击伤害
-        .modifyAttribute("minecraft:generic.attack_damage", "monster_damage", 0.5, "multiply_base")
-        // +20 最大生命值
-        .modifyAttribute("minecraft:generic.max_health", "monster_health", 20, "addition")
+        // +10% 速度
+        /*.modifyAttribute("minecraft:generic.movement_speed", "monster_speed", 0.1, "multiply_base")
+        // +10% 攻击伤害
+        .modifyAttribute("minecraft:generic.attack_damage", "monster_damage", 0.1, "multiply_base")
+        // +5 最大生命值
+        .modifyAttribute("minecraft:generic.max_health", "monster_health", 5, "addition")*/
         .effectTick((entity, amplifier) => {
             if (entity.isPlayer() && !entity.level.isClientSide()) {
                 let player = entity;

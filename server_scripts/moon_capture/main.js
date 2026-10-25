@@ -49,8 +49,6 @@ ItemEvents.rightClicked('minecraft:stick',event => {
 ItemEvents.rightClicked('rainbow:mini_moon',event => {
     let { player, item, level } = event;
     if (level.isClientSide()) return;
-
-    level.server.runCommandSilent('/clanginghowl meteor_shower start')
-    player.tell('你召唤了流星雨！')
-    item.shrink(1);
+    // 异星陨石现在是可重复装备使用的主动饰品，右键与技能轮盘共用持续AOE入口。
+    if (typeof global.startAlienMeteor == 'function') global.startAlienMeteor(player);
 });

@@ -13,33 +13,7 @@
 function onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!victim.isPlayer()) return;
 
-    // --- 远古之庇护 ---
-    // 仅非白 MineTeam 队伍生效；受伤者与同队伍内其他在线佩戴者平均承担本次伤害。
-    // 转移部分使用魔法伤害，并由 global 标记阻止转移事件再次递归分摊。
-    if (hasContextCurio(context, "victim", victim, "rainbow:ancientaegis")
-        && !global.ancientAegisRedirecting
-        && typeof global.getAncientAegisDamageTargets === "function") {
-        try {
-            let targets = global.getAncientAegisDamageTargets(victim);
-            let originalAmount = event.getAmount();
-            if (targets != null && targets.length > 1 && originalAmount > 0) {
-                let sharedAmount = originalAmount / targets.length;
-                global.ancientAegisRedirecting = true;
-                try {
-                    for (let target of targets) {
-                        if (target == null || target.getId() === victim.getId()) continue;
-                        target.attack(target.damageSources().magic(), sharedAmount);
-                    }
-                } finally {
-                    global.ancientAegisRedirecting = false;
-                }
-                event.setAmount(sharedAmount);
-            }
-        } catch (e) {
-            global.ancientAegisRedirecting = false;
-            console.log("[远古之庇护] 队伍伤害分担失败: " + e);
-        }
-    }
+    // 远古之庇护已移到LivingDamageEvent，在护甲和保护结算后分出25%。
 
     // --- 巫毒女巫锅 ---
     // 佩戴时，攻击者每有一个负面药水效果，对玩家的伤害减少4%，最高100%

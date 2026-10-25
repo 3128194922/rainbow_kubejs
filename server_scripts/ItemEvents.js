@@ -235,11 +235,11 @@ ItemEvents.rightClicked("rainbow:musical_score", event => {
     });
 });*/
 
-ItemEvents.rightClicked("rainbow:mini_ender_chest", event => {
+/*ItemEvents.rightClicked("rainbow:mini_ender_chest", event => {
     let { player, level } = event;
     if (level.isClientSide()) return;
     player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
-});
+});*/
 //末地空气
 /*ItemEvents.rightClicked("minecraft:glass_bottle", event => {
     let { player, level, item } = event;

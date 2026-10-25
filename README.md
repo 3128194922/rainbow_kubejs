@@ -210,7 +210,8 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:sharingan` | 血轮珠 | 注册：[startup_scripts/Registry/Registry_curios.js#L2748](startup_scripts/Registry/Registry_curios.js#L2748) |
 | `rainbow:dismas_scarf` | 强盗围巾，翻滚次数 +2、翻滚充能速度 +25%；极限闪避反击使用自定义伤害类型 `rainbow:dismas_scarf`（无视护甲与效果/保护附魔） | 注册：[startup_scripts/Registry/Registry_curios.js#L2788](startup_scripts/Registry/Registry_curios.js#L2788)，伤害类型：[server_scripts/rainbow/dismas_scarf.js](server_scripts/rainbow/dismas_scarf.js) |
 | `rainbow:unholy_cross` | 亵渎十字架，佩戴者造成伤害后额外造成一次 1 点真实伤害（独立伤害实例，自定义伤害类型 `rainbow:unholy_cross`，无视护甲/抗性/保护附魔） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害逻辑：[startup_scripts/ForgeEvents/handleUnholyCross.js](startup_scripts/ForgeEvents/handleUnholyCross.js)，伤害类型：[server_scripts/rainbow/unholy_cross.js](server_scripts/rainbow/unholy_cross.js) |
-| `rainbow:magic_ring` | 魔法戒指，佩戴时暴击率 +20%（`attributeslib:crit_chance`，0.20 = 20%） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| `rainbow:ancient_skull` | 古圣头骨，受到的最终伤害转化为等量债务；每 0.5 秒以真实伤害结算剩余债务的 20%（最少 0.5 点）；债务未清零时无法卸下，强制卸下立即结算；真实伤害类型 `rainbow:ancient_skull` 无视护甲/抗性/保护附魔 | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，伤害逻辑：[startup_scripts/ForgeEvents/handleAncientSkull.js](startup_scripts/ForgeEvents/handleAncientSkull.js)，伤害类型：[server_scripts/rainbow/ancient_skull.js](server_scripts/rainbow/ancient_skull.js) |
+| `rainbow:demon_parchment` | 恶魔羊皮纸，沿用原魔法戒指素材；佩戴时暴击率 +20%（`attributeslib:crit_chance`，0.20 = 20%） | 注册：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:satan_hymn` | 撒旦圣歌，每 2% 暴击率增加 1% 暴击效果（连续比例：暴击率÷2；curioTick 按当前暴击率动态刷新暴击伤害修饰符） | 注册/逻辑：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:forehead_guard` | 护额，每 1% 移速加成增加 5% 被动闪避（`attributeslib:dodge_chance`；移速 0.1=100%，低于 100% 时同比例降低闪避；curioTick 动态刷新闪避修饰符） | 注册/逻辑：[startup_scripts/Registry/Registry_curios.js](startup_scripts/Registry/Registry_curios.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:the_3000_ways_to_kill` | 要你命3000，爆炸伤害倍率 +2 | 注册：[startup_scripts/Registry/Registry_curios.js#L2825](startup_scripts/Registry/Registry_curios.js#L2825) |
@@ -434,9 +435,9 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 
 **触发条件：** 玩家幸运值 ≤ 0 时攻击生物（驯服生物除外），概率触发
 
-> 实现：[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)，词条效果：[server_scripts/mini_boss_system/effects.js](server_scripts/mini_boss_system/effects.js)，伤害词条：[startup_scripts/mini_boss_system/damage.js](startup_scripts/mini_boss_system/damage.js)，AI：[server_scripts/mini_boss_system/IA.js](server_scripts/mini_boss_system/IA.js)，战利品：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)
+> 实现：[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)，词条效果：[server_scripts/mini_boss_system/effects.js](server_scripts/mini_boss_system/effects.js)，伤害词条：[startup_scripts/mini_boss_system/damage.js](startup_scripts/mini_boss_system/damage.js)，AI：[server_scripts/mini_boss_system/IA.js](server_scripts/mini_boss_system/IA.js)，战利品：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)，黑名单：[server_scripts/mini_boss_system/blacklist.js](server_scripts/mini_boss_system/blacklist.js)
 
-**触发逻辑：** 玩家攻击时检测幸运值，幸运为负时按 `|幸运|/100` 概率把被打实体转化为迷你Boss（驯服生物/真 Boss `fieldguide:bosses` 标签免疫转化），随机抽取 1-4 次词条（去重）并为每个词条随机掷等级，生命值 x3，并施加 `mini_boss_creeper_armor` UV 特效作为红色油漆层标识（Dyeing 清理白名单）。词条由 Jade 信息栏金色标题 + 逐行着色显示（等级 > 1 追加罗马数字，如 挖掘II）
+**触发逻辑：** 玩家攻击时检测幸运值，幸运为负时按 `|幸运|/100` 概率把被打实体转化为迷你Boss（驯服生物/真 Boss `fieldguide:bosses` 标签/实体黑名单免疫转化），随机抽取 1-4 次词条（去重，词条黑名单过滤）并为每个词条随机掷等级，生命值 x3，并施加 `mini_boss_creeper_armor` UV 特效作为红色油漆层标识（Dyeing 清理白名单）。词条由 Jade 信息栏金色标题 + 逐行着色显示（等级 > 1 追加罗马数字，如 挖掘II）
 
 **词条系统（17 种，含等级）：** 等级存储于 `persistentData.POWER_LEVELS`（key→等级）与 `_mb_lvl_<key>`，Jade 信息栏显示金色"✦ 迷你Boss ✦"标题 + 逐行词条（专属符号+标签），颜色随等级提升（aqua 低级 → yellow 过半 → red 满级），等级 > 1 追加金色罗马数字；标签/等级范围经 `global` 共享，`/reload` 即可更新显示
 
@@ -461,6 +462,8 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | 狂怒 (Fury) | 1 | 血量越低伤害越高，加成比例 = 1 - 当前血量/最大血量，最大 +100% |
 
 > 等级范围配置：`POWER_LEVEL_RANGE`（[server_scripts/mini_boss_system/main.js](server_scripts/mini_boss_system/main.js)），未列出的词条默认 1 级
+
+> 黑名单配置：[server_scripts/mini_boss_system/blacklist.js](server_scripts/mini_boss_system/blacklist.js) —— `MB_ENTITY_BLACKLIST` 实体黑名单（命中 id 模式的实体不参与转化，无词条/血量加成/外观/掉落，支持 `'create:*'` 命名空间通配）；`MB_POWER_BLACKLIST` 词条黑名单（按实体 id 禁止抽取指定词条，键 `'*'` 全局禁用，词条被全部禁用的实体视同实体黑名单）。负幸运受击与血月生成两条路径共用，`/reload` 生效（仅影响新转化）
 
 > 战利品表 `rainbow:mini_boss_extra`：[server_scripts/mini_boss_system/loot.js](server_scripts/mini_boss_system/loot.js)（钻石/绿宝石/金锭/铁锭/经验瓶/末影珍珠/黑曜石/超精密构件/奇迹物质/下界合金碎片）
 
@@ -717,12 +720,12 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 
 ### 伤害指示器系统
 
-ParticleJS 文本粒子与飘字基础设施（priority 4000），注册于 [startup_scripts/damage_indicators/main.js](startup_scripts/damage_indicators/main.js)。
+ParticleJS 文本粒子与伤害飘字基础设施（priority 4000），注册于 [startup_scripts/damage_indicators/main.js](startup_scripts/damage_indicators/main.js)。文字类型使用 `.pipeline('custom')`，由 ParticleJS 自有客户端管理器和网络通道创建、更新与渲染，绕开 RuOK 对 ParticleEngine 的接管；武士刀切割贴图粒子仍使用原版管线。
 
-- **粒子类型：** `rainbow:damage_indicator_text`（动态文本粒子）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
-- **分色：** 物理红 / 魔法紫 / 真实伤害白；`rainbow:unholy_cross` 等自定义伤害类型按注册表 ID 判定为真实伤害（`message_id` 为 player 时不会误判为普通攻击）
+- **粒子类型：** `rainbow:damage_indicator_text`（custom 管线动态文本）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
+- **分色：** 物理红 / 魔法紫 / 真实伤害白；`rainbow:unholy_cross`、`rainbow:ancient_skull` 等自定义伤害类型按注册表 ID 判定为真实伤害（`message_id` 为 player 时不会误判为普通攻击）
 - **全局 API：** `global.sendParticleText`、`global.sendParticleTextInFront`、`global.spawnDamageIndicator`
-- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化暴击/闪避、原版跳劈分别飘「暴击！/闪避！/跳劈！」
+- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；神化暴击与本次最终伤害合并为单个「暴击 12.3！」文本粒子，统一使用亮红色（#FF5555）与深红描边；普通命中只显示数字，沿用伤害类型颜色；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化闪避、原版跳劈分别飘「闪避！/重击！」。其他脚本仍可通过原有 `global.sendParticleText`、`global.sendParticleTextInFront` 接口发送文本粒子。
 
 ### Cataclysm Boss 强化
 
@@ -1060,6 +1063,17 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 自定义灵魂火配方与火焰伤害定义，覆盖原版、下界扩展、末地扩展、地下城美食；MoreFire 兼容脚本统一配置原版火/灵魂火/dungeonsdelight 活体火/endergetic 末影火/netherexp 远古火/caverns_and_chasms 铜火的颜色、伤害与雨中熄灭规则。
 
 末影之握、生灵之触的攻击附火通过 `MoreFire.ignite(entity, fireId, ticks)` 实现，分别使用本项目设定的 `endergetic:ender_fire`（末影火）与 `dungeonsdelight:living_fire`（生灵火）火焰定义。
+
+### 魂火喷火器
+
+> 实现：[startup_scripts/soul_flamethrower/](startup_scripts/soul_flamethrower/)
+
+ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clanginghowl:soul_burner`）时接入本项目 MoreFire 自定义魂火 `rainbow:soul_flame`（MoreFire 类型方块，可在任意地面存活，接触/持续燃烧伤害 2.0、青色火焰、雨不灭水灭）：
+
+- 实体灼烧：`clanginghowl:fire_stream` 伤害命中时通过 `MoreFire.ignite` 为目标附着 `rainbow:soul_flame`（青色火焰动画 + 持续伤害接管），入口 `LivingHurtEvent`；
+- 地面附着：喷火 raycast 放置的 `minecraft:fire` / `minecraft:soul_fire` 替换为 `rainbow:soul_flame` 方块（`NeighborNotifyEvent`，替换前校验 canSurvive，悬空位置保留原版火）。
+
+无附魔喷火器行为不变。方块注册在 startup，修改后需重启游戏生效。
 
 ---
 

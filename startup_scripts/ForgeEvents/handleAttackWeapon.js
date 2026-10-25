@@ -94,21 +94,6 @@ function handleAttackWeapon(event, entity, target, context) {
             break;
     }
 
-    // lpecac：攻击时在目标位置生成源于玩家的不破坏方块爆炸，爆炸大小由 boom_damage 属性决定，0.15秒冷却
-    if (hasContextCurio(context, "attacker", entity, 'rainbow:lpecac')) {
-        if (entity.cooldowns.isOnCooldown('rainbow:lpecac')) return;
-        try {
-            let boomValue = entity.getAttributeValue("rainbow:generic.boom_damage");
-            entity.level.createExplosion(target.x, target.y, target.z)
-                .causesFire(false)
-                .exploder(entity)
-                .explosionMode("none")
-                .strength(boomValue/10)
-                .explode();
-            entity.cooldowns.addCooldown("rainbow:lpecac", SecoundToTick(0.15));
-        } catch (e) {
-            console.log('lpecac爆炸报错:');
-            console.log(e);
-        }
-    }
+    // 吐根现由实际伤害入口统一触发近战/远程/法术AOE，不再创建击退爆炸。
+
 }

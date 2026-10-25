@@ -32,7 +32,7 @@ const SOUL_DIAMOND_STORED_XP = 'SoulDiamondStoredXp';
 StartupEvents.registry('item', event => {
     event.create('rainbow:relic')
         .displayName('圣遗物')
-        .texture('rainbow:item/super_mechanism')
+        //.texture('rainbow:item/super_mechanism')
         .rarity('epic')
         .maxStackSize(1)
         .tag('curios:charm')
@@ -1765,7 +1765,7 @@ StartupEvents.registry('item', event => {
 })
 
 // 寻友护符
-// 机制：根据服务器在线玩家数量，每人提供 0.1 的 multiply_total 挖掘速度/攻击伤害/自然恢复加成
+// 机制：根据服务器在线玩家数量，每人提供5%的 multiply_total 挖掘速度/经验获取/受到治疗加成
 // 在线玩家 > 1 时进入激活状态，切换为已激活图标
 StartupEvents.registry('item', event => {
     event.create('rainbow:player_doll')
@@ -1775,17 +1775,7 @@ StartupEvents.registry('item', event => {
         .attachCuriosCapability(
             CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
                 .modifyAttribute(ev => {
-                    let player = ev.slotContext.entity();
-                    if (player == null) return;
-                    if (player.server == null) return;
-
-                    let onlineCount = player.server.players.size();
-                    if (onlineCount > 0)
-                    {
-                        ev.modify("attributeslib:mining_speed", "player_doll", 0.1 * onlineCount, "multiply_total");
-                        ev.modify("minecraft:generic.attack_damage", "player_doll", 0.1 * onlineCount, "multiply_total");
-                        ev.modify("cataclysm:nature_heal", "player_doll", 10 * onlineCount, "addition");
-                    }
+                    rebalanceFriendAttributes(ev);
                 })
                 .curioTick((slotContext, stack) => {
                     if (stack.nbt == null) {
@@ -1866,7 +1856,8 @@ StartupEvents.registry('item', event => {
                     let dx = player.x - lastX;
                     let dz = player.z - lastZ;
                     // 一秒内位移不超过宽容度 → 视为不移动（忽略轻微漂移）
-                    let moving = (dx * dx + dz * dz) > SHINY_STONE_MOVE_TOLERANCE * SHINY_STONE_MOVE_TOLERANCE;
+                    // 潜行强制视为静止，仍每秒记录真实位置。
+                    let moving = !player.isShiftKeyDown() && (dx * dx + dz * dz) > SHINY_STONE_MOVE_TOLERANCE * SHINY_STONE_MOVE_TOLERANCE;
 
                     tag.putDouble("lastX", player.x);
                     tag.putDouble("lastZ", player.z);
@@ -1951,8 +1942,9 @@ StartupEvents.registry('item', event => {
                     if (!tag.contains("lastX") || !tag.contains("lastZ")) {
                         tag.putDouble("lastX", player.x);
                         tag.putDouble("lastZ", player.z);
-                        tag.putBoolean("isStill", false);
-                        setWoodenDummyCritBonus(player, false);
+                        // 首次装备也立即识别潜行静止。
+                        tag.putBoolean("isStill", player.isShiftKeyDown());
+                        setWoodenDummyCritBonus(player, player.isShiftKeyDown());
                         return;
                     }
 
@@ -1961,7 +1953,8 @@ StartupEvents.registry('item', event => {
                     let dx = player.x - lastX;
                     let dz = player.z - lastZ;
                     // 一秒内位移不超过宽容度 → 视为静止（忽略轻微漂移）
-                    let still = (dx * dx + dz * dz) <= WOODEN_DUMMY_MOVE_TOLERANCE * WOODEN_DUMMY_MOVE_TOLERANCE;
+                    // 潜行时即使移动，也享受静止加成。
+                    let still = player.isShiftKeyDown() || (dx * dx + dz * dz) <= WOODEN_DUMMY_MOVE_TOLERANCE * WOODEN_DUMMY_MOVE_TOLERANCE;
 
                     tag.putDouble("lastX", player.x);
                     tag.putDouble("lastZ", player.z);
@@ -2985,10 +2978,11 @@ StartupEvents.registry('item', event => {
         )
 })
 
-//魔法戒指
-// 功能：佩戴时暴击率 +20%（attributeslib:crit_chance 为百分比属性，0.20 = 20%）
+// 恶魔羊皮纸
+// 功能：沿用原魔法戒指素材；佩戴时暴击率 +20%（attributeslib:crit_chance 为百分比属性，0.20 = 20%）
 StartupEvents.registry('item', event => {
-    event.create('rainbow:magic_ring')
+    event.create('rainbow:demon_parchment')
+        .texture('rainbow:item/magic_ring')
         .rarity("epic")
         .maxStackSize(1)
         .tag("curios:charm")
@@ -2998,7 +2992,7 @@ StartupEvents.registry('item', event => {
                 .canEquip((slotContext, stack) => {
                     let entity = slotContext.entity();
                     if (entity == null) return;
-                    if (hasCurios(entity, 'rainbow:magic_ring')) return false;
+                    if (hasCurios(entity, 'rainbow:demon_parchment')) return false;
                     return true;
                 })
         )
@@ -3339,7 +3333,7 @@ StartupEvents.registry('item', event => {
 StartupEvents.registry('item', event => {
     event.create('rainbow:arcane_codex')
         .displayName('奥数法典')
-        .texture('minecraft:item/enchanted_book')
+        //.texture('minecraft:item/enchanted_book')
         .rarity('epic')
         .maxStackSize(1)
         .tag('curios:charm')
@@ -3353,6 +3347,43 @@ StartupEvents.registry('item', event => {
                     } catch (e) {
                         console.log('[奥数法典] 检查佩戴条件失败: ' + e);
                         return false;
+                    }
+                })
+        )
+})
+
+//古圣头骨
+// 功能：佩戴者受到的最终伤害转为债务（NBT AncientSkullDebt），每 0.5 秒以真实伤害
+// 结算剩余债务的 20%；债务未清零时无法主动卸下，强制卸下立即结算全部债务。
+// 伤害转化与持续伤害逻辑位于 startup_scripts/ForgeEvents/handleAncientSkull.js，
+// 由 startup_scripts/ForgeEvents/main.js 的 LivingDamageEvent 末尾调用。
+StartupEvents.registry('item', event => {
+    event.create('rainbow:ancient_skull')
+        .rarity("epic")
+        .maxStackSize(1)
+        .tag("curios:charm")
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create()
+                .canUnequip((slotContext, stack) => ancientSkullCanUnequip(slotContext, stack))
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:ancient_skull')) return false;
+                    return true;
+                })
+                .curioTick((slotContext, stack) => {
+                    ancientSkullCurioTick(slotContext, stack);
+                })
+                .onUnequip((slotContext, firstStack, secondStack) => {
+                    try {
+                        let player = slotContext.entity();
+                        if (player == null || !player.isPlayer()) return;
+                        if (player.level.isClientSide()) return;
+                        let stack = ancientSkullPickStack(firstStack, secondStack);
+                        if (stack == null) return;
+                        ancientSkullSettleAll(player, stack);
+                    } catch (e) {
+                        console.log('[古圣头骨] 卸下结算入口出错: ' + e);
                     }
                 })
         )

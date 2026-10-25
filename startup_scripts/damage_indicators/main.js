@@ -1,43 +1,52 @@
 // priority: 4000
 // ==========================================
-// ParticleJS 文本粒子与通用文字反馈
+// ParticleJS 自定义管线文本粒子与通用文字反馈
 // ==========================================
 
 const DAMAGE_INDICATOR_PARTICLE = 'rainbow:damage_indicator_text';
 const KATANA_HIT_CUT_PARTICLE = 'rainbow:katana_hit_cut';
+// 神化暴击先于最终伤害触发；暂存目标与原始 DamageSource，供伤害飘字一次性消费。
+const DAMAGE_INDICATOR_CRITICAL_HITS = [];
 
 // 伤害来源分类：用于保留现有伤害数字的颜色规则。
 const PHYSICAL_DAMAGE_TYPES = [
     'player_attack', 'mob_attack', 'mob_attack_no_player', 'arrow', 'trident',
     'thrown', 'indirect_thrown', 'fireworks', 'explosion', 'explosion.player',
-    'fall', 'fly_into_wall', 'falling_anvil', 'falling_block', 'falling_stalactite'
+    'fall', 'fly_into_wall', 'falling_anvil', 'falling_block', 'falling_stalactite',
+    // 圣十字架拆分伤害的物理段使用自定义 message_id。
+    'holy_physical'
 ];
 const MAGIC_DAMAGE_TYPES = [
     'magic', 'indirectMagic', 'indirect_magic', 'dragon_breath',
-    'wither', 'wither_skull', 'freeze', 'sting'
+    'wither', 'wither_skull', 'freeze', 'sting',
+    // 圣十字架拆分伤害的法术段使用自定义 message_id。
+    'holy_magic'
 ];
 const TRUE_DAMAGE_TYPES = [
     'out_of_world', 'generic', 'bad_respawn_point', 'starve', 'dry_out', 'sonic_boom',
-    // 亵渎十字架的追加真实伤害：message_id 为 player，需同时按注册表 ID 识别
-    'rainbow:unholy_cross'
+    // 两种十字架的真实伤害段均有独立的自定义 message_id。
+    'holy_true', 'rainbow:unholy_cross'
 ];
 // 自定义伤害类型注册表 ID：用于修正 message_id 不为类型名时的真实伤害显示
 const TRUE_DAMAGE_TYPE_IDS = [
-    'rainbow:unholy_cross'
+    'rainbow:holy_true',
+    'rainbow:unholy_cross',
+    'rainbow:ancient_skull'
 ];
 const MELEE_DAMAGE_TYPES = [
     'player_attack', 'mob_attack', 'mob_attack_no_player'
 ];
 
-// ParticleJS 文本粒子：伤害数字和免伤反馈共用同一个动态文本类型。
+// 伤害数字和通用文字提示使用 ParticleJS custom 管线，绕过 RuOK 对 ParticleEngine 的接管。
 StartupEvents.registry('particle_type', event => {
     try {
         event.create(DAMAGE_INDICATOR_PARTICLE, 'particlejs')
+            .pipeline('custom')
             ["text(java.lang.String)"]('')
             .renderType('text')
-            .lifetime(15, 19)
-            .scale(1.0)
-            .gravity(1.3)
+            .lifetime(28, 34)
+            .scale(1.7)
+            .gravity(0.35)
             .textOutline(true);
 
         // 武士刀命中切割动画，复用 EEEAB 生物的六帧贴图。
@@ -47,7 +56,7 @@ StartupEvents.registry('particle_type', event => {
             .lifetime(5)
             .renderType('lit');
     } catch (e) {
-        console.log('[ParticleJS] 注册文本/武士刀粒子出错: ' + e);
+        console.log('[ParticleJS] 注册自定义管线文字/武士刀粒子出错: ' + e);
         console.log(e);
     }
 });
@@ -64,12 +73,12 @@ function particlePositionValue(position, methodName) {
     }
 }
 
+// 服务端通用 ParticleJS 文本粒子 API；custom 管线负责客户端同步与渲染。
 function sendTextParticle(level, x, y, z, text, color, outline, outlineColor) {
     try {
         if (level == null || typeof ParticleJS === 'undefined' || ParticleJS == null) return false;
         if (level.isClientSide && level.isClientSide()) return false;
         if (x == null || y == null || z == null || text == null) return false;
-
         ParticleJS.spawn(level, DAMAGE_INDICATOR_PARTICLE, {
             x: Number(x),
             y: Number(y),
@@ -77,19 +86,19 @@ function sendTextParticle(level, x, y, z, text, color, outline, outlineColor) {
             count: 1,
             dy: 0.3,
             text: String(text),
-            textColor: color == null ? 0xFFFFFF : color,
-            textOutlineColor: outlineColor == null ? 0x333333 : outlineColor,
-            textOutline: outline == null ? true : outline
+            textColor: color == null ? 0xFFFFFF : Number(color),
+            textOutlineColor: outlineColor == null ? 0x333333 : Number(outlineColor),
+            textOutline: outline == null ? true : Boolean(outline)
         });
         return true;
     } catch (e) {
-        console.log('[ParticleJS] 发送文本粒子出错: ' + e);
+        console.log('[ParticleJS] 发送自定义管线文本粒子出错: ' + e);
         console.log(e);
         return false;
     }
 }
 
-// 服务端通用文字粒子 API，供 startup_scripts 与 server_scripts 共用。
+// 保持全局文本粒子 API 签名，供其他 startup_scripts 与 server_scripts 调用。
 global.sendParticleText = function (player, x, y, z, text, color, outline, outlineColor) {
     try {
         if (player == null) return false;
@@ -170,6 +179,24 @@ function isTrueDamageTypeId(source) {
     return false;
 }
 
+// 使用 Java DamageSource.equals 匹配同一次伤害，避免同 tick 的其他攻击或派生伤害串标。
+function consumeDamageIndicatorCritical(entity, source) {
+    try {
+        if (entity == null || source == null) return false;
+        let targetKey = String(entity.getUuid());
+        for (let i = DAMAGE_INDICATOR_CRITICAL_HITS.length - 1; i >= 0; i--) {
+            let hit = DAMAGE_INDICATOR_CRITICAL_HITS[i];
+            if (hit.targetKey === targetKey && hit.source.equals(source)) {
+                DAMAGE_INDICATOR_CRITICAL_HITS.splice(i, 1);
+                return hit.time === Number(entity.level.getTime());
+            }
+        }
+    } catch (e) {
+        console.log('[ParticleJS] 消费暴击飘字标记出错: ' + e);
+    }
+    return false;
+}
+
 function spawnDamageIndicator(entity, difference, source) {
     try {
         if (entity == null || entity.level == null || difference == null) return false;
@@ -193,7 +220,14 @@ function spawnDamageIndicator(entity, difference, source) {
         let x = entity.getRandomX(0.5);
         let y = entity.getEyeY();
         let z = entity.getRandomZ(0.5);
-        return sendTextParticle(entity.level, x, y, z, (Math.round(amount * 10 + 0.5) / 10).toFixed(1), textColor, true, outlineColor);
+        // 暴击与数字间留一个空格，整条暴击文本统一使用亮红色与深红描边，区别于普通伤害。
+        let text = (Math.round(amount * 10 + 0.5) / 10).toFixed(1);
+        if (consumeDamageIndicatorCritical(entity, source)) {
+            text = '暴击 ' + text + '！';
+            textColor = 0xFF5555;
+            outlineColor = 0x550000;
+        }
+        return sendTextParticle(entity.level, x, y, z, text, textColor, true, outlineColor);
     } catch (e) {
         console.log('[ParticleJS] 生成伤害数字出错: ' + e);
         console.log(e);
@@ -243,7 +277,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingAttackEvent', 
         let source = event.getSource();
         if (entity == null || entity.level == null || entity.level.isClientSide()) return;
 
-        // 武士刀格挡文字直接复用 ParticleJS 文本粒子，避免依赖已删除的旧文本 API。
+        // 武士刀格挡提示复用 ParticleJS 自定义管线文本粒子；切割贴图仍走原管线。
         if (entity.isUsingItem != null && entity.isUsingItem() && entity.getUseItem != null) {
             let useItem = entity.getUseItem();
             if (useItem != null && String(useItem.id) === 'mysticartifacts:katana') {
@@ -259,15 +293,30 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingAttackEvent', 
     }
 });
 
-// morecallback 战斗事件反馈：神化暴击、神化闪避、原版跳劈统一使用 KubeJS ParticleJS 文本粒子。
+// morecallback 神化暴击仅标记本次伤害，统一在受击目标的伤害数字中显示“暴击数字！”。
 ForgeEvents.onEvent('com.morecallback.event.ApothicCriticalHitEvent', event => {
     try {
-        let attacker = event.getAttacker();
-        if (attacker == null || attacker.level == null || attacker.level.isClientSide()) return;
-        global.sendParticleTextInFront(attacker, '暴击！', 0xFF3333);
+        let target = event.getTarget();
+        if (target == null || target.level == null || target.level.isClientSide()) return;
+        let source = event.getDamageSource();
+        if (source == null) return;
+        DAMAGE_INDICATOR_CRITICAL_HITS.push({
+            targetKey: String(target.getUuid()),
+            source: source,
+            time: Number(target.level.getTime())
+        });
     } catch (e) {
-        console.log('[ParticleJS] 神化暴击文本粒子出错: ' + e);
+        console.log('[ParticleJS] 记录神化暴击飘字标记出错: ' + e);
         console.log(e);
+    }
+});
+
+// 伤害被取消或完全吸收时可能没有 LivingDamageEvent；每 tick 结束清除未消费标记。
+ForgeEvents.onEvent('net.minecraftforge.event.TickEvent$ServerTickEvent', event => {
+    try {
+        if (String(event.phase) === 'END') DAMAGE_INDICATOR_CRITICAL_HITS.length = 0;
+    } catch (e) {
+        console.log('[ParticleJS] 清理暴击飘字标记出错: ' + e);
     }
 });
 
@@ -277,7 +326,7 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
         if (target == null || target.level == null || target.level.isClientSide()) return;
         global.sendParticleTextInFront(target, '闪避！', 0x55FFFF);
     } catch (e) {
-        console.log('[ParticleJS] 神化闪避文本粒子出错: ' + e);
+        console.log('[ParticleJS] 神化闪避提示出错: ' + e);
         console.log(e);
     }
 });

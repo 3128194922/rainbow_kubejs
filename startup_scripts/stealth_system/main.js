@@ -138,6 +138,14 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingChangeTargetEv
         let lvl = target.getLevel();
         if (lvl !== null && lvl !== undefined && lvl.isClientSide()) return;
 
+        // 无法被索敌期间拒绝新目标，并作废此前暴露恢复令牌，保持真正脱索。
+        if (target.hasEffect('rainbow:invisible')) {
+            event.setNewTarget(null);
+            delete stealthRecoverToken[String(target.getUuid())];
+            global.setStealthState(target, true);
+            return;
+        }
+
         // 只要被索敌（无论当前是否已暴露）都写 false 并重置 5s 计时
         global.setStealthState(target, false);
         //console.log(`[stealth_system] ${String(target.getName())} 被怪物索敌，isStealth -> false（5s 后自动恢复）`);
@@ -146,3 +154,26 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingChangeTargetEv
         console.log(`[stealth_system] 处理索敌事件失败: ${err}`);
     }
 });
+// 烟雾弹/烛心套餐共用：效果先生效，再清除仅针对施放者的当前目标与Brain仇恨。
+global.forceStealthDisengage = function (player, ticks) {
+    try {
+        if (player == null || player.level.isClientSide()) return;
+        player.potionEffects.add('rainbow:invisible', ticks, 0, false, true);
+        delete stealthRecoverToken[String(player.getUuid())];
+        global.setStealthState(player, true);
+        for (let mob of player.level.getEntitiesWithin(player.boundingBox.inflate(36))) {
+            if (!(mob instanceof TargetingMob) || !mob.isAlive()) continue;
+            let brain = mob.getBrain();
+            let target = mob.getTarget();
+            let memoryTarget = brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+            let ownsTarget = target != null && String(target.getUuid()) == String(player.getUuid());
+            let ownsMemory = memoryTarget != null && String(memoryTarget.getUuid()) == String(player.getUuid());
+            if (!ownsTarget && !ownsMemory) continue;
+            mob.setTarget(null);
+            brain.eraseMemory(MemoryModuleType.ATTACK_TARGET);
+            brain.eraseMemory(MemoryModuleType.ANGRY_AT);
+            mob.setLastHurtByMob(null);
+            mob.getNavigation().stop();
+        }
+    } catch (e) { console.log('[强制脱索] 清除仇恨失败: ' + e); }
+};

@@ -46,6 +46,10 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     let source = context.source;
     if(victim.level.isClientSide()) return;
 
+    // 派生伤害已经持有攻击预算；已结算分摊只进入最终扣血/债务阶段。
+    let rebalanceHit = rebalanceActiveHit(victim, source);
+    if (rebalanceHit != null && rebalanceHit.kind == 'share') return;
+    if (rebalanceHit == null) {
     //抛射体无敌帧重置（最高优先级：抛射体命中后立即清零 invulnerableTime，修复多重射击）
     handleProjectileIFrame(event, victim, source, context);
 
@@ -67,6 +71,15 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     // 饰品特效
     handleCuriosEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
 
+    // 攻击方通用加成只计算一次，再按相同预算进行神圣三段分解。
+    onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
+    customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
+    if (rebalanceSplitDamage(event, attacker, victim, source, context)) return;
+    } else if (rebalanceHit.kind == 'holy' && rebalanceHit.parent != null) {
+        context.isRangeDamage = rebalanceHit.parent.isRangeDamage;
+        context.isThrownDamage = rebalanceHit.parent.isThrownDamage;
+    }
+
     //  玩家受伤事件
     if (context.victimIsPlayer) {
         onPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
@@ -77,21 +90,15 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
         onNonPlayerHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
     }
 
-    //  实体受伤事件
-    onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
-
     // 宠物伤害逻辑
     if (attacker != null && context.attackerIsLiving && !context.attackerIsPlayer) {
         handleNonPlayerDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
     }
 
-    //  自定义属性流派
-    customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
-
     // 核心充能逻辑（仅保留连射核心等仍使用旧充能表的饰品）
     handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
 
-    // 迷你Boss词条伤害（含适应伤害归零），在常规伤害修正后结算。
+    // 迷你Boss适应仅对已记录类型按等级减免25%/50%/75%。
     handleMiniBossPowers(event, attacker, victim, source);
     }
     catch(e)
@@ -137,6 +144,16 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
     let source = context.source;
     if(victim.level.isClientSide()) return;
 
+    // 分摊伤害已完成原受击者的减伤，不再触发装备抵消或攻击派生；仍允许头骨接收债务。
+    let rebalanceFinalHit = rebalanceActiveHit(victim, source);
+    if (rebalanceFinalHit != null && rebalanceFinalHit.kind == 'share') {
+        handleAncientSkullDamage(event, victim, source, context);
+        return;
+    }
+
+    // 异星陨石：实际远程伤害触发拦截冲击波。
+    alienMeteorIntercept(event, victim, source, context);
+
     // 玩家受伤后
     if (context.victimIsPlayer) {
         onPlayerDamaged(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
@@ -163,8 +180,13 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
         handleBigStomach(event, victim, context);
     }
 
-    // 亵渎十字架：佩戴者造成伤害后额外造成一次 1 点真实伤害（自定义伤害类型 rainbow:unholy_cross）
-    handleUnholyCrossDamage(event, attacker, victim, context);
+    // 护甲/保护及圣经/大胃袋结算后转移25%；剩余部分才进入古圣头骨债务。
+    if (context.victimIsPlayer) rebalanceShareDamage(event, victim, source, context);
+    // 有限法球链：饮料→吐根→亵渎；神圣三段分别进入这个入口。
+    rebalanceProcDamage(event, attacker, victim, source, context);
+
+    // 古圣头骨：佩戴者受到的最终伤害转为债务并取消扣血（逻辑在 handleAncientSkull.js）
+    handleAncientSkullDamage(event, victim, source, context);
 
     }
     catch(e)
@@ -180,6 +202,26 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
         onPlayerKineticCoreDodge(event);
     } catch (e) {
         console.log('[动能核心] 闪避事件处理入口出错：' + e);
+        console.log(e);
+    }
+});
+
+// 圣主之血：火焰易伤无视目标药水免疫强制附着。双事件覆盖两类免疫机制
+// （逻辑在 handleHolyBlood.js）：anka/vzling Boss 覆写 addEffect 丢弃有害效果 → 高优先级事件；
+// 常规 canBeAffected 免疫（灾变Boss等）→ MobEffectImmuneEvent。
+/*ForgeEvents.onEvent('com.morecallback.event.MobEffectHighPriorityEvent', event => {
+    try {
+        handleHolyBloodForceAttach(event);
+    } catch (e) {
+        console.log('[圣主之血] MobEffectHighPriorityEvent入口出错：' + e);
+        console.log(e);
+    }
+});*/
+ForgeEvents.onEvent('com.morecallback.event.MobEffectImmuneEvent', event => {
+    try {
+        handleHolyBloodForceAttach(event);
+    } catch (e) {
+        console.log('[圣主之血] MobEffectImmuneEvent入口出错：' + e);
         console.log(e);
     }
 });

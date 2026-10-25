@@ -460,7 +460,7 @@ registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submen
     try{
             if (!itemStack || itemStack.isEmpty()) return;
     if (player.cooldowns.isOnCooldown("species:smoke_bomb")) return;
-    player.potionEffects.add("rainbow:invisible",60,0,false,false)
+    global.forceStealthDisengage(player, 60);
     // 1. 模拟右键：临时将该物品装备到主/副手，调用物品 use()（内部播放蓄力音效并启动使用流程）
     let hand = InteractionHand.MAIN_HAND;
     let src = event.data ? event.data.getString("sourceType") : "";
@@ -498,17 +498,7 @@ registerSkill('species:smoke_bomb', (event, player, itemStack, isSubmenu, submen
     player.potionEffects.add("minecraft:invisibility", 20 * 15, 0, true, true);
     player.potionEffects.add("minecraft:speed", 20 * 2, 2, true, true);
 
-    // 5. 烟雾笼罩：清除 36 格范围内所有实体的索敌目标（setTarget(null)），使其迷失目标（排除非活实体与玩家）
-    let smokeAABB = player.boundingBox.inflate(36);
-    player.level.getEntitiesWithin(smokeAABB).forEach(targetEntity => {
-        if (!targetEntity) return;
-        if (!targetEntity.isLiving() || !targetEntity.isAlive()) return;
-        if (targetEntity.isPlayer()) return;
-        try { targetEntity.setTarget(null);
-            targetEntity.setNoAI(true); // 禁用 AI，避免被玩家攻击后立刻重新锁定目标
-            targetEntity.setNoAI(false);
-         } catch (e) { console.log("烟雾弹清索敌失败:", e); }
-    });
+    // 强制脱索由forceStealthDisengage统一清除当前目标并阻止重新锁定。
 
     // 6. 非创造模式消耗 1 个烟雾弹
     if (!player.isCreative()) {
@@ -533,7 +523,7 @@ registerSkill('rainbow:wicked_package', (event, player, itemStack, isSubmenu, su
         if (!itemStack || itemStack.isEmpty()) return;
         if (player.cooldowns.isOnCooldown('rainbow:wicked_package')) return;
 
-        player.potionEffects.add("rainbow:invisible",60,0,false,false)
+        global.forceStealthDisengage(player, 60);
         // 1. 烟雾弹效果（同 species:smoke_bomb 技能）
         var x = player.getX();
         var y = player.getY();
@@ -544,18 +534,7 @@ registerSkill('rainbow:wicked_package', (event, player, itemStack, isSubmenu, su
         player.potionEffects.add('minecraft:invisibility', 20 * 15, 0, true, true);
         player.potionEffects.add('minecraft:speed', 20 * 2, 2, true, true);
 
-        // 2. 烟雾笼罩：清除 36 格范围内所有实体的索敌目标（排除非活实体与玩家）
-        var smokeAABB = player.boundingBox.inflate(36);
-        player.level.getEntitiesWithin(smokeAABB).forEach(targetEntity => {
-            if (!targetEntity) return;
-            if (!targetEntity.isLiving() || !targetEntity.isAlive()) return;
-            if (targetEntity.isPlayer()) return;
-            try {
-                targetEntity.setTarget(null);
-                targetEntity.setNoAI(true);
-                targetEntity.setNoAI(false);
-            } catch (e) { console.log('烛心套餐清索敌失败:', e); }
-        });
+        // 脱索入口与烟雾弹相同，仅清除针对佩戴者的仇恨。
 
         // 3. 代码进食 3 次怪物小食：临时构造物品栈并 finishUsingItem，不消耗真实物品
         for (var i = 0; i < 3; i++) {
@@ -932,66 +911,16 @@ registerSkill('rainbow:gravity_core', (event, player, itemStack, isSubmenu, subm
     {
         if(player.isClientSide) return;
     
-        player.setDeltaMovement(new Vec3d(0,10,0))
+        // 牧羊符文：跳跃高度与初速超线性相关（重力0.08/tick+0.98阻力），速度1.67使高度较2.5减半（约28.9格→14.4格）。
+        player.setDeltaMovement(new Vec3d(0,1.67,0))
         player.hurtMarked = true;
     }
 });
 
-// --- 迷你月球 ---
+// --- 异星陨石（保留原mini_moon物品ID） ---
 registerSkillSound('rainbow:mini_moon', 'rainbow:voice.tenshi');
-registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
-    if (itemStack && !player.cooldowns.isOnCooldown("rainbow:mini_moon"))
-    {
-        if(player.isClientSide) return;
-
-        // 释放技能时播放玩家动画 (server_scripts/player_animator/main.js 封装):
-        // 按下shift = 吸引模式 → 播放 assets/rainbow/player_animation/attract.json (rainbow:attract)
-        // 未按下shift = 排斥模式 → 播放 assets/rainbow/player_animation/repel.json (rainbow:repel)
-        let animId = shiftDown ? "rainbow:attract" : "rainbow:repel";
-        let animOk = global.playPlayerAnim(player, animId);
-        console.log(`[Skillwheel] mini_moon 释放: 播放动画 ${animId} 结果=${animOk} (shiftDown=${shiftDown}, player=${player.username || "?"})`);
-
-        let radius = 5;
-        let centerX = player.getX();
-        let centerY = player.getY() + 0.5;
-        let centerZ = player.getZ();
-        let area = player.boundingBox.inflate(radius);
-        let playerUuid = player.getUuid().toString();
-        let areaColor = "80FFFFFF";
-
-        if (shiftDown) {
-            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 1.0 0.2 1.0 1.0 12 1 remove`);
-        } else {
-            event.server.runCommandSilent(`/dyeing area add scale mini_moon_aura ${playerUuid} -5 0 -5 5 2 5 ${areaColor} 0.2 1.0 1.0 1.0 12 1 remove`);
-        }
-
-        player.level.getEntitiesWithin(area).forEach(entity => {
-            if (!entity) return;
-            if (!entity.isLiving() || !entity.isAlive()) return;
-            if (entity == player) return;
-
-            let dx = entity.getX() - centerX;
-            let dy = entity.getY() - centerY;
-            let dz = entity.getZ() - centerZ;
-            let distanceSq = dx * dx + dy * dy + dz * dz;
-            if (distanceSq <= 0 || distanceSq > radius * radius) return;
-
-            let distance = Math.sqrt(distanceSq);
-            let motionX = dx / distance;
-            let motionY = dy / distance;
-            let motionZ = dz / distance;
-
-            if (shiftDown) {
-                entity.setDeltaMovement(new Vec3d(-motionX * 1.2, 0.2 - motionY * 0.2, -motionZ * 1.2));
-            } else {
-                entity.setDeltaMovement(new Vec3d(motionX * 1.4, 0.35 + Math.max(motionY * 0.15, 0), motionZ * 1.4));
-                entity.attack(player.damageSources().playerAttack(player), 6);
-            }
-            entity.hurtMarked = true;
-        })
-
-        player.cooldowns.addCooldown("rainbow:mini_moon", SecoundToTick(15));
-    }
+registerSkill('rainbow:mini_moon', (event, player, itemStack, isSubmenu, submenuIndex, shiftDown) => {
+    if (itemStack != null && typeof global.startAlienMeteor == 'function') global.startAlienMeteor(player);
 });
 
 // --- 圣经 ---

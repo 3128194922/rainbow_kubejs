@@ -62,3 +62,15 @@ configureFire('netherexp:ancient_fire', fire => {
 configureFire('caverns_and_chasms:cupric_fire', fire => {
   fire.setDefinitionColor(0x5FC55B)
 })
+
+// 本项目自定义魂火方块（startup_scripts/soul_flamethrower/main.js 注册）：
+// 魂火喷火器（soul_burner 附魔）喷出的火附着该方块，规则对齐原版灵魂火。
+configureFire('rainbow:soul_flame', fire => {
+  fire.setAutoEntityFireColor(true)
+    .setBlockRainExtinguish(false)
+    .setBlockWaterExtinguish(true)
+    .setEntityRainExtinguish(false)
+    .setEntityWaterExtinguish(true)
+    .setDamage(2.0)
+    .setFireTicks(160)
+})

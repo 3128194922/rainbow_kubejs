@@ -5,6 +5,6 @@ const RAINBOW_BOUNTY_STARTUP = global.RAINBOW_BOUNTY_CONFIG;
 StartupEvents.registry('item', event => {
     event.create(RAINBOW_BOUNTY_STARTUP.contractItem, 'basic')
         .displayName('悬赏委托书')
-        .texture('rainbow:item/instance_pass')
+        .texture('rainbow:item/bounty_contract')
         .maxStackSize(1);
 });

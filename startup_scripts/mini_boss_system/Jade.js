@@ -24,7 +24,7 @@ const PowerLabel = {
 // 词条 key → [最小等级, 最大等级]，需与 main.js 的 POWER_LEVEL_RANGE 保持一致（回退用）
 const PowerRange = {
     Dig: [1, 2], Regenerate: [1, 5], Reinforce: [1, 3], Leader: [1, 1], Stealth: [1, 1],
-    Evolve: [1, 1], Parasite: [1, 3], Adapt: [1, 2], Explode: [1, 5], Disarm: [1, 5],
+    Evolve: [1, 1], Parasite: [1, 3], Adapt: [1, 3], Explode: [1, 5], Disarm: [1, 5],
     HeavyArmor: [1, 5], Dispel: [1, 5], Shadow: [1, 1], Assassin: [1, 5], Rigidity: [1, 1],
     Fury: [1, 1], Drain: [1, 1],
 };
@@ -82,7 +82,7 @@ JadeEvents.onCommonRegistration((event) => {
             let range = rangeMap[k];
             // 未列出范围的词条（如 DTM 特性）最大等级按当前等级算
             let max = range ? range[1] : lvl;
-            // 旧存档可能仍保存适应III；显示等级按新上限归一，实际判定也受2级上限约束。
+            // 旧存档可能仍保存适应III；显示等级按新上限归一，实际判定也受3级上限约束。
             if (range && lvl > max) lvl = max;
             words.push({ k: k, n: labelMap[k] || k, l: lvl, m: max });
         });

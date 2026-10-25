@@ -107,7 +107,7 @@ function applySharpshooterDamage(event, attacker, victim, source, context) {
         let distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
         let distanceMultiplier = 1 + Math.min(distance, 20) * 0.1;
         event.setAmount(event.getAmount() * distanceMultiplier);
-        // 复用已有 ParticleJS 文本粒子，在目标眼睛上方显示红色爆头反馈。
+        // 复用已有 ParticleJS 文本粒子接口，在目标眼睛上方显示红色爆头反馈。
         if (global.sendParticleText != null) {
             global.sendParticleText(victim, victim.getX(), victim.getEyeY() + 0.35, victim.getZ(), '爆头！', 0xFF0000, true, 0x330000);
         }

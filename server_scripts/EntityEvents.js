@@ -3,7 +3,7 @@
 // 👹 实体事件处理脚本
 // ==========================================
 
-// 文本粒子 API 统一通过 global.sendParticleTextInFront 提供。
+// ParticleJS custom 管线文字 API 统一通过 global.sendParticleTextInFront 提供。
 
 // 监听实体受伤事件
 EntityEvents.hurt(event => {

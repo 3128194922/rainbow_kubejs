@@ -38,7 +38,7 @@ StartupEvents.registry("item", event => {
     //event.create("rainbow:luoyang_shovel","sword").maxDamage(100).attackDamageBonus(1).maxStackSize(1).attackDamageBaseline(1)
 
     // 便携末影箱
-    event.create("rainbow:mini_ender_chest").maxStackSize(1)
+    //event.create("rainbow:mini_ender_chest").maxStackSize(1)
 
     // 秘封琥珀
     event.create("rainbow:amber_bee")

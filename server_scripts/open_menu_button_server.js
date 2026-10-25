@@ -11,7 +11,7 @@
 // Open Menu Button - server_scripts
 
 // SimpleMenuProvider / CraftingMenu / ChestMenu / Optional 统一由 server_scripts/CONST.js 提供。
-
+/*
 NetworkEvents.dataReceived("server", (event) => {
     const { data, player, level } = event;
 
@@ -24,3 +24,4 @@ NetworkEvents.dataReceived("server", (event) => {
         level.server.runCommandSilent(`/execute as ${player.getDisplayName().getString()} run dialog show hello_world`)
     }
 });
+*/

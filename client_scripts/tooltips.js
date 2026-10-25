@@ -365,7 +365,7 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.of(`当前怒气: ${energyColor}${energy.toFixed(1)} / 10.0`));
         text.add(2, Text.of(`下次音调: ${pitchColor}${pitch.toFixed(1)} / 2.0`));
         text.add(3, Text.aqua(`受到伤害累计充能，满10点进入狂怒状态（持续11秒，冷却5秒）`));
-        text.add(4, Text.aqua(`狂怒期间每次攻击回复5血，非跳劈暴击额外回复20血`));
+        text.add(4, Text.aqua(`狂怒期间每次攻击回复5血，非重击暴击额外回复20血`));
         text.add(5, Text.gold(`触发音效会逐次升调，达到最高音调后重置`));
     })
 
@@ -486,9 +486,9 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("右键提示 MineTeam 队伍入口；在物品栏点击队伍图标选队"));
-            text.add(2, Text.aqua("仅同一非白色队伍内的佩戴者平均分担所受伤害"));
+            text.add(2, Text.aqua("佩戴者受到伤害后保留 75%，同队队友合计分担 25%"));
             text.add(3, Text.aqua("白色队伍是默认队伍，按未组队处理"));
-            text.add(4, Text.aqua("分担部分以魔法伤害形式转移；白队伍时不生效"));
+            text.add(4, Text.aqua("同队在线存活队友无需佩戴；白队伍时不生效"));
         }
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
@@ -651,8 +651,9 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("释放引力场牵引周围生物并造成伤害"));
-            text.add(2, Text.aqua("潜行释放则推开周围生物"));
+            text.add(1, Text.aqua("开启后持续 10 秒，对周围敌人造成范围伤害"));
+            text.add(2, Text.aqua("半径 5 格，每秒造成 6 点伤害，不造成击退"));
+            text.add(3, Text.gray("受到远程伤害时释放冲击波拦截抛射体"));
         }
     })
     event.addAdvanced('rainbow:sprite', (item, advanced, text) => {
@@ -683,6 +684,7 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:shiny_stone', (item, advanced, text) => {
         text.add(1, Text.aqua("不移动时每秒恢复4点生命值"));
+        text.add(2, Text.aqua("▸ 潜行时强制视为静止，移动中也可回血"));
         text.add(Text.darkGray("美术资源：Forgotten Relics"))
     })
     // 木人桩
@@ -693,7 +695,7 @@ ItemEvents.tooltip((event) => {
             text.remove(1)
             text.add(1, Text.aqua("▸ 静止不动时暴击率 +15%"));
             text.add(2, Text.aqua("▸ 静止不动时暴击伤害 +30%"));
-            text.add(3, Text.gray("  移动后加成消失"));
+            text.add(3, Text.gray("  移动后加成消失；潜行时强制视为静止"));
         }
     })
     // 心之项链（功能见 startup_scripts/Registry/Registry_curios.js）
@@ -794,7 +796,7 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("不穿戴盔甲且进入隐匿状态"));
-            text.add(2, Text.aqua("隐匿状态没不穿一件盔甲+4%伤害"));
+            text.add(2, Text.aqua("隐匿状态下每不穿一件盔甲+4%伤害"));
             text.add(3, Text.darkGray("据说闻起来像葡萄汁"));
         }
     })
@@ -847,8 +849,8 @@ ItemEvents.tooltip((event) => {
     })
     // 吐根酊
     event.addAdvanced('rainbow:lpecac', (item, advanced, text) => {
-        text.add(1, Text.aqua("攻击时在目标位置产生爆炸"));
-        text.add(2, Text.aqua("爆炸不破坏方块，强度由 boom_damage 决定"));
+        text.add(1, Text.aqua("造成伤害时在目标位置触发范围伤害"));
+        text.add(2, Text.aqua("可由近战、远程和法术伤害触发，不造成击退"));
     })
     // 腐烂之心
     event.addAdvanced('rainbow:rotten_heart', (item, advanced, text) => {
@@ -1182,9 +1184,9 @@ ItemEvents.tooltip((event) => {
         if (event.shift) {
             text.remove(1)
             text.add(1, Text.aqua("▸ 根据服务器在线玩家数量提供加成"));
-            text.add(2, Text.aqua("▸ 每人在线：+10% 挖掘速度（乘算）"));
-            text.add(3, Text.aqua("▸ 每人在线：+10% 造成伤害（乘算）"));
-            text.add(4, Text.aqua("▸ 每人在线：+10% 自然恢复速度（乘算）"));
+            text.add(2, Text.aqua("▸ 每名在线玩家：挖掘速度 +5%"));
+            text.add(3, Text.aqua("▸ 每名在线玩家：经验获取 +5%"));
+            text.add(4, Text.aqua("▸ 每名在线玩家：受到治疗 +5%"));
             text.add(5, Text.gold("▸ 在线玩家 > 1 时激活，图标变化"));
         }
     })
@@ -1279,8 +1281,39 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.aqua("▸ 造成伤害后额外造成 1 点真实伤害"));
         text.add(2, Text.gray("  独立伤害，无视护甲、抗性与保护附魔"));
     })
-    // 魔法戒指
-    event.addAdvanced('rainbow:magic_ring', (item, advanced, text) => {
+    // 新增法球饰品与圣主之血说明。
+    event.addAdvanced('rainbow:holy_cross', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 造成伤害时分解为 20% 物理、20% 法术、20% 真实伤害"));
+        text.add(2, Text.gray("  三段独立结算并触发多段伤害机制"));
+    })
+    event.addAdvanced('rainbow:holy_blood', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 周围 5 格内实体的火焰抗性降低 25%"));
+        text.add(2, Text.gray("  火焰抗性最低为 0；兼容灵魂火喷火"));
+        text.add(3, Text.gray("  无视目标药水免疫，可附着于免疫实体"));
+    })
+    // 古圣头骨
+    // 机制：受到的所有伤害转为债务，每 0.5 秒以真实伤害结算剩余债务的 20%
+    // （startup_scripts/ForgeEvents/handleAncientSkull.js，NBT AncientSkullDebt）
+    event.addAdvanced('rainbow:ancient_skull', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 受到的所有伤害转化为等量债务"));
+        text.add(2, Text.aqua("▸ 每 0.5 秒以真实伤害支付剩余债务的 20%"));
+        text.add(3, Text.gray("  真实伤害无视护甲、抗性与保护附魔"));
+        text.add(4, Text.gold("▸ 债务未清零时无法卸下"));
+        text.add(5, Text.red("▸ 被强制卸下时立即结算全部债务"));
+        let debt = 0;
+        try {
+            if (item.nbt != null) {
+                debt = item.nbt.getFloat('AncientSkullDebt') || 0;
+            }
+        } catch (e) {
+            console.log("[古圣头骨提示] 读取债务失败: " + e);
+        }
+        debt = Math.max(0, debt);
+        let debtColor = debt > 0.01 ? "§c" : "§a";
+        text.add(6, Text.of(`▸ 当前债务: ${debtColor}${debt.toFixed(1)}`));
+    })
+    // 恶魔羊皮纸（沿用原魔法戒指的暴击率效果）
+    event.addAdvanced('rainbow:demon_parchment', (item, advanced, text) => {
         text.add(1, Text.aqua("▸ 暴击率 +20%"));
     })
     // 撒旦圣歌

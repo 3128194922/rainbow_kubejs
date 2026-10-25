@@ -2,6 +2,7 @@
 // 满月夜自动触发或由 /bloodmoon 手动触发；MoonJS 统一管理主世界视觉状态。
 const BLOOD_MOON_EVENT_ID = 'rainbow:blood_moon';
 const BLOOD_MOON_MANUAL_EVENT_ID = 'rainbow:blood_moon_manual';
+const PARASITE_MOON_EVENT_ID = 'rainbow:parasite_moon';
 const BLOOD_MOON_SPAWN_MARKER = '_blood_moon_natural_spawn';
 
 function startBloodMoon(level, eventId, durationTicks) {
@@ -64,9 +65,12 @@ LevelEvents.tick('minecraft:overworld', event => {
         if (isFullMoonNight) {
             // 保留其他脚本已启动的月亮事件，不反复重启本血月。
             if (currentEvent == '' || currentEvent == 'null') {
-                startBloodMoon(level, BLOOD_MOON_EVENT_ID, -1);
+                let day = Math.floor(dayTime / 24000);
+                let selectedMoon = global.pickAutomaticMoon(level, day);
+                let startedParasite = selectedMoon == 'parasite_moon' && global.startParasiteMoon(level, -1);
+                if (!startedParasite) startBloodMoon(level, BLOOD_MOON_EVENT_ID, -1);
             }
-        } else if (currentEvent == BLOOD_MOON_EVENT_ID) {
+        } else if (currentEvent == BLOOD_MOON_EVENT_ID || currentEvent == PARASITE_MOON_EVENT_ID) {
             MoonJS.stop(level);
         }
     } catch (error) {

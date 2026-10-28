@@ -21,7 +21,8 @@ function mbDisarm(event) {
     const { entity, source } = event;
     let attacker = source.getActual();
     // 无效攻击者、自伤、攻击者非迷你Boss直接返回
-    if (!attacker || attacker == entity || !attacker.isAlive()) return;
+    // 自伤判定用 getId() 原生 int 比较（== 会走 Rhino Java包装对象慢路径并产生警告开销）
+    if (!attacker || attacker.getId() == entity.getId() || !attacker.isAlive()) return;
     if (!hasPower(attacker, 'Disarm')) return;
     let lvl = getPowerLevel(attacker, 'Disarm');
     // 等级影响卸甲概率：等级 × 0.05（1级=5%，5级=25%）
@@ -55,7 +56,8 @@ function mbDispel(event) {
     const { entity, source } = event;
     let attacker = source.getActual();
     // 无效攻击者、自伤、攻击者非迷你Boss直接返回
-    if (!attacker || attacker == entity || !attacker.isAlive()) return;
+    // 自伤判定用 getId() 原生 int 比较（== 会走 Rhino Java包装对象慢路径并产生警告开销）
+    if (!attacker || attacker.getId() == entity.getId() || !attacker.isAlive()) return;
     if (!hasPower(attacker, 'Dispel')) return;
     let lvl = getPowerLevel(attacker, 'Dispel');
     // 等级影响驱散概率：等级 × 0.05（1级=5%，5级=25%）
@@ -128,7 +130,8 @@ function mbDrain(event) {
     const { entity, source } = event;
     let attacker = source.getActual();
     // 无效攻击者、自伤、攻击者非迷你Boss直接返回
-    if (!attacker || attacker == entity || !attacker.isAlive()) return;
+    // 自伤判定用 getId() 原生 int 比较（== 会走 Rhino Java包装对象慢路径并产生警告开销）
+    if (!attacker || attacker.getId() == entity.getId() || !attacker.isAlive()) return;
     if (!hasPower(attacker, 'Drain')) return;
     // EntityEvents.hurt早于Forge减伤；此处对已记录类型应用相同的适应倍率。
     let adaptMultiplier = 1;

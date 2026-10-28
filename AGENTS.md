@@ -66,6 +66,33 @@
 5. **验证边界**
    - 静态搜索、脚本重载和无报错日志只能证明对应阶段；不能替代游戏内确认实体朝向变化、伤害来源/数值、弹幕命中和多人服务器行为。修复后应记录实际测试环境与新日志，不要把未进游戏验证的写法标记为运行时已验证。
 
+# 性能写法规范（2026-10-25 spark 实测踩坑沉淀）
+
+以下规范来自 spark 采样实测：Java 包装对象 `==` 走 Rhino 慢路径曾是服务端脚本最大单项开销，修复 22 处后 KubeJS/Rhino 占比从总时间 29% 降到 9.5%、`warnAboutNonJSObject` 热点消失。写新代码必须遵守，改老代码时顺手按此清理。
+
+1. **禁止对 Java 包装对象用 `==` / `!=` 判等**
+   - 原因：Rhino 对两个 Java 包装对象判等走 `shallowEq` 慢路径，失败时还会用 MessageFormat/ResourceBundle 格式化 `warnAboutNonJSObject` 警告字符串（spark 实测该警告链本身就是热点）；且包装对象不保证跨调用复用，同一实体两次包装 `==` 可能为 false——性能与正确性双输。`!=` 与 `==` 同罪（如 `rayHit.entity != player`），一并按本条改。
+   - 实体同一性（`entity == player`、`attacker == entity`、`e == player`）：一律 `a.getId() == b.getId()`（原生 int 比较，零包装开销）。
+   - `entity.owner == player`：owner 返回 `Internal.LivingEntity`（ProbeJS 已确认）→ `entity.owner.getId() == player.getId()`。
+   - `player.team == entity.team`：team 返回 `Internal.Team` → `player.team.getName() == entity.team.getName()`（字符串比较）。
+   - `owner.level.dimension == e.level.dimension`：dimension 返回 ResourceKey → 双侧 `.toString()` 后比较。
+   - 纯 JS 字符串之间的 `==`（两侧都已 getString()/toString() 解包）保留不动，这是正常语义。
+
+2. **改比较前先查 ProbeJS 类型，禁止猜 API**
+   - 类型文件在 `kubejs/probe/generated/internals/*.d.ts`，用 grep 确认属性返回类型与可用方法后再改（已核对：`getTeam(): Internal.Team`、`Team.getName(): string`、实体 `getId(): number`、`get owner(): Internal.LivingEntity`）。
+   - 判等选择规则：返回值是实体 → 用 getId() 比；是枚举/ResourceKey/Team 等对象 → 找 getName()/toString()/getSerializedName() 之类转字符串比；是已解包的字符串/数值 → 直接比。
+
+3. **高频 tick 逻辑必须接性能埋点**
+   - 埋点工具在 `server_scripts/system/perf/probe.js`：`global.perfTime('名称', () => { ... })`（返回被包函数返回值，业务异常原样抛出）、`global.perfBegin/perfEnd` 手动区间；`/perf stats` 查看、`/perf reset` 清零。
+   - 给 PlayerEvents.tick 等高频处理器接入新逻辑时用 perfTime 包裹，且包裹位置必须在节流早退判断**之内**（每 2/5/10/20 tick 的 everyTicks 或 `% n` 判断之后），早退 tick 不产生统计噪音。
+   - 命名规范：模块级 `<模块名>-playerTick`（如 `bow-playerTick`）；实体范围遍历段单独埋点 `skill-<技能名>-entityScan`（如 `skill-royal_zombie-entityScan`）。
+   - 包裹边界陷阱：for 循环体内若有从外层函数 `return` 的控制流（如命中即停止续期），不能整段包裹——return 语义会被吞进箭头函数改变行为；此时只包其中的查询调用，如 `let targets = global.perfTime('x', () => level.getEntitiesWithin(box))`。forEach 回调内的 return 只中断当次回调，整段包裹安全。
+
+4. **spark profile 复测方法**
+   - `.sparkprofile` 是未压缩 protobuf（field1=metadata，field2=线程树：f3 为扁平 DFS 节点列表，节点 f3=类名/f4=方法名/f6=行号/f8=packed double 每窗口耗时/f9=packed varint 深度；field3=类名→mod 来源表；深度允许跳变，父节点=深度更小的最近前驱）。通用解码脚本曾置于 `%TEMP%\spark_decode\`，丢失时可按此结构重建。
+   - 分析要点：检索 `warnAboutNonJSObject`/`shallowEq`/`doEquals` 的 inclusive 占比验证 `==` 健康；统计最外层 `dev.latvian.mods.*` 帧 inclusive 合计得脚本总占比，分别报"占总时间"与"扣除 parkNanos 空闲后的活跃时间"两个口径（如 9.5% / 27%）。
+   - 验证闭环：改码 → `node --check` → `/reload` → `/kubejs errors` 无报错 → `/perf reset` 游玩战斗 2 分钟 → `/perf stats` 截埋点排行 → spark 采样对比 warn/shallowEq 是否消失、TPS 是否提升。
+
 # 输出要求
 
 不管有没有文本输出都应该输出文本 【前端变前台，后端变后厨，python送到家，Java炒米粉】

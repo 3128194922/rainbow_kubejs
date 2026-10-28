@@ -156,7 +156,9 @@ PlayerEvents.tick(event => {
     if (!player || !player.level || player.level.isClientSide()) return
     if (!everyTicks(player, 10)) return
 
-    // 所有变量都声明在函数作用域，避免 Rhino 对 try 块内 const/let 的作用域 bug
+    // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+    global.perfTime('food_stall_chairs-playerTick', () => {
+    // 所有变量都声明在函数作用域（perfTime 包裹的箭头函数体内），避免 Rhino 对 try 块内 const/let 的作用域 bug
     let seatUuid, vehicle, seat, cx, cy, cz, chairBlock
     try {
         seatUuid = player.persistentData.getString('rainbowChairSeat')
@@ -184,4 +186,5 @@ PlayerEvents.tick(event => {
     } catch (e) {
         console.log('[food_stall_chairs] 座位清理失败: ' + e)
     }
+    }); // global.perfTime 包裹结束
 })

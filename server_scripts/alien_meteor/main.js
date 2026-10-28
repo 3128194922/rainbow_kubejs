@@ -41,6 +41,10 @@ global.startAlienMeteor = function (player) {
 PlayerEvents.tick(event => {
     try {
         let player = event.player;
+        // 性能优化：入口 20 tick 节流，未激活时不再每 tick 读 NBT；脉冲与到期清除粒度均为 20 tick
+        if (!everyTicks(player, 20)) return;
+        // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+        global.perfTime('alien_meteor-playerTick', () => {
         let data = player.persistentData;
         let until = data.getLong('AlienMeteorUntil');
         if (until <= 0) return;
@@ -50,10 +54,10 @@ PlayerEvents.tick(event => {
             removeAlienMeteorAura(player);
             return;
         }
-        if (player.age % 20 != 0) return;
         if (typeof global.rebalanceAoe == 'function') {
             global.rebalanceAoe(player, player.getX(), player.getY(), player.getZ(), ALIEN_METEOR_RADIUS, 6, 'alien_meteor', 'root', null);
         }
+        }); // global.perfTime 包裹结束
     } catch (e) { console.log('[异星陨石] 持续AOE失败: ' + e); }
 });
 

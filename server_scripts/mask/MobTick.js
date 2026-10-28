@@ -26,7 +26,9 @@ PlayerEvents.tick(event => {
     let player = event.player
     if (player.level.isClientSide()) return
     if (!everyTicks(player, 20)) return;
-    
+
+    // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+    global.perfTime('mask-playerTick', () => {
     let helmet = player.getItemBySlot("head")
     if (helmet.isEmpty()) return
     if (helmet.id !== "species:wicked_mask") return
@@ -45,4 +47,5 @@ PlayerEvents.tick(event => {
     } catch (error) {
         console.error(`面具Tick效果执行出错 [${maskId}]: ${error}`);
     }
+    }); // global.perfTime 包裹结束
 });

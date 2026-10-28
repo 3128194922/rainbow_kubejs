@@ -44,9 +44,11 @@ ServerEvents.loaded(event => {
     ancientAegisEnsureMineTeamScoreboard(event.server);
 });
 
-// /reload 不会再次触发 ServerEvents.loaded；首个服务端 tick 负责在热重载后补齐队伍。
-ServerEvents.tick(event => {
-    ancientAegisEnsureMineTeamScoreboard(event.server);
+// /reload 不会再次触发 ServerEvents.loaded；改为玩家登录时兜底补齐（替代原每服务端 tick 轮询）。
+// 性能优化：颜色队伍仅被本饰品的在线玩家伤害分担使用，登录时机补齐功能等价；
+// 队伍数据保存在存档 scoreboard 中，/reload 与重启不会移除已存在的队伍。
+PlayerEvents.loggedIn(event => {
+    ancientAegisEnsureMineTeamScoreboard(event.player.server);
 });
 
 // 白队伍是 MineTeam 给玩家分配的默认队伍；在本饰品规则中按未组队处理。

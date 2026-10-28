@@ -148,6 +148,15 @@ const TheHarbinger = Java.loadClass('com.github.L_Ender.cataclysm.entity.Animati
 const ModEntities = Java.loadClass('com.github.L_Ender.cataclysm.init.ModEntities')
 const WitherMissile = Java.loadClass('com.github.L_Ender.cataclysm.entity.projectile.Wither_Missile_Entity')
 
+// 性能监测（system/perf）：纳秒级计时。
+// 注意：java.lang.System/Runtime 被 KubeJS 类过滤器默认拒绝（内置插件 deny "java.lang" 前缀，
+// classfilter.txt 仅从 mod jar 内读取，用户侧无法放开），
+// 改用 net.minecraft.Util.getNanos()（内部即 System.nanoTime()，纳秒精度相同）；
+// JVM 内存读取无允许的替代类，monitor 已移除内存指标。
+const MCUtil = Java.loadClass('net.minecraft.Util')
+// 性能监测（system/perf）：/perf 命令的整数参数解析
+const IntegerArgumentType = Java.loadClass('com.mojang.brigadier.arguments.IntegerArgumentType')
+
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化

@@ -684,11 +684,12 @@ function whistleRestoreGroup(server, ownerId, endTick) {
     }
 }
 
-// /reload 会丢失 scheduleInTicks 队列；每秒扫描已加载的个人维度补做过期返回。
+// /reload 会丢失 scheduleInTicks 队列；每 100 tick（5 秒）扫描已加载的个人维度补做过期返回。
+// 性能优化：全维度全实体扫描降频（原 20 tick 一次），过期传送返回晚几秒无感知。
 ServerEvents.tick(event => {
     try {
         let server = event.server;
-        if (server.getTickCount() % 20 !== 0) return;
+        if (server.getTickCount() % 100 !== 0) return;
         let now = server.overworld().getTime();
         let expired = {};
         for (let level of server.getAllLevels()) {
@@ -719,7 +720,10 @@ PlayerEvents.tick(event => {
         if (player.server.overworld().getTime() < point.getLong('endTick')) return;
         // 传送受阻后最多每秒重试，避免玩家 tick 每帧触发同一批实体返回及重复报错。
         if (player.server.getTickCount() % 20 !== 0) return;
-        whistleRestoreGroup(player.server, point.getString('owner'), point.getLong('endTick'));
+        // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+        global.perfTime('Skillwheel-whistle-playerTick', () => {
+            whistleRestoreGroup(player.server, point.getString('owner'), point.getLong('endTick'));
+        });
     } catch (error) {
         console.log('[鸦羽骨哨] 玩家持续事件检查失败: ' + error);
     }
@@ -761,6 +765,8 @@ function ensureWhistlePersonalWorld(player) {
 function collectWhistleNearbyEntities(player) {
     try {
         let nearby = [];
+        // 性能埋点：实体范围遍历段单独计时（鸦羽骨哨-收集附近实体）
+        global.perfTime('skill-whistle-entityScan', () => {
         let area = player.getBoundingBox().inflate(WHISTLE_PERSONAL_WORLD_RADIUS);
         let entities = player.level.getEntitiesWithin(area);
         let radiusSquared = WHISTLE_PERSONAL_WORLD_RADIUS * WHISTLE_PERSONAL_WORLD_RADIUS;
@@ -773,6 +779,7 @@ function collectWhistleNearbyEntities(player) {
             if (dx * dx + dy * dy + dz * dz > radiusSquared) continue;
             nearby.push(entity);
         }
+        }); // global.perfTime 包裹结束
         return nearby;
     } catch (error) {
         console.log('[鸦羽骨哨] 获取附近实体失败: ' + error);
@@ -892,15 +899,19 @@ registerSkill('rainbow:lyre', (event, player, itemStack, isSubmenu, submenuIndex
             },
             4:(player,entity,nbt)=>{
                 if(!entity.isAlive()) return;
-                if(entity == player) return;
+                // 实体同一性用 getId() 原生 int 比较（== 会走 Rhino Java包装对象慢路径并产生警告开销）
+                if(entity.getId() == player.getId()) return;
                 entity.attack(player.damageSources().playerAttack(player),(nbt.getInt("the_end")+1)*10)
                 player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.the_end", "voice", 0.3, 1)
             }
         };
         let AABB = player.boundingBox.inflate(16)
+        // 性能埋点：实体范围遍历段单独计时（天琴座）
+        global.perfTime('skill-lyre-entityScan', () => {
         player.level.getEntitiesWithin(AABB).forEach(entity => {
             lyreSkill[submenuIndex](player,entity,nbt);
         })
+        }) // global.perfTime 包裹结束
         player.cooldowns.addCooldown(itemStack.id,cooldowns[submenuIndex-1])
     }
 });
@@ -961,8 +972,11 @@ registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenu
         let centerZ = player.getZ();
         let area = player.boundingBox.inflate(radius);
 
+        // 性能埋点：实体范围遍历段单独计时（圣经脉冲）
+        global.perfTime('skill-bible-entityScan', () => {
         player.level.getEntitiesWithin(area).forEach(entity => {
-            if (!entity || !entity.isLiving() || !entity.isAlive() || entity == player) return;
+            // getId() 比较实体同一性（== 会走 Rhino Java包装对象慢路径）
+            if (!entity || !entity.isLiving() || !entity.isAlive() || entity.getId() == player.getId()) return;
 
             let dx = entity.getX() - centerX;
             let dy = entity.getY() - centerY;
@@ -978,6 +992,7 @@ registerSkill('rainbow:the_bible', (event, player, itemStack, isSubmenu, submenu
             ));
             entity.hurtMarked = true;
         });
+        }); // global.perfTime 包裹结束
 
         // 播放音效（复用 mini_moon 的音效）
         player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "rainbow:voice.prayer", "voice", 1, 1);
@@ -1103,7 +1118,8 @@ registerSkill('minecraft:firework_rocket', (event, player, itemStack, isSubmenu,
 
         // 检测碰撞实体
         let collideBox = player.boundingBox.inflate(0.6, 0.3, 0.6);
-        let targets = player.level.getEntitiesWithin(collideBox);
+        // 性能埋点：仅包裹 AABB 实体查询调用（下方 for 循环含从外层 return 的续期控制逻辑，不可包裹）
+        let targets = global.perfTime('skill-firework_dash-entityScan', () => player.level.getEntitiesWithin(collideBox));
 
         for (let i = 0; i < targets.size(); i++) {
             let target = targets.get(i);
@@ -1232,9 +1248,12 @@ registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, sub
             `/dyeing area add scale ice_lantern_freeze ${playerUuid} -4 0 -4 4 2 4 80DDF5FF 0.2 1.4 0.2 1.0 8 1 remove`
         );
 
+        // 性能埋点：实体范围遍历段单独计时（冰灯）
+        global.perfTime('skill-ice_lantern-entityScan', () => {
         player.level.getEntitiesWithin(area).forEach(entity => {
             try {
-                if (!entity || entity.getId() === playerId || entity == player) return;
+                // 玩家自身判定统一走 getId()（移除冗余的 entity == player 包装比较）
+                if (!entity || entity.getId() === playerId) return;
 
                 let dx = entity.getX() - centerX;
                 let dy = entity.getY() - centerY;
@@ -1249,6 +1268,7 @@ registerSkill('windswept:ice_lantern', (event, player, itemStack, isSubmenu, sub
                 console.log('[冰灯] 设置实体冻结时间失败: ' + targetError);
             }
         });
+        }); // global.perfTime 包裹结束
 
         player.cooldowns.addCooldown('windswept:ice_lantern', ICE_LANTERN_COOLDOWN_TICKS);
         console.log('[冰灯] 释放完成，冻结实体数量: ' + affectedCount);
@@ -1296,15 +1316,17 @@ registerSkill('mysticartifacts:lightning_bottle', (event, player, itemStack, isS
 
         // AABB 检测周围实体
         let area = player.boundingBox.inflate(radius);
+        // 性能埋点：实体范围遍历段单独计时（闪电瓶脉冲）
+        global.perfTime('skill-bottled_lightning-entityScan', () => {
         player.level.getEntitiesWithin(area).forEach(entity => {
             if (!entity) return;
             if (!entity.isLiving() || !entity.isAlive()) return;
-            if (entity == player) return;
+            if (entity.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
 
             // 跳过友军（已驯服宠物/佣兵）
             let OwnerName = entity.persistentData.OwnerName;
             if (OwnerName && OwnerName == playerUuid) return;
-            if (entity.owner && entity.owner == player) return;
+            if (entity.owner && entity.owner.getId() == player.getId()) return; // owner返回LivingEntity实体，getId()比较（== 会走 Rhino 慢路径）
 
             // 给敌方实体 5 秒漂浮
             entity.potionEffects.add("minecraft:levitation", 20, 0, false, false);
@@ -1320,6 +1342,7 @@ registerSkill('mysticartifacts:lightning_bottle', (event, player, itemStack, isS
                 console.error("闪电瓶召唤闪电失败: " + e);
             }
         });
+        }); // global.perfTime 包裹结束
 
         // 播放雷声
         player.level.playSound(null, player.getX(), player.getY(), player.getZ(), "minecraft:entity.lightning_bolt.thunder", "weather", 1.0, 1.0);
@@ -1503,16 +1526,18 @@ let wickedMaskSkillMap = {
                         // 优先用准心射线找目标，找不到则用视线方向 AABB 搜索最近敌对生物
                         let target = null;
                         let rayHit = player.rayTrace(64, false);
-                        if (rayHit && rayHit.entity && rayHit.entity.isLiving() && rayHit.entity.isAlive() && rayHit.entity != player) {
+                        if (rayHit && rayHit.entity && rayHit.entity.isLiving() && rayHit.entity.isAlive() && rayHit.entity.getId() != player.getId()) { // 实体同一性用 getId() 比较（!= 会走 Rhino Java包装对象慢路径）
                             target = rayHit.entity;
                         } else {
                             // AABB 搜索视线方向上的最近 LivingEntity
                             let eyePos = player.getEyePosition();
                             let searchBox = player.boundingBox.inflate(64);
                             let nearestDist = Double.MAX_VALUE;
+                            // 性能埋点：实体范围遍历段单独计时（烛心面具-导弹目标搜索）
+                            global.perfTime('skill-wicked_mask_missile-entityScan', () => {
                             player.level.getEntitiesWithin(searchBox).forEach(e => {
                                 if (!e || !e.isLiving() || !e.isAlive()) return;
-                                if (e == player) return;
+                                if (e.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
                                 try {
                                     if (!(e instanceof LivingEntity)) return;
                                 } catch (err) { return; }
@@ -1529,6 +1554,7 @@ let wickedMaskSkillMap = {
                                     target = e;
                                 }
                             });
+                            }); // global.perfTime 包裹结束
                         }
 
                         if (target) {
@@ -1606,14 +1632,16 @@ let wickedMaskSkillMap = {
         let affectedCount = 0;
         let area = player.boundingBox.inflate(RANGE);
         try {
+            // 性能埋点：实体范围遍历段单独计时（烛心面具-皇家僵尸）
+            global.perfTime('skill-royal_zombie-entityScan', () => {
             player.level.getEntitiesWithin(area).forEach(entity => {
                 if (!entity) return;
                 if (!entity.isLiving() || !entity.isAlive()) return;
-                if (entity == player) return;
+                if (entity.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
                 if (entity.isPlayer()) return;
                 // 跳过友军（已驯服宠物/佣兵）
                 if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
-                if (entity.owner && entity.owner == player) return;
+                if (entity.owner && entity.owner.getId() == player.getId()) return; // owner返回LivingEntity实体，getId()比较（== 会走 Rhino 慢路径）
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
                     if (!(entity instanceof Monster)) return;
@@ -1626,6 +1654,7 @@ let wickedMaskSkillMap = {
                     affectedCount++;
                 }
             });
+            }); // global.perfTime 包裹结束
             console.log("[烛心面具] 皇家僵尸 chosen_victim 影响实体数: " + affectedCount);
         } catch (e) {
             console.error("[烛心面具] 皇家僵尸召唤技能执行异常: " + e);
@@ -1645,14 +1674,16 @@ let wickedMaskSkillMap = {
         let area = player.boundingBox.inflate(RANGE);
         let affectedCount = 0;
         try {
+            // 性能埋点：实体范围遍历段单独计时（烛心面具-皇家苦力怕）
+            global.perfTime('skill-royal_creeper-entityScan', () => {
             player.level.getEntitiesWithin(area).forEach(entity => {
                 if (!entity) return;
                 if (!entity.isLiving() || !entity.isAlive()) return;
-                if (entity == player) return;
+                if (entity.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
                 if (entity.isPlayer()) return;
                 // 跳过友军（已驯服宠物/佣兵）
                 if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
-                if (entity.owner && entity.owner == player) return;
+                if (entity.owner && entity.owner.getId() == player.getId()) return; // owner返回LivingEntity实体，getId()比较（== 会走 Rhino 慢路径）
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
                     if (!(entity instanceof Monster)) return;
@@ -1665,6 +1696,7 @@ let wickedMaskSkillMap = {
                     affectedCount++;
                 }
             });
+            }); // global.perfTime 包裹结束
             console.log("[烛心面具] 皇家苦力怕 time_bomb 影响实体数: " + affectedCount);
         } catch (e) {
             console.error("[烛心面具] 皇家苦力怕药水效果执行异常: " + e);
@@ -1696,14 +1728,16 @@ let wickedMaskSkillMap = {
         let area = player.boundingBox.inflate(RANGE);
         let affectedCount = 0;
         try {
+            // 性能埋点：实体范围遍历段单独计时（烛心面具-皇家末影人）
+            global.perfTime('skill-royal_enderman-entityScan', () => {
             player.level.getEntitiesWithin(area).forEach(entity => {
                 if (!entity) return;
                 if (!entity.isLiving() || !entity.isAlive()) return;
-                if (entity == player) return;
+                if (entity.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
                 if (entity.isPlayer()) return;
                 // 跳过友军（已驯服宠物/佣兵）
                 if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
-                if (entity.owner && entity.owner == player) return;
+                if (entity.owner && entity.owner.getId() == player.getId()) return; // owner返回LivingEntity实体，getId()比较（== 会走 Rhino 慢路径）
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
                     if (!(entity instanceof Monster)) return;
@@ -1721,6 +1755,7 @@ let wickedMaskSkillMap = {
                     affectedCount++;
                 }
             });
+            }); // global.perfTime 包裹结束
             console.log("[烛心面具] 皇家末影人 药水效果影响实体数: " + affectedCount);
         } catch (e) {
             console.error("[烛心面具] 皇家末影人技能执行异常: " + e);
@@ -1740,14 +1775,16 @@ let wickedMaskSkillMap = {
         let area = player.boundingBox.inflate(RANGE);
         let affectedCount = 0;
         try {
+            // 性能埋点：实体范围遍历段单独计时（烛心面具-皇家骷髅）
+            global.perfTime('skill-royal_skeleton-entityScan', () => {
             player.level.getEntitiesWithin(area).forEach(entity => {
                 if (!entity) return;
                 if (!entity.isLiving() || !entity.isAlive()) return;
-                if (entity == player) return;
+                if (entity.getId() == player.getId()) return; // 实体同一性用 getId() 比较（== 会走 Rhino Java包装对象慢路径）
                 if (entity.isPlayer()) return;
                 // 跳过友军（已驯服宠物/佣兵）
                 if (entity.persistentData.OwnerName && entity.persistentData.OwnerName == playerUuid) return;
-                if (entity.owner && entity.owner == player) return;
+                if (entity.owner && entity.owner.getId() == player.getId()) return; // owner返回LivingEntity实体，getId()比较（== 会走 Rhino 慢路径）
                 // 仅对敌对生物生效（注意：KubeJS 中 entity.getType() 返回 String，不能用其取 MobCategory，改用 instanceof Monster 判定）
                 try {
                     if (!(entity instanceof Monster)) return;
@@ -1760,6 +1797,7 @@ let wickedMaskSkillMap = {
                     affectedCount++;
                 }
             });
+            }); // global.perfTime 包裹结束
             console.log("[烛心面具] 皇家骷髅 trapped 影响实体数: " + affectedCount);
         } catch (e) {
             console.error("[烛心面具] 皇家骷髅技能执行异常: " + e);
@@ -2252,6 +2290,8 @@ registerSkill('mysticartifacts:emergency_plan', (event, player, itemStack, isSub
     let searchBox = player.boundingBox.inflate(16);
     let nearestPlayer = null;
     let nearestDistSq = Infinity;
+    // 性能埋点：实体范围遍历段单独计时（应急方案-最近玩家搜索）
+    global.perfTime('skill-emergency_plan-entityScan', () => {
     player.level.getEntitiesWithin(searchBox).forEach(entity => {
         if (!entity || !entity.isPlayer() || !entity.isAlive()) return;
         if (entity.getUuid().toString() == player.getUuid().toString()) return;
@@ -2264,6 +2304,7 @@ registerSkill('mysticartifacts:emergency_plan', (event, player, itemStack, isSub
             nearestPlayer = entity;
         }
     });
+    }); // global.perfTime 包裹结束
 
     if (!nearestPlayer) {
         player.tell(Text.gray('周围16格内没有其他玩家。'));

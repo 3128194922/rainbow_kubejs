@@ -7,8 +7,10 @@
 PlayerEvents.tick(event => {
     let player = event.player;
     if (!player) return;
-    if (!everyTicks(player, 2)) return; // 每2tick发送一次，减少网络压力
+    if (!everyTicks(player, 2)) return; // 每2tick检查一次，减少网络压力
 
+    // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+    global.perfTime('bow-playerTick', () => {
     if (player.isUsingItem()) {
         let stack = player.getUseItem();
         if (stack && stack.id === "minecraft:bow") {
@@ -22,14 +24,25 @@ PlayerEvents.tick(event => {
                 player.server.runCommandSilent(`/playsound minecraft:ui.button.click player ${player.getDisplayName().getString()} ${player.x} ${player.y} ${player.z}`)
             }
 
-            // 发送拉弓进度数据包给客户端
-            player.sendData("bow_progress", { progress: progress });
+            // 性能优化：仅当进度值变化时才发包（拉弓中每 2 tick 递增 10，行为不变；
+            // 满弓保持在 100 期间不再重复发送），bowProgressSent 记录上次发送值
+            if (player.persistentData.bowProgressSent != progress) {
+                player.persistentData.bowProgressSent = progress;
+                player.sendData("bow_progress", { progress: progress });
+            }
         }
     } else {
-        // 不在拉弓 → 清零 & 重置标记
-        player.sendData("bow_progress", { progress: 0 });
-        player.persistentData.bowFullyDrawn = false;
+        // 性能优化：空闲时不再每 2 tick 持续发包 + 写 NBT，
+        // 仅在刚结束拉弓（上次发送过非零进度）时补发一次 0 并重置标记
+        if (player.persistentData.bowProgressSent != 0) {
+            player.sendData("bow_progress", { progress: 0 });
+            player.persistentData.bowProgressSent = 0;
+        }
+        if (player.persistentData.bowFullyDrawn) {
+            player.persistentData.bowFullyDrawn = false;
+        }
     }
+    }); // global.perfTime 包裹结束
 });
 // server_scripts/bow_progress.js
 /*PlayerEvents.tick(event => {

@@ -70,6 +70,8 @@ PlayerEvents.tick(event => {
     // 状态变化检测（变化时才推送，避免每 tick 都发相同值）
     if (player.age % STEALTH_CHECK_INTERVAL !== 0) return;
 
+    // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+    global.perfTime('stealth_system-playerTick', () => {
     let uuid = String(player.uuid);
     let current = global.getStealthState(player);
 
@@ -78,4 +80,5 @@ PlayerEvents.tick(event => {
         sendStealthState(player);
         //console.log(`[stealth_system] 玩家状态变化 -> isStealth=${current}`);
     }
+    }); // global.perfTime 包裹结束
 });

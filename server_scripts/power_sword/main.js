@@ -102,11 +102,15 @@ ItemEvents.rightClicked(POWER_SWORD_ID, event => {
     }
 });
 
-// 每 tick 清理主手/副手中已经到期的立场，保证模型、属性和攻击状态一致。
+// 每 5 tick 清理主手/副手中已经到期的立场，保证模型、属性和攻击状态一致（0.25 秒粒度足够）。
 PlayerEvents.tick(event => {
     try {
         let player = event.player;
         if (player == null || player.level == null || player.level.isClientSide()) return;
+        // 性能优化：5 tick 节流，避免每 tick 读双手物品 NBT
+        if (!everyTicks(player, 5)) return;
+        // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+        global.perfTime('power_sword-playerTick', () => {
         let now = player.level.getTime();
         let hands = [player.getItemInHand("main_hand"), player.getItemInHand("off_hand")];
         hands.forEach(stack => {
@@ -117,6 +121,7 @@ PlayerEvents.tick(event => {
                 closePowerSwordField(player, stack);
             }
         });
+        }); // global.perfTime 包裹结束
     }
     catch (e) {
         console.log("先驱者动力剑定时结束分解立场出错：");

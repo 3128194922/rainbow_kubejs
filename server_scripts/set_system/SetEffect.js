@@ -629,13 +629,15 @@ PlayerEvents.inventoryChanged(event => {
     try { reevaluateSetsForce(p) } catch (e) {}
 })
 
-// tick 兜底：每 5 tick 轮询装备快照（捕获 curios 变更），每 20 tick 维护已激活效果
+// tick 兜底：每 10 tick 轮询装备快照（捕获 curios 变更，内部有快照哈希比较、未变化即跳过），每 20 tick 维护已激活效果
+// 性能优化：装备槽扫描轮询从 5 tick 降到 10 tick
 PlayerEvents.tick(event => {
     let p = event.player
     if (!p || p.level.isClientSide()) return
     try {
-        if (everyTicks(p, 5)) pollAndReevaluate(p)
-        if (everyTicks(p, 20)) maintainActiveEffects(p)
+        // 性能埋点：各自包裹在 everyTicks 节流之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+        if (everyTicks(p, 10)) global.perfTime('set_system-playerTick-poll', () => pollAndReevaluate(p))
+        if (everyTicks(p, 20)) global.perfTime('set_system-playerTick-maintain', () => maintainActiveEffects(p))
     } catch (e) {
         console.error('[套装系统] tick 异常: ' + e)
     }

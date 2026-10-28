@@ -298,7 +298,8 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
 NativeEvents.onEvent(LivingTickEvent,event=>{
     let Mobs = event.entity
     let target = Mobs.target
-    let directionVec3 = Vec3d.directionFromRotation(Mobs.getRotationVector())
+    // Only calculate missile direction for the watcher tick that can launch one.
+    let directionVec3 = target && Mobs.type == 'cataclysm:the_watcher' && Mobs.persistentData.WatcherFlyModeII && Mobs.age % 80 == 0 ? Vec3d.directionFromRotation(Mobs.getRotationVector()) : null
     if(Mobs == null || target == null || target==undefined) return
     if(target){
     if(Mobs.type=='cataclysm:the_prowler'&&Mobs.persistentData.prowlerNightmareMode){

@@ -458,11 +458,11 @@ function intArrayTagToNumbers(nbtArray) {
 function isEnemy(player, entity) {
     if (!entity || !entity.isLiving() || !entity.isAlive()) return false;
 
-    // 跳过自己
-    if (entity == player) return false;
+    // 跳过自己（实体同一性用 getId() 原生 int 比较，== 会走 Rhino Java包装对象慢路径并产生警告开销）
+    if (entity.getId() == player.getId()) return false;
 
-    // 跳过同队伍
-    if (player.team && entity.team && player.team == entity.team) return false;
+    // 跳过同队伍（team 为原版 Team 对象，改用 getName() 字符串比较避免包装对象 ==）
+    if (player.team && entity.team && player.team.getName() == entity.team.getName()) return false;
 
     // 跳过玩家的召唤物主人
     if (player.owner && entity.id == player.owner.id) return false;

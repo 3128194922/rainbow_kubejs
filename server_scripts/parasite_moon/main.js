@@ -1,9 +1,10 @@
-// 寄生月只替换自然满月血月；选择结果按游戏日持久化，禁睡 Forge 监听在同名 startup_scripts 目录注册。
+// 满月按游戏日抽取是否出现血月；触发后寄生月（虫子血月）占血月的 25%，结果按游戏日持久化。
 // /parasitemoon 手动触发使用独立 eventId，避免被血月满月调度器在非满月夜立即关闭。
 const PARASITE_MOON_EVENT_KEY = 'rainbow:parasite_moon';
 const PARASITE_MOON_MANUAL_EVENT_KEY = 'rainbow:parasite_moon_manual';
 const PARASITE_MOON_ROLL_DAY = 'parasiteMoonRollDay';
 const PARASITE_MOON_ROLL_VALUE = 'parasiteMoonRollValue';
+const FULL_MOON_BLOOD_CHANCE = 0.5;
 const PARASITE_MOON_REPLACE_CHANCE = 0.25;
 
 global.pickAutomaticMoon = function (level, day) {
@@ -13,7 +14,10 @@ global.pickAutomaticMoon = function (level, day) {
         if (data.contains(PARASITE_MOON_ROLL_DAY) && data.getLong(PARASITE_MOON_ROLL_DAY) == day) {
             return data.getString(PARASITE_MOON_ROLL_VALUE);
         }
-        let picked = Math.random() < PARASITE_MOON_REPLACE_CHANCE ? 'parasite_moon' : 'blood_moon';
+        let picked = 'none';
+        if (Math.random() < FULL_MOON_BLOOD_CHANCE) {
+            picked = Math.random() < PARASITE_MOON_REPLACE_CHANCE ? 'parasite_moon' : 'blood_moon';
+        }
         data.putLong(PARASITE_MOON_ROLL_DAY, day);
         data.putString(PARASITE_MOON_ROLL_VALUE, picked);
         return picked;

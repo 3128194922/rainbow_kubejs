@@ -88,6 +88,8 @@ PlayerEvents.tick(event => {
         // 每隔 20 tick（1秒）轮询一次
         if (!everyTicks(player, 20)) return;
 
+        // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+        global.perfTime('big_stomach-playerTick', () => {
         let data = player.persistentData;
         let now = player.level.dayTime();
 
@@ -164,6 +166,7 @@ PlayerEvents.tick(event => {
         if (getCuriosItem(player, "rainbow:cruncher_charm") != null) {
             syncCruncherTaskToStacks(player, data);
         }
+        }); // global.perfTime 包裹结束
     } catch (e) {
         console.log("[贪咀护符] 任务轮询出错：" + e);
     }

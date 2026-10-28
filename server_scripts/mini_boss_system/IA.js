@@ -114,7 +114,7 @@ ForgeRegistries.ENTITY_TYPES.getKeys().forEach(key => {
           if (t >= 40) {
             e.level.getEntitiesWithin(e.boundingBox.inflate(16)).forEach(other => {
               if (!other || !other.isAlive()) return
-              if (other == e) return
+              if (other.getId() == e.getId()) return // 实体同一性用 getId() 原生 int 比较（== 会走 Rhino Java包装对象慢路径）
               if (other.getType() != e.getType()) return
               try {
                 other.potionEffects.add('quark:resilience', 100, 0, false, true);

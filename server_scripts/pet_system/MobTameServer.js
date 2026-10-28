@@ -42,45 +42,42 @@ function reviseTamedPetGoals(mob) {
                         if (owner) {
                             let lastAttackedId = owner.persistentData.LastAttackedMobId
                             let lastAttackedMeId = owner.persistentData.LastMobToAttackMe
-                            
+
+                            // 性能优化：谓词参数 t 即当前候选实体，直接与记录的 UUID 比较即可命中，
+                            // 不再 getEntities() 全量遍历 + 每实体分配 UUID 字符串（原写法为全脚本最大单项开销）
                             // 攻击主人攻击的目标
                             if (lastAttackedId) {
-                                let entityRef = mob.level.getEntities().filter(e => e.getUuid().toString() == lastAttackedId)[0]
-                                if (entityRef) {
+                                if (t.getUuid().toString() == lastAttackedId) {
                                     // 不攻击主人自己的宠物
-                                    if (entityRef.persistentData.OwnerName == owner.getUuid().toString() ||
+                                    if (t.persistentData.OwnerName == owner.getUuid().toString() ||
                                         (t instanceof TamableAnimal && t.isOwnedBy(owner))
                                     ) {
-                                        owner.persistentData.remove("LastMobToAttackMe")
+                                        // 修正：本段处理 LastAttackedMobId，应移除该键（原误移除 LastMobToAttackMe）
+                                        owner.persistentData.remove("LastAttackedMobId")
                                         return false
                                     }
-                                    if (entityRef.distanceToEntity(mob) <= 15) {
-                                        return entityRef.getUuid().toString() == t.getUuid().toString()
+                                    if (t.distanceToEntity(mob) <= 15) {
+                                        return true
                                     } else {
                                         owner.persistentData.remove("LastAttackedMobId")
                                     }
-                                } else {
-                                    owner.persistentData.remove("LastAttackedMobId")
                                 }
                             }
-                            
+
                             // 攻击攻击主人的目标
                             if (lastAttackedMeId) {
-                                let entityRef = mob.level.getEntities().filter(e => e.getUuid().toString() == lastAttackedMeId)[0]
-                                if (entityRef) {
-                                    if (entityRef.persistentData.OwnerName == owner.getUuid().toString() ||
+                                if (t.getUuid().toString() == lastAttackedMeId) {
+                                    if (t.persistentData.OwnerName == owner.getUuid().toString() ||
                                         (t instanceof TamableAnimal && t.isOwnedBy(owner))
                                     ) {
                                         owner.persistentData.remove("LastMobToAttackMe")
                                         return false
                                     }
-                                    if (entityRef.distanceToEntity(mob) <= 15) {
-                                        return entityRef.getUuid().toString() == t.getUuid().toString()
+                                    if (t.distanceToEntity(mob) <= 15) {
+                                        return true
                                     } else {
                                         owner.persistentData.remove("LastMobToAttackMe")
                                     }
-                                } else {
-                                    owner.persistentData.remove("LastMobToAttackMe")
                                 }
                             }
                         }
@@ -221,7 +218,8 @@ Object.keys(tameableMobs).forEach(id => {
             /**@param {Internal.PathfinderMob} e */ e => {
                 let owner = e.server.getPlayer(e.persistentData.OwnerName)
                 if (owner) {
-                    if (owner.level.dimension == e.level.dimension &&
+                    // dimension 为 ResourceKey 对象，改用 toString() 字符串比较（== 会走 Rhino Java包装对象慢路径）
+                    if (owner.level.dimension.toString() == e.level.dimension.toString() &&
                         owner.distanceToEntity(e) >= 16) {
                         e.navigation.moveTo(owner, 1)
                     }

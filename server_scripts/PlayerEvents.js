@@ -12,6 +12,8 @@ PlayerEvents.tick((event) => {
 
     // 每秒执行一次 (20 ticks)
     if (!everyTicks(player, 20)) return;
+    // 性能埋点：包裹在节流早退判断之内，早退 tick 不计入统计（system/perf/probe.js 提供）
+    global.perfTime('PlayerEvents-playerTick', () => {
 /*
     // --- 韧性恢复机制 ---
     // 韧性 (resilience) 会随时间自动恢复，受伤会减少韧性
@@ -40,6 +42,7 @@ PlayerEvents.tick((event) => {
       })*/
       
     if (!everyTicks(player, 200)) return;
+    }); // global.perfTime 包裹结束
 });
 
 // 悬赏委托书现由 bounty_system 的村民交互与右键事件管理，无需扫描玩家背包。

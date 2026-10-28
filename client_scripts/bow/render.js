@@ -31,6 +31,11 @@ function lerpColor(color1, color2, t) {
         .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
+// 上次已绘制的进度值与窗口尺寸，用于变化检测早退
+let bowLastPainted = -1;
+let bowLastWidth = -1;
+let bowLastHeight = -1;
+
 ClientEvents.tick(event => {
     let player = event.player;
     if (!player) return;
@@ -38,6 +43,13 @@ ClientEvents.tick(event => {
     let window = Minecraft.getInstance().getWindow();
     let width = window.getGuiScaledWidth();
     let height = window.getGuiScaledHeight();
+
+    // 性能优化：进度值与窗口尺寸均未变化时早退，跳过 paints 构建与颜色插值
+    // （拉弓中进度每 2 tick 才变一次，空闲时保持 0；进度归零时仍会执行一次 visible:false 隐藏帧，进度条不会残留）
+    if (bowProgress === bowLastPainted && width === bowLastWidth && height === bowLastHeight) return;
+    bowLastPainted = bowProgress;
+    bowLastWidth = width;
+    bowLastHeight = height;
 
     let paints = {};
 

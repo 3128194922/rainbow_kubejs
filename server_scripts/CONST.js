@@ -160,6 +160,8 @@ const IntegerArgumentType = Java.loadClass('com.mojang.brigadier.arguments.Integ
 
 global.foodlist = []; //食物列表初始化
 global.swordlist = []; //剑列表初始化
+// 食物稳定下标表：保留原数组供随机选择，同时支持常数时间反查。
+global.foodlistIndex = {};
 
 // 物品同化配置
 /*global.UNIFIED_ITEMS = [
@@ -174,6 +176,7 @@ global.swordlist = []; //剑列表初始化
 Ingredient.all.itemIds.forEach(itemId => {
     const item = Item.of(itemId).item;
     if (item.foodProperties) {
+        if (global.foodlistIndex[String(itemId)] === undefined) global.foodlistIndex[String(itemId)] = global.foodlist.length;
         global.foodlist.push(itemId);
     }
     // 检查是否为剑（通过类判断）

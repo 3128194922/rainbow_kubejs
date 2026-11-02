@@ -272,8 +272,10 @@ function removePotionSelf(player, effect) {
 
 function phasesEqual(a, b) {
     if (a.length !== b.length) return false
-    let setA = a.map(x => x.setId + ':' + x.phaseIndex)
-    for (let x of b) if (setA.indexOf(x.setId + ':' + x.phaseIndex) === -1) return false
+    // 将左侧阶段编码成键集合，避免对每个右侧阶段重复线性扫描。
+    let setA = {}
+    for (let x of a) setA[x.setId + ':' + x.phaseIndex] = true
+    for (let x of b) if (setA[x.setId + ':' + x.phaseIndex] !== true) return false
     return true
 }
 

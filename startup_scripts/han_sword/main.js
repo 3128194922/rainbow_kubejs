@@ -40,8 +40,10 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDamageEvent', 
         if (target == null || source == null || target.level == null || target.level.isClientSide()) return
         if (!target.isAlive() || event.isCanceled() || event.getAmount() <= 0) return
 
-        let player = source.getEntity()
-        if (!(player instanceof Player) || String(source.msgId()) !== 'player') return
+        // KubeJS 将伤害类型与攻击者映射为 getType/getActual，先过滤环境伤害。
+        if (String(source.getType()) !== 'player') return
+        let player = source.getActual()
+        if (!(player instanceof Player)) return
         let mainHand = player.getItemInHand('main_hand')
         if (mainHand == null || mainHand.id !== 'rainbow:han_sword') return
 

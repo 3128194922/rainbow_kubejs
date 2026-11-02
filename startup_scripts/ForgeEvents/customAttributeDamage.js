@@ -5,16 +5,16 @@
  * @param {Internal.Entity} attacker
  * @param {Internal.Entity} victim
  * @param {Internal.Entity} source
- * @param {number} range_damage 远程伤害
- * @param {number} thrown_damage 投掷伤害
- * @param {number} soure_magic 魔法伤害
- * @param {number} boom_damage 爆炸伤害
+ * @param {Object} range_damage 远程伤害类型键集合
+ * @param {Object} thrown_damage 投掷伤害类型键集合
+ * @param {Object} soure_magic 魔法伤害类型键集合
+ * @param {Object} boom_damage 爆炸伤害类型键集合
  */
 function customAttributeDamage(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isLiving()) return;
     let damageType = context != null ? context.damageType : String(source.getType());
-    let isThrownDamage = context != null ? context.isThrownDamage : thrown_damage.indexOf(damageType) != -1;
-    let isExplosionDamage = context != null ? context.isExplosionDamage : boom_damage.indexOf(damageType) != -1;
+    let isThrownDamage = context != null ? context.isThrownDamage : thrown_damage[damageType] === true;
+    let isExplosionDamage = context != null ? context.isExplosionDamage : boom_damage[damageType] === true;
 
     if (isThrownDamage) {
         let attributeValue = attacker.getAttributeValue("rainbow:generic.thrown_damage");

@@ -8,6 +8,7 @@
 //   /perf stats          查看埋点统计（global.perfTime 等接入后生效）
 //   /perf reset          清零埋点统计
 // 输出同时发送到聊天与服务端日志（logs/kubejs/server.log）留档。
+// 1.20.1 的原版 Component 使用 literal 创建文本。
 
 ServerEvents.commandRegistry(event => {
     const { commands: Commands } = event;
@@ -21,23 +22,23 @@ ServerEvents.commandRegistry(event => {
                     .executes(ctx => {
                         let player = ctx.source.getPlayer();
                         if (player == null) {
-                            ctx.source.sendFailure(Component.string('§c基准测试需要由玩家执行'));
+                            ctx.source.sendFailure(Component.literal('§c基准测试需要由玩家执行'));
                             return 0;
                         }
                         let rounds = ctx.getArgument('rounds', Integer);
                         perfRunBench(player, rounds, Math.max(50, Math.floor(rounds / 10)), line => {
-                            ctx.source.sendSuccess(Component.string(line), false);
+                            ctx.source.sendSuccess(Component.literal(line), false);
                         });
                         return 1;
                     }))
                 .executes(ctx => {
                     let player = ctx.source.getPlayer();
                     if (player == null) {
-                        ctx.source.sendFailure(Component.string('§c基准测试需要由玩家执行'));
+                        ctx.source.sendFailure(Component.literal('§c基准测试需要由玩家执行'));
                         return 0;
                     }
                     perfRunBench(player, 5000, 300, line => {
-                        ctx.source.sendSuccess(Component.string(line), false);
+                        ctx.source.sendSuccess(Component.literal(line), false);
                     });
                     return 1;
                 }))
@@ -47,20 +48,20 @@ ServerEvents.commandRegistry(event => {
                     .executes(ctx => {
                         let seconds = ctx.getArgument('seconds', Integer);
                         let msg = perfStartMonitor(ctx.source.getServer(), seconds, ctx.source.getPlayer() == null ? '' : ctx.source.getPlayer().username);
-                        ctx.source.sendSuccess(Component.string(msg), false);
+                        ctx.source.sendSuccess(Component.literal(msg), false);
                         return 1;
                     }))
                 .executes(ctx => {
                     let initiator = ctx.source.getPlayer() == null ? '' : ctx.source.getPlayer().username;
                     let msg = perfStartMonitor(ctx.source.getServer(), 60, initiator);
-                    ctx.source.sendSuccess(Component.string(msg), false);
+                    ctx.source.sendSuccess(Component.literal(msg), false);
                     return 1;
                 }))
             // 埋点统计：按总耗时降序输出
             .then(Commands.literal('stats')
                 .executes(ctx => {
                     for (let line of perfProbeReport()) {
-                        ctx.source.sendSuccess(Component.string(line), false);
+                        ctx.source.sendSuccess(Component.literal(line), false);
                         console.info('[perf] ' + line);
                     }
                     return 1;
@@ -69,7 +70,7 @@ ServerEvents.commandRegistry(event => {
             .then(Commands.literal('reset')
                 .executes(ctx => {
                     perfResetProbes();
-                    ctx.source.sendSuccess(Component.string('§a埋点统计已清零'), false);
+                    ctx.source.sendSuccess(Component.literal('§a埋点统计已清零'), false);
                     return 1;
                 }))
     );

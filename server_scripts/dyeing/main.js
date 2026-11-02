@@ -44,8 +44,9 @@ function hasPreservedEffect(savedData, uuid) {
 
 // 综合判断该 uuid 是否应跳过清理：实体为 mini boss 或持有白名单特效 id
 function shouldSkipDyeing(savedData, server, uuid) {
-    if (isMiniBossEntity(server, uuid.toString())) return true;
-    return hasPreservedEffect(savedData, uuid);
+    // 白名单已决定跳过时，无需查询可能尚未加载的实体。
+    if (hasPreservedEffect(savedData, uuid)) return true;
+    return isMiniBossEntity(server, uuid.toString());
 }
 
 // 清空支持 removeAll 的数据类（Paint/UV/AreaPaint/ScreenOverlay）

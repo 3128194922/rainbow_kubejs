@@ -25,21 +25,21 @@
 //   - 玩家默认不受优化影响（EXCLUDE_PLAYER = true）
 // ==========================================
 
-// ========== 黑名单配置（直接编辑数组即可） ==========
+// ========== 黑名单配置（按 ID 键设置 true，即可常数时间查询） ==========
 // 抛射体黑名单：造成伤害的抛射体实体 ID（在黑名单中的抛射体不触发无敌帧重置）
-const PROJECTILE_BLACKLIST = [
-    // 示例：'minecraft:arrow', 'minecraft:snowball', 'minecraft:trident',
-];
+const PROJECTILE_BLACKLIST = {
+    // 示例：'minecraft:arrow': true, 'minecraft:snowball': true, 'minecraft:trident': true,
+};
 
 // 实体黑名单：受伤实体 ID（在黑名单中的实体不被重置无敌帧）
-const ENTITY_BLACKLIST = [
-    // 示例：'minecraft:wither', 'minecraft:ender_dragon',
-];
+const ENTITY_BLACKLIST = {
+    // 示例：'minecraft:wither': true, 'minecraft:ender_dragon': true,
+};
 
 // 伤害类型黑名单：伤害类型 ID（在黑名单中的伤害类型不触发无敌帧重置）
-const DAMAGE_TYPE_BLACKLIST = [
-    // 示例：'arrow', 'trident', 'thrown',
-];
+const DAMAGE_TYPE_BLACKLIST = {
+    // 示例：'arrow': true, 'trident': true, 'thrown': true,
+};
 
 // 玩家默认不受无敌帧优化影响（true = 玩家保留原版无敌帧；false = 玩家也受优化影响）
 const EXCLUDE_PLAYER = true;
@@ -79,7 +79,7 @@ function handleProjectileIFrame(event, victim, source, context) {
 
         // --- 实体黑名单检查（受伤实体 ID） ---
         let victimId = getEntityRegistryId(victim);
-        if (victimId !== null && ENTITY_BLACKLIST.indexOf(victimId) !== -1) {
+        if (victimId !== null && ENTITY_BLACKLIST[victimId] === true) {
             return;
         }
 
@@ -88,7 +88,7 @@ function handleProjectileIFrame(event, victim, source, context) {
         let projectile = source.immediate;
         if (projectile !== null && projectile !== undefined) {
             let projectileId = getEntityRegistryId(projectile);
-            if (projectileId !== null && PROJECTILE_BLACKLIST.indexOf(projectileId) !== -1) {
+            if (projectileId !== null && PROJECTILE_BLACKLIST[projectileId] === true) {
                 return;
             }
         }
@@ -97,7 +97,7 @@ function handleProjectileIFrame(event, victim, source, context) {
         let damageType = context != null ? context.damageType : source.getType();
         if (damageType !== null && damageType !== undefined) {
             let damageTypeStr = String(damageType);
-            if (DAMAGE_TYPE_BLACKLIST.indexOf(damageTypeStr) !== -1) {
+            if (DAMAGE_TYPE_BLACKLIST[damageTypeStr] === true) {
                 return;
             }
         }

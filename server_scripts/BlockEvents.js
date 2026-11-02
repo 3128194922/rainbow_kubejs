@@ -70,10 +70,11 @@ BlockEvents.rightClicked(event => {
 
     // 切洋葱逻辑：在砧板上切洋葱触发特殊效果
     if (block.id == 'farmersdelight:cutting_board') {
-        if (block.getEntity().getStoredItem().getItem().toString() == 'onion' && Ingredient.of('#farmersdelight:tools/knives').getItemIds().toArray().indexOf(item.id) != -1) {
+        // KubeJS 源码的 Ingredient#getItemIds 返回 Set<String>，用 contains 做常数时间物品成员查询。
+        if (block.getEntity().getStoredItem().getItem().toString() == 'onion' && Ingredient.of('#farmersdelight:tools/knives').getItemIds().contains(item.id)) {
             onion(1)
         }
-        else if (block.getEntity().getStoredItem().getItem().toString() == 'overweight_onion_block' && Ingredient.of('#minecraft:hoes').getItemIds().toArray().indexOf(item.id) != -1) {
+        else if (block.getEntity().getStoredItem().getItem().toString() == 'overweight_onion_block' && Ingredient.of('#minecraft:hoes').getItemIds().contains(item.id)) {
             onion(2)
         }
     }

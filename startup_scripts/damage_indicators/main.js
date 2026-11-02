@@ -8,34 +8,34 @@ const KATANA_HIT_CUT_PARTICLE = 'rainbow:katana_hit_cut';
 // 神化暴击先于最终伤害触发；暂存目标与原始 DamageSource，供伤害飘字一次性消费。
 const DAMAGE_INDICATOR_CRITICAL_HITS = [];
 
-// 伤害来源分类：用于保留现有伤害数字的颜色规则。
-const PHYSICAL_DAMAGE_TYPES = [
-    'player_attack', 'mob_attack', 'mob_attack_no_player', 'arrow', 'trident',
-    'thrown', 'indirect_thrown', 'fireworks', 'explosion', 'explosion.player',
-    'fall', 'fly_into_wall', 'falling_anvil', 'falling_block', 'falling_stalactite',
+// 伤害来源键集合：用于保留现有颜色规则并提供平均 O(1) 成员查询。
+const PHYSICAL_DAMAGE_TYPES = {
+    'player_attack': true, 'mob_attack': true, 'mob_attack_no_player': true, 'arrow': true, 'trident': true,
+    'thrown': true, 'indirect_thrown': true, 'fireworks': true, 'explosion': true, 'explosion.player': true,
+    'fall': true, 'fly_into_wall': true, 'falling_anvil': true, 'falling_block': true, 'falling_stalactite': true,
     // 圣十字架拆分伤害的物理段使用自定义 message_id。
-    'holy_physical'
-];
-const MAGIC_DAMAGE_TYPES = [
-    'magic', 'indirectMagic', 'indirect_magic', 'dragon_breath',
-    'wither', 'wither_skull', 'freeze', 'sting',
+    'holy_physical': true
+};
+const MAGIC_DAMAGE_TYPES = {
+    'magic': true, 'indirectMagic': true, 'indirect_magic': true, 'dragon_breath': true,
+    'wither': true, 'wither_skull': true, 'freeze': true, 'sting': true,
     // 圣十字架拆分伤害的法术段使用自定义 message_id。
-    'holy_magic'
-];
-const TRUE_DAMAGE_TYPES = [
-    'out_of_world', 'generic', 'bad_respawn_point', 'starve', 'dry_out', 'sonic_boom',
+    'holy_magic': true
+};
+const TRUE_DAMAGE_TYPES = {
+    'out_of_world': true, 'generic': true, 'bad_respawn_point': true, 'starve': true, 'dry_out': true, 'sonic_boom': true,
     // 两种十字架的真实伤害段均有独立的自定义 message_id。
-    'holy_true', 'rainbow:unholy_cross'
-];
+    'holy_true': true, 'rainbow:unholy_cross': true
+};
 // 自定义伤害类型注册表 ID：用于修正 message_id 不为类型名时的真实伤害显示
 const TRUE_DAMAGE_TYPE_IDS = [
     'rainbow:holy_true',
     'rainbow:unholy_cross',
     'rainbow:ancient_skull'
 ];
-const MELEE_DAMAGE_TYPES = [
-    'player_attack', 'mob_attack', 'mob_attack_no_player'
-];
+const MELEE_DAMAGE_TYPES = {
+    'player_attack': true, 'mob_attack': true, 'mob_attack_no_player': true
+};
 
 // 伤害数字和通用文字提示使用 ParticleJS custom 管线，绕过 RuOK 对 ParticleEngine 的接管。
 StartupEvents.registry('particle_type', event => {
@@ -206,13 +206,13 @@ function spawnDamageIndicator(entity, difference, source) {
         let damageType = getDamageType(source);
         let textColor = 0xFF0000;
         let outlineColor = 0x330000;
-        if (TRUE_DAMAGE_TYPES.indexOf(damageType) >= 0 || isTrueDamageTypeId(source)) {
+        if (TRUE_DAMAGE_TYPES[damageType] === true || isTrueDamageTypeId(source)) {
             textColor = 0xFFFFFF;
             outlineColor = 0x333333;
-        } else if (MAGIC_DAMAGE_TYPES.indexOf(damageType) >= 0) {
+        } else if (MAGIC_DAMAGE_TYPES[damageType] === true) {
             textColor = 0xAA00FF;
             outlineColor = 0x220033;
-        } else if (PHYSICAL_DAMAGE_TYPES.indexOf(damageType) >= 0) {
+        } else if (PHYSICAL_DAMAGE_TYPES[damageType] === true) {
             textColor = 0xFF0000;
             outlineColor = 0x330000;
         }
@@ -246,7 +246,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingDamageEvent', 
         if (entity == null || entity.level == null || entity.level.isClientSide()) return;
         let source = event.getSource();
         global.spawnDamageIndicator(entity, -event.getAmount(), source);
-        if (MELEE_DAMAGE_TYPES.indexOf(getDamageType(source)) >= 0) {
+        if (MELEE_DAMAGE_TYPES[getDamageType(source)] === true) {
             ParticleJS.spawn(entity.level, KATANA_HIT_CUT_PARTICLE, {
                 x: entity.getX(),
                 y: entity.getY() + entity.getBbHeight() * 0.5,

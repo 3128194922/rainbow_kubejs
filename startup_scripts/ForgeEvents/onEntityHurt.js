@@ -5,10 +5,10 @@
  * @param {Internal.Entity} attacker
  * @param {Internal.Entity} victim
  * @param {Internal.Entity} source
- * @param {string[]} range_damage 远程伤害
- * @param {string[]} thrown_damage 投掷伤害
- * @param {string[]} soure_magic 魔法伤害
- * @param {string[]} boom_damage 爆炸伤害
+ * @param {Object} range_damage 远程伤害类型键集合
+ * @param {Object} thrown_damage 投掷伤害类型键集合
+ * @param {Object} soure_magic 魔法伤害类型键集合
+ * @param {Object} boom_damage 爆炸伤害类型键集合
  */
 function onEntityHurt(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     // --- 神射手护符：弹幕爆头后按射手距离计算伤害倍率（实现见 sharpshooter_charm/main.js） ---

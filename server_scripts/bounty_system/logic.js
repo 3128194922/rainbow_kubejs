@@ -25,14 +25,17 @@ function rainbowBountyPickOffers(bounties, count, isAvailable, random, previous)
         offers.push(pool.splice(index, 1)[0]);
     }
     if (previous != null && previous.length == offers.length && offers.length > 0) {
+        // 上一批 ID 转成集合，保留原重复判定并避免循环内反复线性查找。
+        let previousIndex = {};
+        for (let previousId of previous) previousIndex[previousId] = true;
         let same = true;
         for (let offer of offers) {
-            if (previous.indexOf(offer.id) < 0) same = false;
+            if (previousIndex[offer.id] !== true) same = false;
         }
         if (same) {
             let alternatives = [];
             for (let bounty of pool) {
-                if (previous.indexOf(bounty.id) < 0) alternatives.push(bounty);
+                if (previousIndex[bounty.id] !== true) alternatives.push(bounty);
             }
             if (alternatives.length > 0) {
                 let index = Math.min(alternatives.length - 1, Math.floor(random() * alternatives.length));

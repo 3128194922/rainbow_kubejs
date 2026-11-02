@@ -29,6 +29,7 @@ let tasks = [];
 let callbacks = {};
 let levels = [];
 let returnOrder = [];
+let perfCalls = [];
 const server = {
     overworld: () => ({ getTime: () => now }),
     getTickCount: () => now,
@@ -105,9 +106,18 @@ const sandbox = {
     registerSkillSound() {},
     registerSkill: (_, callback) => { callbacks.skill = callback; },
     ServerEvents: { tick: callback => { callbacks.tick = callback; } },
-    PlayerEvents: { tick: callback => { callbacks.playerTick = callback; } }
+    PlayerEvents: { tick: callback => { callbacks.playerTick = callback; } },
+    global: { perfTime: (name, callback) => { perfCalls.push(name); return callback(); } }
 };
 vm.runInNewContext(script.slice(start, end), sandbox);
+
+callbacks.tick({ server });
+assert.deepEqual(perfCalls, ['Skillwheel-whistle-serverTick-scan'], 'The periodic full entity scan should be timed');
+now = 1001;
+callbacks.tick({ server });
+assert.deepEqual(perfCalls, ['Skillwheel-whistle-serverTick-scan'], 'Ticks between scans should not add timing calls');
+now = 1000;
+perfCalls = [];
 
 callbacks.skill({ server }, owner, {}, false, 0, false);
 assert.equal(owner.level, world);
@@ -194,7 +204,11 @@ assert.ok(retryLogs.some(message => message.includes('跨维度返回被拒绝')
 assert.equal(owner.level, world, 'The world must stay loaded while a mob is pending');
 assert.equal(mob.persistentData.contains('WhistlePersonalWorldReturn'), true);
 mob.changeDimension = moveMob;
+// 持续扫描按 100 tick 边界运行：2120 尚未到下次扫描点，2200 才会重试。
 now = 2120;
+callbacks.tick({ server });
+assert.equal(mob.level, world, 'A failed return must wait for the next 100-tick scan');
+now = 2200;
 callbacks.tick({ server });
 assert.equal(mob.level, origin);
 assert.equal(owner.level, origin);

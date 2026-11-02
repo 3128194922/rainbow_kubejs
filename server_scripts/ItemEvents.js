@@ -93,10 +93,11 @@ ItemEvents.rightClicked("rainbow:eldritch_pan", event => {
 
     // 逻辑：将副手食物“吃掉”并记录到锅的NBT中，增加计数
     let targetItem = player.getItemInHand("off_hand");
-    let tag = global.foodlist.indexOf(targetItem.id); // 查找在 foodlist 中的索引
+    // 使用 CONST.js 根据原列表顺序建立的索引表，保证存入 NBT 的编号不变。
+    let tag = global.foodlistIndex[targetItem.id];
 
-    // 如果未找到（tag === -1），则不处理
-    if (tag === -1) return;
+    // 如果索引表中没有该物品，则不处理。
+    if (tag === undefined) return;
 
     // 检查主手物品的 NBT 是否有 foodlist，没有则初始化
     if (!item.nbt.foodlist) {

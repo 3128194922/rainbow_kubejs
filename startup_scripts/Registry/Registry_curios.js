@@ -2127,7 +2127,7 @@ StartupEvents.registry('item', event => {
                                 let iter = enchMap.entrySet().iterator();
                                 while (iter.hasNext()) {
                                     let enchId = String(ForgeRegistries.ENCHANTMENTS.getKey(iter.next().getKey()));
-                                    if (global.CURSES.indexOf(enchId) !== -1) curseCount++;
+                                    if (global.CURSE_INDEX[enchId] === true) curseCount++;
                                 }
                             }
                         }

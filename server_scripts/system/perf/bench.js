@@ -49,8 +49,9 @@ function perfRunBench(player, lightRounds, queryRounds, sendLine) {
 
         // 距离计算：敌对目标筛选常用
         let other = player;
-        results.push(perfBenchItem('distanceToSqr(同实体)', 200, lightRounds, () => {
-            player.distanceToSqr(other.getX(), other.getY(), other.getZ());
+        // KubeJS 6 将三坐标距离平方映射为 getDistanceSq。
+        results.push(perfBenchItem('getDistanceSq(同实体位置)', 200, lightRounds, () => {
+            player.getDistanceSq(other.getX(), other.getY(), other.getZ());
         }));
 
         // AABB 创建：范围查询前的盒子分配

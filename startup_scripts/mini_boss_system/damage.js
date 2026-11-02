@@ -59,7 +59,10 @@ function mbRecordAdaptDamage(entity, source) {
             types = types.slice(0, cap);
             pd.putString('_mb_adapt_types', JSON.stringify(types));
         }
-        if (types.indexOf(damageType) >= 0) return true;
+        // 保留存档数组顺序，同时用键集合常数时间判断该伤害类型是否已记录。
+        let typeIndex = {};
+        for (let recordedType of types) typeIndex[recordedType] = true;
+        if (typeIndex[damageType] === true) return true;
 
         if (types.length < cap) {
             types.push(damageType);

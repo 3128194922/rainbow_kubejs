@@ -240,20 +240,13 @@ function getGlfwKeyValue(keyName) {
  * @returns {string} 
  */
 function BoatToChestBoat(boatId) {
-    // 定义boat和chest_boat的对应关系
-    let boat = [
-        'minecraft:boat',
-        'blueprint:boat',
-        'quark:quark_boat'
-    ];
-
-    let chest_boat = [
-        'minecraft:chest_boat',
-        'blueprint:chest_boat',
-        'quark:quark_chest_boat'
-    ];
-
-    return chest_boat[boat.indexOf(boatId)];
+    // 船与储物船的映射直接按 ID 查询，未知船型仍返回 undefined。
+    const chestBoatByBoat = {
+        'minecraft:boat': 'minecraft:chest_boat',
+        'blueprint:boat': 'blueprint:chest_boat',
+        'quark:quark_boat': 'quark:quark_chest_boat'
+    };
+    return chestBoatByBoat[boatId];
 }
 
 
@@ -263,14 +256,16 @@ function BoatToChestBoat(boatId) {
  * @returns {string} 
  */
 function McTo(ItemStack) {
-    let items = ['minecraft:hopper', 'minecraft:tnt', 'minecraft:furnace', 'oreganized:shrapnel_bomb']
-    let entitys = ['minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart']
-    let furnaces = ['quark:deepslate_furnace', 'quark:blackstone_furnace']
-    if (items.indexOf(ItemStack) == -1 && furnaces.indexOf(ItemStack) == -1) return null;
-    if (furnaces.indexOf(ItemStack) != -1) {
-        return 'minecraft:furnace_minecart';
-    }
-    else return entitys[items.indexOf(ItemStack)]
+    // 矿车物品通过直接映射查询；保留未知物品返回 null 的行为。
+    const minecartByItem = {
+        'minecraft:hopper': 'minecraft:hopper_minecart',
+        'minecraft:tnt': 'minecraft:tnt_minecart',
+        'minecraft:furnace': 'minecraft:furnace_minecart',
+        'oreganized:shrapnel_bomb': 'oreganized:shrapnel_bomb_minecart',
+        'quark:deepslate_furnace': 'minecraft:furnace_minecart',
+        'quark:blackstone_furnace': 'minecraft:furnace_minecart'
+    };
+    return minecartByItem[ItemStack] || null;
 }
 
 
@@ -280,8 +275,18 @@ function McTo(ItemStack) {
  * @returns {boolean} 
  */
 function BoatidOK(ItemStack) {
-    let entitys = ['minecraft:chest_minecart', 'minecraft:hopper_minecart', 'minecraft:tnt_minecart', 'minecraft:furnace_minecart', 'oreganized:shrapnel_bomb_minecart', 'minecraft:chest_boat', 'blueprint:chest_boat', 'quark:quark_chest_boat']
-    return entitys.indexOf(ItemStack) == -1 ? true : false;
+    // 实体转换黑名单使用键集合，白名单外的实体仍返回 true。
+    const blockedEntityIds = {
+        'minecraft:chest_minecart': true,
+        'minecraft:hopper_minecart': true,
+        'minecraft:tnt_minecart': true,
+        'minecraft:furnace_minecart': true,
+        'oreganized:shrapnel_bomb_minecart': true,
+        'minecraft:chest_boat': true,
+        'blueprint:chest_boat': true,
+        'quark:quark_chest_boat': true
+    };
+    return blockedEntityIds[ItemStack] !== true;
 }
 
 /**

@@ -690,6 +690,7 @@ ServerEvents.tick(event => {
     try {
         let server = event.server;
         if (server.getTickCount() % 100 !== 0) return;
+        global.perfTime('Skillwheel-whistle-serverTick-scan', () => {
         let now = server.overworld().getTime();
         let expired = {};
         for (let level of server.getAllLevels()) {
@@ -705,6 +706,7 @@ ServerEvents.tick(event => {
             }
         }
         for (let key of Object.keys(expired)) whistleRestoreGroup(server, expired[key][0], expired[key][1]);
+        }); // global.perfTime 包裹结束
     } catch (error) {
         console.log('[鸦羽骨哨] 持续事件检查失败: ' + error);
     }

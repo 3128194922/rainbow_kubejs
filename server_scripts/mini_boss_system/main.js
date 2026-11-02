@@ -97,7 +97,10 @@ function rollPowerLevel(key) {
 function getRandomPower(banned) {
     let keys = Object.keys(POWER);
     if (banned && banned.length > 0) {
-        keys = keys.filter(k => banned.indexOf(k) < 0);
+        // 每次抽取先把禁用数组整理成键集合，再以常数时间排除禁用词条。
+        let bannedIndex = {};
+        for (let bannedKey of banned) bannedIndex[bannedKey] = true;
+        keys = keys.filter(k => bannedIndex[k] !== true);
     }
     if (keys.length == 0) return null;
     return keys[Math.floor(Math.random() * keys.length)];

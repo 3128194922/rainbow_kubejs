@@ -12,13 +12,13 @@
 const CRUNCHER_CYCLE = 48000; // 2个游戏日的tick数
 const CRUNCHER_EVOLVE_STREAK = 10; // 连续完成该数量任务后进化为大胃袋
 
-// 贪咀护符想吃食物黑名单：随机到这些 id 时自动重选（直到不是黑名单）
-const CRUNCHER_BLACKLIST = [
+// 贪咀护符食物黑名单集合：添加 ID: true 即可常数时间判断并在命中时重选。
+const CRUNCHER_BLACKLIST = {
     /*"minecraft:rotten_flesh",
     "minecraft:spider_eye",
     "minecraft:poisonous_potato",
     "minecraft:pufferfish"*/
-];
+};
 
 // 随机一个想吃食物（来自 global.foodlist，server端CONST.js初始化）
 // 命中黑名单时自动重选，直到选出非黑名单食物（含最大尝试次数保护）
@@ -29,7 +29,7 @@ function pickCruncherFood() {
         let food = Item.of(global.foodlist[Math.floor(randomInRange(0, global.foodlist.length - 1))]);
         if (food == null || food.isEmpty()) continue;
         let id = food.getId().toString();
-        if (CRUNCHER_BLACKLIST.indexOf(id) !== -1) continue; // 命中黑名单，重选
+        if (CRUNCHER_BLACKLIST[id] === true) continue; // 命中黑名单，重选
         return id;
     }
     // 全部命中黑名单的兜底：返回列表第一个非黑名单食物
@@ -37,7 +37,7 @@ function pickCruncherFood() {
         let food = Item.of(global.foodlist[i]);
         if (food == null || food.isEmpty()) continue;
         let id = food.getId().toString();
-        if (CRUNCHER_BLACKLIST.indexOf(id) !== -1) continue;
+        if (CRUNCHER_BLACKLIST[id] === true) continue;
         return id;
     }
     return null;

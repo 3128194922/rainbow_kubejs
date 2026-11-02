@@ -499,9 +499,14 @@ ItemEvents.modification(event => {
       "81908577-5866-484f-a397-7b9340fd7c0b",
       "91908577-5866-484f-a397-7b9340fd7c0b"
    ]
+   // ID 到首次配置 UUID 的索引表，保留重复物品 ID 时 indexOf 的首项语义。
+   let uuidByItem = {};
+   for (let i = 0; i < items.length; i++) {
+      if (uuidByItem[items[i]] === undefined) uuidByItem[items[i]] = uuids[i];
+   }
    items.forEach(item => {
       event.modify(item, event => {
-         event.addAttribute("caverns_and_chasms:magic_damage", uuids[items.indexOf(item)], item, 0.5, "addition")
+         event.addAttribute("caverns_and_chasms:magic_damage", uuidByItem[item], item, 0.5, "addition")
       })
    })
 })
@@ -515,9 +520,14 @@ ItemEvents.modification(event => {
       "81908571-5866-484f-a397-7b9340fd7c0b",
       "91908571-5866-484f-a397-7b9340fd7c0b"
    ]
+   // ID 到首次配置 UUID 的索引表，保留重复物品 ID 时 indexOf 的首项语义。
+   let uuidByItem = {};
+   for (let i = 0; i < items.length; i++) {
+      if (uuidByItem[items[i]] === undefined) uuidByItem[items[i]] = uuids[i];
+   }
    items.forEach(item => {
       event.modify(item, event => {
-         event.addAttribute("rainbow:generic.boom_damage", uuids[items.indexOf(item)], item, 1, "addition")
+         event.addAttribute("rainbow:generic.boom_damage", uuidByItem[item], item, 1, "addition")
       })
    })
 })

@@ -12,7 +12,8 @@ ItemEvents.tooltip(event => {
         const food = item.item.foodProperties
         if (!food) return;
         if(!item.item) return;
-        if(item.item.hasTag('@dungeonsdelight')) return
+        // 按物品的模组命名空间排除地牢乐事；Item 没有 hasTag 方法。
+        if (item.mod == 'dungeonsdelight') return
 
         const effects = food.effects
         if (!effects || effects.isEmpty()) return

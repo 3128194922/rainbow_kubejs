@@ -95,11 +95,12 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityJoinLevelEvent", even
     
     if(level.isClientSide()) return;
     
-    let WHITE_ENTITY = ["dungeonnowloading:sealed_chaos","species:spectre"]
+    // 白名单实体集合：避免事件中对固定 ID 列表逐项扫描。
+    let WHITE_ENTITY = {"dungeonnowloading:sealed_chaos": true, "species:spectre": true}
     
     let entity = event.getEntity();
     
-    if(WHITE_ENTITY.indexOf(entity.getType()) == -1) return;
+    if(WHITE_ENTITY[entity.getType()] !== true) return;
     
     if(!entity.owner || !entity.owner.isPlayer()) return;
     

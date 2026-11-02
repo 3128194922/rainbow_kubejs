@@ -2,7 +2,8 @@
 // 远古之庇护：使用 MineTeam 的原版颜色队伍，同一非白队伍内分担伤害。
 
 const ANCIENT_AEGIS_ID = 'rainbow:ancientaegis';
-const ANCIENT_AEGIS_MINE_TEAM_COLORS = ['black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple', 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white'];
+// MineTeam 颜色集合：队伍校验按键查询，保持允许颜色清单不变。
+const ANCIENT_AEGIS_MINE_TEAM_COLORS = {'black': true, 'dark_blue': true, 'dark_green': true, 'dark_aqua': true, 'dark_red': true, 'dark_purple': true, 'gold': true, 'gray': true, 'dark_gray': true, 'blue': true, 'green': true, 'aqua': true, 'red': true, 'light_purple': true, 'yellow': true, 'white': true};
 const ANCIENT_AEGIS_MINE_TEAM_INIT_STATE = { initialized: false };
 
 function ancientAegisGetMineTeamName(player) {
@@ -13,7 +14,7 @@ function ancientAegisGetMineTeamName(player) {
         if (team == null) return null;
 
         let teamName = String(team.getName());
-        if (teamName === 'white' || ANCIENT_AEGIS_MINE_TEAM_COLORS.indexOf(teamName) < 0) return null;
+        if (teamName === 'white' || ANCIENT_AEGIS_MINE_TEAM_COLORS[teamName] !== true) return null;
         return teamName;
     } catch (e) {
         console.log('[远古之庇护] 查询 MineTeam 队伍失败: ' + e);

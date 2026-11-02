@@ -149,7 +149,10 @@ function mbDrain(event) {
                     types = types.slice(0, cap);
                     pd.putString('_mb_adapt_types', JSON.stringify(types));
                 }
-                if (damageType && types.indexOf(damageType) >= 0) adaptMultiplier = 1 - cap * 0.25;
+                // 旧存档继续使用数组格式；本次受击的成员判断改为键查询。
+                let typeIndex = {};
+                for (let recordedType of types) typeIndex[recordedType] = true;
+                if (damageType && typeIndex[damageType] === true) adaptMultiplier = 1 - cap * 0.25;
             } catch (er) {
                 console.log('[MiniBoss 适应] 吸血前读取记录失败: ' + er);
             }

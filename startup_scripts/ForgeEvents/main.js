@@ -1,29 +1,29 @@
 // priority: 10000
-// 定义远程伤害类型列表
-const range_damage = [
-    'atmospheric.passionFruitSeed',
-    'soulBullet',
-    'arrow',
-    'lead_bolt',
-    'create.potato_cannon'
-];
-// 定义投掷伤害类型列表
-const thrown_damage = [
-    'thrown',
-    'trident',
-    "dungeonsdelight.cleaver",
-    'spirit_dinosaur'
-];
-// 定义魔法伤害类型列表
-const soure_magic = [
-    "indirectMagic",
-    "magic"
-];
-// 定义爆炸伤害类型列表
-const boom_damage = [
-    "explosion.player",
-    "explosion"
-];
+// 远程伤害类型集合：伤害类型 ID 为键，成员查询为平均 O(1)。
+const range_damage = {
+    'atmospheric.passionFruitSeed': true,
+    'soulBullet': true,
+    'arrow': true,
+    'lead_bolt': true,
+    'create.potato_cannon': true
+};
+// 投掷伤害类型集合：伤害类型 ID 为键，成员查询为平均 O(1)。
+const thrown_damage = {
+    'thrown': true,
+    'trident': true,
+    "dungeonsdelight.cleaver": true,
+    'spirit_dinosaur': true
+};
+// 魔法伤害类型集合：保留现有类型，供兼容处理器读取。
+const soure_magic = {
+    "indirectMagic": true,
+    "magic": true
+};
+// 爆炸伤害类型集合：伤害类型 ID 为键，成员查询为平均 O(1)。
+const boom_damage = {
+    "explosion.player": true,
+    "explosion": true
+};
 
 // CombatRoll 翻滚回传：葵花宝典佩戴者被动获得下一次伤害免疫。
 ForgeEvents.onEvent("net.combatroll.forge.event.CombatRollEvent", event => {

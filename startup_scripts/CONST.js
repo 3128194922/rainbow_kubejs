@@ -115,6 +115,7 @@ function getTideClass(name) {
 }
 
 global.CURIONUMBER = 4
+// 诅咒附魔集合：通过对象键做常数时间成员查询。
 global.CURSES = [
     "minecraft:binding_curse",
     "minecraft:vanishing_curse",
@@ -127,6 +128,9 @@ global.CURSES = [
     "domesticationinnovation:immaturity_curse",
     "imbuence:curse_of_the_dragon_palace"
 ]
+// 诅咒附魔索引表：保留 global.CURSES 数组接口，成员查询改为常数时间键查找。
+global.CURSE_INDEX = {};
+for (let curseId of global.CURSES) global.CURSE_INDEX[curseId] = true;
 global.NEWFILENUMBER = 3;
 global.MAX_STORAGE = 20; // 限制最多收容数量
 global.biomelist = [];

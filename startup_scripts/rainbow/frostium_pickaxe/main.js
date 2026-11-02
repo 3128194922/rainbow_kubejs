@@ -11,7 +11,7 @@ function getFrostiumMode(item) {
         let tag = item.nbt
         if (tag != null && tag.contains(FROSTIUM_MODE_TAG)) {
             let mode = tag.getInt(FROSTIUM_MODE_TAG)
-            if (FROSTIUM_PICKAXE_MODES.indexOf(mode) >= 0) return mode
+            if (FROSTIUM_PICKAXE_MODE_INDEX[String(mode)] !== undefined) return mode
         }
     } catch (e) {
         console.log('读取始冰镐挖掘模式失败：')

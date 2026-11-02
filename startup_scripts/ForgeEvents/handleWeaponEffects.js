@@ -5,16 +5,16 @@
  * @param {Internal.Entity} attacker
  * @param {Internal.Entity} victim
  * @param {Internal.Entity} source
- * @param {string[]} range_damage 远程伤害
- * @param {string[]} thrown_damage 投掷伤害
- * @param {string[]} soure_magic 魔法伤害
- * @param {string[]} boom_damage 爆炸伤害
+ * @param {Object} range_damage 远程伤害类型键集合
+ * @param {Object} thrown_damage 投掷伤害类型键集合
+ * @param {Object} soure_magic 魔法伤害类型键集合
+ * @param {Object} boom_damage 爆炸伤害类型键集合
  */
 function handleWeaponEffects(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context) {
     if (!attacker || !attacker.isLiving()) return;
     let mainHand = attacker.getItemInHand("main_hand");
     let damageType = context != null ? context.damageType : String(source.getType());
-    let isRangeDamage = context != null ? context.isRangeDamage : range_damage.indexOf(damageType) != -1;
+    let isRangeDamage = context != null ? context.isRangeDamage : range_damage[damageType] === true;
     
     // 提尔锋原护甲增伤机制已停用，改为主手装备时提供盔甲穿透属性。
     /*if (mainHand.id == "rainbow:tyrfing" && !isRangeDamage) {

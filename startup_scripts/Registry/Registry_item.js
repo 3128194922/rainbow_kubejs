@@ -124,6 +124,26 @@ StartupEvents.registry("item", event => {
     // 群系之刃：高攻击力剑
     //event.create("rainbow:biome_of_sword", "sword").maxDamage(100).attackDamageBonus(3).maxStackSize(1).attackDamageBaseline(4.0)
 
+    // 汉剑：保留铁剑基础属性，使用 Geo 动画模型，不加入原版创造选项卡。
+    event.create('rainbow:han_sword', 'anim_sword')
+        .displayName('汉剑')
+        .unstackable()
+        .maxDamage(0)
+        .tier(Tiers.IRON)
+        .attackDamageBaseline(3.0)
+        .speedBaseline(-2.4)
+        .geoModel(geo => {
+            try {
+                geo.setSimpleModel('rainbow:geo/item/han_sword.geo.json')
+                geo.setSimpleTexture('rainbow:textures/item/han_sword.png')
+                geo.setSimpleAnimation('rainbow:animations/item/han_sword.animation.json')
+            }
+            catch (e) {
+                console.log('[汉剑] 注册 Geo 模型失败：')
+                console.log(e)
+            }
+        })
+
     // 决斗细剑：对同一 UUID 生物伤害增加，主手提供 20% 闪避几率
     event.create("rainbow:duel", "sword")
     .maxDamage(1000)

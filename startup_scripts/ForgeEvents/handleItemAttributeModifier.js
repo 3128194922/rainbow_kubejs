@@ -42,10 +42,10 @@ function handleItemAttributeModifier(event) {
         })
     }*/
 
-    // 饕餮之锅：食物数量影响攻击力
-    let itemNbt = item.getNbt();
-    let foodnum = itemNbt != null ? itemNbt.getInt("foodnumber") || 0 : 0;
+    // 饕餮之锅：仅目标物品在主手时读取 NBT，避免其他物品触发属性事件时的无用读取。
     if (item.id === "rainbow:eldritch_pan" && slotType === "mainhand") {
+        let itemNbt = item.getNbt();
+        let foodnum = itemNbt != null ? itemNbt.getInt("foodnumber") || 0 : 0;
         event.addModifier(
             "generic.attack_damage",
             new AttributeModifier(

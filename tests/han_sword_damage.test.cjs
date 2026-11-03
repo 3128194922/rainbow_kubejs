@@ -10,15 +10,13 @@ class Player {
 }
 
 function handler() {
-  const code = fs.readFileSync(path.join(__dirname, '../startup_scripts/han_sword/main.js'), 'utf8');
-  let callback;
+  const code = fs.readFileSync(path.join(__dirname, '../startup_scripts/ForgeEvents/handleWeaponEffects.js'), 'utf8');
   const errors = [];
-  vm.runInNewContext(code, {
+  const context = {
     Player, console: { log(value) { errors.push(String(value)); } },
-    StartupEvents: { registry() {}, modifyCreativeTab() {} },
-    ForgeEvents: { onEvent(name, fn) { callback = fn; } },
-  });
-  return { callback, errors };
+  };
+  vm.runInNewContext(`${code}\nthis.callback = event => handleHanSwordExecution(event, event.getEntity(), event.getSource());`, context);
+  return { callback: context.callback, errors };
 }
 
 function damageEvent(source, health = 4) {

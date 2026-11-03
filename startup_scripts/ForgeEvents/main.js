@@ -144,6 +144,9 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingDamageEvent", 
     let source = context.source;
     if(victim.level.isClientSide()) return;
 
+    // 汉剑低血量斩杀：在 LivingDamage 阶段保留原伤害来源与结算流程。
+    handleHanSwordExecution(event, victim, source);
+
     // 分摊伤害已完成原受击者的减伤，不再触发装备抵消或攻击派生；仍允许头骨接收债务。
     let rebalanceFinalHit = rebalanceActiveHit(victim, source);
     if (rebalanceFinalHit != null && rebalanceFinalHit.kind == 'share') {

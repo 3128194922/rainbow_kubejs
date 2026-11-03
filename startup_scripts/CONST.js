@@ -17,6 +17,8 @@ const ClickAction = Java.loadClass('net.minecraft.world.inventory.ClickAction')
 const EquipmentSlot = Java.loadClass('net.minecraft.world.entity.EquipmentSlot')
 const SoundEvents = Java.loadClass('net.minecraft.sounds.SoundEvents')
 const SoundSource = Java.loadClass('net.minecraft.sounds.SoundSource')
+// 狂怒面具播放新音效前，向附近客户端发送指定声音的停止包。
+const ClientboundStopSoundPacket = Java.loadClass('net.minecraft.network.protocol.game.ClientboundStopSoundPacket')
 const AABB = Java.loadClass('net.minecraft.world.phys.AABB')
 const ResourceLocation = Java.loadClass('net.minecraft.resources.ResourceLocation')
 const BlockPos = Java.loadClass('net.minecraft.core.BlockPos')

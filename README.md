@@ -124,7 +124,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | 物品ID | 类型 | 说明 | 实现位置 |
 |--------|------|------|----------|
 | ~~`rainbow:biome_of_sword`~~ | 剑 | 群系之刃，右键收集当前群系力量，已收集群系越多越强（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L121](startup_scripts/Registry/Registry_item.js#L121) |
-| `rainbow:han_sword` | 剑 | 汉剑，完全由 KubeJS 注册，保留铁剑攻击属性与 Geo 外观，无限耐久；近战命中当前生命低于最大生命 25% 的存活实体时直接斩杀，并触发文字和音效 | 注册与斩杀：[startup_scripts/han_sword/main.js](startup_scripts/han_sword/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)，资源：[assets/rainbow/](assets/rainbow/) |
+| `rainbow:han_sword` | 剑 | 汉剑，完全由 KubeJS 注册，保留铁剑攻击属性与 Geo 外观，无限耐久；近战命中当前生命低于最大生命 25% 的存活实体时直接斩杀，并触发文字和音效 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，斩杀：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)、[startup_scripts/ForgeEvents/main.js](startup_scripts/ForgeEvents/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)，资源：[assets/rainbow/](assets/rainbow/) |
 | `rainbow:duel` | 剑 | 决斗细剑（Blockbench 元素模型），主手 `attributeslib:dodge_chance` +20%；按目标 UUID 记录连击，连续攻击同一生物伤害 ×1.5；被动闪避恢复 4 点生命值，极限闪避获得力量 I 3 秒 | 注册：[startup_scripts/Registry/Registry_item.js#L128](startup_scripts/Registry/Registry_item.js)，连击增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)、[startup_scripts/rainbow/duel/main.js](startup_scripts/rainbow/duel/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:tyrfing` | 剑 | 提尔锋，主手持有时获得 +50 盔甲穿透 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，属性：[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
 | `rainbow:heavy_axe` | 斧 | 重锤（Blockbench 元素模型），根据下落加速度造成伤害：伤害加成 = 下落距离×0.5 + 动能伤害属性×2，命中后清零下落距离。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)，配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
@@ -722,10 +722,10 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 
 ParticleJS 文本粒子与伤害飘字基础设施（priority 4000），注册于 [startup_scripts/damage_indicators/main.js](startup_scripts/damage_indicators/main.js)。文字类型使用 `.pipeline('custom')`，由 ParticleJS 自有客户端管理器和网络通道创建、更新与渲染，绕开 RuOK 对 ParticleEngine 的接管；武士刀切割贴图粒子仍使用原版管线。
 
-- **粒子类型：** `rainbow:damage_indicator_text`（custom 管线动态文本）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
+- **粒子类型：** `rainbow:damage_indicator_text`（custom 管线动态文本）、`rainbow:critical_damage_indicator_text`（放大版暴击文本）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
 - **分色：** 物理红 / 魔法紫 / 真实伤害白；`rainbow:unholy_cross`、`rainbow:ancient_skull` 等自定义伤害类型按注册表 ID 判定为真实伤害（`message_id` 为 player 时不会误判为普通攻击）
 - **全局 API：** `global.sendParticleText`、`global.sendParticleTextInFront`、`global.spawnDamageIndicator`
-- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；神化暴击与本次最终伤害合并为单个「暴击 12.3！」文本粒子，统一使用亮红色（#FF5555）与深红描边；普通命中只显示数字，沿用伤害类型颜色；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化闪避、原版跳劈分别飘「闪避！/重击！」。其他脚本仍可通过原有 `global.sendParticleText`、`global.sendParticleTextInFront` 接口发送文本粒子。
+- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；神化暴击与本次最终伤害合并为单个「暴击 12.3！」文本粒子，字号更大并沿用对应伤害类型的文字颜色和描边；普通命中只显示数字，沿用伤害类型颜色；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化闪避、原版跳劈分别飘「闪避！/重击！」。其他脚本仍可通过原有 `global.sendParticleText`、`global.sendParticleTextInFront` 接口发送文本粒子。
 
 ### Cataclysm Boss 强化
 

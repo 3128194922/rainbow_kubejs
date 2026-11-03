@@ -84,6 +84,13 @@ function handleFuryMaskHurt(event, victim, context) {
         victim.cooldowns.addCooldown(FURY_MASK_ID, FURY_COOLDOWN_TICKS);
 
         let pitch = getFuryPitch(nbt);
+        // 停止附近客户端上一个相同狂怒音效，避免多个触发音频重叠。
+        let stopSoundPacket = new ClientboundStopSoundPacket(
+            new ResourceLocation("rainbow:voice.animals"), SoundSource.VOICE
+        );
+        victim.level.server.getPlayerList().broadcast(
+            null, victim.getX(), victim.getY(), victim.getZ(), 16.0, victim.level.dimension(), stopSoundPacket
+        );
         victim.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), "rainbow:voice.animals", "voice", 0.5, pitch); // 音量 0.5（原 1.0 的一半）
         nbt.putFloat(FURY_PITCH_KEY, advanceFuryPitch(pitch));
     } catch (e) {

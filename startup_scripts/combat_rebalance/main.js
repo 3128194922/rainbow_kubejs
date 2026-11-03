@@ -50,7 +50,11 @@ function rebalanceCanProc(kind, proc) {
 
 function rebalanceDamageSource(victim, attacker, type) {
     let registry = victim.level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-    let holder = registry.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation('rainbow', type)));
+    // 吐根酊使用原版爆炸类型；其他流派派生伤害仍使用 rainbow 命名空间类型。
+    let typeParts = type.split(':');
+    let namespace = typeParts.length > 1 ? typeParts[0] : 'rainbow';
+    let path = typeParts.length > 1 ? typeParts[1] : type;
+    let holder = registry.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(namespace, path)));
     // 分摊不归属实体，避免同队 PvP 拦截和误触发攻击者法球。
     return attacker == null ? new DamageSource(holder) : new DamageSource(holder, attacker, attacker);
 }
@@ -196,13 +200,13 @@ function rebalanceProcDamage(event, attacker, victim, source, context) {
             && !attacker.cooldowns.isOnCooldown('rainbow:lpecac')) {
             attacker.cooldowns.addCooldown('rainbow:lpecac', 3);
             let damage = Math.max(0, attacker.getAttributeValue('rainbow:generic.boom_damage'));
-            // AOE 爆炸特效：在目标位置播放爆炸音效与粒子；特效单独 try-catch，失败不中断伤害派生链
+            // 视觉特效只直接播放音效和生成粒子，不调用原版 Level.explode；特效失败不中断 AABB 伤害结算。
             try {
                 attacker.level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), 'minecraft:entity.generic.explode', 'players', 2.0, 1.0);
                 attacker.level.spawnParticles('minecraft:explosion_emitter', true, victim.getX(), victim.getY() + 0.5, victim.getZ(), 0.1, 0.1, 0.1, 1, 0);
                 attacker.level.spawnParticles('minecraft:poof', true, victim.getX(), victim.getY() + 0.5, victim.getZ(), 0.5, 0.5, 0.5, 10, 0.05);
             } catch (e) { console.log('[法球派生] lpecac 爆炸特效失败: ' + e); }
-            rebalanceAoe(attacker, victim.getX(), victim.getY(), victim.getZ(), 3, damage, 'lpecac_aoe', 'lpecac', hit);
+            rebalanceAoe(attacker, victim.getX(), victim.getY(), victim.getZ(), 3, damage, 'minecraft:explosion', 'lpecac', hit);
         }
         if (rebalanceCanProc(kind, 'unholy') && hasContextCurio(context, 'attacker', attacker, 'rainbow:unholy_cross')) {
             rebalanceDealDamage(attacker, victim, 'unholy_cross', 1, 'unholy', hit);

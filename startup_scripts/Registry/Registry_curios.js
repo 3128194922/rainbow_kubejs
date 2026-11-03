@@ -2485,7 +2485,7 @@ StartupEvents.registry('item', event => {
                     }
                     return true;
                 })
-                .addAttribute("rainbow:generic.boom_damage", "lpecac", 5, "addition")
+                .addAttribute("rainbow:generic.boom_damage", "lpecac", 1, "addition")
         )
 })
 

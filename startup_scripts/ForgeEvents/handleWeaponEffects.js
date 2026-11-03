@@ -64,3 +64,46 @@ function handleWeaponEffects(event, attacker, victim, source, range_damage, thro
         }
     }
 }
+
+// 汉剑：目标生命低于最大生命 25% 时，将本次玩家近战伤害提高到足以致死。
+function handleHanSwordExecution(event, target, source) {
+    try {
+        if (target == null || source == null || target.level == null || target.level.isClientSide()) return
+        if (!target.isAlive() || event.isCanceled() || event.getAmount() <= 0) return
+
+        // 先筛选玩家伤害，避免环境伤害访问攻击者。
+        if (String(source.getType()) !== 'player') return
+        let player = source.getActual()
+        if (!(player instanceof Player)) return
+        let mainHand = player.getItemInHand('main_hand')
+        if (mainHand == null || mainHand.id !== 'rainbow:han_sword') return
+
+        let health = target.getHealth()
+        let maxHealth = target.getMaxHealth()
+        if (health <= 0 || maxHealth <= 0 || health >= maxHealth * 0.25) return
+
+        // 保留原伤害来源，使击杀、掉落和经验仍由原攻击流程结算。
+        event.setAmount(Math.max(event.getAmount(), health))
+        // 其他伤害处理器仍可继续调整伤害；下一 tick 确认击杀后再播放反馈。
+        let level = target.level
+        let x = target.getX()
+        let y = target.getY()
+        let z = target.getZ()
+        player.server.scheduleInTicks(1, () => {
+            try {
+                if (target.isAlive()) return
+                player.displayClientMessage(Component.literal('§c汉剑斩杀！'), true)
+                level.playSound(null, x, y, z,
+                    SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0, 0.75)
+            }
+            catch (feedbackError) {
+                console.log('[汉剑] 斩杀反馈播放失败：')
+                console.log(feedbackError)
+            }
+        })
+    }
+    catch (e) {
+        console.log('[汉剑] 低血量斩杀处理失败：')
+        console.log(e)
+    }
+}

@@ -69,14 +69,14 @@ function onBeforeNonEntityHurt(event, attacker, victim, source, range_damage, th
     }
 
         // --- 防化服套装效果 ---
-        if (victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
+        /*if (victim.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
         && victim.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
         && victim.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
         && victim.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
         if (isHazardDamage) {
             event.setCanceled(true)
         }
-    }
+    }*/
 
     // --- 暴食护符（免饥饿伤害） ---
     if (isStarveDamage && hasContextCurio(context, "victim", victim, "rainbow:gluttony_charm")) {

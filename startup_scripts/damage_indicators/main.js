@@ -4,6 +4,7 @@
 // ==========================================
 
 const DAMAGE_INDICATOR_PARTICLE = 'rainbow:damage_indicator_text';
+const CRITICAL_DAMAGE_INDICATOR_PARTICLE = 'rainbow:critical_damage_indicator_text';
 const KATANA_HIT_CUT_PARTICLE = 'rainbow:katana_hit_cut';
 // 神化暴击先于最终伤害触发；暂存目标与原始 DamageSource，供伤害飘字一次性消费。
 const DAMAGE_INDICATOR_CRITICAL_HITS = [];
@@ -49,6 +50,16 @@ StartupEvents.registry('particle_type', event => {
             .gravity(0.35)
             .textOutline(true);
 
+        // 暴击使用独立文本粒子类型放大字号，保持普通伤害与其他提示的尺寸不变。
+        event.create(CRITICAL_DAMAGE_INDICATOR_PARTICLE, 'particlejs')
+            .pipeline('custom')
+            ["text(java.lang.String)"]('')
+            .renderType('text')
+            .lifetime(28, 34)
+            .scale(2.4)
+            .gravity(0.35)
+            .textOutline(true);
+
         // 武士刀命中切割动画，复用 EEEAB 生物的六帧贴图。
         event.create(KATANA_HIT_CUT_PARTICLE, 'particlejs')
             ["texture(net.minecraft.resources.ResourceLocation)"](new ResourceLocation('eeeabsmobs', 'hit_cut_1'))
@@ -74,12 +85,12 @@ function particlePositionValue(position, methodName) {
 }
 
 // 服务端通用 ParticleJS 文本粒子 API；custom 管线负责客户端同步与渲染。
-function sendTextParticle(level, x, y, z, text, color, outline, outlineColor) {
+function sendTextParticle(level, x, y, z, text, color, outline, outlineColor, particleType) {
     try {
         if (level == null || typeof ParticleJS === 'undefined' || ParticleJS == null) return false;
         if (level.isClientSide && level.isClientSide()) return false;
         if (x == null || y == null || z == null || text == null) return false;
-        ParticleJS.spawn(level, DAMAGE_INDICATOR_PARTICLE, {
+        ParticleJS.spawn(level, particleType == null ? DAMAGE_INDICATOR_PARTICLE : particleType, {
             x: Number(x),
             y: Number(y),
             z: Number(z),
@@ -220,14 +231,23 @@ function spawnDamageIndicator(entity, difference, source) {
         let x = entity.getRandomX(0.5);
         let y = entity.getEyeY();
         let z = entity.getRandomZ(0.5);
-        // 暴击与数字间留一个空格，整条暴击文本统一使用亮红色与深红描边，区别于普通伤害。
+        // 暴击与数字间留一个空格；独立粒子类型放大文本，同时沿用当前伤害类型的文字和描边颜色。
         let text = (Math.round(amount * 10 + 0.5) / 10).toFixed(1);
-        if (consumeDamageIndicatorCritical(entity, source)) {
+        let isCritical = consumeDamageIndicatorCritical(entity, source);
+        if (isCritical) {
             text = '暴击 ' + text + '！';
-            textColor = 0xFF5555;
-            outlineColor = 0x550000;
         }
-        return sendTextParticle(entity.level, x, y, z, text, textColor, true, outlineColor);
+        return sendTextParticle(
+            entity.level,
+            x,
+            y,
+            z,
+            text,
+            textColor,
+            true,
+            outlineColor,
+            isCritical ? CRITICAL_DAMAGE_INDICATOR_PARTICLE : DAMAGE_INDICATOR_PARTICLE
+        );
     } catch (e) {
         console.log('[ParticleJS] 生成伤害数字出错: ' + e);
         console.log(e);

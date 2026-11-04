@@ -72,6 +72,17 @@ function handleAttackCurios(event, entity, target, context) {
         return curioIndex != null && curioCodes != null && curioCodes[itemId] === code && curioIndex[itemId] != null;
     };
 
+    // 石之羽：佩戴者触发 AttackEntityEvent 时获得迅捷 II 3 秒。
+    if (hasAttackCurio('rainbow:stone_feather', 6)) {
+        try {
+            if (entity != null && entity.isPlayer()) {
+                entity.potionEffects.add('minecraft:speed', 60, 1);
+            }
+        } catch (err) {
+            console.log('[石之羽] 攻击时施加迅捷效果失败: ' + err);
+        }
+    }
+
     // 末影之握：攻击时为目标附着末影火 3秒（60 tick）
     // 末影火、生灵火的颜色/伤害/熄灭规则统一由 server_scripts/morefire_compat.js 设定。
     if (hasAttackCurio('rainbow:ender_glove', 1)) {

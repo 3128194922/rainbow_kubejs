@@ -507,7 +507,8 @@ StartupEvents.registry('item', event => {
                 .modifyFortuneLevel((slotContext, lootContext, stack) => 3)
                 .modifyLootingLevel((slotContext, source, target, baseLooting, stack) => baseLooting + 3)
                 .canEquip((slotContext, stack) => {
-                    let entity = slotContext.entity();w
+                    // 绝望徽章仅在角色有效且尚未佩戴同类饰品时允许装备。
+                    let entity = slotContext.entity();
 
                     if (entity == null) return;
 
@@ -1872,12 +1873,12 @@ StartupEvents.registry('item', event => {
 })
 
 // 木人桩
-// 功能：静止不动时暴击率 +15%、暴击伤害 +30%。
+// 功能：静止不动时暴击率 +30%、暴击伤害 +50%。
 // 静止判定沿用日曜石：每 20 tick 与上一秒位置比较，一秒内水平位移 ≤ 0.5 格视为静止。
 // 属性使用临时修饰符，移动后移除，卸下时由 onUnequip 兜底移除。
 const WOODEN_DUMMY_MOVE_TOLERANCE = 0.5;
-const WOODEN_DUMMY_CRIT_CHANCE = 0.15;
-const WOODEN_DUMMY_CRIT_DAMAGE = 0.30;
+const WOODEN_DUMMY_CRIT_CHANCE = 0.30;
+const WOODEN_DUMMY_CRIT_DAMAGE = 0.50;
 const WOODEN_DUMMY_CRIT_CHANCE_UUID = UUID.fromString('8a1f3c2e-5b7d-4e9a-9c4f-2d6b8e0a1c03');
 const WOODEN_DUMMY_CRIT_DAMAGE_UUID = UUID.fromString('3c7e9f1b-4a2d-4b8e-8f6a-1e5c7d9b2a04');
 
@@ -2923,6 +2924,52 @@ StartupEvents.registry('item', event => {
         )
 })
 
+// 生命之花：生命值越低，受到治疗加成越高，加成比例为 1 - 当前生命值 / 最大生命值。
+StartupEvents.registry('item', event => {
+    event.create('rainbow:relic_flower')
+        .displayName('生命之花')
+        .texture('rainbow:item/relic_flower')
+        .rarity('epic')
+        .maxStackSize(1)
+        .tag('curios:charm')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .modifyAttribute(ev => {
+                    try {
+                        let player = ev.slotContext.entity();
+                        if (player == null || !player.isPlayer()) return;
+
+                        let health = player.getHealth();
+                        let maxHealth = player.getMaxHealth();
+                        if (maxHealth <= 0) return;
+
+                        let healingBonus = 1 - health / maxHealth;
+                        healingBonus = Math.max(0, Math.min(1, healingBonus));
+                        ev.modify('attributeslib:healing_received', 'relic_flower', healingBonus, 'multiply_total');
+                    } catch (e) {
+                        console.log('[生命之花] 计算治疗加成失败: ' + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    try {
+                        // 每 tick 通知 CuriosJS 重算属性，让加成跟随玩家生命值变化。
+                        if (stack.nbt == null) {
+                            stack.nbt = {};
+                        }
+                        stack.nbt.putBoolean('update', !stack.nbt.getBoolean('update'));
+                    } catch (e) {
+                        console.log('[生命之花] 刷新动态属性失败: ' + e);
+                    }
+                })
+                .canEquip((slotContext, stack) => {
+                    let entity = slotContext.entity();
+                    if (entity == null) return;
+                    if (hasCurios(entity, 'rainbow:relic_flower')) return false;
+                    return true;
+                })
+        )
+})
+
 //血轮珠
 StartupEvents.registry('item', event => {
     event.create('rainbow:sharingan')
@@ -2998,8 +3045,22 @@ StartupEvents.registry('item', event => {
         )
 })
 
+// 石之羽：佩戴在 charm 栏位时暴击率 +20%，攻击实体时的迅捷效果由 ForgeEvents 攻击处理器发放。
+StartupEvents.registry('item', event => {
+    event.create('rainbow:stone_feather')
+        .displayName('石之羽')
+        .texture('rainbow:item/stone_feather')
+        .rarity('epic')
+        .maxStackSize(1)
+        .tag('curios:charm')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .addAttribute('attributeslib:crit_chance', 'stone_feather_crit_chance', 0.20, 'addition')
+        )
+})
+
 //撒旦圣歌
-// 功能：每 2% 暴击率增加 1% 暴击效果（连续比例：暴击效果加成 = 暴击率 × 0.5）
+// 功能：每 1% 暴击率增加 2% 暴击效果（连续比例：暴击效果加成 = 暴击率 × 2）
 // 暴击率会随装备/药水效果实时变化，因此 curioTick 每 tick 按当前暴击率刷新暴击伤害临时修饰符；
 // 临时修饰符不写入玩家存档，卸下时由 onUnequip 立即移除。
 const SATAN_HYMN_CRIT_DAMAGE_UUID = UUID.fromString('4b7d1e2a-6c3f-4a9b-8d5e-2f1a3c7b9d10');
@@ -3027,8 +3088,8 @@ function updateSatanHymnCritDamage(player) {
         if (!(chance > 0)) chance = 0;
         if (chance > 1) chance = 1;
 
-        // 0.02 暴击率（2%）→ 0.01 暴击效果（1%），即暴击率 ÷ 2；保留 4 位小数避免浮点抖动反复写入
-        let bonus = Math.round(chance * 0.5 * 10000) / 10000;
+        // 0.01 暴击率（1%）→ 0.02 暴击效果（2%），即暴击率 × 2；保留 4 位小数避免浮点抖动反复写入。
+        let bonus = Math.round(chance * 2 * 10000) / 10000;
         let existing = damageAttr.getModifier(SATAN_HYMN_CRIT_DAMAGE_UUID);
         if (existing != null && Math.abs(existing.getAmount() - bonus) < 0.0001) return;
 
@@ -3063,6 +3124,84 @@ StartupEvents.registry('item', event => {
                     let player = slotContext.entity();
                     if (player == null || player.level.isClientSide()) return;
                     removeSatanHymnCritDamage(player);
+                })
+        )
+})
+
+// 薛定谔的猫：按当前攻击速度动态增加暴击效果；临时修饰符不写入存档，卸下时移除。
+const SCHRODINGER_CRIT_DAMAGE_UUID = UUID.fromString('7d8c2f10-3a4b-4c5d-9e6f-1a2b3c4d5e6f');
+const SCHRODINGER_CRIT_DAMAGE_NAME = 'schrodinger_crit_damage';
+
+function removeSchrodingerCritDamage(player) {
+    try {
+        if (player == null) return;
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (damageAttr == null) return;
+        damageAttr.removeModifier(SCHRODINGER_CRIT_DAMAGE_UUID);
+    } catch (e) {
+        console.log('[薛定谔的猫] 移除暴击效果修饰符失败: ' + e);
+    }
+}
+
+function updateSchrodingerCritDamage(player) {
+    try {
+        if (player == null) return;
+        let damageAttr = player.getAttribute('attributeslib:crit_damage');
+        if (damageAttr == null) return;
+
+        let attackSpeed = player.getAttributeValue('minecraft:generic.attack_speed');
+        // attributeslib:crit_damage 使用小数值表达百分比，例如 0.10 表示 +10%。
+        let bonus = Math.max(0, 0.10 + (4 - attackSpeed) * 0.10);
+        bonus = Math.round(bonus * 10000) / 10000;
+
+        let existing = damageAttr.getModifier(SCHRODINGER_CRIT_DAMAGE_UUID);
+        if (existing != null && Math.abs(existing.getAmount() - bonus) < 0.0001) return;
+
+        damageAttr.removeModifier(SCHRODINGER_CRIT_DAMAGE_UUID);
+        if (bonus > 0) {
+            damageAttr.addTransientModifier(new AttributeModifier(SCHRODINGER_CRIT_DAMAGE_UUID, SCHRODINGER_CRIT_DAMAGE_NAME, bonus, AttributeModifierOperation.ADDITION));
+        }
+    } catch (e) {
+        console.log('[薛定谔的猫] 刷新暴击效果失败: ' + e);
+    }
+}
+
+StartupEvents.registry('item', event => {
+    event.create('rainbow:schrodinger')
+        .displayName('薛定谔的猫')
+        .texture('rainbow:item/schrodinger')
+        .rarity('epic')
+        .maxStackSize(1)
+        .tag('curios:charm')
+        .attachCuriosCapability(
+            CuriosJSCapabilityBuilder.create().canUnequip(canUnequipNotOnCooldown)
+                .canEquip((slotContext, stack) => {
+                    try {
+                        let player = slotContext.entity();
+                        if (player == null) return;
+                        if (hasCurios(player, 'rainbow:schrodinger')) return false;
+                        return true;
+                    } catch (e) {
+                        console.log('[薛定谔的猫] 检查装备条件失败: ' + e);
+                    }
+                })
+                .curioTick((slotContext, stack) => {
+                    try {
+                        let player = slotContext.entity();
+                        if (player == null || player.level.isClientSide()) return;
+                        updateSchrodingerCritDamage(player);
+                    } catch (e) {
+                        console.log('[薛定谔的猫] 更新佩戴效果失败: ' + e);
+                    }
+                })
+                .onUnequip((slotContext, newStack, stack) => {
+                    try {
+                        let player = slotContext.entity();
+                        if (player == null || player.level.isClientSide()) return;
+                        removeSchrodingerCritDamage(player);
+                    } catch (e) {
+                        console.log('[薛定谔的猫] 卸下时清理效果失败: ' + e);
+                    }
                 })
         )
 })

@@ -381,6 +381,12 @@ ItemEvents.tooltip((event) => {
         }
     })
 
+    // 生命之花：提示根据已损失生命比例获得的治疗加成。
+    event.addAdvanced('rainbow:relic_flower', (item, advanced, text) => {
+        text.add(1, Text.aqua('▸ 受到治疗加成 = 1 - 当前生命值 / 最大生命值'));
+        text.add(2, Text.gray('▸ 生命值越低，加成越高；最低生命时 +100%'));
+    })
+
     const machine_name ={
         'mbd2:nuke_machine': "核弹发射井",
     }
@@ -694,8 +700,8 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("▸ 静止不动时暴击率 +15%"));
-            text.add(2, Text.aqua("▸ 静止不动时暴击伤害 +30%"));
+            text.add(1, Text.aqua("▸ 静止不动时暴击率 +30%"));
+            text.add(2, Text.aqua("▸ 静止不动时暴击伤害 +50%"));
             text.add(3, Text.gray("  移动后加成消失；潜行时强制视为静止"));
         }
     })
@@ -1313,14 +1319,20 @@ ItemEvents.tooltip((event) => {
         let debtColor = debt > 0.01 ? "§c" : "§a";
         text.add(6, Text.of(`▸ 当前债务: ${debtColor}${debt.toFixed(1)}`));
     })
-    // 恶魔羊皮纸（沿用原魔法戒指的暴击率效果）
+    // 恶魔羊皮纸：保留常驻暴击率，并提示暴击时触发的短时增幅。
     event.addAdvanced('rainbow:demon_parchment', (item, advanced, text) => {
         text.add(1, Text.aqua("▸ 暴击率 +20%"));
+        text.add(2, Text.aqua("▸ 暴击时获得暴击率 +30%，持续 3 秒"));
+    })
+    // 石之羽：提示饰品栏暴击率加成与攻击触发的迅捷效果。
+    event.addAdvanced('rainbow:stone_feather', (item, advanced, text) => {
+        text.add(1, Text.aqua("▸ 佩戴于 charm 栏位：暴击率 +20%"));
+        text.add(2, Text.aqua("▸ 攻击实体时获得迅捷 II，持续 3 秒"));
     })
     // 撒旦圣歌
-    // 机制：每 2% 暴击率增加 1% 暴击效果（暴击率÷2），动态修饰符见 Registry_curios.js 的 updateSatanHymnCritDamage
+    // 机制：每 1% 暴击率增加 2% 暴击效果（暴击率×2），动态修饰符见 Registry_curios.js 的 updateSatanHymnCritDamage
     event.addAdvanced('rainbow:satan_hymn', (item, advanced, text) => {
-        text.add(1, Text.aqua("▸ 每 2% 暴击率增加 1% 暴击效果"));
+        text.add(1, Text.aqua("▸ 每 1% 暴击率增加 2% 暴击效果"));
         let chance = 0;
         try {
             if (Client.player != null) {
@@ -1331,8 +1343,13 @@ ItemEvents.tooltip((event) => {
             console.log("[撒旦圣歌提示] 读取暴击率出错: " + e);
         }
         let cappedChance = Math.max(0, Math.min(1, chance));
-        let bonus = cappedChance * 0.5;
+        let bonus = cappedChance * 2;
         text.add(2, Text.of(`▸ 当前暴击率 §e${(chance * 100).toFixed(1)}%§r → 暴击效果 §b+${(bonus * 100).toFixed(1)}%`));
+    })
+    // 薛定谔的猫：暴击效果随当前攻击速度变化，并限制最低为 0%。
+    event.addAdvanced('rainbow:schrodinger', (item, advanced, text) => {
+        text.add(1, Text.aqua('▸ 暴击效果 +10% + (4 - 攻击速度) × 10%'));
+        text.add(2, Text.gray('▸ 最低 0%；攻速 4 时 +10%，攻速 2.4 时 +26%'));
     })
     // 护额
     // 机制：每 1% 移速加成增加 5% 被动闪避，移速低于 100% 时同比例降低闪避；动态修饰符见 Registry_curios.js 的 updateForeheadGuardDodge

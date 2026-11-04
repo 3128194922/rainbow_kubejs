@@ -267,3 +267,22 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.player.AttackEntityEvent", 
         console.log(e)
     }
 })
+
+// 神化暴击：MoreCallback 在 AttributesLib 暴击成功时发布此事件。
+ForgeEvents.onEvent('com.morecallback.event.ApothicCriticalHitEvent', event => {
+    try {
+        handleDemonParchmentCriticalHit(event.getAttacker());
+    } catch (e) {
+        console.log('[恶魔羊皮纸] 神化暴击事件入口出错: ' + e);
+    }
+});
+
+// 原版跳劈暴击：忽略已被冷却逻辑抑制的暴击。
+ForgeEvents.onEvent('com.morecallback.event.VanillaCriticalHitEvent', event => {
+    try {
+        if (event.isSuppressed()) return;
+        handleDemonParchmentCriticalHit(event.getPlayer());
+    } catch (e) {
+        console.log('[恶魔羊皮纸] 原版暴击事件入口出错: ' + e);
+    }
+});

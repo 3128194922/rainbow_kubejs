@@ -196,9 +196,8 @@ function rebalanceProcDamage(event, attacker, victim, source, context) {
             let bonus = Math.max(0, attacker.getAttributeValue('oreganized:kinetic_damage')) * 0.3;
             rebalanceDealDamage(attacker, victim, 'kinetic_orb', bonus, 'kinetic', hit);
         }
-        if (rebalanceCanProc(kind, 'lpecac') && hasContextCurio(context, 'attacker', attacker, 'rainbow:lpecac')
-            && !attacker.cooldowns.isOnCooldown('rainbow:lpecac')) {
-            attacker.cooldowns.addCooldown('rainbow:lpecac', 3);
+        // 多段攻击的每个命中阶段由 hit.procced 防止自身递归；不使用玩家级冷却，以免吞掉同一次攻击后续阶段的吐根触发。
+        if (rebalanceCanProc(kind, 'lpecac') && hasContextCurio(context, 'attacker', attacker, 'rainbow:lpecac')) {
             let damage = Math.max(0, attacker.getAttributeValue('rainbow:generic.boom_damage'));
             // 视觉特效只直接播放音效和生成粒子，不调用原版 Level.explode；特效失败不中断 AABB 伤害结算。
             try {

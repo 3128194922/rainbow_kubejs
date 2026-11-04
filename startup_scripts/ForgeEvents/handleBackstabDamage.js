@@ -40,6 +40,15 @@ function handleBackstabDamage(event, attacker, victim, context) {
         let originalAmount = event.getAmount();
         event.setAmount(originalAmount * 2);
 
+        // 记录本次背刺，供最终伤害数字合并显示“背刺”提示；提示失败不影响伤害结算。
+        try {
+            if (global.markBackstabDamageIndicator != null && context != null) {
+                global.markBackstabDamageIndicator(victim, context.source);
+            }
+        } catch (indicatorError) {
+            console.log(`[背刺判定] 记录伤害飘字标记失败: ${indicatorError}`);
+        }
+
         // 泣血之刃：背刺时恢复背刺伤害50%的血量
         if (hasContextCurio(context, "attacker", attacker, 'rainbow:blood_collection_bag')) {
             let healAmount = event.getAmount() * 0.5;

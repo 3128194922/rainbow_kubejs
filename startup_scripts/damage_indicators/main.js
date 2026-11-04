@@ -8,6 +8,8 @@ const CRITICAL_DAMAGE_INDICATOR_PARTICLE = 'rainbow:critical_damage_indicator_te
 const KATANA_HIT_CUT_PARTICLE = 'rainbow:katana_hit_cut';
 // 神化暴击先于最终伤害触发；暂存目标与原始 DamageSource，供伤害飘字一次性消费。
 const DAMAGE_INDICATOR_CRITICAL_HITS = [];
+// 背刺判定发生在 LivingHurtEvent；按目标、伤害来源和 tick 匹配最终伤害数字。
+const DAMAGE_INDICATOR_BACKSTAB_HITS = [];
 
 // 伤害来源键集合：用于保留现有颜色规则并提供平均 O(1) 成员查询。
 const PHYSICAL_DAMAGE_TYPES = {
@@ -208,6 +210,40 @@ function consumeDamageIndicatorCritical(entity, source) {
     return false;
 }
 
+// 背刺伤害在最终结算时消费标记，避免同 tick 其他伤害错误显示“背刺”。
+function consumeDamageIndicatorBackstab(entity, source) {
+    try {
+        if (entity == null || source == null) return false;
+        let targetKey = String(entity.getUuid());
+        for (let i = DAMAGE_INDICATOR_BACKSTAB_HITS.length - 1; i >= 0; i--) {
+            let hit = DAMAGE_INDICATOR_BACKSTAB_HITS[i];
+            if (hit.targetKey === targetKey && hit.source.equals(source)) {
+                DAMAGE_INDICATOR_BACKSTAB_HITS.splice(i, 1);
+                return hit.time === Number(entity.level.getTime());
+            }
+        }
+    } catch (e) {
+        console.log('[ParticleJS] 消费背刺飘字标记出错: ' + e);
+    }
+    return false;
+}
+
+// 由背刺 LivingHurtEvent 写入标记；实际文字仍在 LivingDamageEvent 生成。
+global.markBackstabDamageIndicator = function (entity, source) {
+    try {
+        if (entity == null || entity.level == null || source == null || entity.level.isClientSide()) return false;
+        DAMAGE_INDICATOR_BACKSTAB_HITS.push({
+            targetKey: String(entity.getUuid()),
+            source: source,
+            time: Number(entity.level.getTime())
+        });
+        return true;
+    } catch (e) {
+        console.log('[ParticleJS] 记录背刺飘字标记出错: ' + e);
+        return false;
+    }
+};
+
 function spawnDamageIndicator(entity, difference, source) {
     try {
         if (entity == null || entity.level == null || difference == null) return false;
@@ -234,8 +270,13 @@ function spawnDamageIndicator(entity, difference, source) {
         // 暴击与数字间留一个空格；独立粒子类型放大文本，同时沿用当前伤害类型的文字和描边颜色。
         let text = (Math.round(amount * 10 + 0.5) / 10).toFixed(1);
         let isCritical = consumeDamageIndicatorCritical(entity, source);
-        if (isCritical) {
-            text = '暴击 ' + text + '！';
+        let isBackstab = consumeDamageIndicatorBackstab(entity, source);
+        if (isBackstab || isCritical) {
+            // 背刺与暴击共用放大粒子；同时触发时保留两个提示词。
+            let labels = [];
+            if (isBackstab) labels.push('背刺');
+            if (isCritical) labels.push('暴击');
+            text = labels.join(' ') + ' ' + text + '！';
         }
         return sendTextParticle(
             entity.level,
@@ -246,7 +287,7 @@ function spawnDamageIndicator(entity, difference, source) {
             textColor,
             true,
             outlineColor,
-            isCritical ? CRITICAL_DAMAGE_INDICATOR_PARTICLE : DAMAGE_INDICATOR_PARTICLE
+            isBackstab || isCritical ? CRITICAL_DAMAGE_INDICATOR_PARTICLE : DAMAGE_INDICATOR_PARTICLE
         );
     } catch (e) {
         console.log('[ParticleJS] 生成伤害数字出错: ' + e);
@@ -334,7 +375,10 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicCriticalHitEvent', event => {
 // 伤害被取消或完全吸收时可能没有 LivingDamageEvent；每 tick 结束清除未消费标记。
 ForgeEvents.onEvent('net.minecraftforge.event.TickEvent$ServerTickEvent', event => {
     try {
-        if (String(event.phase) === 'END') DAMAGE_INDICATOR_CRITICAL_HITS.length = 0;
+        if (String(event.phase) === 'END') {
+            DAMAGE_INDICATOR_CRITICAL_HITS.length = 0;
+            DAMAGE_INDICATOR_BACKSTAB_HITS.length = 0;
+        }
     } catch (e) {
         console.log('[ParticleJS] 清理暴击飘字标记出错: ' + e);
     }

@@ -18,6 +18,7 @@ startup_scripts/
    ├─ handleFireworkDash.js       # 烟花拳套冲撞和撞墙伤害
    ├─ handleAttackWeapon.js       # 攻击事件中的武器逻辑
    ├─ handleAttackCurios.js       # 攻击事件中的饰品逻辑
+   ├─ handleDemonParchmentCrit.js # 恶魔羊皮纸：暴击后药水增幅
    ├─ handleItemAttributeModifier.js # 物品动态属性修改
    ├─ handleProjectileIFrame.js   # 抛射物无敌帧处理
    ├─ handleBackstabDamage.js     # 背刺伤害
@@ -55,6 +56,7 @@ startup_scripts/
 | `LivingHurtEvent` | 伤害计算过程中的武器、饰品、背刺、冻结、自定义属性等逻辑 |
 | `LivingDamageEvent` | 伤害结算后的玩家、非玩家、通用实体及伤害抵消逻辑 |
 | `AttackEntityEvent` | 玩家攻击实体时的武器和攻击饰品逻辑 |
+| `ApothicCriticalHitEvent` / `VanillaCriticalHitEvent` | 恶魔羊皮纸暴击触发药水增幅 |
 | `ItemAttributeModifierEvent` | 物品动态属性修改 |
 
 伤害事件的执行顺序应视为功能契约，不要随意调整：
@@ -112,11 +114,11 @@ LivingDamageEvent
 
 - `createDamageContext(event)`：缓存受害者、攻击者、伤害来源、伤害类型及玩家/伤害类型标记。
 - `createAttackContext(event)`：缓存攻击者、目标、主手和副手物品。
-- `buildCurioIndex(player)`：在当前事件内扫描一次 Curios，并按物品 ID 建立索引。
+- `buildCurioIndex(player)`：扫描 Curios 并按物品 ID 建立索引；扫描结果由 `getForgeCurioIndex(player)` 按维度、`level.getTime()` 和玩家 UUID 缓存。
 - `getContextCurioStack(...)` / `hasContextCurio(...)`：读取事件内的饰品缓存。
 - `isForgeDamageType(...)`：通过字典判断伤害类型分组。
 
-Curios 索引只在当前事件中使用，不跨 tick 缓存，避免玩家更换饰品后读取到旧数据。同一个物品 ID 出现多次时，当前索引保留第一次找到的物品。
+Curios 索引在同一维度 tick 的多个同步伤害事件间复用，该维度下一 tick 首次查询时整批重建并释放旧玩家引用；这可减少多弹丸伤害链反复扫描饰品栏。同一个物品 ID 出现多次时，当前索引保留第一次找到的物品。
 
 ### `tables.js`
 
@@ -134,7 +136,8 @@ Curios 索引只在当前事件中使用，不跨 tick 缓存，避免玩家更�
 ### 攻击入口
 
 - `handleAttackWeapon.js`：泰拉刃、动力剑。通过物品 ID 查表后使用 `switch` 分发；决斗剑的 UUID 伤害逻辑位于 `handleWeaponEffects.js`，闪避效果位于 `rainbow/duel/main.js`。
-- `handleAttackCurios.js`：末影手套、生灵手套、天秤座、点金手套、流浪软糖包。复用攻击事件的 Curios 索引。
+- `handleAttackCurios.js`：末影手套、生灵手套、天秤座、点金手套、流浪软糖包、石之羽（攻击触发迅捷 II）。复用攻击事件的 Curios 索引。
+- `handleDemonParchmentCrit.js`：佩戴恶魔羊皮纸并成功触发神化暴击或原版跳劈暴击时，给予 3 秒暴击率增幅药水效果。
 
 ### 受伤前
 

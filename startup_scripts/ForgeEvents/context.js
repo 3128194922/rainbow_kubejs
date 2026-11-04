@@ -1,4 +1,6 @@
-// ForgeEvents 事件上下文：统一缓存一次事件内会重复读取的数据。
+// ForgeEvents 事件上下文：统一缓存伤害事件链中会重复读取的数据。
+// 玩家饰品索引按维度和 tick 复用，避免多弹丸同步伤害反复扫描，并在下一 tick 丢弃旧玩家引用。
+const FORGE_CURIO_INDEX_CACHE = {};
 
 // 伤害类型分组：事件上下文只做一次字典查询，处理器直接读取布尔标记。
 const FORGE_DAMAGE_TYPE_GROUPS = {
@@ -120,8 +122,7 @@ function createAttackContext(event) {
 }
 
 /**
- * 构建玩家当前饰品索引。
- * 索引只在当前事件上下文中使用，不跨 tick 缓存，避免饰品更换后数据过期。
+ * 扫描玩家当前饰品并构建索引；调用方按玩家 tick 缓存扫描结果。
  */
 function buildCurioIndex(player) {
     let index = {};
@@ -150,8 +151,34 @@ function buildCurioIndex(player) {
 }
 
 /**
+ * 获取当前 tick 可复用的玩家饰品索引；下一 tick 自动重建，饰品更换不会跨 tick 读取旧数据。
+ */
+function getForgeCurioIndex(player) {
+    try {
+        if (player == null || !player.isPlayer()) return {};
+        let level = player.level;
+        let dimensionKey = String(level.dimension);
+        let tick = level.getTime();
+        let dimensionCache = FORGE_CURIO_INDEX_CACHE[dimensionKey];
+        if (dimensionCache == null || dimensionCache.tick != tick) {
+            dimensionCache = {tick: tick, players: {}};
+            FORGE_CURIO_INDEX_CACHE[dimensionKey] = dimensionCache;
+        }
+        let playerKey = String(player.getUuid());
+        let index = dimensionCache.players[playerKey];
+        if (index != null) return index;
+        index = buildCurioIndex(player);
+        dimensionCache.players[playerKey] = index;
+        return index;
+    } catch (e) {
+        console.log("ForgeEvents 获取当前tick饰品缓存失败: " + e);
+        return buildCurioIndex(player);
+    }
+}
+
+/**
  * 从事件上下文中获取指定位置的饰品。
- * 同一角色在一个事件内只构建一次饰品索引。
+ * 同一角色在一个 tick 内只扫描一次饰品栏，事件上下文仍保留本地索引引用。
  */
 function getContextCurioStack(context, role, id) {
     try {
@@ -160,7 +187,7 @@ function getContextCurioStack(context, role, id) {
         let cacheName = role == "attacker" ? "attackerCurioIndex" : "victimCurioIndex";
         if (context[cacheName] == null) {
             let player = role == "attacker" ? context.attacker : context.victim;
-            context[cacheName] = buildCurioIndex(player);
+            context[cacheName] = getForgeCurioIndex(player);
         }
 
         let stack = context[cacheName][id];

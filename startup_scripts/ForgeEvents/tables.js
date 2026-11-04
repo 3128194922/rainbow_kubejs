@@ -36,7 +36,9 @@ const FORGE_ATTACK_CURIO_CODES = {
     "rainbow:living_gauntlet": 2,
     "rainbow:libra": 3,
     "rainbow:gold_glove": 4,
-    "rainbow:wandering_gummy_pack": 5
+    "rainbow:wandering_gummy_pack": 5,
+    // 石之羽：攻击事件中的迅捷效果。
+    "rainbow:stone_feather": 6
 };
 
 // 根目录 startup 脚本通过 global 读取这些表，遵守项目跨目录调用规范。

@@ -202,3 +202,15 @@ StartupEvents.registry("mob_effect", event => {
     event.create("rainbow:invisible")
     .beneficial() // 标记为有益效果
 });
+
+// 恶魔羊皮纸：暴击触发的短时效果，为玩家提供 +30% 暴击率。
+StartupEvents.registry("mob_effect", event => {
+    try {
+        event.create("rainbow:demon_parchment_crit")
+            .beneficial()
+            .color(0xD8B56D)
+            .modifyAttribute("attributeslib:crit_chance", "demon_parchment_crit_chance", 0.30, "addition");
+    } catch (e) {
+        console.log("[恶魔羊皮纸] 暴击增幅药水效果注册失败: " + e);
+    }
+});

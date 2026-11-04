@@ -77,7 +77,13 @@
    - 报错表现：`Can't find method ... DamageSources...LightningBolt,MobEntityJS`，原因是给 `lightningBolt` 传入了当前包装不支持的实体参数。
    - 规范：本项目已核对的调用形式为 `entity.damageSources().lightningBolt()`，再将返回的伤害源交给 `target.attack(source, amount)`；不要传入 `LightningBolt` 和使徒实体参数。
 
-5. **验证边界**
+5. **Curios `canEquip` 回调中的孤立字符**
+   - 报错表现：点击饰品栏时客户端崩溃，堆栈指向 `startup_scripts/Registry/Registry_curios.js` 的 `canEquip` 回调并报 `ReferenceError: "w" is not defined`。
+   - 原因：`let entity = slotContext.entity();` 语句末尾误带孤立标识符 `w`；回调在饰品栏检查能否放入物品时执行该标识符，从而抛错。
+   - 修复：删除多余的 `w`，保留实体有效性和重复饰品检查逻辑。
+   - 验证：已依据 2026-11-04 错误报告核实栈帧和当前源码，并静态核对修复行；尚未重启游戏或实际点击 Curios 饰品栏，运行时修复仍待游戏内确认。
+
+6. **验证边界**
    - 静态搜索、脚本重载和无报错日志只能证明对应阶段；不能替代游戏内确认实体朝向变化、伤害来源/数值、弹幕命中和多人服务器行为。修复后应记录实际测试环境与新日志，不要把未进游戏验证的写法标记为运行时已验证。
 
 # 性能写法规范（2026-10-25 spark 实测踩坑沉淀）
@@ -106,6 +112,18 @@
    - `.sparkprofile` 是未压缩 protobuf（field1=metadata，field2=线程树：f3 为扁平 DFS 节点列表，节点 f3=类名/f4=方法名/f6=行号/f8=packed double 每窗口耗时/f9=packed varint 深度；field3=类名→mod 来源表；深度允许跳变，父节点=深度更小的最近前驱）。通用解码脚本曾置于 `%TEMP%\spark_decode\`，丢失时可按此结构重建。
    - 分析要点：检索 `warnAboutNonJSObject`/`shallowEq`/`doEquals` 的 inclusive 占比验证 `==` 健康；统计最外层 `dev.latvian.mods.*` 帧 inclusive 合计得脚本总占比，分别报"占总时间"与"扣除 parkNanos 空闲后的活跃时间"两个口径（如 9.5% / 27%）。
    - 验证闭环：改码 → `node --check` → `/reload` → `/kubejs errors` 无报错 → `/perf reset` 游玩战斗 2 分钟 → `/perf stats` 截埋点排行 → spark 采样对比 warn/shallowEq 是否消失、TPS 是否提升。
+
+5. **多弹丸伤害链的 Curios 索引缓存**
+   - 表现：霰弹手炮等一次生成多个弹丸的武器，在同时触发神圣十字架、亵渎十字架或吐根时，会在短时间进入大量同步伤害事件，重复扫描玩家整套饰品栏，加重服务端卡顿。
+   - 原因：`createDamageContext` 为每个伤害阶段创建新上下文；原先的 `getContextCurioStack` 只在单个事件内缓存索引，弹丸及派生伤害之间无法复用。
+   - 修复：在 `startup_scripts/ForgeEvents/context.js` 按维度、玩家 UUID 和 `player.level.getTime()` 缓存 Curios 索引（KubeJS 2001.6.5 映射到 `Level.getGameTime()`）；该维度下一 tick 首次查询时整体替换缓存，释放旧玩家引用。保留每次伤害事件和原有伤害结算，不合并或跳过触发。
+   - 验证：已静态核对 KubeJS 源码映射、事件调用链及差异；脚本重载、游戏内三饰品/霰弹手炮实测和 spark 前后对比尚未验证，不能据此宣称运行时卡顿已消除。
+
+6. **吐根在十字架多段伤害中只触发一次**
+   - 表现：装备 `rainbow:lpecac` 时，神圣十字架的一次多段伤害只有第一段触发吐根。
+   - 原因：吐根使用玩家级 3 tick 冷却，连续同步处理的后续伤害阶段被冷却挡住；当前派生伤害已有 `hit.procced` 标记和触发矩阵限制递归。
+   - 修复：移除吐根玩家级冷却判断与设置，继续依赖每个伤害阶段的 `hit.procced` 及触发矩阵，允许同一多段攻击的后续阶段触发。
+   - 验证：已静态核对修改后的触发条件；尚未执行游戏内多段攻击验证。按用户本次范围，不修改 MysticArtifacts 雷电瓶实现，因此雷电瓶重复触发行为不在本次修复范围内。
 
 # 输出要求
 

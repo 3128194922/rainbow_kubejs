@@ -70,8 +70,8 @@ const ThrowableItemProjectile = Java.loadClass('net.minecraft.world.entity.proje
 const MoverType = Java.loadClass('net.minecraft.world.entity.MoverType')
 const AbstractArrow = Java.loadClass('net.minecraft.world.entity.projectile.AbstractArrow')
 const Projectile = Java.loadClass('net.minecraft.world.entity.projectile.Projectile')
-// 先驱者动力剑：服务端触发 GeckoJS 物品动画时使用的接口。
-const GeoItem = Java.loadClass('software.bernie.geckolib.animatable.GeoItem')
+// 先驱者动力剑已整项注释停用；其 GeckoJS 动画接口随技能逻辑一并停用。
+//const GeoItem = Java.loadClass('software.bernie.geckolib.animatable.GeoItem')
 
 // 第一阶段规范整理：服务端所有 Java 类统一在本文件加载，并使用无 $ 前缀变量。
 const SwordItem = Java.loadClass('net.minecraft.world.item.SwordItem')

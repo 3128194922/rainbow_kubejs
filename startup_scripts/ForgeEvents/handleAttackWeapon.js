@@ -1,5 +1,6 @@
 // Priority: 5000
-const POWER_SWORD_ATTACK_FIELD_REDUCTION_TICKS = 2 * 20;
+// 先驱者动力剑已整项注释停用；攻击消耗常量随技能逻辑一并停用。
+//const POWER_SWORD_ATTACK_FIELD_REDUCTION_TICKS = 2 * 20;
 
 /**
  * 处理玩家攻击实体时的武器充能逻辑
@@ -30,7 +31,8 @@ function handleAttackWeapon(event, entity, target, context) {
                 }
             }
             break;
-        case 2:
+        // 先驱者动力剑已整项注释停用；原 case 2 保留供后续恢复。
+        /*case 2:
             // 先驱者动力剑：同一物品通过 NBT 开启分解立场，并保留原有攻击次数消耗。
             try {
                 let powerSwordTag = mainHand.getNbt();
@@ -91,7 +93,7 @@ function handleAttackWeapon(event, entity, target, context) {
                 console.log("先驱者动力剑攻击状态处理出错：");
                 console.log(e);
             }
-            break;
+            break;*/
     }
 
     // 吐根现由实际伤害入口统一触发近战/远程/法术AOE，不再创建击退爆炸。

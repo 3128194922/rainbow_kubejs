@@ -532,7 +532,8 @@ ItemEvents.tooltip((event) => {
             text.add(9, Text.darkGray("拘束制御术式 零 解"));
         }
     })
-    event.addAdvanced('rainbow:power_sword', (item, advanced, text) => {
+    // 先驱者动力剑已整项注释停用；原 tooltip 保留供后续恢复。
+    /*event.addAdvanced('rainbow:power_sword', (item, advanced, text) => {
         // 先判断 NBT 是否存在，并显示单物品当前的分解立场状态。
         let nbt = item.getNbt();
         let active = nbt != null && nbt.getBoolean("DecompositionField");
@@ -540,7 +541,7 @@ ItemEvents.tooltip((event) => {
         text.add(2, Text.gold("能量：").append(Text.yellow(nbt != null ? `${nbt.getInt("Power")}` : "0")));
         text.add(3, Text.gray("右键：开启 10 秒分解立场"));
         text.add(4, Text.gray("攻击会消耗立场能量"));
-    })
+    })*/
     // 决斗细剑：说明主手闪避加成、被动闪避回血、UUID 追击与极限闪避力量效果。
     event.addAdvanced('rainbow:duel', (item, advanced, text) => {
         text.add(1, Text.aqua("▸ 主手：+20% 闪避几率"));

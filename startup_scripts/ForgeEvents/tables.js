@@ -27,8 +27,8 @@ const FORGE_VOID_TRANSMUTE_RECIPES = {
 };
 
 const FORGE_ATTACK_WEAPON_CODES = {
-    "rainbow:terasword": 1,
-    "rainbow:power_sword": 2
+    "rainbow:terasword": 1
+    // 先驱者动力剑已整项注释停用；原映射为 "rainbow:power_sword": 2
 };
 
 const FORGE_ATTACK_CURIO_CODES = {

@@ -135,7 +135,7 @@ Curios 索引在同一维度 tick 的多个同步伤害事件间复用，该维�
 
 ### 攻击入口
 
-- `handleAttackWeapon.js`：泰拉刃、动力剑。通过物品 ID 查表后使用 `switch` 分发；决斗剑的 UUID 伤害逻辑位于 `handleWeaponEffects.js`，闪避效果位于 `rainbow/duel/main.js`。
+- `handleAttackWeapon.js`：泰拉刃；先驱者动力剑已注释停用。通过物品 ID 查表后使用 `switch` 分发；决斗剑的 UUID 伤害逻辑位于 `handleWeaponEffects.js`，闪避效果位于 `rainbow/duel/main.js`。
 - `handleAttackCurios.js`：末影手套、生灵手套、天秤座、点金手套、流浪软糖包、石之羽（攻击触发迅捷 II）。复用攻击事件的 Curios 索引。
 - `handleDemonParchmentCrit.js`：佩戴恶魔羊皮纸并成功触发神化暴击或原版跳劈暴击时，给予 3 秒暴击率增幅药水效果。
 

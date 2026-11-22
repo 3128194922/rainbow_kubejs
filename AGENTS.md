@@ -128,3 +128,12 @@
 # 输出要求
 
 不管有没有文本输出都应该输出文本 【前端变前台，后端变后厨，python送到家，Java炒米粉】
+
+# 伤害数字显示避坑记录
+
+1. **伤害粒子与 PowerfulDummy 假人显示不一致**
+   - 表现：PowerfulDummy `20-0.0.10` 假人单次伤害显示 `7.0`，KubeJS 伤害粒子显示 `7.1`。
+   - 原因：`LivingDamageEvent#getAmount()` 返回 `float`。假人读取同一 `float` 后以 Java `String.format("%.1f", ...)` 显示；旧粒子代码先用 JS double 做 `Math.round(amount * 10 + 0.5)`，等于按 0.1 向上取整，`7.0499` 会错误显示为 `7.1`。
+   - 修复：`startup_scripts/damage_indicators/main.js` 去掉原先按 0.1 向上取整的写法，改为直接 `toFixed(1)` 保留一位小数。`LivingDamageEvent#getAmount()` 本身已是 float，JS 再转 float 没有必要。
+   - 二次问题：最初曾尝试 `new java.lang.Float(value)` 转 float，KubeJS6 在事件回调中报 `Line 167: 'java()' is no longer supported!`，导致伤害粒子完全不显示。现已删除该写法。
+   - 验证：已通过 `tests/damage_indicators.test.cjs` 的新增回归测试（输入 `7.04` 期望 `7.0`）、`node --check` 和 `git diff --check`；尚未进入游戏使用假人复测。

@@ -57,6 +57,12 @@ test('普通命中只生成一个伤害文本粒子，坐标来自受击目标',
     assert.deepEqual([h.particles[0].x, h.particles[0].y, h.particles[0].z], [20, 65.6, 30]);
 });
 
+test('伤害数字按一位小数显示，与假人显示一致', () => {
+    const h = harness();
+    h.damage(h.entity('victim'), source(), 7.04);
+    assert.equal(h.particles[0].text, '7.0');
+});
+
 test('暴击事件不单独飘字，最终伤害合并为一个文本且标记只消费一次', () => {
     const h = harness(), target = h.entity('victim'), hit = source();
     h.crit(target, hit);
@@ -64,8 +70,8 @@ test('暴击事件不单独飘字，最终伤害合并为一个文本且标记�
     h.damage(target, hit);
     assert.equal(h.particles.length, 1);
     assert.equal(h.particles[0].text, '暴击 12.3！');
-    assert.equal(h.particles[0].textColor, 0xFF5555);
-    assert.equal(h.particles[0].textOutlineColor, 0x550000);
+    assert.equal(h.particles[0].textColor, 0xFF0000);
+    assert.equal(h.particles[0].textOutlineColor, 0x330000);
     h.damage(target, hit);
     assert.equal(h.particles[1].text, '12.3');
 });
@@ -118,8 +124,8 @@ test('同一Java伤害源的不同脚本包装通过equals匹配', () => {
     assert.deepEqual(h.particles.map(p => p.text), ['暴击 12.3！']);
 });
 
-// 普通命中保留分类颜色；发生暴击时整条文本改为更醒目的专用红色。
-test('魔法和真实伤害普通命中保留分类颜色，暴击统一为亮红色', () => {
+// 普通命中和暴击均保留分类颜色。
+test('魔法和真实伤害普通命中与暴击均保留分类颜色', () => {
     for (const [type, color] of [['magic', 0xAA00FF], ['generic', 0xFFFFFF]]) {
         const h = harness(), target = h.entity('victim'), hit = source(type);
         h.damage(target, hit);
@@ -128,8 +134,8 @@ test('魔法和真实伤害普通命中保留分类颜色，暴击统一为亮�
         h.damage(target, hit);
         assert.equal(h.particles.length, 2);
         assert.equal(h.particles[1].text, '暴击 12.3！');
-        assert.equal(h.particles[1].textColor, 0xFF5555);
-        assert.equal(h.particles[1].textOutlineColor, 0x550000);
+        assert.equal(h.particles[1].textColor, color);
+        assert.equal(h.particles[1].textOutlineColor, color === 0xFFFFFF ? 0x333333 : 0x220033);
     }
 });
 

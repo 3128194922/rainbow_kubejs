@@ -221,7 +221,7 @@ ItemEvents.rightClicked("rainbow:eldritch_sword", event => {
     player.cooldowns.addCooldown("rainbow:creeper_charm", SecoundToTick(60 * 60));
 });*/
 
-// 先驱者动力剑右键与定时状态清理已迁移到 server_scripts/power_sword/main.js。
+// 先驱者动力剑已整项注释停用；原右键与定时状态清理脚本位于 server_scripts/power_sword/main.js。
 
 /*
 // --- 乐谱：播放音乐 ---

@@ -158,6 +158,20 @@ function getDamageType(source) {
     return '';
 }
 
+// KubeJS6/Rhino 不支持 java() 全局（new java.lang.Float 会在事件回调中抛 "'java()' is no longer supported"）。
+// 当前 amount 已来自 LivingDamageEvent#getAmount() 的 float，继续用 JS toFixed(1) 保留一位小数。
+function formatDamageIndicatorAmount(amount) {
+    try {
+        let value = Number(amount);
+        if (!isFinite(value)) return value.toFixed(1);
+        return value.toFixed(1);
+    } catch (e) {
+        console.log('[ParticleJS] 格式化伤害数字失败: ' + e);
+        let value = Number(amount);
+        return isFinite(value) ? value.toFixed(1) : String(value);
+    }
+}
+
 // 按伤害类型注册表 ID 识别真实伤害：自定义伤害的 message_id 可能只是 'player'，
 // 此时 getType() 无法区分普通攻击与自定义真实伤害。
 let trueDamageTypeIdErrorLogged = false;
@@ -267,8 +281,8 @@ function spawnDamageIndicator(entity, difference, source) {
         let x = entity.getRandomX(0.5);
         let y = entity.getEyeY();
         let z = entity.getRandomZ(0.5);
-        // 暴击与数字间留一个空格；独立粒子类型放大文本，同时沿用当前伤害类型的文字和描边颜色。
-        let text = (Math.round(amount * 10 + 0.5) / 10).toFixed(1);
+        // 暴击与数字间留一个空格；独立粒子类型放大文本，数值格式化与 PowerfulDummy 假人显示保持一致。
+        let text = formatDamageIndicatorAmount(amount);
         let isCritical = consumeDamageIndicatorCritical(entity, source);
         let isBackstab = consumeDamageIndicatorBackstab(entity, source);
         if (isBackstab || isCritical) {

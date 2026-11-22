@@ -216,7 +216,8 @@ event.create("rainbow:baseball_power", "sword")
     .attackDamageBonus(19.0)
     .attackDamageBaseline(0.0)*/
 
-// 先驱者动力剑：使用 GeckoJS 的 anim_sword 渲染 Blockbench 当前模型，并注册分解立场的三段触发动画。
+// 先驱者动力剑已整项注释停用；资源文件保留供后续恢复。
+/*先驱者动力剑：使用 GeckoJS 的 anim_sword 渲染 Blockbench 当前模型，并注册分解立场的三段触发动画。
 event.create("rainbow:power_sword", "anim_sword")
     .attackDamageBonus(7.0)
     .attackDamageBaseline(0.0)
@@ -243,7 +244,7 @@ event.create("rainbow:power_sword", "anim_sword")
             console.log("先驱者动力剑 GeckoJS 模型注册出错：");
             console.log(e);
         }
-    })
+    })*/
 
 // 泰拉刃：强大的武器
 //event.create("rainbow:terasword", "sword")

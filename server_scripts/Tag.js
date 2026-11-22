@@ -9,6 +9,8 @@ ServerEvents.tags("item", event => {
         event.add("rainbow:food",food)
     })
 
+    event.add('shiledattack:charge_attack',['minecraft:wooden_sword']);
+
     // 饰品相关标签
     event.add("curios:charm",['windswept:ice_lantern','mysticartifacts:lightning_bottle','mysticartifacts:emergency_plan','mysticartifacts:demonic_gestation','mysticartifacts:ancestors_letter','tide:fishing_journal','mysticartifacts:survival_jade','create:copper_backtank', 'create:netherite_backtank','royalvariations:royal_staff','mysticartifacts:death_eye','mysticartifacts:sword_swarm_charm'
     ,'alexsmobs:void_worm_eye','rainbow:ice_tea','minecraft:firework_rocket','caverns_and_chasms:tinplate','caverns_and_chasms:saddled_egg','species:wicked_swapper',

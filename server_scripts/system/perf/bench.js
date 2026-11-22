@@ -59,7 +59,7 @@ function perfRunBench(player, lightRounds, queryRounds, sendLine) {
             new AABB(px - 4, py - 4, pz - 4, px + 4, py + 4, pz + 4);
         }));
 
-        // 物品栈读取：power_sword 等每 tick 取手部物品的成本
+        // 物品栈读取：先驱者动力剑已停用，原每 tick 取手部物品成本示例保留供性能说明。
         results.push(perfBenchItem('getItemBySlot(head).id', 200, lightRounds, () => {
             player.getItemBySlot('head').id;
         }));

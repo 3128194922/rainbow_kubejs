@@ -36,9 +36,9 @@ function handleBackstabDamage(event, attacker, victim, context) {
         let isBackstab = BackstabbingEnchantment.isLookingBehindTarget(victim, attacker.position());
         if (!isBackstab) return;
 
-        // 满足条件：伤害 ×2
+        // 满足条件：伤害 × 1.2
         let originalAmount = event.getAmount();
-        event.setAmount(originalAmount * 2);
+        event.setAmount(originalAmount * 1.2);
 
         // 记录本次背刺，供最终伤害数字合并显示“背刺”提示；提示失败不影响伤害结算。
         try {

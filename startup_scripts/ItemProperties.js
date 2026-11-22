@@ -12,8 +12,8 @@ ItemEvents.modelProperties(event => {
     event.register("rainbow:terasword", "powers", (itemStack, level, entity, seed) => {
         return itemStack.nbt.getDouble("power") >= 1.0 ? 1.0 : 0.0;
     });
-    // 先驱者动力剑：根据分解立场截止时间切换模型，过期状态不显示立场贴图。
-    event.register("rainbow:power_sword", "decomposition_field", (itemStack, level, entity, seed) => {
+    // 先驱者动力剑已整项注释停用；模型属性随物品注册一并停用。
+    /*event.register("rainbow:power_sword", "decomposition_field", (itemStack, level, entity, seed) => {
         try {
             let powerSwordTag = itemStack.getNbt();
             if (powerSwordTag == null || level == null) return 0.0;
@@ -25,7 +25,7 @@ ItemEvents.modelProperties(event => {
             console.log(e);
             return 0.0;
         }
-    });
+    });*/
 
     // 小嘀嗒：根据 NBT 中的 Energy 值改变模型 (0-100 -> 0.0-1.0)
     event.register("rainbow:short_core", "energy", (itemStack, level, entity, seed) => {

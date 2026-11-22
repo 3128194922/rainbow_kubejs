@@ -34,8 +34,8 @@
 ### 本地验证
 
 ```text
-pwsh tools/tests/power_sword_contract_test.ps1  # 功能契约测试（共 8 个，见「开发辅助与测试」）
-node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血月 / 木剑镶嵌 / 心灵宝石）
+pwsh tools/tests/<名称>_contract_test.ps1       # PowerShell 源码契约测试（当前 9 个，见「开发辅助与测试」）
+node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当前 20 个 .test.cjs）
 /kubejs errors                                  # 游戏内查看 KubeJS 错误
 ```
 
@@ -62,7 +62,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
   - [迷你Boss系统](#迷你boss系统)
   - [血月事件（MoonJS）](#血月事件moonjs)
   - [炮击标定系统 (CBC)](#炮击标定系统-cbc)
-  - [先驱者动力剑](#先驱者动力剑)
+  - [先驱者动力剑（已注释停用）](#先驱者动力剑已注释停用)
   - [圣遗物镶嵌与元素觉醒](#圣遗物镶嵌与元素觉醒-wooden_sword_inlay)
   - [基因系统](#基因系统)
   - [宠物/佣兵驯服系统](#宠物佣兵驯服系统)
@@ -129,7 +129,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | `rainbow:tyrfing` | 剑 | 提尔锋，主手持有时获得 +50 盔甲穿透 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，属性：[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
 | `rainbow:heavy_axe` | 斧 | 重锤（Blockbench 元素模型），根据下落加速度造成伤害：伤害加成 = 下落距离×0.5 + 动能伤害属性×2，命中后清零下落距离。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)，配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
 | `rainbow:eldritch_pan` | 锅(头部) | 饕餮之锅，攻速极慢但伤害高。右键收集副手食物记录食用种类 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L81-L94](client_scripts/tooltips.js#L81-L94)，渲染：[client_scripts/curios_render.js#L134-L171](client_scripts/curios_render.js#L134-L171) |
-| `rainbow:power_sword` | 剑 | 先驱者动力剑（GeckoLib `anim_sword` 渲染 + 三段动画），右键开启持续 10 秒的分解立场（期间攻击 +12），每次攻击扣减 2 秒持续时间，收场后进入 40 秒冷却；状态与能量存储在同一物品 NBT | 注册：[startup_scripts/Registry/Registry_item.js#L201](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js)，攻击收场：[startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
+| ~~`rainbow:power_sword`~~ | 剑 | 先驱者动力剑（**整项代码已注释停用，资源保留**；原效果为 GeckoLib `anim_sword` 渲染 + 三段动画，右键开启 10 秒分解立场，攻击消耗持续时间，收场 40 秒冷却） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js) |
 | ~~`rainbow:terasword`~~ | 剑 | 泰拉刃，消耗能量发射 TNT 弹射物（**注册已注释**，ItemProperties 模型与攻击逻辑残留，无效引用） | 注册：[startup_scripts/Registry/Registry_item.js#L192](startup_scripts/Registry/Registry_item.js#L192) |
 | `rainbow:slime_rod` | 剑 | 黏液棒，右键生成粘液块平台，潜行右键生成救生罩，左键脱下实体装备 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体事件：[server_scripts/EntityEvents.js#L12-L25](server_scripts/EntityEvents.js#L12-L25) |
 | `rainbow:frostium_pickaxe` | 镐 | 霜冻金属镐，耐久 1500，加速挖掘 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L258-L261](server_scripts/Recipes.js#L258-L261) |
@@ -497,16 +497,16 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 - **音效：** 电台右键播报火炮数量时播放 `rainbow:voice.artillery_radio` 无线电静电音
 - **配套数据包：** [data/createbigcannons/](data/createbigcannons/) 将 13 种大口径炮弹 entity_damage 改为 10 亿（忽略无敌/护甲、爆炸威力 28，命中秒杀），机炮弹药保留低伤害
 
-### 先驱者动力剑
+### 先驱者动力剑（已注释停用）
 
-`rainbow:power_sword` 的单物品技能「分解立场」。
+`rainbow:power_sword` 的注册、技能、攻击逻辑、属性加成、模型属性、tooltip、战利品掉落及相关常量均已注释停用；模型、贴图、动画与语言项保留供后续恢复。
 
 > 实现：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js)
 > 攻击收场：[startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js)
 
-- **开启：** 右键写 NBT `DecompositionField` / `DecompositionFieldUntil`（200 tick），清空 `Power`，播放音效并经 `GeoItem.getOrAssignId` 触发 GeckoLib 三段动画 `decomposition_field_open/loop/close`
-- **维持：** 分解立场期间攻击 +12（[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js)），每次攻击扣减 2 秒持续时间
-- **收场：** 到期（`PlayerEvents.tick` 检查主/副手）或攻击耗尽时移除 NBT 并进入 40 秒冷却，回调 `global.triggerPowerSwordAnimation` 播放收场动画
+- **当前状态：** 物品不再注册，技能事件、右键、tick、攻击分支与 tooltip 均不执行；`startup_scripts` 改动需要完整重启游戏后生效。
+- **原实现（已注释）：** 右键写 NBT `DecompositionField` / `DecompositionFieldUntil`（200 tick），经 `GeoItem.getOrAssignId` 触发 GeckoLib 三段动画；攻击消耗持续时间，到期或耗尽后进入 40 秒冷却。
+- **资源保留：** `assets/rainbow/models`、`assets/rainbow/textures`、`assets/rainbow/geo`、`assets/rainbow/animations` 与 `assets/rainbow/lang` 中相关文件未删除。
 
 ### 圣遗物镶嵌与元素觉醒 (wooden_sword_inlay)
 
@@ -535,17 +535,18 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 - **基因属性映射：** `global.GeneEffectMap` 在 [startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js) 中定义
 - **工具提示：** 按 ALT 查看 `rainbow:amber_bee` 的基因详情
 
-### 宠物/佣兵驯服系统
+### 宠物/佣兵驯服系统（第四条参考，已完整停用）
 
-> 启动：[startup_scripts/pet_system/MobTameStartup.js](startup_scripts/pet_system/MobTameStartup.js)
-> 服务器：[server_scripts/pet_system/MobTameServer.js](server_scripts/pet_system/MobTameServer.js)
-> Jade 客户端：[client_scripts/pet_system/JadeEvents.js](client_scripts/pet_system/JadeEvents.js)
+> 当前状态：已停用。4 个实现文件已保留并整文件注释，方便恢复；`main.js` 仅保留说明，不负责关闭系统。
+> 启动实现（已注释）：[startup_scripts/pet_system/MobTameStartup.js](startup_scripts/pet_system/MobTameStartup.js)
+> 服务端实现（已注释）：[server_scripts/pet_system/MobTameServer.js](server_scripts/pet_system/MobTameServer.js)
+> Jade 启动/客户端实现（已注释）：[startup_scripts/pet_system/JadeEvents.js](startup_scripts/pet_system/JadeEvents.js)、[client_scripts/pet_system/JadeEvents.js](client_scripts/pet_system/JadeEvents.js)
 
-- **可驯服生物：** 铁傀儡（通过 `EntityJSEvents.modifyEntity`）
-- **驯服机制：** 有 OwnerName 持久化数据即为驯服
-- **骑乘控制：** 完整的 WASD 移动/跳跃/飞行/游泳逻辑
-- **Jade 显示：** 被精神控制的生物显示 `[召唤物]` 标签
-- **战利品：** 被驯服的生物不掉落任何物品
+- **停用范围：** 右键驯服、装鞍、坐下/跟随、AI 目标、骑乘控制、Jade 所有者数据 provider 与客户端 `[召唤物]` 标签均已注释。
+- **恢复方式：** 使用备份或去掉每行开头的 `// [PET_SYSTEM_DISABLED] `；不要只改 `main.js`，KubeJS 6 会递归加载同目录脚本。
+- **加载要求：** `server_scripts` 可执行 `/kubejs reload server_scripts`；`startup_scripts` 与 `client_scripts` 需要重启客户端才完全生效。
+- **静态检查：** 4 个实现文件 `node --check` 通过；未注释的 `ItemEvents.entityInteracted`、`EntityEvents.spawned`、`EntityEvents.hurt`、`EntityJSEvents.addGoalSelectors`、`EntityJSEvents.modifyEntity`、`JadeEvents.on*` 注册为 0。游戏内行为尚未实测。
+- **非本系统残留：** 其他脚本中的 `OwnerName` 逻辑（召唤/友军判断/大师球回收/佣兵无掉落等）未改动，不属于第四条参考的 `pet_system`。
 
 ### 共生徽章系统
 
@@ -651,13 +652,13 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | 文件 | 功能 | 实现位置 |
 |------|------|----------|
 | `customAttributeDamage.js` | 自定义属性伤害计算 | [startup_scripts/ForgeEvents/customAttributeDamage.js](startup_scripts/ForgeEvents/customAttributeDamage.js) |
-| `handleBackstabDamage.js` | 背刺判定（最高优先级）：隐匿状态+背面攻击伤害×2，联动泣血之刃回血 | [startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js) |
+| `handleBackstabDamage.js` | 背刺判定（最高优先级）：隐匿状态+背面攻击伤害×1.2，联动泣血之刃回血 | [startup_scripts/ForgeEvents/handleBackstabDamage.js](startup_scripts/ForgeEvents/handleBackstabDamage.js) |
 | `handleCuriosEffects.js` | 攻击者饰品特效：冰茶/曼巴之力按速度值增伤（其余旧逻辑已注释） | [startup_scripts/ForgeEvents/handleCuriosEffects.js](startup_scripts/ForgeEvents/handleCuriosEffects.js) |
 | `handleWeaponEffects.js` | 武器效果处理 | [startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js) |
 | `handleNonPlayerDamage.js` | 非玩家伤害处理 | [startup_scripts/ForgeEvents/handleNonPlayerDamage.js](startup_scripts/ForgeEvents/handleNonPlayerDamage.js) |
 | `handleCoreCharging.js` | 核心充能处理（装填/连射核心 + 狂怒面具 FuryDamage 充能） | [startup_scripts/ForgeEvents/handleCoreCharging.js](startup_scripts/ForgeEvents/handleCoreCharging.js) |
 | `handleAttackCurios.js` | 攻击饰品效果：末影之握（MoreFire 末影火 `endergetic:ender_fire` 3s）/ 生灵之触（MoreFire 生灵火 `dungeonsdelight:living_fire` 3s）/ 天秤座（交换双方药水效果） | [startup_scripts/ForgeEvents/handleAttackCurios.js](startup_scripts/ForgeEvents/handleAttackCurios.js) |
-| `handleAttackWeapon.js` | 攻击武器效果：泰拉刃（power 1-4）/ 动力剑（分解立场中 Power 消耗与 40s 冷却） | [startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js) |
+| `handleAttackWeapon.js` | 攻击武器效果：泰拉刃（power 1-4）；动力剑已注释停用 | [startup_scripts/ForgeEvents/handleAttackWeapon.js](startup_scripts/ForgeEvents/handleAttackWeapon.js) |
 | `handleBigStomach.js` | 大胃袋：任务完成（bs_done）后消耗饱和度抵消伤害 | [startup_scripts/ForgeEvents/handleBigStomach.js](startup_scripts/ForgeEvents/handleBigStomach.js) |
 | `handleDespairInsigniaDeath.js` | 极限证章：佩戴者造成的全部伤害降低50% | [startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js](startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js) |
 | `handleFireworkDash.js` | 烟花拳套冲刺：击退 + 撞墙二次伤害（`FireworkDashImpact*` NBT） | [startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
@@ -680,7 +681,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（血
 | 机制 | 说明 |
 |------|------|
 | 霜冻镐加速 | 挖掘硬度 > 5 的方块时挖掘速度 x16 |
-| 背刺判定 | 玩家隐匿状态（`global.getStealthState`）+ 复用 FarmersDelight `BackstabbingEnchantment.isLookingBehindTarget`（背面±60°锥形）时伤害×2；装备泣血之刃额外恢复背刺伤害 50% 血量 |
+| 背刺判定 | 玩家隐匿状态（`global.getStealthState`）+ 复用 FarmersDelight `BackstabbingEnchantment.isLookingBehindTarget`（背面±60°锥形）时伤害×1.2；装备泣血之刃额外恢复背刺伤害 50% 血量 |
 | 决斗剑 | 按目标 UUID 记录当前目标；连续攻击同一目标伤害 ×1.5，被动闪避回血 4 点，极限闪避获得力量 I 3 秒 |
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
 | 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
@@ -728,7 +729,8 @@ ParticleJS 文本粒子与伤害飘字基础设施（priority 4000），注册�
 - **粒子类型：** `rainbow:damage_indicator_text`（custom 管线动态文本）、`rainbow:critical_damage_indicator_text`（放大版暴击文本）、`rainbow:katana_hit_cut`（武士刀命中六帧切割动画）
 - **分色：** 物理红 / 魔法紫 / 真实伤害白；`rainbow:unholy_cross`、`rainbow:ancient_skull` 等自定义伤害类型按注册表 ID 判定为真实伤害（`message_id` 为 player 时不会误判为普通攻击）
 - **全局 API：** `global.sendParticleText`、`global.sendParticleTextInFront`、`global.spawnDamageIndicator`
-- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；神化暴击与本次最终伤害合并为单个「暴击 12.3！」文本粒子，背刺伤害显示「背刺 12.3！」，两者同时触发则显示「背刺 暴击 12.3！」；这些提示使用放大字号并沿用对应伤害类型的文字颜色和描边，普通命中只显示数字；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化闪避、原版跳劈分别飘「闪避！/重击！」。其他脚本仍可通过原有 `global.sendParticleText`、`global.sendParticleTextInFront` 接口发送文本粒子。
+- **自动触发：** `LivingDamageEvent` 生成伤害数字并对近战播放切割动画；神化暴击与本次最终伤害合并为单个「暴击 12.3！」文本粒子，背刺伤害显示「背刺 12.3！」，两者同时触发则显示「背刺 暴击 12.3！」；这些提示使用放大字号并沿用对应伤害类型的文字颜色和描边（暴击不再统一改为亮红色），普通命中只显示数字；持 `mysticartifacts:katana` 格挡时飘「格挡！」；morecallback 神化闪避、原版跳劈分别飘「闪避！/重击！」。其他脚本仍可通过原有 `global.sendParticleText`、`global.sendParticleTextInFront` 接口发送文本粒子。
+- **数值格式：** 伤害值先通过 `new java.lang.Float(value)` 转回 `float` 精度，再用 `toFixed(1)` 保留一位小数，使伤害粒子与 PowerfulDummy 假人的一位小数显示一致；异常时退回原值格式化。已通过 `tests/damage_indicators.test.cjs` 的 `7.0499 → 7.0` 回归测试，尚未进入游戏用假人复测。
 
 ### Cataclysm Boss 强化
 
@@ -1168,7 +1170,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
 - **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
 - **NBT 信息显示：** 连射核心能量值、饕餮之锅已食用数、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
-- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标）
+- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死；第四条参考的 `pet_system` 停用后，“右键回收被脑控的佣兵生物”提示仍为未清理残留）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量，已注释停用）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标）
 
 ### JEI 修改
 > 实现：[client_scripts/jei.js](client_scripts/jei.js)
@@ -1239,7 +1241,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - 添加粑粑（`alexscaves:guano`，权重 10）
 
 ### 佣兵无掉落
-- 被驯服生物（`OwnerName` 不为空）：不掉落任何物品
+- 历史规则：被驯服生物（`OwnerName` 不为空）不掉落任何物品；此规则仍在 [server_scripts/Loot.js](server_scripts/Loot.js)，但第四条参考的 `pet_system` 已停用，且未清理该 `OwnerName` 残留。
 
 ### 灵脂蜡块 docker 掉落
 - 被 `forge:spawn_type=MOB_SUMMONED` 且有 docker 数据的实体可配置额外掉落
@@ -1657,14 +1659,14 @@ Alex's Mobs 虚空蠕虫体节经传送门时（`PortalTicks==5`）自动施加 
 
 | 目录/文件 | 说明 |
 |-----------|------|
-| [tools/tests/](tools/tests/) | 8 个 PowerShell 契约测试，对脚本源码做正则断言（输出 PASS / 抛出失败）：`ancientaegis`（组队逻辑）、`dyeing_const`（Dyeing 类真实加载）、`ice_lantern`（冰灯冻结技能）、`power_sword`（分解立场 + 旧 baseball 物品已清除）、`rainbow_duel`（UUID 连击 + 闪避属性）、`stealth_system`（CompoundTag 读取）、`whistle_personal_world`（个人维度传送）、`wooden_sword_inlay`（木剑镶嵌接线与规范） |
-| [tests/](tests/) | `node --test "tests/*.test.cjs"` 事件替身逻辑测试：`blood_moon.test.cjs`（血月调度与迷你 Boss 路径）、`wooden_sword_inlay.test.cjs`（执行真实 config/main，覆盖铁砧镶嵌、随机一致性、属性写入与边界）、`soul_diamond.test.cjs`（执行真实 Registry_curios，覆盖心灵宝石越级经验暂存与返还、参数顺序、异常场景） |
+| [tools/tests/](tools/tests/) | 9 个 PowerShell 契约测试，对脚本源码做正则断言（输出 PASS / 抛出失败）：`ancientaegis`（组队逻辑）、`dyeing_const`（Dyeing 类真实加载）、`ice_lantern`（冰灯冻结技能）、`power_sword`（验证整项注释停用，原代码保留供恢复）、`rainbow_duel`（UUID 连击 + 闪避属性）、`stealth_system`（CompoundTag 读取）、`whistle_personal_world`（个人维度传送）、`wooden_sword_inlay`（木剑镶嵌接线与规范）、`apostle_rhino`（Rhino 引擎中的使徒脚本检查；目录另有 2 个 Java 辅助源文件） |
+| [tests/](tests/) | `node --test "tests/*.test.cjs"` 共 20 个事件替身逻辑测试，主要包括：`blood_moon`（血月调度与迷你 Boss）、`backroom_hunters`（后室追猎者）、`bounty_system`（悬赏）、`combat_rebalance`（战斗重平衡）、`damage_indicators`（伤害数字格式化与颜色/暴击合并）、`dyeing_cleanup_order`、`food_tooltip`、`han_sword_damage`、`holy_blood`、`parasite_moon`、`perf_bench`、`perf_commands`、`relic_element_awakening`、`sharpshooter_charm`、`soul_diamond`、`soul_flamethrower`、`whistle_return`、`wooden_sword_inlay`、`alien_meteor`、`apostle`。这些测试主要验证事件替身/静态行为，不能替代游戏内实测。 |
 | [docs/superpowers/](docs/superpowers/) | 功能设计文档，specs（设计）与 plans（实现）成对维护：炮击标定器（2026-09-04）、小宇宙物品（2026-09-07）、使徒实体（2026-09-27） |
 | [model_sources/](model_sources/) | Blockbench 工程源文件（`apostle/` 使徒实体含改版备份与渲染图），最终导出到 `assets/rainbow/geo` 与 `textures` |
 | [probe/](probe/) | ProbeJS 生成的 TypeScript 类型（`probe/generated/`），配合 [jsconfig.json](jsconfig.json) 与 [.vscode/settings.json](.vscode/settings.json) 提供编辑器补全 |
 | [config-manager/](config-manager/) / [default-config-manager/](default-config-manager/) | 各模组配置的受管备份与默认配置（含 `createbigcannons-server.toml` 中文注释版） |
 | [startup_scripts/ForgeEvents/README.md](startup_scripts/ForgeEvents/README.md) | 战斗事件目录自述：主入口调用顺序契约、新增伤害功能六步流程、编码约定与验证清单 |
-| 杂项 | [startup_scripts/Title.js](startup_scripts/Title.js)（模组显示名改为 Crafty Core Builders）、[startup_scripts/Modification.js](startup_scripts/Modification.js)（火盆匣挖掘速度 / 隐匿腰带潜行属性）、[client_scripts/utils/getUI.js](client_scripts/utils/getUI.js)（GUI 调试，默认关闭） |
+| 杂项 | [startup_scripts/Title.js](startup_scripts/Title.js)（模组显示名改为 Crafty Core Builders）、[startup_scripts/Modification.js](startup_scripts/Modification.js)（火盆匣挖掘速度 / 隐匿腰带潜行属性）、[client_scripts/utils/getUI.js](client_scripts/utils/getUI.js)（GUI 调试，默认关闭）、[server_scripts/Tag.js](server_scripts/Tag.js)（`shiledattack:charge_attack` 标签添加原版木剑） |
 
 测试命令：`pwsh tools/tests/<名称>_contract_test.ps1`（源码契约）、`node --test "tests/*.test.cjs"`（事件替身逻辑）。
 

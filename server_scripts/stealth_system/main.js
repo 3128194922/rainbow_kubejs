@@ -1,3 +1,6 @@
+// [DISABLED 2026-11-25] isStealth 同步已迁移到 StealthAPI mod（StealthSync + StealthNetwork）。
+// 本文件整体注释保留，仅用于回滚参考；mod 会直接读取同一 NBT 键并向客户端发包。
+/*
 // priority: 0
 // ==========================================
 // 潜行系统 - 服务端：isStealth 状态同步到客户端
@@ -82,3 +85,4 @@ PlayerEvents.tick(event => {
     }
     }); // global.perfTime 包裹结束
 });
+*/

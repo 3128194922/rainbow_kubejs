@@ -1,3 +1,6 @@
+// [DISABLED 2026-11-25] 潜行黑边已迁移到 StealthAPI mod（com.stealthapi.client.StealthOverlay）。
+// 本文件整体注释保留，仅用于回滚参考；不要恢复，否则会与 mod 黑边叠加。
+/*
 // priority: 0
 // ==========================================
 // 潜行系统 - 客户端：潜行黑边视角渲染
@@ -145,3 +148,4 @@ ClientEvents.tick(event => {
         console.log(`[stealth_system] 渲染潜行视角失败: ${err}`);
     }
 });
+*/

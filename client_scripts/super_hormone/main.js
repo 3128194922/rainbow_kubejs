@@ -1,5 +1,49 @@
 // priority: 0
 // ==========================================
+// 超级激素 - 客户端：仅把持续时间转交给 StealthAPI
+// Super Hormone (Client) - bridge to StealthAPI
+// ==========================================
+// [2026-11-25] 黄边渲染已迁移到 StealthAPI（com.stealthapi.client.StealthOverlay）。
+// 本脚本只负责接收服务端 Skillwheel.js 推送的 duration，并调用 mod 接口；
+// 黄边颜色、透明度、厚度、淡入淡出、与潜行黑边互斥全部由 StealthAPI 处理。
+// ==========================================
+
+// 网络通道名，与服务端 Skillwheel.js 必须一致
+const SUPER_HORMONE_SYNC_CHANNEL = "super_hormone_sync";
+
+// StealthAPI 缺失时只记录一次，避免每 tick 刷日志
+let stealthApiMissingLogged = false;
+
+NetworkEvents.dataReceived(SUPER_HORMONE_SYNC_CHANNEL, event => {
+    let data = event.data;
+    if (data === null || data === undefined) return;
+
+    let duration = data.getInt("duration");
+    if (!duration || duration <= 0) return;
+
+    if (StealthOverlay === null) {
+        if (!stealthApiMissingLogged) {
+            stealthApiMissingLogged = true;
+            console.log("[super_hormone] 未找到 StealthAPI，黄边无法渲染");
+        }
+        return;
+    }
+
+    try {
+        // 只传持续时间；mod 内部负责淡入、到期淡出和与黑边的互斥
+        StealthOverlay.showSuperHormone(duration);
+    } catch (err) {
+        console.log(`[super_hormone] 调用 StealthAPI.showSuperHormone 失败: ${err}`);
+    }
+});
+
+/*
+// ==========================================
+// [OLD 2026-11-25] 以下为迁移前的 KubeJS 黄边实现，仅作回滚参考。
+// 注意：StealthAPI 已改为 showSuperHormone(duration) 接口，旧代码不能直接取消注释恢复。
+// ==========================================
+// priority: 0
+// ==========================================
 // 超级激素 - 客户端：黄色视角边框渲染
 // Super Hormone (Client) - yellow vignette overlay
 // ==========================================
@@ -10,9 +54,6 @@
 // 当超级激素激活时，stealth_system 会强制其黑边淡出，由本系统独占渲染；
 // 超级激素结束后标志位清除，潜行黑边恢复正常。
 // ==========================================
-
-// 网络通道名，与服务端 Skillwheel.js 必须一致
-const SUPER_HORMONE_SYNC_CHANNEL = "super_hormone_sync";
 
 // 边缘黄色最大不透明度（0~255，180 ≈ 70%）
 const SUPER_HORMONE_MAX_ALPHA = 180;
@@ -30,25 +71,15 @@ const SUPER_HORMONE_FADE_SPEED = 0.15;
 const SUPER_HORMONE_RGB = 0xFFE000;
 
 // 局域变量
-let superHormoneTargetAlpha = 0;   // 目标透明度（0~1）
-let superHormoneAlpha = 0;          // 当前透明度（0~1）
-let endTick = 0;                    // 效果结束的客户端 tick
-let clientTickCounter = 0;          // 客户端 tick 计数器（用于到期判定）
+let superHormoneTargetAlpha = 0;
+let superHormoneAlpha = 0;
+let endTick = 0;
+let clientTickCounter = 0;
 
 // 初始化全局标志位（供 stealth_system 读取优先级）
 if (global.superHormoneActive === undefined) {
     global.superHormoneActive = false;
 }
-
-// 接收服务端推送：收到时刷新 endTick 并启动淡入
-NetworkEvents.dataReceived(SUPER_HORMONE_SYNC_CHANNEL, event => {
-    let data = event.data;
-    if (data === null || data === undefined) return;
-    let duration = data.getInt("duration");
-    if (!duration || duration <= 0) return;
-    endTick = clientTickCounter + duration;
-    superHormoneTargetAlpha = 1;
-});
 
 // 生成黄色 ARGB 颜色值（alpha 0~255，RGB 恒为金黄色）
 function superHormoneArgColor(alpha) {
@@ -88,8 +119,8 @@ ClientEvents.tick(event => {
 
         // 当前不透明度（0~255）
         let alphaNow = Math.round(SUPER_HORMONE_MAX_ALPHA * superHormoneAlpha);
-        let edgeColor = superHormoneArgColor(alphaNow); // 边缘侧：黄色带透明度
-        let clearColor = 0x00000000;                     // 内侧：完全透明
+        let edgeColor = superHormoneArgColor(alphaNow);
+        let clearColor = 0x00000000;
 
         // 四边渐变矩形：屏幕边缘为黄，向屏幕中心渐变为透明
         let paints = {
@@ -133,3 +164,4 @@ ClientEvents.tick(event => {
         console.log(`[super_hormone] 渲染黄色视角失败: ${err}`);
     }
 });
+*/

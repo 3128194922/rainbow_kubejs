@@ -20,3 +20,5 @@ const Color = Java.loadClass("java.awt.Color")
 // 轴向旋转四元数工厂（cannon_target 信标球 billboard 渲染使用 YP 轴）
 const Axis = Java.loadClass("com.mojang.math.Axis")
 const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries")
+// StealthAPI 客户端边框控制器（潜行黑边 / 超级激素黄边；mod 未安装时为 null）
+const StealthOverlay = Java.tryLoadClass('com.stealthapi.client.StealthOverlay')

@@ -1410,37 +1410,38 @@ ItemEvents.tooltip((event) => {
         }
     })
     // 📻 炮兵电台：右键播报范围内火炮数量并播放电台音效；被信标球潜行右键绑定为齐射模式。
-    event.addAdvanced('rainbow:artillery_radio', (item, advanced, text) => {
-        text.add(1, Text.gray("右键：播报范围内已组装火炮数量（伴随无线电静电音效）"));
-        text.add(2, Text.gray("被信标球潜行右键：绑定电台齐射模式"));
-        text.add(3, Text.aqua("电台扫描范围：周围 16×1×16 内的 CBC 火炮底座"));
-    })
+    // 炮击标定系统已注释停用（2026-11-25），物品不再注册，tooltip 一并停用。
+    //event.addAdvanced('rainbow:artillery_radio', (item, advanced, text) => {
+    //    text.add(1, Text.gray("右键：播报范围内已组装火炮数量（伴随无线电静电音效）"));
+    //    text.add(2, Text.gray("被信标球潜行右键：绑定电台齐射模式"));
+    //    text.add(3, Text.aqua("电台扫描范围：周围 16×1×16 内的 CBC 火炮底座"));
+    //})
     // CBC 炮击标定器（信标球）：一对一底座绑定 / 炮兵电台齐射绑定 两种互斥模式。
-    event.addAdvanced('rainbow:cannon_targeter', (item, advanced, text) => {
-        text.add(1, Text.gray("潜行右键 CBC 炮台底座：绑定（该炮单独开火）"));
-        text.add(2, Text.gray("潜行右键炮兵电台：绑定（范围内火炮齐射）"));
-        text.add(3, Text.gray("右键：投掷目标，目标停止后自动开火"));
-        let nbt = item.getNbt();
-        if (nbt != null && nbt.contains('cannonRadioBound')) {
-            text.add(4, Text.gold("已绑定炮兵电台：").append(Text.yellow(
-                '['
-                + nbt.getInt('cannonRadioX') + ', '
-                + nbt.getInt('cannonRadioY') + ', '
-                + nbt.getInt('cannonRadioZ') + ']'
-            )));
-            text.add(5, Text.aqua("电台模式：投掷后电台范围内 16×1×16 的所有火炮集中齐射"));
-        } else if (nbt != null && nbt.contains('cannonTargetDimension')) {
-            text.add(4, Text.gold("已绑定：").append(Text.yellow(
-                nbt.getString('cannonTargetMount') + ' ['
-                + nbt.getInt('cannonTargetX') + ', '
-                + nbt.getInt('cannonTargetY') + ', '
-                + nbt.getInt('cannonTargetZ') + ']'
-            )));
-            text.add(5, Text.gray("维度：" + nbt.getString('cannonTargetDimension')));
-        } else {
-            text.add(4, Text.red("尚未绑定"));
-        }
-    })
+    //event.addAdvanced('rainbow:cannon_targeter', (item, advanced, text) => {
+    //    text.add(1, Text.gray("潜行右键 CBC 炮台底座：绑定（该炮单独开火）"));
+    //    text.add(2, Text.gray("潜行右键炮兵电台：绑定（范围内火炮齐射）"));
+    //    text.add(3, Text.gray("右键：投掷目标，目标停止后自动开火"));
+    //    let nbt = item.getNbt();
+    //    if (nbt != null && nbt.contains('cannonRadioBound')) {
+    //        text.add(4, Text.gold("已绑定炮兵电台：").append(Text.yellow(
+    //            '['
+    //            + nbt.getInt('cannonRadioX') + ', '
+    //            + nbt.getInt('cannonRadioY') + ', '
+    //            + nbt.getInt('cannonRadioZ') + ']'
+    //        )));
+    //        text.add(5, Text.aqua("电台模式：投掷后电台范围内 16×1×16 的所有火炮集中齐射"));
+    //    } else if (nbt != null && nbt.contains('cannonTargetDimension')) {
+    //        text.add(4, Text.gold("已绑定：").append(Text.yellow(
+    //            nbt.getString('cannonTargetMount') + ' ['
+    //            + nbt.getInt('cannonTargetX') + ', '
+    //            + nbt.getInt('cannonTargetY') + ', '
+    //            + nbt.getInt('cannonTargetZ') + ']'
+    //        )));
+    //        text.add(5, Text.gray("维度：" + nbt.getString('cannonTargetDimension')));
+    //    } else {
+    //        text.add(4, Text.red("尚未绑定"));
+    //    }
+    //})
 })
 
 // ==========================================

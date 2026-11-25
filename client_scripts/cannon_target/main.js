@@ -1,3 +1,6 @@
+// 炮击标定系统已注释停用（2026-11-25）；以下客户端渲染内容保留供后续恢复。
+// 信标球实体注册已在 startup_scripts/Registry/Registry_entity.js 注释，本回调不再被调用。
+/*
 // priority: 1000
 // ==========================================
 // 🎯 CBC 炮击标定 —— 客户端渲染
@@ -8,10 +11,8 @@
 // 由 startup_scripts/Registry/Registry_entity.js 的 .render(context) 回调调用，
 // 依赖 client_scripts/CONST.js 中的 Minecraft 与 Axis 类。
 
-/**
- * 信标球标记实体 billboard 渲染回调（仅客户端执行）
- * @param {ContextUtils.NLRenderContext} context EntityJS 渲染上下文（poseStack/entityYaw 等）
- */
+// 信标球标记实体 billboard 渲染回调（仅客户端执行）
+// @param {ContextUtils.NLRenderContext} context EntityJS 渲染上下文（poseStack/entityYaw 等）
 global.cannonTargetMarkerBillboard = function (context) {
     try {
         let mc = Minecraft.getInstance()
@@ -24,3 +25,4 @@ global.cannonTargetMarkerBillboard = function (context) {
         console.log('[CannonTarget] 信标球billboard渲染异常: ' + e)
     }
 }
+*/

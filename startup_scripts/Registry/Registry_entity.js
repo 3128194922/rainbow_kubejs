@@ -120,36 +120,37 @@ StartupEvents.registry('entity_type', event => {
 // 🎯 CBC 炮击目标实体
 // ==========================================
 // 独立于 rainbow:kuchiyose_scroll，避免把实体 ID 当作物品注册或复用通灵卷轴逻辑。
-StartupEvents.registry('entity_type', event => {
-    event.create('rainbow:cannon_target_marker', 'entityjs:nonliving')
-        .sized(0.25, 0.25)
-        .clientTrackingRange(32)
-        .updateInterval(1)
-        .mobCategory('misc')
-        .modelResource(entity => "rainbow:geo/entity/psychic_scroll.geo.json")
-        .textureResource(entity => "rainbow:textures/item/beacon_ball.png")
-        .render(context => {
-            // billboard 渲染：贴图始终面朝玩家（同烈焰弹），具体旋转在客户端执行
-            // 委托 client_scripts/cannon_target/main.js 的 global.cannonTargetMarkerBillboard
-            try {
-                if (typeof global.cannonTargetMarkerBillboard == 'function') {
-                    global.cannonTargetMarkerBillboard(context);
-                }
-            } catch (e) {
-                console.log('[CannonTarget] 目标实体渲染异常: ' + e);
-            }
-        })
-        .tick(entity => {
-            try {
-                if (entity.getLevel().isClientSide()) return;
-                if (typeof global.cannonTargetMarkerTick == 'function') {
-                    global.cannonTargetMarkerTick(entity);
-                }
-            } catch (e) {
-                console.log('[CannonTarget] 目标实体tick异常: ' + e);
-            }
-        });
-});
+// 炮击标定系统已注释停用（2026-11-25），目标实体不再注册。
+//StartupEvents.registry('entity_type', event => {
+//    event.create('rainbow:cannon_target_marker', 'entityjs:nonliving')
+//        .sized(0.25, 0.25)
+//        .clientTrackingRange(32)
+//        .updateInterval(1)
+//        .mobCategory('misc')
+//        .modelResource(entity => "rainbow:geo/entity/psychic_scroll.geo.json")
+//        .textureResource(entity => "rainbow:textures/item/beacon_ball.png")
+//        .render(context => {
+//            // billboard 渲染：贴图始终面朝玩家（同烈焰弹），具体旋转在客户端执行
+//            // 委托 client_scripts/cannon_target/main.js 的 global.cannonTargetMarkerBillboard
+//            try {
+//                if (typeof global.cannonTargetMarkerBillboard == 'function') {
+//                    global.cannonTargetMarkerBillboard(context);
+//                }
+//            } catch (e) {
+//                console.log('[CannonTarget] 目标实体渲染异常: ' + e);
+//            }
+//        })
+//        .tick(entity => {
+//            try {
+//                if (entity.getLevel().isClientSide()) return;
+//                if (typeof global.cannonTargetMarkerTick == 'function') {
+//                    global.cannonTargetMarkerTick(entity);
+//                }
+//            } catch (e) {
+//                console.log('[CannonTarget] 目标实体tick异常: ' + e);
+//            }
+//        });
+//});
 
 // ==========================================
 // 🌀 心理卷轴（心理墙变体）

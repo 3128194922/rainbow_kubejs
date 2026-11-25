@@ -61,7 +61,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
   - [绝地潜兵 (Helldivers) 系统](#绝地潜兵-helldivers-系统)
   - [迷你Boss系统](#迷你boss系统)
   - [血月事件（MoonJS）](#血月事件moonjs)
-  - [炮击标定系统 (CBC)](#炮击标定系统-cbc)
+  - [炮击标定系统 (CBC)（已注释停用）](#炮击标定系统-cbc已注释停用)
   - [先驱者动力剑（已注释停用）](#先驱者动力剑已注释停用)
   - [圣遗物镶嵌与元素觉醒](#圣遗物镶嵌与元素觉醒-wooden_sword_inlay)
   - [基因系统](#基因系统)
@@ -253,7 +253,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | `rainbow:nbt_util` | NBT 工具，右键实体输出 NBT 到日志 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:golden_finger` | 金手指，让两个生物互相骑乘（大象骑村民触发成就） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js) |
 | `rainbow:aggro_stick` | 索敌棒，右键点击两个实体，让它们互相索敌攻击 | 注册：[startup_scripts/Registry/Registry_item.js#L210](startup_scripts/Registry/Registry_item.js#L210)，交互：[server_scripts/aggro_link/ItemEvents.js](server_scripts/aggro_link/ItemEvents.js) |
-| `rainbow:cannon_targeter` | 炮击标定器（信标球），单炮绑定/电台齐射两种互斥模式，右键投掷炮击目标实体 | 注册：[startup_scripts/Registry/Registry_item.js#L55](startup_scripts/Registry/Registry_item.js#L55)，系统：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，tooltip：[client_scripts/tooltips.js#L1256](client_scripts/tooltips.js#L1256) |
+| ~~`rainbow:cannon_targeter`~~ | 炮击标定器（信标球）（**整项代码已注释停用，资源保留**）；原效果为单炮绑定/电台齐射两种互斥模式，右键投掷炮击目标实体 | 注册：[startup_scripts/Registry/Registry_item.js#L55](startup_scripts/Registry/Registry_item.js#L55)（注释），系统：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)（注释），tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js)（注释） |
 | `rainbow:mini_world` | 小宇宙，右键进出个人世界（MiniWorldApi），返回点存 persistentData | 注册：[startup_scripts/rainbow/mini_world/main.js](startup_scripts/rainbow/mini_world/main.js)，逻辑：[server_scripts/rainbow/mini_world/main.js](server_scripts/rainbow/mini_world/main.js)，设计文档：[docs/superpowers/specs/2026-09-07-mini-world-item-design.md](docs/superpowers/specs/2026-09-07-mini-world-item-design.md) |
 | `rainbow:quantum_key` | 量子密钥，创建 60 秒后失效，用于解锁曼德尔砖 | 注册：[startup_scripts/quantum_mandel/main.js](startup_scripts/quantum_mandel/main.js) |
 | `rainbow:mandel_brick` | 曼德尔砖，经量子密钥解锁后右键按战利品表发奖 | 注册：[startup_scripts/quantum_mandel/main.js](startup_scripts/quantum_mandel/main.js) |
@@ -283,7 +283,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | `rainbow:number_computer` | 逻辑计算机 | 注册：[startup_scripts/Registry/Registry_block.js#L98](startup_scripts/Registry/Registry_block.js#L98) |
 | `rainbow:luban_lock` | 鲁班锁，空手右键捕获上方 3×3×3 结构（含方块状态与方块实体），破坏保留结构到物品，放置时自动还原 | 注册：[startup_scripts/Registry/Registry_docker.js#L574](startup_scripts/Registry/Registry_docker.js#L574)，交互：[server_scripts/luban_lock/luban_lock.js](server_scripts/luban_lock/luban_lock.js)，tooltip：[client_scripts/tooltips.js#L680-L688](client_scripts/tooltips.js#L680-L688) |
 | `rainbow:docker_nether_on` | 下界反应堆，收集附近唱片机音乐产生下界之音 | 注册：[startup_scripts/Registry/Registry_docker.js#L460](startup_scripts/Registry/Registry_docker.js#L460) |
-| `rainbow:artillery_radio` | 炮兵电台，每秒扫描 16×1×16 范围内已组装火炮供信标球齐射调度；右键播报范围内火炮数量（无线电静电音效） | 注册：[startup_scripts/Registry/Registry_block.js#L100](startup_scripts/Registry/Registry_block.js#L100)，逻辑：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js) |
+| ~~`rainbow:artillery_radio`~~ | 炮兵电台（**已注释停用，模型/贴图/音效已迁移至 BackroomRoguelike 的 `extraction_point` 撤离方块**）；原效果为每秒扫描 16×1×16 范围内已组装火炮供信标球齐射调度 | 注册：[startup_scripts/Registry/Registry_block.js#L100](startup_scripts/Registry/Registry_block.js#L100)（注释），逻辑：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)（注释） |
 | `rainbow:food_stall_chairs` | 帕瓦椅子（cardinal 朝向方块），右键坐下（隐形盔甲架座位）、潜行右键收回，坐椅玩家无敌 | 注册：[startup_scripts/Registry/Registry_block.js#L47](startup_scripts/Registry/Registry_block.js#L47)，交互：[server_scripts/food_stall/food_stall_chairs.js](server_scripts/food_stall/food_stall_chairs.js) |
 
 > Docker 通用型方块注册：[startup_scripts/docker/main.js](startup_scripts/docker/main.js)
@@ -478,24 +478,21 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 
 入口：[startup_scripts/blood_moon/main.js](startup_scripts/blood_moon/main.js)、[server_scripts/blood_moon/main.js](server_scripts/blood_moon/main.js)；贴图：[assets/rainbow/textures/moon/blood.png](assets/rainbow/textures/moon/blood.png)。启用前需重启游戏或服务端，客户端需加载资源贴图；游戏内视觉、睡眠和实体生成行为仍需实测。
 
-### 炮击标定系统 (CBC)
+### 炮击标定系统 (CBC)（已注释停用）
 
-信标球 `rainbow:cannon_targeter` 与炮兵电台 `rainbow:artillery_radio` 组成的 CBC（Create Big Cannons）火炮标定系统。
+信标球 `rainbow:cannon_targeter` 与炮兵电台 `rainbow:artillery_radio` 组成的 CBC（Create Big Cannons）火炮标定系统已整项注释停用（2026-11-25）：物品、方块、目标实体、声音事件注册与 tooltip 均不再生效，服务端/客户端脚本保留供后续恢复；电台模型、贴图与音效已迁移至 BackroomRoguelike 的撤离方块 `backroomroguelike:extraction_point`，对应语言项已清理。
 
-> 服务端：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)
-> 客户端渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js)
+> 服务端（已注释）：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)
+> 客户端渲染（已注释）：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js)
 > 设计文档：[docs/superpowers/specs/2026-09-04-cannon-target-design.md](docs/superpowers/specs/2026-09-04-cannon-target-design.md)
 
-| 模式 | 绑定方式 | 效果 |
-|------|----------|------|
-| 单炮绑定 | 潜行右键 CBC 炮台底座（`createbigcannons:cannon_mount` / `fixed_cannon_mount`） | 一对一绑定，投掷目标后单炮开火 |
-| 电台齐射 | 潜行右键炮兵电台 `rainbow:artillery_radio` | 电台调度 16×1×16 范围内全部已组装火炮齐射 |
-
-- **目标投掷：** 普通右键抛出目标实体 `rainbow:cannon_target_marker`（抛物线物理：0.99 空气阻力 + 0.03/tick 重力），停止移动/落地/碰实体/超时 200 tick 时结算开火
-- **瞄准结算：** `cannonTargetApplyAim` 区分固定底座（±45° 剪切板偏移）与垂直底座（原值），同步 pitch/yaw 后 `tryFiringShot()`
-- **关键全局函数：** `global.cannonTargetMath`（纯数学接口）、`global.cannonRadioTick`（电台每秒扫描）、`global.cannonTargetMarkerTick`（目标实体 tick）
-- **音效：** 电台右键播报火炮数量时播放 `rainbow:voice.artillery_radio` 无线电静电音
-- **配套数据包：** [data/createbigcannons/](data/createbigcannons/) 将 13 种大口径炮弹 entity_damage 改为 10 亿（忽略无敌/护甲、爆炸威力 28，命中秒杀），机炮弹药保留低伤害
+- **当前状态：** 两个物品/方块不再注册，目标实体与电台声音事件不再注册；右键绑定、投掷开火、电台扫描与 tooltip 均不执行。`startup_scripts` 改动需完整重启游戏后生效。
+- **不受影响：** `/cbc_aim_to` 火炮瞄准工具（[server_scripts/cbc_aim.js](server_scripts/cbc_aim.js)）仍可用；原先复用的方向映射函数已迁移到该文件顶部。
+- **原实现（已注释）：** 单炮绑定（潜行右键 `createbigcannons:cannon_mount` / `fixed_cannon_mount`）与电台齐射（潜行右键炮兵电台，调度 16×1×16 范围内已组装火炮）两种互斥模式；普通右键抛出目标实体 `rainbow:cannon_target_marker`（0.99 空气阻力 + 0.03/tick 重力），停止/落地/碰实体/超时 200 tick 时结算开火。
+- **原瞄准结算：** `cannonTargetApplyAim` 区分固定底座（±45° 剪切板偏移）与垂直底座（原值），同步 pitch/yaw 后 `tryFiringShot()`。
+- **原关键全局函数：** `global.cannonTargetMath`（纯数学接口）、`global.cannonRadioTick`（电台每秒扫描）、`global.cannonTargetMarkerTick`（目标实体 tick）。
+- **原音效：** 电台右键播报火炮数量时播放 `rainbow:voice.artillery_radio` 无线电静电音。
+- **配套数据包（保留生效）：** [data/createbigcannons/](data/createbigcannons/) 将 13 种大口径炮弹 entity_damage 改为 10 亿（忽略无敌/护甲、爆炸威力 28，命中秒杀），机炮弹药保留低伤害
 
 ### 先驱者动力剑（已注释停用）
 
@@ -1170,7 +1167,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
 - **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
 - **NBT 信息显示：** 连射核心能量值、饕餮之锅已食用数、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
-- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死；第四条参考的 `pet_system` 停用后，“右键回收被脑控的佣兵生物”提示仍为未清理残留）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量，已注释停用）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标）
+- **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死；第四条参考的 `pet_system` 停用后，“右键回收被脑控的佣兵生物”提示仍为未清理残留）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量，已注释停用）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标，已注释停用）
 
 ### JEI 修改
 > 实现：[client_scripts/jei.js](client_scripts/jei.js)
@@ -1381,7 +1378,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - `rainbow:voice.super_hormone` - 超级激素音效
 - `rainbow:voice.kuchiyosenojutsu` - 口寄用之术音效
 - `rainbow:voice.animals` - 动物音效
-- `rainbow:voice.artillery_radio` - 炮兵电台无线电静电噪声（对应 [assets/rainbow/sounds/artillery_radio.ogg](assets/rainbow/sounds/artillery_radio.ogg)）
 
 ---
 

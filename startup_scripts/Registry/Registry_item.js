@@ -52,10 +52,11 @@ StartupEvents.registry("item", event => {
         .tooltip("§e命名「强度:时间」= 强度(0-15):持续秒数")
 
     // CBC 炮击标定器：绑定火炮底座后投掷目标实体，详见 server_scripts/cannon_target/main.js
-    event.create('rainbow:cannon_targeter')
-        .displayName('炮击标定器')
-        .texture('rainbow:item/beacon_ball')
-        .maxStackSize(1)
+    // 炮击标定系统已注释停用（2026-11-25），物品不再注册；贴图/语言项保留。
+    //event.create('rainbow:cannon_targeter')
+    //    .displayName('炮击标定器')
+    //    .texture('rainbow:item/beacon_ball')
+    //    .maxStackSize(1)
 
     // 乐谱
     //event.create("rainbow:musical_score")

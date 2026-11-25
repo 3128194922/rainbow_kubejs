@@ -40,8 +40,9 @@ StartupEvents.registry("sound_event", (event) => {
     event.create("rainbow:voice.animals")
 
     // 炮兵电台触发音效：无线电静电噪声（CC0 素材，OpenGameArt "Frequency Static Sound Effects"），
-    // 对应 assets/rainbow/sounds/artillery_radio.ogg，播放点在 server_scripts/cannon_target/main.js
-    event.create("rainbow:voice.artillery_radio")
+    // 原文件 assets/rainbow/sounds/artillery_radio.ogg 已迁移至 BackroomRoguelike（extraction_point_activate.ogg）
+    // 炮击标定系统已注释停用（2026-11-25），声音事件不再注册。
+    //event.create("rainbow:voice.artillery_radio")
 })
 
 // 注册物品

@@ -17,6 +17,34 @@
 //           ap_autocannon_round, flak_autocannon_round, machine_gun_round (机炮弹药)
 // ============================================
 
+// ============ 炮台朝向映射（原 server_scripts/cannon_target/main.js 提供）============
+// 炮击标定系统注释停用后，本工具仍需要这两个映射函数，故迁移到本文件，数值语义不变。
+// 原版 Direction#toYRot 语义 = (horizontalIndex & 3) * 90：南0/西90/北180/东270，上下方向与原版一致取270。
+// 不直接调用 Direction 实例方法（toYRot/getAxis 等）：本整合包运行环境曾出现解析失败。
+const CBC_AIM_DIR_YAW = {
+    south: 0,
+    west: 90,
+    north: 180,
+    east: 270,
+    up: 270,
+    down: 270
+}
+
+function cannonTargetDirectionYaw(direction) {
+    if (direction == null) return 180
+    let name = String(direction).toLowerCase()
+    return CBC_AIM_DIR_YAW.hasOwnProperty(name) ? CBC_AIM_DIR_YAW[name] : 0
+}
+
+// 方向符号：等价于 CBC 的 (轴方向为POSITIVE) == (轴为X) ? 1 : -1 —— 东/北/下=+1，西/南/上=-1。
+function cannonTargetDirectionSign(direction) {
+    if (direction == null) return 1
+    let name = String(direction).toLowerCase()
+    if (name == 'east' || name == 'north' || name == 'down') return 1
+    if (name == 'west' || name == 'south' || name == 'up') return -1
+    return 1
+}
+
 // ============ 弹药类型弹道参数 ============
 // 数据来源: Create Big Cannons v6 源码 munition_properties/projectiles/*.json
 const AMMO_TYPES = {
@@ -468,7 +496,7 @@ function readCurrentAngles(block, player) {
             let slotYaw = Number(tag.getInt('Yaw'))
             let slotPitch = Number(tag.getInt('Pitch'))
             // 原 dir.toYRot()/getAxisDirection()/getAxis() 在本环境会解析失败(报 Cannot find function)，
-            // 改用 cannon_target/main.js 提供的方向名字符串映射，数值语义不变
+            // 改用本文件顶部的方向名字符串映射，数值语义不变
             let baseYaw = cannonTargetDirectionYaw(dir)
             let curYaw = (slotYaw + baseYaw) % 360
             if (curYaw < 0) curYaw += 360
@@ -597,7 +625,7 @@ function computeAndApplyToBlock(block, player, level, clipboardData) {
             // Create 的 ClipboardCloneable: readFromClipboard(CompoundTag, Player, Direction, boolean)
             // 写入 int 角度(范围 -45~45) (水平安装炮塔, 角度即显示角度)
             let dir = cannonBe.getContraptionDirection() != null ? cannonBe.getContraptionDirection() : Direction.NORTH
-            // 原 dir.toYRot()/getAxisDirection()/getAxis() 在本环境会解析失败，改用方向名字符串映射（cannon_target/main.js 提供）
+            // 原 dir.toYRot()/getAxisDirection()/getAxis() 在本环境会解析失败，改用方向名字符串映射（本文件顶部）
             let baseYaw = cannonTargetDirectionYaw(dir)
 
             let yawAdj = yaw - baseYaw

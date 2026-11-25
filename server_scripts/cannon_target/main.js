@@ -1,3 +1,6 @@
+// 炮击标定系统已注释停用（2026-11-25）；以下服务端逻辑保留供后续恢复。
+// 说明：cbc_aim.js 仍需的方向映射函数已迁移至 server_scripts/cbc_aim.js，本文件停用不影响 /cbc_aim_to。
+/*
 // priority: 1000
 // ==========================================
 // 🎯 CBC 炮击标定器 + 📻 炮兵电台
@@ -750,3 +753,4 @@ BlockEvents.rightClicked(CANNON_MOUNT_ID, cannonTargetBindBlock)
 BlockEvents.rightClicked(CANNON_FIXED_MOUNT_ID, cannonTargetBindBlock)
 BlockEvents.rightClicked(CANNON_RADIO_ID, cannonRadioBind)
 ItemEvents.rightClicked(CANNON_TARGETER_ITEM, cannonTargetThrow)
+*/

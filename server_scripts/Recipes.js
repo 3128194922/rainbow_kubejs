@@ -234,10 +234,10 @@ ServerEvents.recipes(event => {
     event.shapeless('atmospheric:dragon_roots', ['atmospheric:dragon_fruit', 'minecraft:vine'])
 /*
     //tnt箭
-    event.shaped('rainbow:tnt_arrow', [['','minecraft:arrow',''],
+    event.shaped('mysticartifacts:tnt_arrow', [['','minecraft:arrow',''],
     ['','minecraft:tnt',''],
     ['','','']])
-    event.shapeless('mysticartifacts:slime_arrow',['rainbow:tnt_arrow','minecraft:slime_ball'])
+    event.shapeless('mysticartifacts:slime_arrow',['mysticartifacts:tnt_arrow','minecraft:slime_ball'])
 */
     //牢大冰红茶配方
     event.recipes.farmersdelight.cooking(

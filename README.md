@@ -294,12 +294,12 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 
 | 实体ID | 说明 | 实现位置 |
 |--------|------|----------|
-| `rainbow:tnt_arrow` | 延迟 TNT 箭，击中实体即爆，击中方块延迟 40 tick 爆炸 | 注册：[startup_scripts/Registry/Registry_entity.js](startup_scripts/Registry/Registry_entity.js) |
+| `mysticartifacts:tnt_arrow` | 延迟 TNT 箭，击中实体即爆，击中方块延迟 40 tick 爆炸。已从 KubeJS 移植进 MysticArtifacts mod（`TntArrowEntity`），旧 EntityJS 注册已注释停用 | 模组源码 `MyMods/MysticArtifacts`；旧注册：[startup_scripts/Registry/Registry_entity.js](startup_scripts/Registry/Registry_entity.js) |
 | `rainbow:apostle` | 使徒：村民变种弹幕 Boss（EntityJS + Blockbench 几何/贴图），保持 12–20 格距离，13 式招式状态机（权重随机轮换 + 大招冷却/保底 + 血量召唤 + 30% 狂暴），危险招式带 Dyeing 预警 | 注册：[startup_scripts/apostle/main.js](startup_scripts/apostle/main.js)，AI：[server_scripts/apostle/main.js](server_scripts/apostle/main.js)，行为逻辑：[docs/行为逻辑.md](docs/行为逻辑.md)，设计文档：[docs/superpowers/specs/2026-09-27-apostle-entity-design.md](docs/superpowers/specs/2026-09-27-apostle-entity-design.md) |
 | `rainbow:apostle_bullet` | 使徒弹幕投掷物（entityjs:projectile，独立物品形态），命中目标筛选与结算由 `global.apostle*` 回调驱动 | 注册：[startup_scripts/apostle/main.js](startup_scripts/apostle/main.js)，逻辑：[server_scripts/apostle/main.js](server_scripts/apostle/main.js) |
-| `rainbow:cannon_target_marker` | 炮击目标标记实体（信标球投掷），抛物线物理，落地/停稳后调度绑定火炮开火；客户端 billboard 渲染 | 注册：[startup_scripts/Registry/Registry_entity.js#L119](startup_scripts/Registry/Registry_entity.js#L119)，tick：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js) |
-| `rainbow:psychic_scroll` | 心理卷轴墙实体：拦截/偏转抛射物、推动检测盒内生物（施放者豁免） | 注册：[startup_scripts/Registry/Registry_entity.js#L215](startup_scripts/Registry/Registry_entity.js#L215)，逻辑：[server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
-| `rainbow:kuchiyose_scroll` | 通灵卷轴（entityjs:tamable 可驯服召唤物），「口寄用之术」技能召唤 | 注册：[startup_scripts/Registry/Registry_entity.js#L70](startup_scripts/Registry/Registry_entity.js#L70) |
+| `rainbow:cannon_target_marker` | 炮击目标标记实体（信标球投掷），抛物线物理，落地/停稳后调度绑定火炮开火；客户端 billboard 渲染 | 注册：[startup_scripts/Registry/Registry_entity.js#L124](startup_scripts/Registry/Registry_entity.js#L124)，tick：[server_scripts/cannon_target/main.js](server_scripts/cannon_target/main.js)，渲染：[client_scripts/cannon_target/main.js](client_scripts/cannon_target/main.js) |
+| `rainbow:psychic_scroll` | 心理卷轴墙实体：拦截/偏转抛射物、推动检测盒内生物（施放者豁免） | 注册：[startup_scripts/Registry/Registry_entity.js#L220](startup_scripts/Registry/Registry_entity.js#L220)，逻辑：[server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
+| `rainbow:kuchiyose_scroll` | 通灵卷轴（entityjs:tamable 可驯服召唤物），「口寄用之术」技能召唤 | 注册：[startup_scripts/Registry/Registry_entity.js#L75](startup_scripts/Registry/Registry_entity.js#L75) |
 
 使徒 2026-10-23 更新：修复命中回调与属性注册的 Rhino 局部 `const` 错误，螺旋/退避朝向统一使用 `getYaw()`；保留原外形，补齐 13 招动作，加上待机/移动共 15 段动画。动作随开招、结束、目标丢失和冲刺撞墙同步切换。已通过专项脚本与实际 Rhino 引擎检查，游戏内伤害和多人动画同步仍待重启后验证，详见 [使徒验证记录](docs/apostle-validation.md)。
 

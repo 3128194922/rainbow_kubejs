@@ -928,6 +928,11 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('mysticartifacts:final_exploding_arrow', (item, advanced, text) => {
         text.add(1, Text.aqua("命中时产生 2 格爆炸(不破坏方块)"));
     })
+    // 延迟TNT箭（已移植进 MysticArtifacts mod）
+    event.addAdvanced('mysticartifacts:tnt_arrow', (item, advanced, text) => {
+        text.add(1, Text.aqua("命中生物立即爆炸(强度3，不破坏方块)"));
+        text.add(2, Text.aqua("击中方块 2 秒后爆炸"));
+    })
     // 末影苦无
     event.addAdvanced('mysticartifacts:ender_kunai', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));

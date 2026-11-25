@@ -100,7 +100,7 @@ ServerEvents.tags("item", event => {
     "curios:charm")
     
     // 箭矢标签
-    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'rainbow:tnt_arrow', "rainbow:toxic_arrow", 'mysticartifacts:sculk_arrow', 
+    event.add("minecraft:arrows", ['rainbow:frost_arrow', 'oreganized:lead_bolt', 'mysticartifacts:tnt_arrow', "rainbow:toxic_arrow", 'mysticartifacts:sculk_arrow', 
     "mysticartifacts:nether_of_voice", "mysticartifacts:airburst_arrow","mysticartifacts:void_arrow"])
     
     event.add("minecraft:firework", ["mysticartifacts:void_arrow"])

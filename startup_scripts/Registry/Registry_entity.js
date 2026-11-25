@@ -2,6 +2,10 @@
 // ==========================================
 // 🧟 注册实体类型
 // ==========================================
+// 延迟TNT箭已移植到 MysticArtifacts（mysticartifacts:tnt_arrow）：
+// 见 MyMods/MysticArtifacts 的 TntArrowEntity / TntArrowItem / ModEntities.TNT_ARROW。
+// 下方旧 EntityJS 注册整体停用，QA 若回滚再放开。
+/*
 StartupEvents.registry('entity_type', event => {
     // 延迟TNT箭：击中目标后延迟爆炸
     event.create('rainbow:tnt_arrow', 'entityjs:arrow')
@@ -57,6 +61,7 @@ StartupEvents.registry('entity_type', event => {
             // 可选地阻止玩家捡起
         });
 });
+*/
 
 // ==========================================
 // 📜 通灵卷轴（召唤物）

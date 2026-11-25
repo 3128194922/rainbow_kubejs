@@ -47,6 +47,32 @@ PlayerEvents.tick((event) => {
 
 // 悬赏委托书现由 bounty_system 的村民交互与右键事件管理，无需扫描玩家背包。
 
+// ==========================================
+// 🏃 疾跑状态检测（2026-11-25 新增）
+// 每 5 tick 读取一次 isSprinting()；仅在「未疾跑 → 疾跑」切换时 tell，
+// 防止每 tick 刷屏。上帧状态存 persistentData，跨重登/切维度保留。
+// ==========================================
+PlayerEvents.tick((event) => {
+    let player = event.player;
+    if (!player) return;
+    if (player.level.isClientSide()) return;
+    if (!everyTicks(player, 5)) return;
+
+    try {
+        let sprinting = player.isSprinting();
+        // 上一次检测到的疾跑状态（默认 false，即开局视为未疾跑）
+        let lastSprinting = player.persistentData.getBoolean('rainbow_sprint_state');
+        if (sprinting === lastSprinting) return;
+
+        player.persistentData.putBoolean('rainbow_sprint_state', sprinting);
+        if (sprinting) {
+            player.tell('状态：疾跑中');
+        }
+    } catch (err) {
+        console.log(`[PlayerEvents] 疾跑状态检测失败: ${err}`);
+    }
+});
+
 
 // 传送门挑战 (已注释)
 /*ItemEvents.rightClicked(event => {

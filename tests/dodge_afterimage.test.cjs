@@ -29,11 +29,14 @@ function loadScript(options = {}) {
   return { context, handlers, trailCalls };
 }
 
-function makePlayer(uuid, time, clientSide = false) {
+function makePlayer(uuid, time, clientSide = false, superHormoneUntil = 0) {
   return {
     level: {
       isClientSide: () => clientSide,
       getTime: () => time,
+    },
+    persistentData: {
+      getLong: () => superHormoneUntil,
     },
     getUuid: () => ({ toString: () => uuid }),
   };
@@ -98,6 +101,18 @@ test('ignores client-side players', () => {
 test('does nothing when Dyeing is unavailable', () => {
   const { handlers } = loadScript({ noDyeing: true });
   assert.doesNotThrow(() => fireRoll(handlers, makePlayer('player-f', 600), 8));
+});
+
+test('does not overwrite the golden trail while super hormone is active', () => {
+  const { handlers, trailCalls } = loadScript();
+  fireRoll(handlers, makePlayer('player-h', 800, false, 900), 8);
+  assert.equal(trailCalls.length, 0);
+});
+
+test('applies the dodge trail again after super hormone ends', () => {
+  const { handlers, trailCalls } = loadScript();
+  fireRoll(handlers, makePlayer('player-i', 901, false, 900), 8);
+  assert.equal(trailCalls.length, 1);
 });
 
 test('swallows Dyeing errors without breaking the event', () => {

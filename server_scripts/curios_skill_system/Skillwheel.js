@@ -1507,6 +1507,11 @@ registerSkill('rainbow:super_hormone', (event, player, itemStack, isSubmenu, sub
         // 通知客户端渲染黄色视角边框（与潜行黑边互斥，超级激素优先）
         player.sendData("super_hormone_sync", { duration: durationTicks });
 
+        // 技能持续期间维持金色残影（Dyeing trail；由 server_scripts/super_hormone 维护）
+        if (typeof global.applySuperHormoneAfterimage === 'function') {
+            global.applySuperHormoneAfterimage(player, durationTicks);
+        }
+
         player.cooldowns.addCooldown("rainbow:super_hormone", 50 * 20); // 冷却 50 秒
     } catch (err) {
         console.log("[超级激素] 错误: " + err);

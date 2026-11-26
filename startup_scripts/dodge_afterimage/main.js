@@ -23,6 +23,8 @@ const DODGE_AFTERIMAGE_DEFAULT_ROLL_TICKS = 8
 const DODGE_AFTERIMAGE_LINGER_TICKS = 2
 // 同一玩家的重复事件窗口（tick），用于吃掉同一次翻滚的重复回调
 const DODGE_AFTERIMAGE_DUPLICATE_TICKS = 2
+// 超级激素持续残影的结束时间键（server_scripts/super_hormone 写入；期间不覆盖金色 trail）
+const SUPER_HORMONE_AFTERIMAGE_UNTIL_KEY = 'rainbow:super_hormone_afterimage_until'
 
 // uuid -> 上次应用残影的 gameTime
 const dodgeAfterimageLastTick = {}
@@ -41,6 +43,11 @@ global.playDodgeAfterimage = function (player, rollDurationTicks) {
         if (typeof Dyeing === 'undefined' || Dyeing == null) return false
 
         let now = level.getTime()
+        // 超级激素期间由金色持续残影占用 trail，短促的翻滚残影不再覆盖它
+        let superHormoneUntil = 0
+        try { superHormoneUntil = player.persistentData.getLong(SUPER_HORMONE_AFTERIMAGE_UNTIL_KEY) } catch (e) {}
+        if (superHormoneUntil > 0 && now <= superHormoneUntil) return false
+
         let uuid = player.getUuid().toString()
         let last = dodgeAfterimageLastTick[uuid]
         if (last != null && now >= last && now - last <= DODGE_AFTERIMAGE_DUPLICATE_TICKS) return false

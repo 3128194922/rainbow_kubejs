@@ -100,6 +100,8 @@ ItemEvents.tooltip((event) => {
 })
 
 ItemEvents.tooltip((event) => {
+    // 饕餮之锅已迁移至 MysticArtifacts（mysticartifacts:eldritch_pan）；tooltip 由 mod 提供。
+    /*
     event.addAdvanced("rainbow:eldritch_pan", (item, advanced, text) => {
         if (item.nbt.foodnumber < 3 || !item.nbt.foodnumber) {
             text.add(0, "饕餮之锅");
@@ -109,6 +111,7 @@ ItemEvents.tooltip((event) => {
         }
         text.add(1, Text.gold("已食用食物数:").append(Text.yellow(`${item.nbt.foodnumber}`)));
     })
+    */
     /*event.addAdvanced("rainbow:eldritch_sword", (item, advanced, text) => {
         text.add(0, Text.aqua("饕餮剑"));
         let count = item.nbt ? (item.nbt.swordnumber || 0) : 0;

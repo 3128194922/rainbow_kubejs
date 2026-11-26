@@ -131,6 +131,8 @@ CuriosJSEvents.registerRenderer(event => {
         }
     )
 
+    // 饕餮之锅已迁移至 MysticArtifacts（mysticartifacts:eldritch_pan）；渲染由 mod 注册。
+    /*
     event.register(
         'rainbow:eldritch_pan',
         context => {
@@ -169,6 +171,7 @@ CuriosJSEvents.registerRenderer(event => {
             matrixStack.popPose()
         }
     )
+    */
 
     event.register(
         'farmersdelight:basket',

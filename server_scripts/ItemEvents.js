@@ -86,7 +86,8 @@ ItemEvents.rightClicked("minecraft:paper", event => {
     player.openInventoryGUI(player.enderChestInventory, Component.translatable("container.enderchest"));
 });*/
 
-// --- 饕餮之锅：食物收集 ---
+// --- 饕餮之锅：食物收集（已迁移至 MysticArtifacts，旧实现保留供对照） ---
+/*
 ItemEvents.rightClicked("rainbow:eldritch_pan", event => {
     let { player, item, level } = event;
     if (level.isClientSide()) return;
@@ -122,6 +123,7 @@ ItemEvents.rightClicked("rainbow:eldritch_pan", event => {
     item.nbt.foodlist.push(Integer.valueOf(tag));
     item.nbt.foodnumber = item.nbt.foodlist.length;
 });
+*/
 
 /*
 if (item.id == "minecraft:stick") {

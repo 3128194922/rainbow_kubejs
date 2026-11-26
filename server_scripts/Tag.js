@@ -88,7 +88,9 @@ ServerEvents.tags("item", event => {
     )
     
     // 头部饰品标签
-    retagItem(event,['farmersdelight:skillet', 'rainbow:eldritch_pan', 'dungeonsdelight:golden_cleaver', 'farmersdelight:basket'],
+    // 饕餮之锅已迁移至 MysticArtifacts，由 mod 自带 curios:head 标签。
+    // retagItem(event,['rainbow:eldritch_pan'], "curios:head")
+    retagItem(event,['farmersdelight:skillet', 'dungeonsdelight:golden_cleaver', 'farmersdelight:basket'],
         "curios:head")
 
     // 饰品栏位

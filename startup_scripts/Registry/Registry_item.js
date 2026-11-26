@@ -181,12 +181,14 @@ StartupEvents.registry("item", event => {
     event.create("rainbow:heavy_axe", "axe").unstackable().attackDamageBonus(3.0).attackDamageBaseline(0.0).maxDamage(501)
         .tooltip("§6根据你的下落加速度造成伤害")
 
-    // 饕餮之锅：攻速慢，伤害高
+    // 饕餮之锅已迁移至 MysticArtifacts（mysticartifacts:eldritch_pan）；旧注册保留供对照。
+    /*
     event.create("rainbow:eldritch_pan", "sword")
         .speedBaseline(-3.1)
         .attackDamageBonus(4.0)
         .rarity("epic")
         .maxDamage(0)
+    */
     /*
         // 饕餮剑：吞噬剑以成长
         event.create("rainbow:eldritch_sword", "sword")

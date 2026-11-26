@@ -128,7 +128,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | `rainbow:duel` | 剑 | 决斗细剑（Blockbench 元素模型），主手 `attributeslib:dodge_chance` +20%；按目标 UUID 记录连击，连续攻击同一生物伤害 ×1.5；被动闪避恢复 4 点生命值，极限闪避获得力量 I 3 秒 | 注册：[startup_scripts/Registry/Registry_item.js#L128](startup_scripts/Registry/Registry_item.js)，连击增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)、[startup_scripts/rainbow/duel/main.js](startup_scripts/rainbow/duel/main.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:tyrfing` | 剑 | 提尔锋，主手持有时获得 +50 盔甲穿透 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，属性：[startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
 | `rainbow:heavy_axe` | 斧 | 重锤（Blockbench 元素模型），根据下落加速度造成伤害：伤害加成 = 下落距离×0.5 + 动能伤害属性×2，命中后清零下落距离。配方：`species:kinetic_core` + 烈焰棒 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，增伤：[startup_scripts/ForgeEvents/handleWeaponEffects.js](startup_scripts/ForgeEvents/handleWeaponEffects.js)，配方：[server_scripts/Recipes.js#L203-L206](server_scripts/Recipes.js#L203-L206) |
-| `rainbow:eldritch_pan` | 锅(头部) | 饕餮之锅，攻速极慢但伤害高。右键收集副手食物记录食用种类 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，tooltip：[client_scripts/tooltips.js#L81-L94](client_scripts/tooltips.js#L81-L94)，渲染：[client_scripts/curios_render.js#L134-L171](client_scripts/curios_render.js#L134-L171) |
+| ~~`rainbow:eldritch_pan`~~ | 锅(头部) | 饕餮之锅，**已迁移至 MysticArtifacts（`mysticartifacts:eldritch_pan`）**；旧 KubeJS 注册、右键、属性、tooltip 与 Curios 渲染均已注释，模型/贴图已移入 mod。原效果：攻速极慢但伤害高，右键收集副手食物记录食用种类 | [MyMods/MysticArtifacts](../../../MyMods/MysticArtifacts) |
 | ~~`rainbow:power_sword`~~ | 剑 | 先驱者动力剑（**整项代码已注释停用，资源保留**；原效果为 GeckoLib `anim_sword` 渲染 + 三段动画，右键开启 10 秒分解立场，攻击消耗持续时间，收场 40 秒冷却） | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，技能：[server_scripts/power_sword/main.js](server_scripts/power_sword/main.js) |
 | ~~`rainbow:terasword`~~ | 剑 | 泰拉刃，消耗能量发射 TNT 弹射物（**注册已注释**，ItemProperties 模型与攻击逻辑残留，无效引用） | 注册：[startup_scripts/Registry/Registry_item.js#L192](startup_scripts/Registry/Registry_item.js#L192) |
 | `rainbow:slime_rod` | 剑 | 黏液棒，右键生成粘液块平台，潜行右键生成救生罩，左键脱下实体装备 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，实体事件：[server_scripts/EntityEvents.js#L12-L25](server_scripts/EntityEvents.js#L12-L25) |
@@ -660,7 +660,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | `handleDespairInsigniaDeath.js` | 极限证章：佩戴者造成的全部伤害降低50% | [startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js](startup_scripts/ForgeEvents/handleDespairInsigniaDeath.js) |
 | `handleFireworkDash.js` | 烟花拳套冲刺：击退 + 撞墙二次伤害（`FireworkDashImpact*` NBT） | [startup_scripts/ForgeEvents/handleFireworkDash.js](startup_scripts/ForgeEvents/handleFireworkDash.js) |
 | `handleFreezeEffects.js` | 冻结机制：冻结超阈值 → `/dyeing uv add static freeze_ice` 蓝冰视觉 + `global.freezeEntity`（durationTicks/6） | [startup_scripts/ForgeEvents/handleFreezeEffects.js](startup_scripts/ForgeEvents/handleFreezeEffects.js) |
-| `handleItemAttributeModifier.js` | 饕餮之锅：已食用食物数（foodnumber）→ 攻击伤害 | [startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
+| ~~`handleItemAttributeModifier.js`~~ | 饕餮之锅已迁移至 MysticArtifacts；旧“已食用食物数（foodnumber）→ 攻击伤害”逻辑注释保留 | [startup_scripts/ForgeEvents/handleItemAttributeModifier.js](startup_scripts/ForgeEvents/handleItemAttributeModifier.js) |
 | `handleProjectileIFrame.js` | 弹射物无敌帧重置（EXCLUDE_PLAYER=true，三类黑名单） | [startup_scripts/ForgeEvents/handleProjectileIFrame.js](startup_scripts/ForgeEvents/handleProjectileIFrame.js) |
 | `handleUnholyCross.js` | 亵渎十字架：佩戴者造成伤害后额外造成一次 1 点真实伤害（自定义伤害类型 `rainbow:unholy_cross`，独立伤害实例） | [startup_scripts/ForgeEvents/handleUnholyCross.js](startup_scripts/ForgeEvents/handleUnholyCross.js) |
 | `onPlayerDamaged.js` | 玩家受伤：动能核心（species:kinetic_core）受伤时 AOE 半径 7 | [startup_scripts/ForgeEvents/onPlayerDamaged.js](startup_scripts/ForgeEvents/onPlayerDamaged.js) |
@@ -681,7 +681,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | 背刺判定 | 玩家隐匿状态（`global.getStealthState`）+ 复用 FarmersDelight `BackstabbingEnchantment.isLookingBehindTarget`（背面±60°锥形）时伤害×1.2；装备泣血之刃额外恢复背刺伤害 50% 血量 |
 | 决斗剑 | 按目标 UUID 记录当前目标；连续攻击同一目标伤害 ×1.5，被动闪避回血 4 点，极限闪避获得力量 I 3 秒 |
 | 邪恶面具 | 依据生物血量/武器类型动态增加属性，非同类怪物不主动攻击 |
-| 饕餮之锅 | 已食用食物数 > 0 时攻击额外造成百分比伤害 |
+| ~~饕餮之锅~~ | 已迁移至 MysticArtifacts，现由 mod 的 `ItemAttributeModifierEvent` 处理 |
 | 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害（物品注册已注释，逻辑残留） |
 | 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半怪物化，累计 5 分钟转怪物化 |
 | 虚空嬗变 | `rainbow:raw_voidore` 可转化为 `createutilities:void_steel_ingot` |
@@ -924,7 +924,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 > 标签：[server_scripts/Tag.js#L74-L77](server_scripts/Tag.js#L74-L77) + [server_scripts/Tag.js#L117](server_scripts/Tag.js#L117)
 
 ### 头部 (Head)
-饕餮之锅、煎锅、金切肉刀、篮子
+~~饕餮之锅~~（已迁移至 MysticArtifacts）、煎锅、金切肉刀、篮子
 
 > 标签：[server_scripts/Tag.js#L79-L81](server_scripts/Tag.js#L79-L81)
 
@@ -942,7 +942,7 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 | `rainbow:sunglasses` | head | 太阳镜，翻转 180° 跟随头部旋转，缩放 0.9 | 
 | `farmersdelight:skillet` | head | 煎锅，翻转 180° 平贴在头顶 | 
 | `dungeonsdelight:golden_cleaver` | head | 金切肉刀，斜插在头侧 | 
-| `rainbow:eldritch_pan` | head | 饕餮之锅，戴在头顶向下偏移 1 格 | 
+| ~~`rainbow:eldritch_pan`~~ | head | 饕餮之锅已迁移至 MysticArtifacts，渲染由 mod 的 `EldritchPanCurioRenderer` 注册 | 
 | `farmersdelight:basket` | head | 篮子，略向下偏移 | 
 | `minecraft:tnt` | back | TNT，背部居中 | 
 | `alexscaves:nuclear_bomb` | back | 核弹，背部居中 | 
@@ -1166,7 +1166,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - **食物自动提示：** `#rainbow:food_tooltip` 标签物品自动显示食物效果（名称+等级+时长），使用 `MobEffectUtil.formatDuration` 格式化
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
 - **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
-- **NBT 信息显示：** 连射核心能量值、饕餮之锅已食用数、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
+- **NBT 信息显示：** 连射核心能量值、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
 - **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死；第四条参考的 `pet_system` 停用后，“右键回收被脑控的佣兵生物”提示仍为未清理残留）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量，已注释停用）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标，已注释停用）
 
 ### JEI 修改
@@ -1330,7 +1330,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 | `rainbow:food` | 所有食物（`global.foodlist`） |
 | `curios:charm` | create 背罐、皇家法杖、死亡之眼、剑群护符、号角、虚空蠕虫之眼、冰茶 |
 | `curios:back` | TNT/破片炸弹/孢子炸弹/末地烛/精灵/全部 16 种旗帜 |
-| `curios:head` | 煎锅/饕餮之锅/金切肉刀/篮子 |
+| `curios:head` | 煎锅/金切肉刀/篮子（饕餮之锅由 MysticArtifacts 自带标签） |
 | `skillwheel:skills` / `skillwheel:skills_ui` | 全部 21 个技能饰品 + 邪恶面具 |
 | `skillwheel:submenu` | 天琴座 |
 | `minecraft:arrows` | 霜冻箭/铅弹/TNT箭/毒性箭/幽匿箭/下界之声/空爆箭/虚空箭 |

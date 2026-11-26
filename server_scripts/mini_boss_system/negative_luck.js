@@ -14,7 +14,7 @@ EntityEvents.hurt(event => {
         if (target.persistentData === null || target.persistentData === undefined) return
 
         let source = event.source
-        let player = source == null ? null : source.player
+        let player = (source === null || source === undefined) ? null : source.player
         if (player === null || player === undefined) return
 
         let luck = player.getAttribute("minecraft:generic.luck").getValue()

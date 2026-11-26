@@ -1169,12 +1169,7 @@ registerSkill('minecraft:firework_rocket', (event, player, itemStack, isSubmenu,
             target.setDeltaMovement(new Vec3d(dx * 2.5, 0.5, dz * 2.5));
             target.hurtMarked = true;
 
-            let targetData = target.persistentData;
-            targetData.putInt("FireworkDashImpactTicks", 10);
-            targetData.putDouble("FireworkDashImpactDx", dx);
-            targetData.putDouble("FireworkDashImpactDz", dz);
-            targetData.putFloat("FireworkDashImpactDamage", damage);
-            targetData.putInt("FireworkDashImpactSrcId", player.getId());
+            global.startFireworkDashImpact(target, dx, dz, damage, player.getId());
 
             clearFireworkDashData(player.persistentData);
             player.setDeltaMovement(new Vec3d(0, 0, 0));

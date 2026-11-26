@@ -2,8 +2,8 @@
 // ==========================================
 // 🎆 烟花拳套 - 冲撞击退 & 撞墙伤害处理
 // ==========================================
-// 由 LivingTickEvent 检测被冲刺击飞的实体，
-// 施加持续击退速度，撞墙时触发二次伤害
+// 命中时登记一次，由服务端调度器在后续 10 tick 施加持续击退速度；
+// 撞墙时触发二次伤害。
 
 // 常量（需与 Skillwheel.js 一致）
 const FW_GAUNTLET_IMPACT_TICKS = "FireworkDashImpactTicks";
@@ -23,38 +23,55 @@ function clearFireworkImpact(data) {
     data.remove(FW_GAUNTLET_IMPACT_SRC_ID);
 }
 
-function fireworkDashLivingTick(event, entity) {
-    if (entity.level.isClientSide()) return;
+function runFireworkDashImpact(entity, dx, dz, damage, sourceId, remainingTicks) {
+    try {
+        if (entity === null || !entity.isAlive()) return;
+        let data = entity.persistentData;
 
-    let data = entity.persistentData;
-    let impactTicks = data.getInt(FW_GAUNTLET_IMPACT_TICKS);
-    if (impactTicks <= 0) return;
-
-    // 撞墙检测：水平碰撞 → 二次伤害
-    if (entity.horizontalCollision) {
-        let sourceId = data.getInt(FW_GAUNTLET_IMPACT_SRC_ID);
-        let source = sourceId ? entity.level.getEntity(sourceId) : null;
-        let wallDmg = data.getFloat(FW_GAUNTLET_IMPACT_DAMAGE);
-        if (source) {
-            entity.attack(source.damageSources().playerAttack(source), wallDmg);
-        } else {
-            entity.attack(entity.damageSources().generic(), wallDmg);
+        // 撞墙检测：水平碰撞 → 二次伤害
+        if (entity.horizontalCollision) {
+            let source = sourceId ? entity.level.getEntity(sourceId) : null;
+            if (source) {
+                entity.attack(source.damageSources().playerAttack(source), damage);
+            } else {
+                entity.attack(entity.damageSources().generic(), damage);
+            }
+            clearFireworkImpact(data);
+            return;
         }
-        clearFireworkImpact(data);
-        return;
-    }
 
-    // 持续击退速度
-    let dx = data.getDouble(FW_GAUNTLET_IMPACT_DX);
-    let dz = data.getDouble(FW_GAUNTLET_IMPACT_DZ);
-    entity.setDeltaMovement(new Vec3d(dx * FW_GAUNTLET_IMPACT_KNOCKBACK_SPEED, 0.4, dz * FW_GAUNTLET_IMPACT_KNOCKBACK_SPEED));
-    entity.hurtMarked = true;
+        entity.setDeltaMovement(new Vec3d(
+            dx * FW_GAUNTLET_IMPACT_KNOCKBACK_SPEED,
+            0.4,
+            dz * FW_GAUNTLET_IMPACT_KNOCKBACK_SPEED
+        ));
+        entity.hurtMarked = true;
 
-    impactTicks--;
-    if (impactTicks <= 0) {
-        clearFireworkImpact(data);
-    } else {
-        data.putInt(FW_GAUNTLET_IMPACT_TICKS, impactTicks);
+        remainingTicks--;
+        if (remainingTicks <= 0) {
+            clearFireworkImpact(data);
+            return;
+        }
+        data.putInt(FW_GAUNTLET_IMPACT_TICKS, remainingTicks);
+        entity.level.server.scheduleInTicks(1, () => {
+            runFireworkDashImpact(entity, dx, dz, damage, sourceId, remainingTicks);
+        });
+    } catch (e) {
+        console.log('[烟花拳套] 冲撞击退执行失败: ' + e);
+        try { clearFireworkImpact(entity.persistentData); } catch (ignored) {}
     }
 }
-global.registerLivingTickHandler('firework-dash', fireworkDashLivingTick)
+
+// 命中时只登记一次，后续 10 tick 由服务端调度器驱动，不再扫描全部 living entity。
+global.startFireworkDashImpact = function (entity, dx, dz, damage, sourceId) {
+    if (entity === null || !entity.isAlive()) return;
+    let data = entity.persistentData;
+    data.putInt(FW_GAUNTLET_IMPACT_TICKS, FW_GAUNTLET_IMPACT_KNOCKBACK_TICKS);
+    data.putDouble(FW_GAUNTLET_IMPACT_DX, dx);
+    data.putDouble(FW_GAUNTLET_IMPACT_DZ, dz);
+    data.putFloat(FW_GAUNTLET_IMPACT_DAMAGE, damage);
+    data.putInt(FW_GAUNTLET_IMPACT_SRC_ID, sourceId);
+    entity.level.server.scheduleInTicks(1, () => {
+        runFireworkDashImpact(entity, dx, dz, damage, sourceId, FW_GAUNTLET_IMPACT_KNOCKBACK_TICKS);
+    });
+}

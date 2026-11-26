@@ -142,7 +142,6 @@ const CombatRollAttributes = Attributes
 const CombatRollLivingEntity = LivingEntity
 
 // 先驱者系统使用的 Forge/Cataclysm 类集中加载，避免在功能脚本内重复加载。
-const LivingTickEvent = Java.loadClass('net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent')
 const LivingDamageEvent = Java.loadClass('net.minecraftforge.event.entity.living.LivingDamageEvent')
 // 迷你Boss 已迁移到 MiniBoss mod；KubeJS 只保留桥接，不再加载旧 IA/effects/main 逻辑。
 const MiniBossApi = Java.tryLoadClass('com.rainbow.miniboss.api.MiniBossApi')

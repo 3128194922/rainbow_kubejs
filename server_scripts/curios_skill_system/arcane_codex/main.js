@@ -4,6 +4,7 @@ const ARCANE_CODEX_TYPE_KEY = 'rainbow_arcane_codex_original_type';
 const ARCANE_CODEX_NBT_KEY = 'rainbow_arcane_codex_original_nbt';
 const ARCANE_CODEX_END_TICK_KEY = 'rainbow_arcane_codex_end_tick';
 const ARCANE_CODEX_DURATION_TICKS = 200;
+const ARCANE_CODEX_SCHEDULED = {};
 
 // 在转换前复制属性数据，避免 convertTo 转移装备时改变原实体的装备属性修饰符。
 function arcaneCodexReadAttributes(source) {
@@ -82,6 +83,7 @@ function arcaneCodexTransformToPig(target) {
 
         arcaneCodexCopyAttributes(attributeSnapshots, pig);
         pig.setHealth(Math.min(originalHealth, pig.getMaxHealth()));
+        arcaneCodexScheduleRestore(pig);
         return true;
     } catch (e) {
         console.log('[奥数法典] 转化目标失败: ' + e);
@@ -147,15 +149,45 @@ function arcaneCodexRestorePig(pig) {
     }
 }
 
-// 使用统一 LivingTick 调度器与实体所在维度的 level.getTime() 计时，兼容本项目 KubeJS 版本。
-function arcaneCodexLivingTick(event, entity) {
+// 按剩余时间延迟恢复；服务端重启后由 EntityEvents.spawned 重新挂起。
+function arcaneCodexScheduleRestore(pig) {
     try {
-        if (entity.level === null || entity.level === undefined || entity.level.isClientSide()) return;
-        if (entity.persistentData === null || entity.persistentData === undefined || !entity.persistentData.getBoolean(ARCANE_CODEX_MARKER)) return;
-        if (entity.level.getTime() < entity.persistentData.getLong(ARCANE_CODEX_END_TICK_KEY)) return;
-        arcaneCodexRestorePig(entity);
+        if (pig == null || !pig.isAlive() || !pig.persistentData.getBoolean(ARCANE_CODEX_MARKER)) return;
+        let uuid = pig.getUuid().toString();
+        if (ARCANE_CODEX_SCHEDULED[uuid] === true) return;
+        ARCANE_CODEX_SCHEDULED[uuid] = true;
+        let level = pig.level;
+        let remaining = pig.persistentData.getLong(ARCANE_CODEX_END_TICK_KEY) - level.getTime();
+        if (remaining <= 0) {
+            delete ARCANE_CODEX_SCHEDULED[uuid];
+            arcaneCodexRestorePig(pig);
+            return;
+        }
+        level.server.scheduleInTicks(remaining, () => {
+            try {
+                delete ARCANE_CODEX_SCHEDULED[uuid];
+                if (pig.isAlive() && pig.persistentData.getBoolean(ARCANE_CODEX_MARKER)) {
+                    arcaneCodexRestorePig(pig);
+                }
+            } catch (e) {
+                delete ARCANE_CODEX_SCHEDULED[uuid];
+                console.log('[奥数法典] 延迟恢复失败: ' + e);
+            }
+        });
     } catch (e) {
-        console.log('[奥数法典] 定时恢复监听失败: ' + e);
+        console.log('[奥数法典] 挂起恢复任务失败: ' + e);
     }
 }
-global.registerLivingTickHandler('arcane-codex', arcaneCodexLivingTick)
+
+// 只在实体生成/存档加载时检查一次，已有标记猪会重新挂起恢复任务。
+EntityEvents.spawned(event => {
+    try {
+        let entity = event.entity;
+        if (entity == null || !(entity instanceof Mob)) return;
+        if (String(entity.getType()) !== 'minecraft:pig') return;
+        if (!entity.persistentData.getBoolean(ARCANE_CODEX_MARKER)) return;
+        arcaneCodexScheduleRestore(entity);
+    } catch (e) {
+        console.log('[奥数法典] 生成时恢复调度失败: ' + e);
+    }
+})

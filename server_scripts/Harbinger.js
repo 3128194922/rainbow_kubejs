@@ -255,9 +255,8 @@ NativeEvents.onEvent(LivingDamageEvent,event=>{
 })
 function harbingerEmpLivingTick(event, entity) {
     let Mobs = entity
-    if (Mobs.type !== 'cataclysm:the_harbinger') return
     let target = Mobs.target
-    if(Mobs.type=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
+    if(Mobs.persistentData.harbingerDestructionMode){
         if(Mobs.age%18==0){
             Mobs.level.server.runCommandSilent(`/execute at ${Mobs.getUuid().toString()} run particle minecraft:dust 1 0 0 2 ~ ~2 ~ 1 1 1 5 64 force`)
         }
@@ -270,13 +269,10 @@ function harbingerEmpLivingTick(event, entity) {
         }
     }
 }
-global.registerLivingTickHandler('harbinger-emp', harbingerEmpLivingTick)
-
 function harbingerChargeLivingTick(event, entity) {
-    if (entity.type !== 'cataclysm:the_harbinger') return
     let target = entity.target;
     if(target === null || target === undefined || !entity.isAlive()) return
-    if(entity.type=='cataclysm:the_harbinger'&&entity.persistentData.harbingerDestructionMode){
+    if(entity.persistentData.harbingerDestructionMode){
         if(entity.persistentData.getInt('FiveChargeCooldown')<=0&&entity.persistentData.getInt('ChargeNumber')<6&&
         entity.getAnimation()==IAnimatedEntity.NO_ANIMATION&&entity.getHealth()<=entity.getMaxHealth()*0.42){
             if(entity.persistentData.getInt('ChargeNumber')>=1){
@@ -295,12 +291,9 @@ function harbingerChargeLivingTick(event, entity) {
         }
     }
 }
-global.registerLivingTickHandler('harbinger-charge', harbingerChargeLivingTick)
-
 function harbingerWatcherLivingTick(event, entity) {
     let Mobs = entity
     let mobType = Mobs.type
-    if (mobType !== 'cataclysm:the_prowler' && mobType !== 'cataclysm:the_watcher' && mobType !== 'cataclysm:the_harbinger') return
     let target = Mobs.target
     // Only calculate missile direction for the watcher tick that can launch one.
     let directionVec3 = null
@@ -376,4 +369,45 @@ function harbingerWatcherLivingTick(event, entity) {
         }
 }
 }
-global.registerLivingTickHandler('harbinger-watcher', harbingerWatcherLivingTick)
+// 将 3 个 Boss 的每 tick 逻辑挂到 EntityJS CustomGoal：
+// Goal 只在指定实体类型上执行，普通生物不会跨 Java -> Rhino 边界。
+EntityJSEvents.addGoalSelectors('cataclysm:the_harbinger', event => {
+    event.customGoal(
+        'rainbow_harbinger_tick',
+        0,
+        mob => true,
+        mob => true,
+        true,
+        mob => {},
+        mob => {},
+        true,
+        mob => {
+            if (mob === null || mob.level === null || mob.level.isClientSide()) return
+            harbingerEmpLivingTick(null, mob)
+            harbingerChargeLivingTick(null, mob)
+            harbingerWatcherLivingTick(null, mob)
+        }
+    )
+})
+
+function addCataclysmWatcherTickGoal(entityId) {
+    EntityJSEvents.addGoalSelectors(entityId, event => {
+        event.customGoal(
+            'rainbow_watcher_tick_' + entityId.replace(':', '_'),
+            0,
+            mob => true,
+            mob => true,
+            true,
+            mob => {},
+            mob => {},
+            true,
+            mob => {
+                if (mob === null || mob.level === null || mob.level.isClientSide()) return
+                harbingerWatcherLivingTick(null, mob)
+            }
+        )
+    })
+}
+
+addCataclysmWatcherTickGoal('cataclysm:the_watcher')
+addCataclysmWatcherTickGoal('cataclysm:the_prowler')

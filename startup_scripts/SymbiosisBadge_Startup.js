@@ -152,20 +152,18 @@ function controlEntity(entity, player) {
     entity.addMotion(vec3.x(), vec3.y(), vec3.z())
 }
 
-function symbiosisBadgeLivingTick(event, entity) {
-    if (entity.level.isClientSide()) return
-    if (!entity.isVehicle()) return
-
-    const passengers = entity.getPassengers()
-    if (passengers.isEmpty()) return
-
-    const passenger = passengers.get(0)
-    if (!passenger.isPlayer()) return
-    if (entity instanceof Player) return
-
-    if (typeof hasCurios !== 'undefined' && hasCurios(passenger, 'rainbow:ccb')) {
+global.symbiosisBadgePlayerTick = function (event) {
+    try {
+        let passenger = event.player
+        if (passenger.level.isClientSide()) return
+        let entity = passenger.vehicle
+        if (entity === null) return
+        if (entity instanceof Player) return
         if (SymbiosisConfig.BLACKLIST.includes(entity.type.toString())) return
-        controlEntity(entity, passenger)
+        if (typeof hasCurios !== 'undefined' && hasCurios(passenger, 'rainbow:ccb')) {
+            controlEntity(entity, passenger)
+        }
+    } catch (e) {
+        console.log('[共生徽章] 玩家骑乘 tick 失败: ' + e)
     }
 }
-global.registerLivingTickHandler('symbiosis-badge', symbiosisBadgeLivingTick)

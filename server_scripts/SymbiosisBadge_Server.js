@@ -18,6 +18,12 @@ ItemEvents.entityInteracted("rainbow:ccb", event => {
     handleRide(event)
 })
 
+// 共生徽章只在玩家骑乘时工作；由玩家 tick 驱动，不再扫描全部生物。
+PlayerEvents.tick(event => {
+    if (typeof global.symbiosisBadgePlayerTick !== 'function') return
+    global.perfTime('symbiosis-badge-playerTick', () => global.symbiosisBadgePlayerTick(event))
+})
+
 function handleRide(event) {
     let player = event.player
     let level = player.level

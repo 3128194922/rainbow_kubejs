@@ -14,6 +14,7 @@
 const LIVING_TICK_HANDLERS = {}
 let livingTickHandlerList = []
 let livingTickHandlerListDirty = true
+let livingTickPerfCounter = 0
 
 global.registerLivingTickHandler = function (id, handler) {
     if (typeof id !== 'string' || id.length === 0) {
@@ -52,9 +53,20 @@ function dispatchLivingTick(event) {
     if (entity.level === null || entity.level === undefined || entity.level.isClientSide()) return
 
     let handlers = getLivingTickHandlers()
+    // 每 256 次 LivingTick 只采样一轮，避免 perfTime 本身成为高频热点。
+    // server_scripts 每次 /reload 后会替换 global.perfTime，因此这里不缓存函数引用。
+    let perfTime = null
+    livingTickPerfCounter = (livingTickPerfCounter + 1) & 255
+    if (livingTickPerfCounter === 0 && typeof global.perfTime === 'function') {
+        perfTime = global.perfTime
+    }
     for (let i = 0; i < handlers.length; i++) {
         try {
-            handlers[i].handler(event, entity)
+            if (perfTime !== null) {
+                perfTime('living-tick:' + handlers[i].id, () => handlers[i].handler(event, entity))
+            } else {
+                handlers[i].handler(event, entity)
+            }
         } catch (err) {
             console.log('[LivingTick] 子函数失败 ' + handlers[i].id + ': ' + err)
         }

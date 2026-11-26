@@ -82,3 +82,23 @@ test('注销后不再执行', () => {
   listener({ entity: { level: { isClientSide: () => false } } });
   assert.equal(calls, 0);
 });
+
+test('每 256 次 LivingTick 采样一次子函数耗时', () => {
+  const { globalObject, listener } = loadDispatcher();
+  const sampled = [];
+  let calls = 0;
+  globalObject.perfTime = (name, fn) => {
+    sampled.push(name);
+    return fn();
+  };
+  globalObject.registerLivingTickHandler('sampled', () => calls++);
+  const event = { entity: { level: { isClientSide: () => false } } };
+
+  for (let i = 0; i < 255; i++) listener(event);
+  assert.deepEqual(sampled, []);
+  assert.equal(calls, 255);
+
+  listener(event);
+  assert.deepEqual(sampled, ['living-tick:sampled']);
+  assert.equal(calls, 256);
+});

@@ -85,6 +85,7 @@ ForgeModEvents.onEvent(
             }
         });
 
+        // [2026-11-26] Hotai 补丁已在 CCEntityTypes 注册 C&C 属性，以下兼容代码停用，避免重复注册。
         //event.add('player', 'caverns_and_chasms:magic_damage');
         //event.add('player', 'caverns_and_chasms:magic_protection');
     }
@@ -97,9 +98,11 @@ ForgeModEvents.onEvent(
 // 通过 entityjs 挂载 C&C 原生属性到玩家（使用 ForgeRegistries 直接解析）
 EntityJSEvents.attributes(event => {
     event.modify('minecraft:player', helper => {
-        helper.add('caverns_and_chasms:magic_damage', 0.0);
-        helper.add('caverns_and_chasms:magic_protection', 1.0);
-        helper.add('caverns_and_chasms:stealth', 0.0);
+        // [2026-11-26] Hotai 补丁已把以下 C&C 属性注册到玩家属性表，停用 KubeJS 兼容添加，
+        // 避免重复注册或覆盖模组默认值（尤其是 magic_protection 的 1.0 基础值）。
+        // helper.add('caverns_and_chasms:magic_damage', 0.0);
+        // helper.add('caverns_and_chasms:magic_protection', 1.0);
+        // helper.add('caverns_and_chasms:stealth', 0.0);
         // 天元素套装使用原版飞行速度属性；玩家默认属性表没有这一项。
         helper.add('minecraft:generic.flying_speed', 0.4);
     });

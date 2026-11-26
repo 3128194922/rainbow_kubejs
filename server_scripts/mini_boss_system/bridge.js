@@ -3,10 +3,25 @@
 // MiniBoss mod <-> KubeJS 薄桥接
 // ==========================================
 // 原 KubeJS 迷你Boss 实现已整体停用并保留为 *.js.disabled。
-// 血月/其他脚本仍可调用 global.convertToMiniBoss(entity)，
-// 实际转化、词条、AI Goal、伤害、掉落全部由 MiniBoss mod 处理。
+// MiniBoss mod 只负责转化、词条、AI Goal 和伤害/死亡事件；
+// 负幸运、血月、额外掉落、Dyeing 外观都在 KubeJS 侧实现。
 
 let miniBossApiMissingLogged = false
+const MINI_BOSS_DYEING_ENABLED = true
+
+function applyMiniBossDyeing(entity) {
+    try {
+        if (!MINI_BOSS_DYEING_ENABLED) return
+        if (!Platform.isLoaded('dyeing')) return
+        if (entity.server === null || entity.server === undefined) return
+        entity.server.runCommandSilent(
+            '/dyeing uv add scroll mini_boss_creeper_armor ' + entity.getUuid().toString()
+            + ' rainbow:textures/miniboss/miniboss_armor.png 0.01 0.01 1'
+        )
+    } catch (error) {
+        console.log('[MiniBoss] Dyeing 外观失败: ' + error)
+    }
+}
 
 global.convertToMiniBoss = function (entity) {
     try {
@@ -18,7 +33,9 @@ global.convertToMiniBoss = function (entity) {
             }
             return false
         }
-        return MiniBossApi.convert(entity)
+        let converted = MiniBossApi.convert(entity)
+        if (converted) applyMiniBossDyeing(entity)
+        return converted
     } catch (error) {
         console.log('[MiniBoss] 桥接转化失败: ' + error)
         return false

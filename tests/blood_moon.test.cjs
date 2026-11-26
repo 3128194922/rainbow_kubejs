@@ -338,10 +338,11 @@ test('entity whose powers are all blacklisted skips miniboss conversion entirely
 });
 */
 
-function bridgeContext(api, logs = []) {
+function bridgeContext(api, logs = [], dyeingLoaded = false) {
   const context = {
     global: {},
     MiniBossApi: api,
+    Platform: { isLoaded: id => dyeingLoaded && id === 'dyeing' },
     console: { log: line => logs.push(String(line)) },
   };
   loadScript('server_scripts/mini_boss_system/bridge.js', context);
@@ -369,6 +370,19 @@ test('KubeJS bridge handles missing MiniBoss mod without throwing', () => {
   assert.equal(logs.filter(line => line.includes('未找到 MiniBoss mod')).length, 1);
 });
 
+test('KubeJS bridge applies Dyeing armor after a successful conversion', () => {
+  const commands = [];
+  const api = { convert: () => true, isMiniBoss: () => true };
+  const context = bridgeContext(api, [], true);
+  const entity = {
+    getUuid: () => ({ toString: () => 'test-uuid' }),
+    server: { runCommandSilent: command => commands.push(command) },
+  };
+  assert.equal(context.global.convertToMiniBoss(entity), true);
+  assert.equal(commands.length, 1);
+  assert.match(commands[0], /^\/dyeing uv add scroll mini_boss_creeper_armor test-uuid /);
+});
+
 test('blood moon uses the shared global conversion bridge', () => {
   const { listeners, calls, state } = serverHarness();
   state.set('eventId', 'rainbow:blood_moon');
@@ -393,11 +407,12 @@ test('legacy KubeJS mini-boss implementation is disabled', () => {
     'server_scripts/mini_boss_system/main.js',
     'server_scripts/mini_boss_system/IA.js',
     'server_scripts/mini_boss_system/effects.js',
-    'server_scripts/mini_boss_system/loot.js',
     'server_scripts/mini_boss_system/blacklist.js',
     'startup_scripts/mini_boss_system/damage.js',
   ]) {
     assert.equal(fs.existsSync(path.join(root, relative)), false, relative + ' must not be loaded');
     assert.equal(fs.existsSync(path.join(root, relative + '.disabled')), true, relative + '.disabled must exist');
   }
+  assert.equal(fs.existsSync(path.join(root, 'server_scripts/mini_boss_system/loot.js')), true,
+    'KubeJS loot.js must stay active');
 });

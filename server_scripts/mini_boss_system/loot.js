@@ -1,5 +1,5 @@
 // priority: 0
-// 迷你Boss额外战利品掉落
+// 迷你Boss额外战利品掉落（KubeJS + LootJS 负责，MiniBoss mod 不再处理掉落）
 
 LootJS.modifiers(event => {
     event

@@ -98,8 +98,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.living.LivingHurtEvent", ev
     // 核心充能逻辑（仅保留连射核心等仍使用旧充能表的饰品）
     handleCoreCharging(event, attacker, victim, source, range_damage, thrown_damage, soure_magic, boom_damage, context);
 
-    // 迷你Boss适应仅对已记录类型按等级减免25%/50%/75%。
-    handleMiniBossPowers(event, attacker, victim, source);
+    // 迷你Boss伤害词条由 MiniBoss mod 在 LOWEST 优先级统一处理。
     }
     catch(e)
     {

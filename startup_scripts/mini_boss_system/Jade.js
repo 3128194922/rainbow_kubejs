@@ -23,7 +23,7 @@ const PowerLabel = {
 
 // 词条 key → [最小等级, 最大等级]，需与 main.js 的 POWER_LEVEL_RANGE 保持一致（回退用）
 const PowerRange = {
-    Dig: [1, 2], Regenerate: [1, 5], Reinforce: [1, 3], Leader: [1, 1], Stealth: [1, 1],
+    Dig: [1, 2], Regenerate: [1, 3], Reinforce: [1, 3], Leader: [1, 1], Stealth: [1, 1],
     Evolve: [1, 1], Parasite: [1, 3], Adapt: [1, 3], Explode: [1, 5], Disarm: [1, 5],
     HeavyArmor: [1, 5], Dispel: [1, 5], Shadow: [1, 1], Assassin: [1, 5], Rigidity: [1, 1],
     Fury: [1, 1], Drain: [1, 1],

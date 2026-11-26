@@ -23,8 +23,7 @@ function clearFireworkImpact(data) {
     data.remove(FW_GAUNTLET_IMPACT_SRC_ID);
 }
 
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent', event => {
-    let entity = event.entity;
+function fireworkDashLivingTick(event, entity) {
     if (entity.level.isClientSide()) return;
 
     let data = entity.persistentData;
@@ -57,4 +56,5 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTi
     } else {
         data.putInt(FW_GAUNTLET_IMPACT_TICKS, impactTicks);
     }
-});
+}
+global.registerLivingTickHandler('firework-dash', fireworkDashLivingTick)

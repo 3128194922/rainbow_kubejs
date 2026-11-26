@@ -253,10 +253,10 @@ NativeEvents.onEvent(LivingDamageEvent,event=>{
         MobBreakBlock(Mobs,2,3,true)
 }
 })
-NativeEvents.onEvent(LivingTickEvent,event=>{
-    let Mobs = event.entity;
+function harbingerEmpLivingTick(event, entity) {
+    let Mobs = entity
+    if (Mobs.type !== 'cataclysm:the_harbinger') return
     let target = Mobs.target
-    if(Mobs == null) return
     if(Mobs.type=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
         if(Mobs.age%18==0){
             Mobs.level.server.runCommandSilent(`/execute at ${Mobs.getUuid().toString()} run particle minecraft:dust 1 0 0 2 ~ ~2 ~ 1 1 1 5 64 force`)
@@ -264,17 +264,18 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
         let getEmpCooldown = Mobs.persistentData.getInt('EMPCooldown')
         Mobs.persistentData.putInt('EMPCooldown',getEmpCooldown-1)
         Mobs.persistentData.putInt('FiveChargeCooldown',Mobs.persistentData.getInt('FiveChargeCooldown')-1)
-        if(target == null) return
-        if(target&&Mobs!==target&&target.getHealth()>0){
+        if(target === null || target === undefined) return
+        if(Mobs.getId() !== target.getId() && target.getHealth()>0){
             HarbingerEMPAttack(Mobs)
         }
     }
-})
+}
+global.registerLivingTickHandler('harbinger-emp', harbingerEmpLivingTick)
 
-NativeEvents.onEvent(LivingTickEvent,event=>{
-    let entity = event.entity;
+function harbingerChargeLivingTick(event, entity) {
+    if (entity.type !== 'cataclysm:the_harbinger') return
     let target = entity.target;
-    if(entity==null||target==null||!entity.isAlive())return
+    if(target === null || target === undefined || !entity.isAlive()) return
     if(entity.type=='cataclysm:the_harbinger'&&entity.persistentData.harbingerDestructionMode){
         if(entity.persistentData.getInt('FiveChargeCooldown')<=0&&entity.persistentData.getInt('ChargeNumber')<6&&
         entity.getAnimation()==IAnimatedEntity.NO_ANIMATION&&entity.getHealth()<=entity.getMaxHealth()*0.42){
@@ -293,28 +294,34 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
             entity.persistentData.putInt('ChargeNumber',0)
         }
     }
-})
+}
+global.registerLivingTickHandler('harbinger-charge', harbingerChargeLivingTick)
 
-NativeEvents.onEvent(LivingTickEvent,event=>{
-    let Mobs = event.entity
+function harbingerWatcherLivingTick(event, entity) {
+    let Mobs = entity
+    let mobType = Mobs.type
+    if (mobType !== 'cataclysm:the_prowler' && mobType !== 'cataclysm:the_watcher' && mobType !== 'cataclysm:the_harbinger') return
     let target = Mobs.target
     // Only calculate missile direction for the watcher tick that can launch one.
-    let directionVec3 = target && Mobs.type == 'cataclysm:the_watcher' && Mobs.persistentData.WatcherFlyModeII && Mobs.age % 80 == 0 ? Vec3d.directionFromRotation(Mobs.getRotationVector()) : null
-    if(Mobs == null || target == null || target==undefined) return
-    if(target){
-    if(Mobs.type=='cataclysm:the_prowler'&&Mobs.persistentData.prowlerNightmareMode){
+    let directionVec3 = null
+    if (target !== null && target !== undefined && mobType === 'cataclysm:the_watcher' && Mobs.persistentData.WatcherFlyModeII && Mobs.age % 80 === 0) {
+        directionVec3 = Vec3d.directionFromRotation(Mobs.getRotationVector())
+    }
+    if(target === null || target === undefined) return
+    if(target !== null && target !== undefined){
+    if(mobType=='cataclysm:the_prowler'&&Mobs.persistentData.prowlerNightmareMode){
         let getSummonNumber = Mobs.persistentData.getInt('SummonNumber')
         if(Mobs.age%260==0&&getSummonNumber<16){
             SummonFlyWatcher(Mobs)
             Mobs.persistentData.putInt('SummonNumber',getSummonNumber+1)
         }
     }
-    if(Mobs.type=='cataclysm:the_watcher'&&Mobs.persistentData.WatcherFlyMode){
+    if(mobType=='cataclysm:the_watcher'&&Mobs.persistentData.WatcherFlyMode){
         let targetY = target.y + target.getEyeHeight() + 3.5;
         let dy = targetY - Mobs.y;
         Mobs.move('self', new Vec3d(0, dy > 0 ? 0.175 : -0.35, 0));
     }
-    if(Mobs.type=='cataclysm:the_watcher'&&Mobs.persistentData.WatcherFlyModeII){
+    if(mobType=='cataclysm:the_watcher'&&Mobs.persistentData.WatcherFlyModeII){
         let targetY = target.y + target.getEyeHeight() + 4.0;
         let dy = targetY - Mobs.y;
         Mobs.move('self', new Vec3d(0, dy > 0 ? 0.175 : -0.35, 0));
@@ -336,8 +343,8 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
             }
         }
     }
-    if(Mobs.nbt.getBoolean('Is_Act')==false||Mobs.getAnimation()==TheHarbinger.STUN_ANIAMATION) return
-    if(Mobs.type=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
+    if(String(Mobs.nbt.getBoolean('Is_Act')) === 'false'||Mobs.getAnimation()==TheHarbinger.STUN_ANIAMATION) return
+    if(mobType=='cataclysm:the_harbinger'&&Mobs.persistentData.harbingerDestructionMode){
         if(Mobs.getAnimation()!==TheHarbinger.CHARGE_ANIMATION){
         if(Mobs.getHealth()>Mobs.getMaxHealth()*0.5){
         let NormaltargetY = target.y + target.getEyeHeight()+5;
@@ -349,7 +356,7 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
             let ChargeTargetY = target.y + target.getEyeHeight()+3.35
             let dy2 = ChargeTargetY - Mobs.y;
             Mobs.move('self', new Vec3d(0, dy2 > 0 ? 0.5 : -0.5, 0));
-            if(Mobs.persistentData.HowitzerSkillCooldown==false&&Mobs.distanceToSqr(target)<=16){
+            if(String(Mobs.persistentData.HowitzerSkillCooldown) === 'false'&&Mobs.distanceToSqr(target)<=16){
                 if(Mobs.getHealth()<Mobs.getMaxHealth()*0.66){
                     SummonFlyWatcherII(Mobs,Mobs.x,Mobs.y+Mobs.getEyeHeight(),Mobs.z)
                 }
@@ -368,4 +375,5 @@ NativeEvents.onEvent(LivingTickEvent,event=>{
         }
         }
 }
-})
+}
+global.registerLivingTickHandler('harbinger-watcher', harbingerWatcherLivingTick)

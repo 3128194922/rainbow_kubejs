@@ -93,7 +93,7 @@ EntityEvents.spawned(event => {
         entity.level.server.scheduleInTicks(1, () => {
             try {
                 if (entity.isAlive() && global.bloodMoonIsActive(entity.level)) {
-                    convertToMiniBoss(entity);
+                    global.convertToMiniBoss(entity);
                 }
             } catch (error) {
                 console.log('[BloodMoon] 延迟转化失败: ' + error);

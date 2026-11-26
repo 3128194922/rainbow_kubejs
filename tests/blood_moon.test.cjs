@@ -34,7 +34,10 @@ function serverHarness() {
     },
   };
   const context = {
-    global: {},
+    global: {
+      pickAutomaticMoon: () => 'blood_moon',
+      convertToMiniBoss: entity => { calls.converted.push(entity); return true; },
+    },
     console,
     Component: { literal: value => value },
     ServerEvents: { commandRegistry: callback => callback({
@@ -48,7 +51,6 @@ function serverHarness() {
       start: (level, phase, options) => { calls.start.push({ level, phase, options }); state.set('eventId', options.eventId); },
       stop: level => { calls.stop.push(level); state.set('eventId', ''); },
     },
-    convertToMiniBoss: entity => { calls.converted.push(entity); return true; },
   };
   loadScript('server_scripts/blood_moon/main.js', context);
   return { listeners, calls, state, context };
@@ -188,6 +190,11 @@ test('Forge hooks mark natural hostile spawns and deny sleep only while blood mo
   assert.equal(result, null);
 });
 
+/*
+ * 旧 KubeJS 迷你Boss 实现已迁移到 MiniBoss mod，以下测试针对已停用的
+ * server_scripts/mini_boss_system/main.js / blacklist.js，保留源码便于回滚，
+ * 但不再作为当前实现的有效测试。当前桥接测试见文件末尾。
+ *
 test('blood moon conversion and existing negative luck conversion use the same miniboss rules', () => {
   let hurt;
   let bossMode = false;
@@ -328,4 +335,69 @@ test('entity whose powers are all blacklisted skips miniboss conversion entirely
   assert.equal(context.convertToMiniBoss(mob.entity), false);
   assert.equal(mob.tags.has('isMiniBoss'), false);
   assert.equal(mob.dyeCalls.length, 0);
+});
+*/
+
+function bridgeContext(api, logs = []) {
+  const context = {
+    global: {},
+    MiniBossApi: api,
+    console: { log: line => logs.push(String(line)) },
+  };
+  loadScript('server_scripts/mini_boss_system/bridge.js', context);
+  return context;
+}
+
+test('KubeJS bridge delegates conversion and state to MiniBoss mod', () => {
+  const converted = [];
+  const api = {
+    convert: entity => { converted.push(entity); return true; },
+    isMiniBoss: entity => entity === 'boss',
+  };
+  const context = bridgeContext(api);
+  assert.equal(context.global.convertToMiniBoss({ id: 1 }), true);
+  assert.equal(converted.length, 1);
+  assert.equal(context.global.isMiniBoss('boss'), true);
+  assert.equal(context.global.isMiniBoss('normal'), false);
+});
+
+test('KubeJS bridge handles missing MiniBoss mod without throwing', () => {
+  const logs = [];
+  const context = bridgeContext(null, logs);
+  assert.equal(context.global.convertToMiniBoss({ id: 1 }), false);
+  assert.equal(context.global.isMiniBoss({ id: 1 }), false);
+  assert.equal(logs.filter(line => line.includes('未找到 MiniBoss mod')).length, 1);
+});
+
+test('blood moon uses the shared global conversion bridge', () => {
+  const { listeners, calls, state } = serverHarness();
+  state.set('eventId', 'rainbow:blood_moon');
+  const scheduled = [];
+  const entity = {
+    level: Object.assign(moonLevel(13000), {
+      server: { scheduleInTicks: (ticks, callback) => scheduled.push({ ticks, callback }) },
+    }),
+    isAlive: () => true,
+    persistentData: {
+      getBoolean: () => true,
+      remove: () => {},
+    },
+  };
+  listeners.spawned({ entity });
+  scheduled[0].callback();
+  assert.equal(calls.converted.length, 1);
+});
+
+test('legacy KubeJS mini-boss implementation is disabled', () => {
+  for (const relative of [
+    'server_scripts/mini_boss_system/main.js',
+    'server_scripts/mini_boss_system/IA.js',
+    'server_scripts/mini_boss_system/effects.js',
+    'server_scripts/mini_boss_system/loot.js',
+    'server_scripts/mini_boss_system/blacklist.js',
+    'startup_scripts/mini_boss_system/damage.js',
+  ]) {
+    assert.equal(fs.existsSync(path.join(root, relative)), false, relative + ' must not be loaded');
+    assert.equal(fs.existsSync(path.join(root, relative + '.disabled')), true, relative + '.disabled must exist');
+  }
 });

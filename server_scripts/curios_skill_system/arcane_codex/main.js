@@ -147,15 +147,15 @@ function arcaneCodexRestorePig(pig) {
     }
 }
 
-// 使用 Forge LivingTickEvent 与实体所在维度的 level.getTime() 计时，兼容本项目 KubeJS 版本。
-NativeEvents.onEvent(LivingTickEvent, event => {
+// 使用统一 LivingTick 调度器与实体所在维度的 level.getTime() 计时，兼容本项目 KubeJS 版本。
+function arcaneCodexLivingTick(event, entity) {
     try {
-        let entity = event.entity;
-        if (entity == null || entity.level == null || entity.level.isClientSide()) return;
-        if (entity.persistentData == null || !entity.persistentData.getBoolean(ARCANE_CODEX_MARKER)) return;
+        if (entity.level === null || entity.level === undefined || entity.level.isClientSide()) return;
+        if (entity.persistentData === null || entity.persistentData === undefined || !entity.persistentData.getBoolean(ARCANE_CODEX_MARKER)) return;
         if (entity.level.getTime() < entity.persistentData.getLong(ARCANE_CODEX_END_TICK_KEY)) return;
         arcaneCodexRestorePig(entity);
     } catch (e) {
         console.log('[奥数法典] 定时恢复监听失败: ' + e);
     }
-});
+}
+global.registerLivingTickHandler('arcane-codex', arcaneCodexLivingTick)

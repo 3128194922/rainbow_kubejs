@@ -102,7 +102,7 @@ test('转移失败份额返还本人，古圣头骨接收债务视为成功',()=
   b.attack=(s,n)=>{b.nbtDebt+=n;return false;};
   ctx.rebalanceShareDamage(ev,v,{getType:()=> 'player'},null);assert.equal(ev.amount,15);
 });
-test('适应首次放行，记录后I/II/III只减25%/50%/75%，容量最高3',()=>{
+test.skip('适应首次放行，记录后I/II/III只减25%/50%/75%，容量最高3（已迁移到 MiniBoss mod）',()=>{
   for(const rank of [1,2,3]){
     const {ctx}=harness(),v=entity(),data=new Map([['isMiniBoss',true],['_mb_p_Adapt',true],['_mb_lvl_Adapt',rank]]);
     v.persistentData={getBoolean:k=>data.get(k)===true,getInt:k=>data.get(k)||0,getString:k=>data.get(k)||'',putString:(k,x)=>data.set(k,x)};

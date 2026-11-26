@@ -248,10 +248,11 @@ function ensureQuantumKeyList(list, level) {
     }
 }
 
-function handleQuantumKeyLivingTick(event) {
+function handleQuantumKeyLivingTick(event, entity) {
     try {
-        let player = event.getEntity()
-        if (player == null || player.getInventory == null) return
+        let player = entity
+        // 量子密钥只维护玩家背包；先排除非玩家，避免每个生物都读取背包。
+        if (!player.isPlayer() || player.getInventory == null) return
         let level = getQuantumMandelLevel(player)
         if (level == null || isQuantumMandelClientLevel(level)) return
         let inventory = player.getInventory()
@@ -318,9 +319,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.player.PlayerInteractEvent$
 })
 
 // 玩家 tick、合成、丢弃和物品实体生成时初始化创建时间，复刻原物品的 60 秒生命周期。
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent', event => {
-    handleQuantumKeyLivingTick(event)
-})
+global.registerLivingTickHandler('quantum-key', handleQuantumKeyLivingTick)
 
 ForgeEvents.onEvent('net.minecraftforge.event.entity.EntityJoinLevelEvent', event => {
     handleQuantumKeyEntityJoin(event)

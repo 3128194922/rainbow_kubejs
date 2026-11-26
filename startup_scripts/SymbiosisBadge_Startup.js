@@ -152,8 +152,7 @@ function controlEntity(entity, player) {
     entity.addMotion(vec3.x(), vec3.y(), vec3.z())
 }
 
-ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTickEvent', event => {
-    const entity = event.entity
+function symbiosisBadgeLivingTick(event, entity) {
     if (entity.level.isClientSide()) return
     if (!entity.isVehicle()) return
 
@@ -168,4 +167,5 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEvent$LivingTi
         if (SymbiosisConfig.BLACKLIST.includes(entity.type.toString())) return
         controlEntity(entity, passenger)
     }
-})
+}
+global.registerLivingTickHandler('symbiosis-badge', symbiosisBadgeLivingTick)

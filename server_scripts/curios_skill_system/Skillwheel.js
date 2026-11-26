@@ -49,12 +49,44 @@ let heartEntityMap = {
     'rainbow:frozen_heart': 'windswept:chilled'
 };
 
+// 腐烂心脏召唤的僵尸需要非白 MineTeam 队伍；白色是 MineTeam 的默认无队伍状态。
+const HEART_TEAM_REQUIRED_ENTITY = 'rainbow:rotten_heart';
+
+// 读取玩家在 MineTeam 中的有效队伍颜色；白队、无队伍或查询失败统一返回 null。
+function heartGetMineTeamColor(player) {
+    try {
+        if (player == null || MineTeamUtil == null) return null;
+        let color = String(MineTeamUtil.getEffectiveTeamColor(player));
+        return MineTeamUtil.isNoTeam(color) ? null : color;
+    } catch (e) {
+        console.log('[心脏召唤] 查询 MineTeam 队伍失败: ' + e);
+        return null;
+    }
+}
+
+// 召唤物继承 OwnerName 后，再由 MineTeam 写入颜色队伍，保证友军判定与召唤者一致。
+function heartJoinMineTeam(entity, teamColor) {
+    try {
+        if (MineTeamSync == null) return;
+        MineTeamSync.applyTeam(entity, teamColor, true);
+    } catch (e) {
+        console.log('[心脏召唤] 召唤物加入 MineTeam 队伍失败: ' + e);
+    }
+}
+
 Object.keys(heartEntityMap).forEach(heartId => {
     registerSkill(heartId, (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
         if (player.cooldowns.isOnCooldown(heartId)) return;
 
         let COOLDOWN = SecoundToTick(20);
         let entityId = heartEntityMap[heartId];
+        let teamColor = heartGetMineTeamColor(player);
+
+        // 白队玩家无法召唤僵尸，且不进入冷却，加入颜色队伍后可立即使用。
+        if (heartId === HEART_TEAM_REQUIRED_ENTITY && teamColor == null) {
+            player.tell('§7你处于白色队伍，无法召唤僵尸；请先在物品栏点击队伍图标加入颜色队伍。');
+            return;
+        }
 
         let entity = player.level.createEntity(entityId);
         if (entity) {
@@ -72,6 +104,7 @@ Object.keys(heartEntityMap).forEach(heartId => {
             entity.setItemSlot("head", helmet);
             
             entity.spawn();
+            if (teamColor != null) heartJoinMineTeam(entity, teamColor);
             entity.potionEffects.add("rainbow:off_work_time", COOLDOWN / 2, 0, false, false);
             
             player.cooldowns.addCooldown(heartId, COOLDOWN);

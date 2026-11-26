@@ -129,6 +129,9 @@ const ForgeEventFactory = Java.loadClass('net.minecraftforge.event.ForgeEventFac
 const MobSpawnType = Java.loadClass('net.minecraft.world.entity.MobSpawnType')
 const TideUtils = Java.tryLoadClass('com.li64.tide.util.TideUtils')
 const ThermometerItem = Java.tryLoadClass('galena.oreganized.content.item.ThermometerItem')
+// MineTeam 队伍：心脏召唤物读取玩家有效颜色、写入同一颜色队伍；缺失模组时不阻断其他脚本。
+const MineTeamUtil = Java.tryLoadClass('com.xiaohunao.mine_team.common.util.TeamUtil')
+const MineTeamSync = Java.tryLoadClass('com.xiaohunao.mine_team.common.team.TeamSync')
 //const FireManager = Java.loadClass('it.crystalnest.soul_fire_d.api.FireManager')
 //const Fire = Java.loadClass('it.crystalnest.soul_fire_d.api.Fire')
 const BiConsumer = Java.loadClass('java.util.function.BiConsumer')

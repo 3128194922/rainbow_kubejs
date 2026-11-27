@@ -1,4 +1,6 @@
 // priority: 0
+// [GENE_SYSTEM_DISABLED] 实体基因系统已停用（2026-11-27）：整文件块注释保留，恢复时删除下方 /* 与文件末尾 */。
+/*
 // ==========================================
 // 🧬 基因提取器 - rainbow:amber_bee
 // 对拥有 entity_gene 的生物右键，提取其基因片段
@@ -38,3 +40,4 @@ ItemEvents.entityInteracted('rainbow:amber_bee', event => {
 
     player.tell(`§a成功提取基因: §e${geneId}`);
 });
+*/

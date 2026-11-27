@@ -106,65 +106,6 @@ ServerEvents.recipes(event => {
         ['minecraft:kelp', 'minecraft:kelp', 'minecraft:kelp'],
         ['minecraft:kelp', '', 'minecraft:kelp'],
         ['alexsmobs:shark_tooth', 'alexsmobs:serrated_shark_tooth','alexsmobs:cachalot_whale_tooth']])
-    /*
-    //核电配方
-    event.shaped("mbd2:u235__machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:u235_out_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:u235_in_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:metal_barrel_in_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:u235_out_g_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    //SCP914
-    event.shaped("mbd2:scp914_out_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:scp914_in_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:scp914_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'quark:crafter', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:scp914_g_in_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    //食物引擎
-    event.shaped("mbd2:ch4_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    event.shaped("mbd2:ch4_out_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    //音乐发动机
-    event.shaped("mbd2:music_machine", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'minecraft:sculk_shrieker', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-    //石油发动机
-    event.shaped("mbd2:710_mechanical", [
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'create:precision_mechanism', 'alexscaves:scrap_metal'],
-        ['alexscaves:scrap_metal', 'alexscaves:scrap_metal','alexscaves:scrap_metal']])
-*/
     //破坏者刺雷
     /*event.shaped("opalus:griefer_spear", [
         ['', 'savage_and_ravage:blast_proof_plating', ''],
@@ -265,12 +206,6 @@ ServerEvents.recipes(event => {
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot']])
-*//*
-    //逻辑计算机
-    event.shaped('mbd2:number_machine', [
-        ['create:brass_casing', 'create:pulse_timer', 'create:fluid_tank'], 
-        ['create:cogwheel', 'create:precision_mechanism', 'create:large_cogwheel'], 
-        ['rainbow:three', 'quark:redstone_randomizer', 'rainbow:eight']])
 */
     //鲁班锁
     event.shaped('rainbow:luban_lock', [

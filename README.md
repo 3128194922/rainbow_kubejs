@@ -64,11 +64,10 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
   - [炮击标定系统 (CBC)（已注释停用）](#炮击标定系统-cbc已注释停用)
   - [先驱者动力剑（已注释停用）](#先驱者动力剑已注释停用)
   - [圣遗物镶嵌与元素觉醒](#圣遗物镶嵌与元素觉醒-wooden_sword_inlay)
-  - [基因系统](#基因系统)
+  - [基因系统（已注释停用）](#基因系统已注释停用)
   - [宠物/佣兵驯服系统](#宠物佣兵驯服系统)
   - [共生徽章系统](#共生徽章系统)
   - [面具系统](#面具系统)
-  - [音乐魔法系统](#音乐魔法系统)
   - [后室 (Backrooms) 系统](#后室-backrooms-系统)
   - [副本/悬赏实例系统](#副本悬赏实例系统)
   - [蜂群系统](#蜂群系统)
@@ -86,7 +85,6 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
   - [小宇宙物品](#小宇宙物品)
   - [Dyeing 特效管理](#dyeing-特效管理)
   - [版本检查系统](#版本检查系统)
-  - [MBD 机器事件系统](#mbd-机器事件系统)
   - [信标光束能量注入系统](#信标光束能量注入系统)
   - [套装效果系统](#套装效果系统)
   - [Player 动画系统 (PlayerAnimator)](#player-动画系统-playeranimator)
@@ -244,7 +242,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | `rainbow:rainbow_stone` | 七彩石 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L447](server_scripts/Recipes.js#L447) |
 | `rainbow:miracle` | 奇迹物质 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L361](server_scripts/Recipes.js#L361) |
 | ~~`rainbow:coin_1` / `rainbow:coin_2`~~ | 货币（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L182-L183](startup_scripts/Registry/Registry_item.js#L182-L183) |
-| `rainbow:amber_bee` | 秘封琥珀，基因提取器，右键生物提取 FruitfulFun 基因 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L279](server_scripts/Recipes.js#L279)，tooltip：[client_scripts/tooltips.js#L367-L398](client_scripts/tooltips.js#L367-L398) |
+| `rainbow:amber_bee` | 秘封琥珀，原基因提取器；实体基因系统已停用，右键不再写入基因 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js](server_scripts/Recipes.js)，tooltip：[client_scripts/tooltips.js](client_scripts/tooltips.js) |
 | `rainbow:cleaver_upgrade` | 斩切刀升级模板 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L513-L517](server_scripts/Recipes.js#L513-L517) |
 | `rainbow:raw_voidore` | 虚空粗矿 | 注册：[startup_scripts/Registry/Registry_item.js](startup_scripts/Registry/Registry_item.js)，配方：[server_scripts/Recipes.js#L303](server_scripts/Recipes.js#L303) |
 | ~~`rainbow:brain`~~ | 村民脑子，耐久 300（**注册已注释**） | 注册：[startup_scripts/Registry/Registry_item.js#L195](startup_scripts/Registry/Registry_item.js#L195) |
@@ -522,16 +520,18 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 - **属性生效：** Curios 回调读取 `RainbowInlayCount` / `RainbowInlay{n}Attr` / `RainbowInlay{n}Val`；修饰符 UUID 同时包含 Curios 槽位与词条下标，允许多件圣遗物词条叠加
 - **提示：** 圣遗物 tooltip 显示词条、觉醒元素及同元素 4/5 件加成
 
-### 基因系统
+### 基因系统（已注释停用）
 
-> 启动配置：[startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js) + [startup_scripts/gene_system/main.js](startup_scripts/gene_system/main.js)
-> 基因逻辑：[server_scripts/gene/gene_logic.js](server_scripts/gene/gene_logic.js)
-> 基因交互：[server_scripts/gene/interaction.js](server_scripts/gene/interaction.js)
-> 物品事件：[server_scripts/gene_system/IItemEvents.js](server_scripts/gene_system/IItemEvents.js)
+> 当前状态：已停用（2026-11-27）。仍在加载的 3 个文件已整文件注释；`gene_logic.js`、`interaction.js` 与客户端 Jade 原本已是整段块注释。
+> 启动配置（已注释）：[startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js)
+> 启动逻辑（已注释）：[startup_scripts/gene_system/main.js](startup_scripts/gene_system/main.js)
+> 基因逻辑（已注释）：[server_scripts/gene/gene_logic.js](server_scripts/gene/gene_logic.js)
+> 基因交互（已注释）：[server_scripts/gene/interaction.js](server_scripts/gene/interaction.js)
+> 物品事件（已注释）：[server_scripts/gene_system/IItemEvents.js](server_scripts/gene_system/IItemEvents.js)
 
-- **基因提取：** `rainbow:amber_bee` 右键生物提取基因，读取 FruitfulFun 基因数据写入 NBT
-- **基因属性映射：** `global.GeneEffectMap` 在 [startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js) 中定义
-- **工具提示：** 按 ALT 查看 `rainbow:amber_bee` 的基因详情
+- **停用范围：** `global.EntityGenePool` / `global.GeneEffectMap` 不再定义；实体生成与繁殖不再写入 `entity_gene`，`rainbow:amber_bee` 右键不再写入 `extracted_gene`。
+- **恢复方式：** `config.js`、`main.js` 删除每行开头的 `// [GENE_SYSTEM_DISABLED] `；`IItemEvents.js` 去掉新增的整段 `/* ... */`；`gene_logic.js`、`interaction.js`、`client_scripts/gene/JadeEvents.js` 去掉原有块注释，然后完整重启客户端。
+- **保留项：** `rainbow:amber_bee` 的物品注册、配方与 tooltip 未删除；tooltip 对 `global.GeneEffectMap` 已有空值保护，无基因 NBT 时显示“无基因信息”。
 
 ### 宠物/佣兵驯服系统（第四条参考，已完整停用）
 
@@ -564,12 +564,6 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 > 生物技能：[server_scripts/mask/MobSkill.js](server_scripts/mask/MobSkill.js)
 
 处理面具生物的行为逻辑和技能释放。
-
-### 音乐魔法系统
-
-> 网络事件：[server_scripts/music_magic/NetWorkEvents.js](server_scripts/music_magic/NetWorkEvents.js)
-
-处理音乐魔法相关网络包。
 
 ### 后室 (Backrooms) 系统
 
@@ -766,12 +760,6 @@ ParticleJS 文本粒子与伤害飘字基础设施（priority 4000），注册�
 > 播报：[server_scripts/version_check/main.js](server_scripts/version_check/main.js)
 
 启动时按 `global._VERSION_CHECKS` 配置表检测模组版本（当前要求 `entityjs 0.6.6-1.20.1`），不匹配或缺失时写入 `global._VERSION_WARNINGS`，玩家登录时逐条红色播报。
-
-### MBD 机器事件系统
-
-> 实现：[server_scripts/MBDServerEvents.js](server_scripts/MBDServerEvents.js)
-
-处理多方块机器 (Multiblock Machines) 的 Tick 事件（当前代码已注释，预留给 `mbd2:fire_machine`）。
 
 ### 信标光束能量注入系统
 
@@ -1166,7 +1154,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 
 - **食物自动提示：** `#rainbow:food_tooltip` 标签物品自动显示食物效果（名称+等级+时长），使用 `MobEffectUtil.formatDuration` 格式化
 - **按 SHIFT 查看详细：** 巨人戒指、重力核心、血战沙场之证、赌徒骰子、大胃王、冒险护符、绝望之证、暴食之符、金猪护符、怪物护符、时空核心、远古神盾、共生徽章、迷你月球
-- **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果）
+- **按 ALT 查看详细：** 秘封琥珀（显示基因信息+属性效果；实体基因系统已停用，现仅显示“无基因信息”）
 - **NBT 信息显示：** 连射核心能量值、海牙吊坠耐久、狱牙吊坠灵魂数、宝箱吊坠击杀数、远古神盾绑定 UUID
 - **新增 tooltip：** 圣饼（10% 减伤+3s 无敌帧）、大师球（灵魂储存+莉莉丝联动免死；第四条参考的 `pet_system` 停用后，“右键回收被脑控的佣兵生物”提示仍为未清理残留）、荷鲁斯之爪（生物盯上时暴击加成）、先驱者动力剑（分解立场状态与能量，已注释停用）、决斗细剑（闪避与 UUID 连击）、炮兵电台/信标球（绑定模式与坐标，已注释停用）
 
@@ -1393,7 +1381,7 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 - `global.attributes` - 所有属性 key 列表
 - `global.deathRecords` - 死亡记录（[server_scripts/Plugins.js](server_scripts/Plugins.js)，供 `/back` 使用）
 - `global.isEnabled` - UI 引导提示开关（[client_scripts/keytips/](client_scripts/keytips/)）
-- `global.GeneEffectMap` - 基因效果映射表（[startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js)）
+- `global.GeneEffectMap` - 基因效果映射表（已停用；[startup_scripts/gene_system/config.js](startup_scripts/gene_system/config.js) 整段注释）
 - `global.CURIONUMBER = 4` - 饰品栏数量
 - `global.CURSES` - 诅咒附魔列表（消失诅咒 + 绑定诅咒）
 - `global.NEWFILENUMBER` - 新文件计数器

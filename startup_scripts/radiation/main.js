@@ -46,3 +46,39 @@ StartupEvents.registry('item', event => {
         .parentModel('item/handheld')
         .glow(true)
 })
+
+// 纳垢赐福：拥有该状态的实体强制接受所有药水效果。
+// 已装 MoreCallback 在 addEffect 头部先发 MobEffectImmuneEvent；
+// 免疫目标不会走到 canBeAffected，所以必须在这里 setForceApply(true)。
+ForgeEvents.onEvent('com.morecallback.event.MobEffectImmuneEvent', event => {
+    try {
+        let entity = event.entity
+        if (entity == null) {
+            return
+        }
+        if (!TheBuff.has(entity, 'rainbow:radiation')) {
+            return
+        }
+        event.setForceApply(true)
+    }
+    catch (err) {
+        console.log('[radiation] 强制接受药水效果失败(MobEffectImmuneEvent): ' + err)
+    }
+})
+
+// 兼容只提供 CanBeAffectedEvent 的 MoreCallback 版本。
+ForgeEvents.onEvent('com.morecallback.event.CanBeAffectedEvent', event => {
+    try {
+        let entity = event.entity
+        if (entity == null) {
+            return
+        }
+        if (!TheBuff.has(entity, 'rainbow:radiation')) {
+            return
+        }
+        event.setForceAllowed(true)
+    }
+    catch (err) {
+        console.log('[radiation] 强制接受药水效果失败: ' + err)
+    }
+})

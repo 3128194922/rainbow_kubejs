@@ -240,15 +240,8 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Remov
             case 2:
                 if (!entity.isPlayer()) break;
 
-                let item_main = entity.getItemInHand("main_hand").getId();
-                let item_off = entity.getItemInHand("off_hand").getId();
-                if (item_main == 'artifacts:umbrella' || item_off == 'artifacts:umbrella') {
-                    event.setCanceled(true);
-                }
-                else {
-                    entity.secondsOnFire = 100;
-                    event.setCanceled(true);
-                }
+                entity.secondsOnFire = 100;
+                event.setCanceled(true);
                 break;
         }
 

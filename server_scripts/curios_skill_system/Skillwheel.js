@@ -461,7 +461,7 @@ registerSkill('rainbow:ccb', (event, player, itemStack, isSubmenu, submenuIndex,
 });
 
 // --- 皇家法杖 ---
-registerSkill('royalletiations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
+registerSkill('royalvariations:royal_staff', (event, player, itemStack, isSubmenu, submenuIndex,shiftDown) => {
     if (itemStack) {
         let hand = InteractionHand.MAIN_HAND;
         let src = event.data ? event.data.getString("sourceType") : "";
@@ -1626,7 +1626,7 @@ let wickedMaskSkillMap = {
         player.cooldowns.addCooldown("species:wicked_mask", SecoundToTick(10));
     },
     // 皇家僵尸：召唤 2 名僵尸（参考心脏系列 heartEntityMap 的 minecraft:zombie 召唤方法）
-    'royalletiations:royal_zombie': (ctx) => {
+    'royalvariations:royal_zombie': (ctx) => {
         let { event, player, itemStack } = ctx;
 
         let COOLDOWN = SecoundToTick(60);
@@ -1645,7 +1645,7 @@ let wickedMaskSkillMap = {
 
                 let sword = Item.of("minecraft:iron_sword").enchant("minecraft:vanishing_curse", 1);
                 // 皇家骑士头盔护甲
-                let helmet = Item.of("royalletiations:royal_knight_helmet").enchant("minecraft:vanishing_curse", 1);
+                let helmet = Item.of("royalvariations:royal_knight_helmet").enchant("minecraft:vanishing_curse", 1);
 
                 entity.setItemSlot("mainhand", sword);
                 entity.setItemSlot("head", helmet);
@@ -1683,7 +1683,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let chosenVictimEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "chosen_victim"));
+                let chosenVictimEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "chosen_victim"));
                 if (chosenVictimEffect) {
                     entity.potionEffects.add(chosenVictimEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1696,7 +1696,7 @@ let wickedMaskSkillMap = {
         }
     },
     // 皇家苦力怕：为 16 格范围内敌方实体（MONSTER 类别）添加 time_bomb 药水效果，并在玩家位置生成来源玩家的不破坏方块爆炸
-    'royalletiations:royal_creeper': (ctx) => {
+    'royalvariations:royal_creeper': (ctx) => {
         let { event, player, itemStack } = ctx;
 
         let RANGE = 16;                    // 影响范围 16 格
@@ -1725,7 +1725,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let timeBombEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "time_bomb"));
+                let timeBombEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "time_bomb"));
                 if (timeBombEffect) {
                     entity.potionEffects.add(timeBombEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1752,7 +1752,7 @@ let wickedMaskSkillMap = {
         player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
     },
     // 皇家末影人：为 16 格范围内敌方实体（MONSTER 类别）添加 pressing_gaze 与 heaviness_of_the_end 药水效果
-    'royalletiations:royal_enderman': (ctx) => {
+    'royalvariations:royal_enderman': (ctx) => {
         let { event, player, itemStack } = ctx;
 
         let RANGE = 16;                    // 影响范围 16 格
@@ -1779,8 +1779,8 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 同时施加 凝视压制 与 末地沉重 两种药水效果（解析 MobEffect 对象后添加）
-                let gazeEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "pressing_gaze"));
-                let heavinessEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "heaviness_of_the_end"));
+                let gazeEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "pressing_gaze"));
+                let heavinessEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "heaviness_of_the_end"));
                 if (gazeEffect) {
                     entity.potionEffects.add(gazeEffect, DURATION, 0, false, false);
                     affectedCount++;
@@ -1799,7 +1799,7 @@ let wickedMaskSkillMap = {
         player.cooldowns.addCooldown("species:wicked_mask", COOLDOWN);
     },
     // 皇家骷髅：为 16 格范围内敌方实体（MONSTER 类别）添加 trapped 陷阱药水效果
-    'royalletiations:royal_skeleton': (ctx) => {
+    'royalvariations:royal_skeleton': (ctx) => {
         let { event, player, itemStack } = ctx;
 
         let RANGE = 16;                    // 影响范围 16 格
@@ -1826,7 +1826,7 @@ let wickedMaskSkillMap = {
                 } catch (err) { return; }
 
                 // 解析效果对象后添加（KubeJS 的 potionEffects.add 只接受 MobEffect 对象）
-                let trappedEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalletiations", "trapped"));
+                let trappedEffect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("royalvariations", "trapped"));
                 if (trappedEffect) {
                     entity.potionEffects.add(trappedEffect, DURATION, 0, false, false);
                     affectedCount++;

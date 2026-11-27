@@ -160,15 +160,6 @@ EntityEvents.spawned(event=>{
 EntityEvents.death(event=>{
     let Entity = event.entity;
     let Level = event.level;
-    if(Entity.type=='cataclysm:the_harbinger'&&Entity.persistentData.harbingerDestructionMode){
-        Level.server.scheduleInTicks(130, () => {
-            let LootMechStar = Level.createEntity('item')
-            LootMechStar.setPosition(Entity.x,Entity.y+2.5,Entity.z)
-            LootMechStar.item = Item.of('firelight:mech_star')
-            LootMechStar.setGlowing(true)
-            LootMechStar.spawn()
-        })
-    }
     if(Entity.type=='cataclysm:the_prowler'&&Entity.persistentData.prowlerNightmareMode){
     Level.server.scheduleInTicks(40, () => {
     Level.createExplosion(Entity.x,Entity.y,Entity.z)
@@ -177,11 +168,6 @@ EntityEvents.death(event=>{
     .explosionMode('none')
     .exploder(Entity)
     .explode()
-    let LootSmithingTemplate = Level.createEntity('item')
-    LootSmithingTemplate.setPosition(Entity.x,Entity.y+2.5,Entity.z)
-    LootSmithingTemplate.item = Item.of('firelight:witherite_smithing_template')
-    LootSmithingTemplate.setGlowing(true)
-    LootSmithingTemplate.spawn()
 })
 }
 })

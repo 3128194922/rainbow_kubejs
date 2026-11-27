@@ -123,14 +123,7 @@ global.CURIONUMBER = 4
 global.CURSES = [
     "minecraft:binding_curse",
     "minecraft:vanishing_curse",
-    "mynethersdelight:poaching",
-    "allurement:ascension_curse",
-    "allurement:fleeting_curse",
-    "domesticationinnovation:undead_curse",
-    "domesticationinnovation:infamy_curse",
-    "domesticationinnovation:blight_curse",
-    "domesticationinnovation:immaturity_curse",
-    "imbuence:curse_of_the_dragon_palace"
+    "mynethersdelight:poaching"
 ]
 // 诅咒附魔索引表：保留 global.CURSES 数组接口，成员查询改为常数时间键查找。
 global.CURSE_INDEX = {};

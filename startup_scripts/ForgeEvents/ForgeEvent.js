@@ -96,7 +96,7 @@ ForgeEvents.onEvent("net.minecraftforge.event.entity.EntityJoinLevelEvent", even
     if(level.isClientSide()) return;
     
     // 白名单实体集合：避免事件中对固定 ID 列表逐项扫描。
-    let WHITE_ENTITY = {"dungeonnowloading:sealed_chaos": true, "species:spectre": true}
+    let WHITE_ENTITY = {"species:spectre": true}
     
     let entity = event.getEntity();
     

@@ -1,4 +1,4 @@
-// 执行真实 KubeJS 脚本，验证圣遗物觉醒及现有套装系统的判定。
+// 执行真实 KubeJS 脚本，验证圣遗物觉醒与 SetJS 注册契约。
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -35,25 +35,35 @@ class Stack {
 
 function harness() {
   const listeners = {};
+  const sets = {};
+  const calls = [];
+  let relicConfig = null;
+  const SetJS = {
+    clear() { calls.push('clear'); for (const key of Object.keys(sets)) delete sets[key]; },
+    setRelicConfig(config) { calls.push('setRelicConfig'); relicConfig = config; },
+    registerSet(id, config) { calls.push('registerSet:' + id); sets[id] = config; },
+    count() { return Object.keys(sets).length; },
+  };
   const context = vm.createContext({
     console,
     global: {},
+    SetJS,
     JavaRandom: class { constructor(seed) { this.seed = Number(seed) | 0; } nextInt(bound) { this.seed = (this.seed * 1664525 + 1013904223) | 0; return (this.seed >>> 0) % bound; } },
     JavaString: { valueOf: (value) => ({ getBytes: () => Buffer.from(String(value)) }) },
     UUID: { nameUUIDFromBytes: (bytes) => bytes.toString() },
     ForgeEvents: { onEvent: (name, fn) => { listeners[name] = fn; } },
-    PlayerEvents: { loggedIn() {}, inventoryChanged() {}, tick() {}, loggedOut() {} },
-    EntityEvents: { hurt() {}, death() {} },
-    Component: { literal: (value) => value },
   });
-  for (const file of ['startup_scripts/wooden_sword_inlay/config.js', 'startup_scripts/wooden_sword_inlay/main.js', 'server_scripts/set_system/SetEffect.js']) {
+  for (const file of [
+    'startup_scripts/wooden_sword_inlay/config.js',
+    'startup_scripts/wooden_sword_inlay/main.js',
+    'server_scripts/set_system/SetEffect.js',
+  ]) {
     vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
   }
   const cfg = context.global.WOODEN_SWORD_INLAY_CONFIG;
   function fullRelic() {
     let stack = new Stack(cfg.relicId);
-    const tag = stack.getOrCreateTag();
-    tag.putLong(cfg.nbt.seed, 12345);
+    stack.getOrCreateTag().putLong(cfg.nbt.seed, 12345);
     for (let i = 0; i < 5; i++) {
       const event = {
         getLeft: () => stack,
@@ -69,7 +79,7 @@ function harness() {
     }
     return stack;
   }
-  return { context, cfg, fullRelic, Stack };
+  return { context, cfg, fullRelic, sets, calls, get relicConfig() { return relicConfig; } };
 }
 
 test('第五次镶嵌写入八元素之一，旧满镶嵌圣遗物按五条词条补算', () => {
@@ -78,7 +88,6 @@ test('第五次镶嵌写入八元素之一，旧满镶嵌圣遗物按五条词�
   const tag = relic.getNbt();
   const saved = tag.getString(h.cfg.nbt.element);
   assert.ok(h.cfg.elements[saved], `未知元素 ${saved}`);
-  tag.data[h.cfg.nbt.element] = undefined;
   delete tag.data[h.cfg.nbt.element];
   assert.equal(h.context.global.getRelicAwakeningElement(tag), saved);
   tag.putDouble(h.cfg.nbt.prefix + '0Val', tag.getDouble(h.cfg.nbt.prefix + '0Val') + 0.005);
@@ -96,42 +105,19 @@ test('未满五条和缺失词条的圣遗物不计入元素套装', () => {
   assert.equal(h.context.global.getRelicAwakeningElement(relic.getNbt()), null);
 });
 
-test('每种元素的 4 件和 5 件阶段分别加相同数值，只计入已佩戴的同元素圣遗物', () => {
+test('definitions 先 clear 再注册，并把圣遗物参数交给 SetJS', () => {
   const h = harness();
-  const registry = vm.runInContext('SetRegistry', h.context);
-  const relic = h.fullRelic();
-  const element = h.context.global.getRelicAwakeningElement(relic.getNbt());
-  const set = registry['relic_' + element];
-  assert.ok(set);
-  assert.equal(set.phases.length, 2);
-  assert.equal(set.phases[0].requiredCount, 4);
-  assert.equal(set.phases[1].requiredCount, 5);
-  assert.equal(set.phases[0].effects[0].amount, set.phases[1].effects[0].amount);
-  const eq = { vanilla: {}, curios: Array.from({ length: 5 }, (_, index) => ({ type: 'charm', index, stack: relic.copy() })) };
-  assert.equal(h.context.isPhaseActive(eq, set.phases[0], set.slots), true);
-  assert.equal(h.context.isPhaseActive(eq, set.phases[1], set.slots), true);
-  const other = relic.copy();
-  // 保持物品 ID 相同，仅改变词条 NBT，直到推导为另一元素。
-  let different = null;
-  for (let i = 1; i <= 100; i++) {
-    other.getNbt().putDouble(h.cfg.nbt.prefix + '0Val', i / 10000);
-    if (h.context.global.getRelicAwakeningElement(other.getNbt()) !== element) { different = other.copy(); break; }
-  }
-  assert.ok(different, '应能构造另一元素的圣遗物');
-  eq.curios[4].stack = different;
-  assert.equal(h.context.isPhaseActive(eq, set.phases[0], set.slots), true);
-  assert.equal(h.context.isPhaseActive(eq, set.phases[1], set.slots), false);
-  assert.notEqual(h.context.hashFromEquipped(eq), h.context.hashFromEquipped({ ...eq, curios: eq.curios.map((slot, i) => i === 4 ? { ...slot, stack: relic.copy() } : slot) }));
-  eq.curios[4].stack = new Stack('minecraft:diamond');
-  assert.equal(h.context.isPhaseActive(eq, set.phases[0], set.slots), true);
-  assert.equal(h.context.isPhaseActive(eq, set.phases[1], set.slots), false);
-  eq.curios[3].stack = new Stack('minecraft:diamond');
-  assert.equal(h.context.isPhaseActive(eq, set.phases[0], set.slots), false);
+  assert.equal(h.calls[0], 'clear');
+  assert.ok(h.relicConfig, '必须调用 setRelicConfig');
+  assert.equal(h.relicConfig.maxSockets, 5);
+  assert.equal(h.relicConfig.countKey, h.cfg.nbt.count);
+  assert.equal(h.relicConfig.prefix, h.cfg.nbt.prefix);
+  assert.equal(h.relicConfig.elementKey, h.cfg.nbt.element);
+  assert.deepEqual(Array.from(h.relicConfig.elements), Object.keys(h.cfg.elements));
 });
 
-test('八种元素均注册指定属性，4 件与 5 件阶段的 UUID 可分别叠加', () => {
+test('八种元素均注册 4 件与 5 件阶段，属性和数值与旧实现一致', () => {
   const h = harness();
-  const registry = vm.runInContext('SetRegistry', h.context);
   const expected = {
     water: ['attributeslib:dodge_chance', 0.05],
     mountain: ['minecraft:generic.knockback_resistance', 0.10],
@@ -142,32 +128,56 @@ test('八种元素均注册指定属性，4 件与 5 件阶段的 UUID 可分别
     earth: ['minecraft:generic.max_health', 4],
     heaven: ['minecraft:generic.flying_speed', 0.10],
   };
-  assert.equal(Object.keys(h.cfg.elements).length, 8);
-  for (const [id, [attribute, amount]] of Object.entries(expected)) {
-    const set = registry['relic_' + id];
+  assert.equal(Object.keys(expected).length, 8);
+  for (const [element, [attribute, amount]] of Object.entries(expected)) {
+    const set = h.sets['relic_' + element];
+    assert.ok(set, `缺少 relic_${element}`);
+    assert.equal(set.phases.length, 2);
+    assert.equal(set.phases[0].requiredCount, 4);
+    assert.equal(set.phases[1].requiredCount, 5);
     assert.equal(set.phases[0].effects[0].attribute, attribute);
     assert.equal(set.phases[0].effects[0].amount, amount);
+    assert.equal(set.phases[1].effects[0].attribute, attribute);
     assert.equal(set.phases[1].effects[0].amount, amount);
-    assert.notEqual(h.context.setEffectKey('relic_' + id, 0, 0), h.context.setEffectKey('relic_' + id, 1, 0));
+    assert.equal(set.slots.length, 5);
+    assert.equal(set.slots[0].curios, true);
+    assert.equal(set.slots[0].item, h.cfg.relicId);
+    assert.equal(set.slots[0].relicElement, element);
   }
 });
 
-test('不同 Curios 佩戴槽位和词条下标生成不同 UUID，使多件圣遗物词条叠加', () => {
+test('琥珀金/骑士套装保留原有阶段数值，并提供客户端 tooltip 描述', () => {
   const h = harness();
-  const relic = h.fullRelic();
-  function modifiers(slotUuid) {
-    const result = [];
-    h.context.applyRelicInlayAttributes({
-      stack: relic,
-      uuid: slotUuid,
-      modify: (attribute, uuid, identifier, amount, operation) => result.push({ attribute, uuid, identifier, amount, operation }),
-    });
-    return result;
+  const cases = [
+    ['oreganized:electrum', '琥珀金套装', 'oreganized:kinetic_damage', 4,
+      ['oreganized:electrum_helmet', 'oreganized:electrum_chestplate',
+        'oreganized:electrum_leggings', 'oreganized:electrum_boots']],
+    ['royalvariations:royal_knight', '骑士套装', 'rainbow:generic.pet_damage', 4,
+      ['royalvariations:royal_knight_helmet', 'royalvariations:royal_knight_cuirass',
+        'royalvariations:royal_knight_leggings', 'royalvariations:royal_knight_boots']],
+  ];
+  for (const [id, name, attribute, slotCount, items] of cases) {
+    const set = h.sets[id];
+    assert.ok(set, `缺少 ${id}`);
+    assert.equal(set.name, name);
+    assert.equal(set.slots.length, slotCount);
+    assert.deepEqual(Array.from(set.slots, (slot) => slot.item), items);
+    assert.equal(set.phases[0].requiredCount, 2);
+    assert.equal(set.phases[0].effects[0].attribute, attribute);
+    assert.equal(set.phases[0].effects[0].amount, 1);
+    assert.equal(set.phases[1].requiredCount, 4);
+    assert.equal(set.phases[1].effects[0].attribute, attribute);
+    assert.equal(set.phases[1].effects[0].amount, 2);
+    assert.equal(set.desc.length, 2);
+    assert.match(set.desc[1], /共 \+3/);
   }
-  const first = modifiers({ toString: () => 'slot-1' });
-  const second = modifiers({ toString: () => 'slot-2' });
-  assert.equal(first.length, 5);
-  assert.equal(second.length, 5);
-  assert.equal(new Set([...first, ...second].map((entry) => entry.uuid)).size, 10);
-  assert.ok(first.every((entry) => entry.operation === 'addition' && entry.amount > 0));
+});
+
+test('KubeJS 侧不再保留旧套装引擎入口', () => {
+  const source = fs.readFileSync(path.join(root, 'server_scripts/set_system/SetEffect.js'), 'utf8');
+  assert.doesNotMatch(source, /PlayerEvents\.tick/);
+  assert.doesNotMatch(source, /isPhaseActive/);
+  assert.doesNotMatch(source, /applyAttribute/);
+  assert.ok(fs.existsSync(path.join(root, 'server_scripts/set_system/SetEffect.legacy.js.disabled')));
+  assert.ok(fs.existsSync(path.join(root, 'client_scripts/set_system/SetTooltip.legacy.js.disabled')));
 });

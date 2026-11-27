@@ -16,15 +16,6 @@
                 }
             ],
 			"modifiers": [],
-			"rewards": [
-                {
-                    "type": "gateways:stack",
-                    "stack": {
-			"item": "youkaishomecoming:blood_bottle",
-                    "count": 8
-               	 }
-                }
-            ],
 			"max_wave_time": 600,
 			"setup_time": 100
 		},

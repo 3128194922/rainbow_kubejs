@@ -107,10 +107,6 @@
                     "entity": "endergetic:brood_eetle",
                     "count": 1,
                     "finalize_spawn": true
-                },
-                {
-                    "entity": "hmag:ender_executor",
-                    "count": 2
                 }
             ],
 			"modifiers": [
@@ -140,10 +136,6 @@
 				"stacks": [
                     {
                         "item": "rainbow:raw_endore",
-                        "count": 4
-                    },
-                    {
-                        "item": "hmag:ender_plasm",
                         "count": 4
                     }
                 ]

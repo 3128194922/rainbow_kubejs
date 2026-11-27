@@ -6,6 +6,7 @@
 const Integer = Java.loadClass("java.lang.Integer");
 const ForgeRegistries = Java.loadClass("net.minecraftforge.registries.ForgeRegistries");
 const Vec3 = Java.loadClass("net.minecraft.world.phys.Vec3");
+const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
 //const FlameProjectileEntity = Java.loadClass("dev.hexnowloading.dungeonnowloading.entity.projectile.FlameProjectileEntity");
 //const DNLEntityTypes = Java.loadClass("dev.hexnowloading.dungeonnowloading.registry.DNLEntityTypes");
 //const BackpackHelper = Java.loadClass('com.mrcrayfish.backpacked.BackpackHelper')

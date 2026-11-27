@@ -2,7 +2,12 @@
 // Every entry is optional: missing mods are skipped automatically.
 function configureFire(id, callback) {
   if (!MoreFire.exists(id)) return
-  callback(MoreFire.get(id))
+  let fire = MoreFire.get(id)
+  if (fire == null) return
+  // MoreFire 自定义火焰统一按原版火焰伤害类型结算，确保 #minecraft:is_fire
+  // 判定（eeeabsmobs 电火反应、火焰免疫/抗性等）一致生效。
+  fire.setDamageType('minecraft:in_fire')
+  callback(fire)
 }
 
 configureFire('minecraft:fire', fire => {

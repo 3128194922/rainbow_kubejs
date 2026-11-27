@@ -9,6 +9,12 @@ function handleFreezeEffects(event, attacker, victim, source, range_damage, thro
         if (!victim || victim.isDeadOrDying()) return;
         if(victim.isPlayer()) return;
 
+        // 火焰融冰：火焰伤害削减冻结积累；完全冻结时立即解冻并移除蓝冰 UV。
+        if (source != null && source.is(DamageTypeTags.IS_FIRE)) {
+            if (global.meltFreeze) global.meltFreeze(victim);
+            return;
+        }
+
         // 获取实体当前冻结时间（tick）
         let frozenTicks = victim.getTicksFrozen();
         if (frozenTicks <= 0) return;
@@ -29,6 +35,9 @@ function handleFreezeEffects(event, attacker, victim, source, range_damage, thro
 
         // 触发冻结后立即清零实体的原版冻结效果
         victim.setTicksFrozen(0);
+
+        // 冰熄灭火：冻结触发时清除原版燃烧与 MoreFire 自定义火焰。
+        if (global.extinguishEntityFire) global.extinguishEntityFire(victim);
 
         // 附着蓝冰 UV 贴图层（静态UV）：scale=1.05 additive=false fullbright=false uv_scale_u=8.0 uv_scale_v=8.0
         let server = victim.level.server;

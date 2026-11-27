@@ -243,8 +243,13 @@ test('handleFreezeEffects：冻结触发时熄灭火', () => {
     assert.equal(extinguishCalls, 1);
 });
 
-test('morefire_compat 为所有已配置火焰显式设置 minecraft:in_fire', () => {
-    const fires = [];
+test('morefire_compat 为 MoreFire.list() 中全部火焰设置 minecraft:in_fire', () => {
+    const ids = [
+        'minecraft:fire', 'minecraft:soul_fire', 'dungeonsdelight:living_fire',
+        'endergetic:ender_fire', 'netherexp:ancient_fire',
+        'caverns_and_chasms:cupric_fire', 'rainbow:soul_flame', 'test:unconfigured_fire'
+    ];
+    const fires = new Map();
     function fireStub() {
         const fire = {
             damageType: null,
@@ -260,20 +265,23 @@ test('morefire_compat 为所有已配置火焰显式设置 minecraft:in_fire', (
         ]) {
             fire[method] = () => fire;
         }
-        fires.push(fire);
         return fire;
     }
     const context = vm.createContext({
         console,
         MoreFire: {
             exists: () => true,
-            get: () => fireStub()
+            list: () => ids,
+            get: id => {
+                if (!fires.has(id)) fires.set(id, fireStub());
+                return fires.get(id);
+            }
         }
     });
     vm.runInContext(read('server_scripts/morefire_compat.js'), context, { filename: 'morefire_compat.js' });
 
-    assert.equal(fires.length, 7);
-    for (const fire of fires) {
-        assert.equal(fire.damageType, 'minecraft:in_fire');
+    assert.equal(fires.size, ids.length);
+    for (const id of ids) {
+        assert.equal(fires.get(id).damageType, 'minecraft:in_fire', id);
     }
 });

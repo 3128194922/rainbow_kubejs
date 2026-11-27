@@ -1,12 +1,25 @@
 // MoreFire reference-fire compatibility.
 // Every entry is optional: missing mods are skipped automatically.
+function tagAllFireDamageTypes() {
+  if (typeof MoreFire === 'undefined' || MoreFire == null) return
+  let ids = MoreFire.list()
+  let tagged = 0
+  for (let id of ids) {
+    let fire = MoreFire.get(id)
+    if (fire == null) continue
+    fire.setDamageType('minecraft:in_fire')
+    tagged++
+  }
+  console.log('[MoreFire] 已将 ' + tagged + ' 个火焰统一为 minecraft:in_fire')
+}
+
+// 先覆盖所有已注册的 MoreFire 火焰，再执行逐项颜色/伤害配置。
+tagAllFireDamageTypes()
+
 function configureFire(id, callback) {
   if (!MoreFire.exists(id)) return
   let fire = MoreFire.get(id)
   if (fire == null) return
-  // MoreFire 自定义火焰统一按原版火焰伤害类型结算，确保 #minecraft:is_fire
-  // 判定（eeeabsmobs 电火反应、火焰免疫/抗性等）一致生效。
-  fire.setDamageType('minecraft:in_fire')
   callback(fire)
 }
 

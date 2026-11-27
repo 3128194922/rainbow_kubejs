@@ -160,8 +160,25 @@ ItemEvents.tooltip((event) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
             text.remove(1)
-            text.add(1, Text.aqua("鱼类图鉴解锁进度 → 幸运加成"));
-            text.add(2, Text.aqua(`幸运 = 解锁比例×25（100%解锁 = +25幸运）`));
+            text.add(1, Text.aqua("百鱼手册：收集进度里程碑奖励"));
+            text.add(2, Text.gray("佩戴后按图鉴解锁比例发放一次性奖励"));
+            text.add(3, Text.gray("10% 初识百鱼：鱼饵×8、鱼片×4"));
+            text.add(4, Text.gray("25% 渐入佳境：鱼类探测器、幸运鱼饵×4、绿宝石×4"));
+            text.add(5, Text.gray("50% 半部鱼经：农历、天气收音机、木箱"));
+            text.add(6, Text.gray("75% 鱼类专家：钻石钓竿、深渊鱼饵×4、紫珀箱"));
+            text.add(7, Text.gray("100% 百鱼全书：幸运符文、迈达斯钓竿、黑曜石箱×2"));
+            text.add(8, Text.aqua("钓到稀有/极稀有/传说鱼类时额外获得奖励"));
+            try {
+                let nbt = item.nbt;
+                if (nbt != null && nbt.contains("journal_total")) {
+                    let unlocked = nbt.getInt("journal_unlocked");
+                    let total = nbt.getInt("journal_total");
+                    let percent = nbt.getInt("journal_percent");
+                    text.add(9, Text.yellow("当前进度：" + unlocked + "/" + total + "（" + percent + "%）"));
+                }
+            } catch (e) {
+                // tooltip 读取失败时保持静态说明即可
+            }
         }
     })
     /*event.addAdvanced('rainbow:daawnlight_spirit_origin', (item, advanced, text) => {

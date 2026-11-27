@@ -1648,7 +1648,25 @@ Alex's Mobs 虚空蠕虫体节经传送门时（`PortalTicks==5`）自动施加 
 ### 第三方物品 Curios 挂载
 > [startup_scripts/ItemEvents.js](startup_scripts/ItemEvents.js)
 
-为其他模组物品挂载 Curios 能力与属性：锡纸/鞍背蛋韧性、魔术硬币闪避、滴水兽护甲、动能核心限戴、百鱼全书按 Tide 图鉴进度给幸运、铜套/银套/防爆套属性、Cataclysm 饰品 charm 栏补属性、新手腰带翻滚强化等。
+为其他模组物品挂载 Curios 能力与属性：锡纸/鞍背蛋韧性、魔术硬币闪避、滴水兽护甲、动能核心限戴、百鱼全书按 Tide 图鉴进度发里程碑奖励、铜套/银套/防爆套属性、Cataclysm 饰品 charm 栏补属性、新手腰带翻滚强化等。
+
+### 百鱼手册
+> 规则：[startup_scripts/fishing_journal/rules.js](startup_scripts/fishing_journal/rules.js)，实现：[startup_scripts/fishing_journal/main.js](startup_scripts/fishing_journal/main.js)
+
+旧版“按图鉴进度给幸运”已移除，改为两套独立奖励：
+
+| 触发 | 奖励 |
+|------|------|
+| 佩戴手册达到 10% | 鱼饵×8、鱼片×4 |
+| 佩戴手册达到 25% | 鱼类探测器、幸运鱼饵×4、绿宝石×4 |
+| 佩戴手册达到 50% | 农历、天气收音机、木箱 |
+| 佩戴手册达到 75% | 钻石钓竿、深渊鱼饵×4、紫珀箱 |
+| 佩戴手册达到 100% | 幸运符文、迈达斯钓竿、黑曜石箱×2 |
+| 钓到稀有鱼类 | 鱼饵×2、绿宝石×1 |
+| 钓到极稀有鱼类 | 幸运鱼饵×2、鹦鹉螺壳×1 |
+| 钓到传说鱼类 | 磁力鱼饵×2、海洋之心×1、木箱×1 |
+
+里程碑每个玩家永久只领一次，领取进度保存在玩家 `persistentData.fish_journal_milestone`；特殊鱼类奖励每次钓获都会发放，不需要佩戴手册。手册 tooltip 会显示已同步的当前图鉴进度。
 
 ---
 

@@ -6,24 +6,7 @@
 // 统一方块右键事件
 BlockEvents.rightClicked(event => {
     let { block, player, hand, item } = event
-    let { x, y, z } = block.pos
     let level = event.level
-
-    /**
-     * 召唤Boss的通用函数
-     * @param {string} blockid 触发方块的ID
-     * @param {string} itemid 手持物品的ID
-     * @param {string} entityid 要召唤的实体ID
-     * @param {boolean} isChangeCount 是否消耗手持物品
-     */
-    function summonBoss(blockid, itemid, entityid, isChangeCount) {
-        if (block.id == blockid && item.id == itemid) {
-            let entity = block.createEntity(entityid)
-            entity.setPosition(x, y, z)
-            entity.spawn()
-            if (isChangeCount) player.mainHandItem.count--
-        }
-    }
 
     /**
      * 洋葱效果函数：攻击范围内的恶魂并转化黑曜石
@@ -54,12 +37,6 @@ BlockEvents.rightClicked(event => {
 
     // 判断是否为主手 不是主手就退出
     if (hand != 'MAIN_HAND') return
-
-    // --- 特殊召唤逻辑 ---
-    // 无限机关召唤无限傀儡
-    summonBoss("rainbow:organ_core", "rainbow:core_key", "infinitygolem:infinity_golem", true);
-    // 末影甲壳虫召唤
-    summonBoss("rainbow:brood_eetle_core", "rainbow:brood_eetle_key", "endergetic:brood_eetle", true);
 
     // --- 实用功能 ---
     // 捏雪球：空手右键雪块或雪层获得雪球（消耗饱食度）
@@ -93,11 +70,6 @@ BlockEvents.rightClicked(event => {
         }
     }
 */
-    // 天空竞技场祭坛设置物品
-    if(block.entityId == "skyarena:altar_block_entity")
-        {
-            block.entity.setRecordItem("rainbow:gauntlet")
-        }
 })
 
 // 空手调整机械动力流体管道窗口状态

@@ -174,17 +174,6 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.MobEffectEvent$Added
             entity.server.runCommandSilent("/dyeing paint add static void_effect " + entity.uuid + " 80FFFFFF")
         }
 
-        // 玩家专用逻辑：防化服免疫中毒/辐照/凋零
-        if (!entity.isPlayer()) return;
-        if (global.FORGE_HAZMAT_EFFECT_CODES[effectId] === true) {
-            if (entity.getItemBySlot("head").id == 'alexscaves:hazmat_mask'
-                && entity.getItemBySlot("chest").id == 'alexscaves:hazmat_chestplate'
-                && entity.getItemBySlot("legs").id == 'alexscaves:hazmat_leggings'
-                && entity.getItemBySlot("feet").id == 'alexscaves:hazmat_boots') {
-                event.setCanceled(true);
-            }
-        }
-
     }
     catch (e) {
         console.log("监听buff赋予出现问题：")

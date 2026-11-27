@@ -633,10 +633,6 @@ ItemEvents.tooltip((event) => {
     event.addAdvanced('rainbow:docker_nether_on', (item, advanced, text) => {
         text.add(1, Text.aqua(`收集附近的唱片机音乐，产生下界之音`));
     })
-    event.addAdvanced(['alexscaves:hazmat_mask','alexscaves:hazmat_chestplate','alexscaves:hazmat_leggings' ,'alexscaves:hazmat_boots'], (item, advanced, text) => {
-        text.add(1, Text.gold(`穿戴全套防化服时`));
-        text.add(2, Text.aqua(`免疫中毒、凋零、辐照效果和伤害`));
-    })
     event.addAdvanced('rainbow:treasure_necklace', (item, advanced, text) => {
         text.add(1, Text.aqua("击杀生物积累能量，满100后消耗耐久产出战利品"));
         let nbt = item.getNbt();

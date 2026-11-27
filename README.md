@@ -103,7 +103,6 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 - [战利品修改](#战利品修改)
 - [配方修改](#配方修改)
 - [标签系统](#标签系统)
-- [Ponder 场景](#ponder-场景)
 - [声音系统](#声音系统)
 - [全局常量](#全局常量)
 - [全局工具库](#全局工具库)
@@ -680,7 +679,6 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | 群系之剑 | 已收集群系数 > 0 时攻击附加百分比伤害（物品注册已注释，逻辑残留） |
 | 怪肉消化 | 食用 `#rainbow:monster_meat` 30% 概率获得半怪物化，累计 5 分钟转怪物化 |
 | 虚空嬗变 | `rainbow:raw_voidore` 可转化为 `createutilities:void_steel_ingot` |
-| 防化服免疫 | 穿戴全套 `alexscaves:hazmat_*` 免疫中毒/凋零/辐照 |
 | 睡眠噩梦 | 玩家醒来时概率在周围生成幻翼 |
 | 下班时间 | `rainbow:off_work_time` 效果结束时丢弃手上物品 |
 | 宝箱吊坠计数 | 击杀生物记录到 `kill` NBT |
@@ -1341,14 +1339,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 
 ---
 
-## Ponder 场景
-
-> 脚本已停用：`client_scripts/ponder.js.back`
-
-- 衣壳体（`alexsmobs:capsid`）的思索场景——展示如何右键放入物品（当前未启用）
-
----
-
 ## 声音系统
 
 > 实现：[startup_scripts/sound.js](startup_scripts/sound.js)
@@ -1446,13 +1436,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 
 > [server_scripts/BlockEvents.js#L104-L121](server_scripts/BlockEvents.js#L104-L121)
 
-### Boss 召唤
-手持对应钥匙右键核心方块召唤 Boss：
-- `rainbow:organ_core` + `rainbow:core_key` → 无限傀儡
-- `rainbow:brood_eetle_core` + `rainbow:brood_eetle_key` → 末影甲壳虫
-
-> [server_scripts/BlockEvents.js#L59-L62](server_scripts/BlockEvents.js#L59-L62)
-
 ### 捏雪球
 空手右键雪块/雪层获得雪球（消耗 1 饱食度）。
 
@@ -1462,11 +1445,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 在砧板上切洋葱/巨型洋葱时，攻击半径内恶魂、转化黑曜石为哭泣黑曜石。
 
 > [server_scripts/BlockEvents.js#L72-L79](server_scripts/BlockEvents.js#L72-L79)
-
-### 天空竞技场祭坛
-右键祭坛自动设置 `rainbow:gauntlet` 唱片。
-
-> [server_scripts/BlockEvents.js#L96-L99](server_scripts/BlockEvents.js#L96-L99)
 
 ### 远程标靶信号器
 潜行右键靶子绑定坐标和维度，跨维度远程发送红石信号。
@@ -1481,11 +1459,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 ---
 
 ## 杂项机制
-
-### 核弹侦测
-> [server_scripts/EntityEvents.js#L82-L89](server_scripts/EntityEvents.js#L82-L89)
-
-当 `alexscaves:nuclear_bomb` 实体生成时，服务器广播和日志输出坐标警告。
 
 ### 实体替换
 > [server_scripts/EntityEvents.js#L100-L106](server_scripts/EntityEvents.js#L100-L106)
@@ -1560,11 +1533,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 > tooltip：[client_scripts/tooltips.js#L411-L413](client_scripts/tooltips.js#L411-L413)
 
 `rainbow:docker_nether_on` 收集附近唱片机音乐，产生下界之音。配方使用 `rainbow:docker_nether_off` + 钻石。
-
-### 防化服免疫
-> tooltip：[client_scripts/tooltips.js#L414-L417](client_scripts/tooltips.js#L414-L417)
-
-穿戴全套 `alexscaves:hazmat_*` 时免疫中毒、凋零、辐照效果和伤害。
 
 ### 村民英雄礼物
 > 已注释：[server_scripts/Loot.js#L68-L121](server_scripts/Loot.js#L68-L121)

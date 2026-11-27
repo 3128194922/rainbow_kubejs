@@ -10,12 +10,6 @@ const FORGE_EFFECT_ADDED_CODES = {
     "effect.rainbow.void": 1
 };
 
-const FORGE_HAZMAT_EFFECT_CODES = {
-    "effect.minecraft.poison": true,
-    "effect.alexscaves.irradiated": true,
-    "effect.minecraft.wither": true
-};
-
 const FORGE_EFFECT_REMOVED_CODES = {
     "effect.rainbow.void": 1,
     "effect.species.bloodlust": 2
@@ -44,7 +38,6 @@ const FORGE_ATTACK_CURIO_CODES = {
 // 根目录 startup 脚本通过 global 读取这些表，遵守项目跨目录调用规范。
 global.FORGE_EFFECT_EXPIRED_CODES = FORGE_EFFECT_EXPIRED_CODES;
 global.FORGE_EFFECT_ADDED_CODES = FORGE_EFFECT_ADDED_CODES;
-global.FORGE_HAZMAT_EFFECT_CODES = FORGE_HAZMAT_EFFECT_CODES;
 global.FORGE_EFFECT_REMOVED_CODES = FORGE_EFFECT_REMOVED_CODES;
 global.FORGE_VOID_TRANSMUTE_RECIPES = FORGE_VOID_TRANSMUTE_RECIPES;
 global.FORGE_ATTACK_WEAPON_CODES = FORGE_ATTACK_WEAPON_CODES;

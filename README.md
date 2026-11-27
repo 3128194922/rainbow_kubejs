@@ -1006,6 +1006,18 @@ TNT、核弹、TNT 桶、破片炸弹、孢子炸弹、末地烛、精灵（`mys
 |----------|------|
 | `rainbow:zombie_horde` | 僵尸大军：36 只僵尸（装备铁剑+链甲），显示名「最后的大队-极恶中队」，tooltip「18名亡灵突击队（PVP大佬版）」，Large 网关、绿色横幅（0x55ff55），Boss 栏 + 雾气效果，`rules(36,64,true,true,false,true,true,36,64,0.0)` |
 
+### 传送门怪物编队（MineTeam）
+
+> 实现：[server_scripts/gateway_team/main.js](server_scripts/gateway_team/main.js)
+
+监听 GatewaysJS 的 `GatewaysEvents.waveEntitySpawned`，把 GatewaysToEternity 生成的怪物
+写入 MineTeam 隐藏队伍 `mine_team_hidden_gateway`（显示名「传送门军团」，颜色 `#8B5CF6`）。
+隐藏队伍玩家不可加入、不出现在选队界面；同队怪物按 MineTeam 规则互不攻击。
+队伍在 `ServerEvents.loaded` 预建，世界卸载后重建；MineTeam 缺失时只提示一次并跳过。
+参数集中在文件顶部 `GATEWAY_TEAM_ID` / `GATEWAY_TEAM_COLOR` / `GATEWAY_TEAM_NAME`。
+验证：`MinecraftServer` + `TestClient` 联调，`gateways:basic/slime` 3/3 进入队伍（证据
+`Docs/Evidence/20261127-171252-gateway-team/`）。
+
 ---
 
 ## 悬赏车队系统

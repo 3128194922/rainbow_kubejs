@@ -133,6 +133,8 @@ const ThermometerItem = Java.tryLoadClass('galena.oreganized.content.item.Thermo
 // MineTeam 队伍：心脏召唤物读取玩家有效颜色、写入同一颜色队伍；缺失模组时不阻断其他脚本。
 const MineTeamUtil = Java.tryLoadClass('com.xiaohunao.mine_team.common.util.TeamUtil')
 const MineTeamSync = Java.tryLoadClass('com.xiaohunao.mine_team.common.team.TeamSync')
+// 传送门编队：用 MineTeam 公开 API 创建/分配隐藏队伍；缺失模组时不阻断其他脚本。
+const MineTeamAPI = Java.tryLoadClass('com.xiaohunao.mine_team.api.MineTeamAPI')
 //const FireManager = Java.loadClass('it.crystalnest.soul_fire_d.api.FireManager')
 //const Fire = Java.loadClass('it.crystalnest.soul_fire_d.api.Fire')
 const BiConsumer = Java.loadClass('java.util.function.BiConsumer')

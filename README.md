@@ -760,10 +760,32 @@ ParticleJS 文本粒子与伤害飘字基础设施（priority 4000），注册�
 ### 信标光束能量注入系统
 
 > 实现：[server_scripts/energizedBeaconCrafting_server.js](server_scripts/energizedBeaconCrafting_server.js)
+> 配置：脚本顶部 `BEACON_CONFIG`（唯一入口）
 
-- 玩家手持红石右键信标，触发光束扫描
+- 玩家手持触发物品（默认红石）右键信标，触发光束扫描
 - 扫描光束经过的实体，根据光束颜色给予着火效果（RGB 亮度 → 强度映射）
-- 检测光束路径上的刚玉簇 (`rainbow:corundum_cluster`)，激活其反方向的靶子方块（60 tick 后复位）
+- 逐格扫描光束路径上的刚玉簇 (`rainbow:corundum_cluster`)，按「刚玉颜色 + 刚玉背面方块」匹配 `BEACON_CONFIG.recipes`
+- 配方命中：掉落 `output`，可选 `consume` 消耗或 `replaceWith` 替换催化剂方块；同一方块有冷却
+- 未命中配方且背面是靶子方块时保留旧行为：按光束颜色亮度输出红石信号（`targetSignalTicks` 后复位）
+
+`BEACON_CONFIG.recipes` 字段：
+
+| 字段 | 说明 |
+|------|------|
+| `color` | 刚玉颜色：`red` / `orange` / `yellow` / `green` / `blue` / `indigo` / `violet` / `white` / `black`；`'any'` 或省略 = 不限 |
+| `catalyst` | 刚玉背面方块 id，可写数组或标签 `#forge:...`；省略 = 任意方块 |
+| `output` | 产物物品 id（掉落物），省略 = 只转换方块 |
+| `count` | 产物数量，默认 1 |
+| `consume` | `true` 时把催化剂方块变成空气，默认 `false` |
+| `replaceWith` | 把催化剂方块替换为指定方块（设置后无视 `consume`） |
+| `cooldown` | 该配方独立冷却 tick，默认使用 `cooldownTicks` |
+
+```js
+recipes: [
+  { color: 'red', catalyst: 'minecraft:iron_block', output: 'minecraft:gold_ingot', count: 1, consume: true },
+  { catalyst: 'minecraft:emerald_block', output: 'minecraft:diamond', replaceWith: 'minecraft:diamond_block' },
+],
+```
 
 ### 套装效果系统
 

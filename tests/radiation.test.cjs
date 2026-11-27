@@ -8,7 +8,7 @@ const path = require('node:path')
 const vm = require('node:vm')
 
 const SCRIPT_PATH = path.resolve(__dirname, '../server_scripts/radiation/main.js')
-const RADIATION_ID = 'thebuff:radiation'
+const RADIATION_ID = 'rainbow:radiation'
 
 function makeCollection(list) {
     return {

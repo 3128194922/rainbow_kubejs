@@ -8,7 +8,7 @@
 // 3. 上限动态增加：目标每有 1 个 HARMFUL 药水效果，上限 +1。
 // 4. 超出上限的层数不保留，按“多出的层数”立即结算一次纳垢赐福伤害。
 
-const RADIATION_ID = 'thebuff:radiation'
+const RADIATION_ID = 'rainbow:radiation'
 const RADIATION_BASE_DURATION = 20
 const RADIATION_INHERIT_RATE = 0.3
 const RADIATION_BASE_CAP = 10

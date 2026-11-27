@@ -8,8 +8,8 @@
 // 以复用 thebuff:buff 伤害类型与附着者归属。
 
 StartupEvents.registry('thebuff:buff', event => {
-    // 显式写命名空间：KubeJS 注册表的默认命名空间是 kubejs，不是 thebuff。
-    event.create('thebuff:radiation')
+    // 显式写命名空间：KubeJS 注册表的默认命名空间是 kubejs，必须写全 ID。
+    event.create('rainbow:radiation')
         .name('纳垢赐福')
         // 用字符串形式，避免 Rhino 把数字参数选到 color(String) 重载。
         .color('#9FD63C')

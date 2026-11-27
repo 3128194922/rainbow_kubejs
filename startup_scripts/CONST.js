@@ -63,6 +63,8 @@ const Enchantments = Java.loadClass('net.minecraft.world.item.enchantment.Enchan
 const DamageTypeTags = Java.loadClass('net.minecraft.tags.DamageTypeTags')
 // 自定义伤害类型（极限闪避围巾反击伤害等）：构造 DamageSource 使用
 const DamageSource = Java.loadClass('net.minecraft.world.damagesource.DamageSource')
+// 电系兼容：给被电系伤害命中的目标附着 eeeabsmobs 感电效果
+const MobEffectInstance = Java.loadClass('net.minecraft.world.effect.MobEffectInstance')
 const Registries = Java.loadClass('net.minecraft.core.registries.Registries')
 const ResourceKey = Java.loadClass('net.minecraft.resources.ResourceKey')
 const LootParams = Java.loadClass('net.minecraft.world.level.storage.loot.LootParams')

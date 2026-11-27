@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "cataclysm:lightning",
+    "cataclysm:storm_bringer",
+    "cataclysm:player_ceraunus",
+    "cataclysm:emp",
+    "clanginghowl:lightning",
+    "mysticartifacts:lightning_bottle_chain"
+  ]
+}

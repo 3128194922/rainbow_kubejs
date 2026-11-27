@@ -17,7 +17,7 @@ ServerEvents.genericLootTables(event => {
     const template = ['netherexp:pump_charge_upgrade_smithing_template', 'netherexp:rift_armor_trim_smithing_template', 
     'netherexp:spirit_armor_trim_smithing_template', 'netherexp:valor_armor_trim_smithing_template', 
     'oreganized:electrum_upgrade_smithing_template', 'quark:smithing_template_rune', 'rainbow:cleaver_upgrade', 
-    'royalvariations:royal_upgrade_smithing_template', 'wetland_whimsy:dots_armor_trim_smithing_template', 
+    'royalvariations:royal_upgrade_smithing_template',
     'minecraft:netherite_upgrade_smithing_template', 'minecraft:sentry_armor_trim_smithing_template', 
     'minecraft:vex_armor_trim_smithing_template', 'minecraft:wild_armor_trim_smithing_template', 
     'minecraft:coast_armor_trim_smithing_template', 'minecraft:dune_armor_trim_smithing_template', 
@@ -43,7 +43,7 @@ ServerEvents.genericLootTables(event => {
     //饰品和武器
     const curios = [Item.of('mysticartifacts:katana', '{Damage:0}'), 'rainbow:dice', 'rainbow:moai_charm', 'rainbow:giants_ring', 
     'rainbow:gravity_core', Item.of('rainbow:lyre', '{submenu:{1:"鼓舞",2:"战曲",3:"小奏",4:"终曲"},the_end:0}'), 'rainbow:ancientaegis',
-    'zgmobs:heart_crystal', 'scepterofdominion:scepter_of_dominion', Item.of('mysticartifacts:katana', '{Damage:0}'),
+    'scepterofdominion:scepter_of_dominion', Item.of('mysticartifacts:katana', '{Damage:0}'),
      Item.of('mysticartifacts:two_dragons_play_ball', '{Damage:0}'), 'mysticartifacts:sword_swarm_charm', 'mysticartifacts:death_eye', 
      'mysticartifacts:poker_card',/*Item.of('rainbow:power_sword', '{Damage:0}'), */Item.of('rainbow:tyrfing', '{Damage:0}'), 'helldivers:magic_book']
     

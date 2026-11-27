@@ -16,33 +16,6 @@
     })
 })*/
 
-// 猫的晨礼：添加粑粑
-ServerEvents.genericLootTables(e => {
-    e.modify("minecraft:gameplay/cat_morning_gift", loot => {
-        let json = [{
-            "type": "minecraft:item",
-            "name": "alexscaves:guano",
-            "weight": 10
-        }]
-        let poolArr = loot.pools.get(0).asJsonObject.get("entries").asJsonArray
-        poolArr.addAll(json)
-    })
-})
-
-// 修改堆肥配方：粑粑可以堆肥
-ServerEvents.compostableRecipes((e) => {
-    const recipes = [
-        {
-            input: 'alexscaves:guano',
-            chance: 1.0,
-        }
-    ];
-
-    recipes.forEach((recipe) => {
-        e.add(recipe.input, recipe.chance);
-    });
-});
-
 /*
 // 幸运方块（rainbow:luckyblock）战利品表
 ServerEvents.blockLootTables(e => {
@@ -145,15 +118,6 @@ ServerEvents.entityLootTables(event => {
             pool.addItem('minecraft:emerald').weight(1).count([1, 2]).lootingEnchant(1, 5)
         })
     })
-    // 蟑螂掉落粑粑
-    event.modifyEntity('alexsmobs:cockroach', Loot => {
-        Loot.addPool(pool => {
-            pool.addItem('alexscaves:guano')
-                .weight(1) // 基础掉落权重
-                .count([0, 1]) // 基础掉落数量范围
-                .lootingEnchant(1, 5)
-        })
-    })
     // 笼头怪掉落废料
     event.modifyEntity('spawnerhead:spawner_head', Loot => {
         Loot.addPool(pool => {
@@ -244,13 +208,6 @@ ServerEvents.entityLootTables(event => {
 
 // 方块战利品
 ServerEvents.blockLootTables(event => {
-    // 旗帜工作台掉落
-    event.addBlock('betsyross:embroidery_table', loot => {
-        loot.addPool(pool => {
-            // 添加战利品
-            pool.addItem('betsyross:embroidery_table')
-        })
-    })
     //松露挖屎
     /*    event.modifyBlock('environmental:buried_truffle',loot=>{
             let pool = [
@@ -270,13 +227,6 @@ ServerEvents.blockLootTables(event => {
         }]
         let arr = loot.pools.get(0).asJsonObject.get("entries").asJsonArray
         arr.addAll(pool)
-    })
-    // 始冰
-    event.addBlock('rainbow:origin_ice_ore', loot => {
-        loot.addPool(pool => {
-            // 添加战利品
-            pool.addItem('legendary_monsters:primal_ice_shard')
-        })
     })
     // 末地矿
     event.addBlock('rainbow:end_ore', loot => {

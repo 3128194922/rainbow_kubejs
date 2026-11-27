@@ -21,9 +21,6 @@ ServerEvents.recipes(event => {
     event.remove({ output: 'environmental:cherry_pie' })//删除配方，通过物品ID
     event.remove({ output: 'environmental:truffle_pie' })
 
-    // 修改单元箱配方：将铁粒替换为潜影盒
-    event.replaceInput({ output: 'backpack_pixel:unitbox' }, 'minecraft:iron_nugget', 'minecraft:shulker_box')
-
     // 移除虚空钢锭的混合配方
     event.remove({ id: "createutilities:mixing/void_steel_ingot" })
 
@@ -92,15 +89,6 @@ ServerEvents.recipes(event => {
     event.shapeless('rainbow:docker_ender_player_vpn','rainbow:docker_ender_player_hotbar')
     event.shapeless('rainbow:docker_ender_proxy','rainbow:docker_ender_player_vpn')
 */
-    // 农夫乐事：切洋葱获得皮
-    event.recipes.farmersdelight.cutting(
-        'farmersdelight:onion',
-        '#farmersdelight:tools/knives', // tool
-        [ // results
-            'overweight_farming:vegetable_peels',
-        ],
-        // '' // sound
-    );
     //海牙吊坠
     event.shaped("rainbow:oceantooth_necklace", [
         ['minecraft:kelp', 'minecraft:kelp', 'minecraft:kelp'],
@@ -114,9 +102,6 @@ ServerEvents.recipes(event => {
 */
     // 万能钥匙配方
     //event.shapeless('gimmethat:master_key',['minecraft:netherite_axe','rainbow:plus','minecraft:netherite_pickaxe','rainbow:plus','minecraft:netherite_shovel'])
-
-    // 毒化烂泥
-    event.recipes.create.mixing(['8x alexscaves:unrefined_waste',"alexscaves:metal_barrel"], ['alexscaves:waste_drum', '8x #minecraft:dirt'])
 
     // 契约戒配方
     /*event.remove({ output: 'petconnect:pet_connect' })
@@ -180,14 +165,6 @@ ServerEvents.recipes(event => {
     ['','','']])
     event.shapeless('mysticartifacts:slime_arrow',['mysticartifacts:tnt_arrow','minecraft:slime_ball'])
 */
-    //牢大冰红茶配方
-    event.recipes.farmersdelight.cooking(
-        ['minecraft:ice','fruitfulfun:lemon','minecraft:sugar'],
-        'rainbow:ice_tea', // 输出
-        30, // 经验
-        10, // 烹饪时间
-        'minecraft:honey_bottle', // 容器（原文为container）
-    );
 /*
     //洛阳铲
     event.shaped('rainbow:luoyang_shovel', [
@@ -195,12 +172,6 @@ ServerEvents.recipes(event => {
         ['minecraft:flint','minecraft:flint','minecraft:flint'],
         ['','minecraft:stick','']])
 */
-    // 始冰镐
-    event.shaped('rainbow:frostium_pickaxe', [
-        ['legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard','legendary_monsters:primal_ice_shard'],
-        ['','minecraft:stick',''],
-        ['','minecraft:stick','']])
-
     //下界反应堆
     /*event.shaped('rainbow:docker_nether_off', [
         ['minecraft:iron_ingot', 'minecraft:diamond', 'minecraft:iron_ingot'], 
@@ -215,9 +186,6 @@ ServerEvents.recipes(event => {
 
     //乐谱
     //event.shapeless('rainbow:musical_score', ['minecraft:feather', 'minecraft:ink_sac', 'minecraft:paper'])
-
-    //密封琥珀
-    event.shapeless('rainbow:amber_bee',['alexscaves:amber_curiosity','minecraft:glass_bottle'])
 
     // 腐肉制作
     event.recipes.create.haunting('minecraft:rotten_flesh', '#mynethersdelight:curry_meats')
@@ -277,12 +245,6 @@ ServerEvents.recipes(event => {
     event.recipes.create.filling('rainbow:democracy_leggings', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_leggings']).id('rainbow:democracy_leggings')
     event.recipes.create.filling('rainbow:democracy_boots', [Fluid.of("rainbow:oil", 1000), 'minecraft:netherite_boots']).id('rainbow:democracy_boots')
 
-    // 臭屁瓶
-    event.recipes.create.mixing('alexsmobs:stink_bottle', ['alexscaves:guano', 'quark:bottled_cloud'])
-
-    // 710配方
-    event.recipes.create.mixing(Fluid.of("rainbow:oil", 1000), ['alexscaves:guano','alexsmobs:cockroach_wing_fragment']).heated()
-
     // 雕刻南瓜
     event.stonecutting("minecraft:carved_pumpkin", "minecraft:pumpkin");
 
@@ -297,8 +259,7 @@ ServerEvents.recipes(event => {
         Item.of('create:precision_mechanism') // 例如，失败时返还一个精密机械结构
     ], 'create:precision_mechanism', [
         event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'minecraft:nether_star']),
-        event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'rainbow:docker_nether_on']),
-        event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'gimmethat:nether_of_voice'])
+        event.recipes.createDeploying('create:incomplete_precision_mechanism', ['create:incomplete_precision_mechanism', 'rainbow:docker_nether_on'])
     ]).transitionalItem('create:incomplete_precision_mechanism').loops(1)
 
     // 液态逻辑
@@ -381,12 +342,6 @@ ServerEvents.recipes(event => {
     })
     event.recipes.create.mixing(['8x hmag:soul_powder', 'minecraft:glass_bottle'], ['netherexp:wisp_bottle', Fluid.of("netherexp:ectoplasm", 250)])
     */
-
-    const list2 = ['hmag:repulsion_gadget', 'hmag:fortune_crystal_plus', 'hmag:fortune_crystal', 'hmag:greedy_crystal_plus', 'hmag:greedy_crystal', 'hmag:honeyed_apple', 'hmag:evil_thorn', 'hmag:evil_prismarine', 'hmag:evil_flame', Item.of('hmag:insomnia_fruit', '{hmag.level:1b}'), 'hmag:soul_apple', 'hmag:randomberry', 'hmag:copper_nugget', 'hmag:reinforcing_chain', 'hmag:multiplex_reinforcing_chain']
-    list2.forEach(item => {
-        event.remove({ output: item })
-    })
-
 
     const corundoms = ['quark:red_corundum_cluster', 'quark:orange_corundum_cluster', 'quark:yellow_corundum_cluster', 'quark:green_corundum_cluster', 'quark:blue_corundum_cluster', 'quark:indigo_corundum_cluster', 'quark:violet_corundum_cluster', 'quark:white_corundum_cluster', 'quark:black_corundum_cluster']
     const creates = ['create:veridium', 'create:scorchia', 'create:scoria', 'create:ochrum', 'create:limestone', 'create:asurine', 'create:crimsite', 'quark:myalite', 'quark:dusky_myalite', 'minecraft:basalt', 'quark:limestone', 'oreganized:glance']

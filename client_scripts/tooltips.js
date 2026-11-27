@@ -260,12 +260,6 @@ ItemEvents.tooltip((event) => {
         text.add(4, Text.darkGray("我好吃个蜜汁火腿，烤鸡这一块~"));
       }
     })
-    event.addAdvanced('gimmethat:moai_charm', (item, advanced, text) => {
-        text.add(1, Text.aqua("生物碰撞箱对你无影响"));
-        text.add(Text.darkGray("**Third-Party Licenses**"))
-        text.add(Text.darkGray("MIT License"))
-        text.add(Text.darkGray("Project: demis-enigmatic-dice"))
-    })
     event.addAdvanced(['rainbow:adventure_charm'], (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));
         if (event.shift) {
@@ -316,10 +310,6 @@ ItemEvents.tooltip((event) => {
         } else {
             text.add(0, "怪肉");
         }
-    })
-    event.addAdvanced('legendary_monsters:the_great_frost', (item, advanced, text) => {
-            text.add(3, Text.gold("特殊能力3:").append(Text.aqua("对水生和着火生物伤害+50%")));
-            text.add(4, Text.gold("特殊能力4:").append(Text.aqua("攻击附加冻结")));
     })
     /*event.addAdvanced('rainbow:musical_score', (item, advanced, text) => {
         if(item.nbt == null) return;
@@ -407,14 +397,10 @@ ItemEvents.tooltip((event) => {
         text.add(2, Text.gray('▸ 生命值越低，加成越高；最低生命时 +100%'));
     })
 
-    const machine_name ={
-        'mbd2:nuke_machine': "核弹发射井",
-    }
-
     event.addAdvanced('rainbow:beacon_ball', (item, advanced, text) => {
         if(!item.nbt) return;
         text.add(1, Text.gold(`绑定坐标：`).append(Text.yellow(`X:${item.nbt.getInt("X")} Y:${item.nbt.getInt("Y")} Z:${item.nbt.getInt("Z")}`)));
-        text.add(1, Text.gold(`绑定机器：`).append(Text.yellow(`${machine_name[item.nbt.getString("MACHINE")]}`)));
+        text.add(1, Text.gold(`绑定机器：`).append(Text.yellow(`${item.nbt.getString("MACHINE")}`)));
     })
     event.addAdvanced('rainbow:phantom_body', (item, advanced, text) => {
         text.add(1, Text.aqua(`触发烛心面具模仿生物的主动技能`));
@@ -489,9 +475,6 @@ ItemEvents.tooltip((event) => {
     })
     event.addAdvanced('rainbow:purified_cloth', (item, advanced, text) => {
         text.add(1, Text.aqua(`长按右键擦掉副手物品的诅咒附魔`));
-    })
-    event.addAdvanced('create_fantasizing:tree_cutter', (item, advanced, text) => {
-        text.add(1, Text.aqua(`在有气罐气体情况下消耗10气体额外造成6伤害`));
     })
     event.addAdvanced('rainbow:chronos', (item, advanced, text) => {
         text.add(1, Text.gray("按[SHIFT]查看详细"));

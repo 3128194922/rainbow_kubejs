@@ -66,18 +66,6 @@ ItemEvents.rightClicked("rainbow:slime_rod", event => {
     player.setItemInHand("main_hand", 'minecraft:air');
 });
 
-// --- 恶搞物品：拉屎 ---
-// 纸 + 潜行 = 获得 "alexscaves:guano"
-ItemEvents.rightClicked("minecraft:paper", event => {
-    let { player, item, level } = event;
-    if (level.isClientSide()) return;
-    if (!player.shiftKeyDown) return;
-
-    item.shrink(1);
-    player.addItem("alexscaves:guano");
-    player.setStatusMessage('你拉屎了');
-});
-
 // --- 末影戒指：打开末影箱 ---
 /*ItemEvents.rightClicked("rainbow:enderchest", event => {
     let { player, level } = event;
@@ -477,13 +465,6 @@ ItemEvents.rightClicked(event => {
 // 食物事件
 // 吃下屎后关闭客户端（恶搞）
 //ItemEvents.foodEaten('rainbow:shit', () => Client.close())
-
-// 超级饰品：大蒜面包增加饰品栏
-ItemEvents.foodEaten('chromaticarsenal:magic_garlic_bread', event=>{
-    let player = event.getPlayer();
-
-    player.addCuriosSlotModifier("super_curio","ecb82943-df2f-41a6-a06b-072d54e44afe","magic_garlic_bread",1,"addition")
-})
 
 // --- 怪物化相关逻辑 ---
 ItemEvents.foodEaten(event => {

@@ -105,12 +105,6 @@ EntityEvents.death(event => {
     } else if (hasCurios(entity, "savage_and_ravage:spore_bomb")) {
         server.runCommandSilent(`/summon savage_and_ravage:spore_bomb ${entity.x} ${entity.y} ${entity.z}`);
         entity.getCuriosStacksHandler("back").get().getStacks().setStackInSlot(0, "minecraft:air");
-    }else if(hasCurios(entity,'alexscaves:nuclear_bomb'))
-    {
-        // 核弹背包
-        server.runCommandSilent(`/summon alexscaves:nuclear_bomb ${entity.x} ${entity.y} ${entity.z}`);
-        entity.getCuriosStacksHandler("back").get().getStacks().setStackInSlot(0, "minecraft:air");
-        server.runCommandSilent(`/playsound alexscaves:nuclear_siren voice @a ~ ~ ~`)
     }
     
     // --- 攻击者触发逻辑 ---

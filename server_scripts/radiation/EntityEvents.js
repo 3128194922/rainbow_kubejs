@@ -6,7 +6,7 @@
 // （thebuff.buff）或弹射物伤害反向叠层。
 
 const URANIUM_SWORD_ID = 'rainbow:uranium_sword'
-const URANIUM_SWORD_RADIATION_DURATION = 20
+const URANIUM_SWORD_RADIATION_DURATION = 200
 
 EntityEvents.hurt(event => {
     try {

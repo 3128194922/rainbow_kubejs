@@ -1540,3 +1540,14 @@ ItemEvents.tooltip(event => {
         }
     });
 });
+
+// ☢ 纳垢之剑：说明纳垢赐福叠层、时长继承与动态上限。
+ItemEvents.tooltip(event => {
+    event.addAdvanced('rainbow:uranium_sword', (item, advanced, text) => {
+        text.add(Text.darkGreen('命中附着纳垢赐福：单次 1 秒，层数 +1'))
+        text.add(Text.green('已有纳垢赐福：继承 30% 剩余时间'))
+        text.add(Text.green('每 10 秒造成等同于当前层数的辐射伤害'))
+        text.add(Text.gray('基础上限 10 层；每个负面药水效果 +1 层上限'))
+        text.add(Text.gray('超过上限的层数会立即结算为伤害'))
+    })
+})

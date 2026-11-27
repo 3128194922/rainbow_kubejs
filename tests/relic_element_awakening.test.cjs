@@ -173,6 +173,18 @@ test('琥珀金/骑士套装保留原有阶段数值，并提供客户端 toolti
   }
 });
 
+test('套装默认按玩家套装注册，定义中不得出现实体 target', () => {
+  const h = harness();
+  const ids = Object.keys(h.sets);
+  assert.ok(ids.length > 0);
+  for (const id of ids) {
+    const target = h.sets[id].target;
+    assert.ok(target == null || target === 'player', `${id} 只能是玩家套装`);
+  }
+  const source = fs.readFileSync(path.join(root, 'server_scripts/set_system/SetEffect.js'), 'utf8');
+  assert.doesNotMatch(source, /target\s*:\s*['"]entity['"]/);
+});
+
 test('KubeJS 侧不再保留旧套装引擎入口', () => {
   const source = fs.readFileSync(path.join(root, 'server_scripts/set_system/SetEffect.js'), 'utf8');
   assert.doesNotMatch(source, /PlayerEvents\.tick/);

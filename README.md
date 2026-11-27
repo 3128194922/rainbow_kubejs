@@ -26,7 +26,6 @@
 - 修改伤害、闪避、盾反、攻击效果：查 [`startup_scripts/ForgeEvents/`](startup_scripts/ForgeEvents/) 与 [`startup_scripts/shield_parry/`](startup_scripts/shield_parry/)。
 - 修改饰品技能：查 [`server_scripts/curios_skill_system/Skillwheel.js`](server_scripts/curios_skill_system/Skillwheel.js) 和 [`client_scripts/tooltips.js`](client_scripts/tooltips.js)。
 - 修改配方、战利品、标签：分别查 [`server_scripts/Recipes.js`](server_scripts/Recipes.js)、[`server_scripts/Loot.js`](server_scripts/Loot.js)、[`server_scripts/Tag.js`](server_scripts/Tag.js)。
-- 修改 CBC 火炮瞄准/炮击标定：查 [`server_scripts/cbc_aim.js`](server_scripts/cbc_aim.js) 与 [`server_scripts/cannon_target/`](server_scripts/cannon_target/)。
 - 查找全局工具函数（冷却反射、翻滚、冻结、Curios 读取等）：见 [全局工具库](#全局工具库)。
 - 修改界面、按键、渲染、提示：查 [`client_scripts/`](client_scripts/) 下对应功能目录。
 - 修改登录/注册/密码/观察者锁定：查 [`server_scripts/login_system/`](server_scripts/login_system/)（账户数据由 sqlitejs 存入 SQLite）。
@@ -400,7 +399,7 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 | 装填核心 | 消耗 100 能量获得装填 Buff | 10s | L358 |
 | 连射核心 | 消耗 100 能量获得连射 Buff | 10s | L367 |
 | 共生徽章 | 5 格射线检测生物并骑乘 | - | L392 |
-| 皇家法杖 `royalletiations:royal_staff` | 触发原版皇家法杖右键效果 | - | L432 |
+| 皇家法杖 `royalvariations:royal_staff` | 触发原版皇家法杖右键效果 | - | L432 |
 | 烟雾弹 `species:smoke_bomb` | 释放烟雾弹 | - | L460 |
 | 魔术箱 `rainbow:wicked_package` | 烛心套餐 | - | L532 |
 | 觉之瞳 | 开关 NBT `is_open` 状态 | - | L579 |
@@ -485,7 +484,6 @@ node --test "tests/*.test.cjs"                  # 事件替身逻辑测试（当
 > 设计文档：[docs/superpowers/specs/2026-09-04-cannon-target-design.md](docs/superpowers/specs/2026-09-04-cannon-target-design.md)
 
 - **当前状态：** 两个物品/方块不再注册，目标实体与电台声音事件不再注册；右键绑定、投掷开火、电台扫描与 tooltip 均不执行。`startup_scripts` 改动需完整重启游戏后生效。
-- **不受影响：** `/cbc_aim_to` 火炮瞄准工具（[server_scripts/cbc_aim.js](server_scripts/cbc_aim.js)）仍可用；原先复用的方向映射函数已迁移到该文件顶部。
 - **原实现（已注释）：** 单炮绑定（潜行右键 `createbigcannons:cannon_mount` / `fixed_cannon_mount`）与电台齐射（潜行右键炮兵电台，调度 16×1×16 范围内已组装火炮）两种互斥模式；普通右键抛出目标实体 `rainbow:cannon_target_marker`（0.99 空气阻力 + 0.03/tick 重力），停止/落地/碰实体/超时 200 tick 时结算开火。
 - **原瞄准结算：** `cannonTargetApplyAim` 区分固定底座（±45° 剪切板偏移）与垂直底座（原值），同步 pitch/yaw 后 `tryFiringShot()`。
 - **原关键全局函数：** `global.cannonTargetMath`（纯数学接口）、`global.cannonRadioTick`（电台每秒扫描）、`global.cannonTargetMarkerTick`（目标实体 tick）。
@@ -1102,48 +1100,6 @@ ClangingHowl 喷火器（`clanginghowl:flamethrower`）带魂火附魔（`clangi
 | `/psychicscroll [秒]` | 召唤测试心理卷轴 | [server_scripts/psychic_scroll.js](server_scripts/psychic_scroll.js) |
 | `/getblock` / `/getplayer` | 调试命令：查询方块/玩家信息 | [server_scripts/Utils.js](server_scripts/Utils.js) |
 | `/getattributes` / `/gethostilemobs` | 列出全部注册属性 / MONSTER 类别实体（需 OP2） | [server_scripts/get_attributes.js](server_scripts/get_attributes.js)、[server_scripts/get_hostile_mobs.js](server_scripts/get_hostile_mobs.js) |
-
-### CBC 火炮瞄准计算工具
-
-> 实现：[server_scripts/cbc_aim.js](server_scripts/cbc_aim.js)
-
-自动计算 CBC 火炮的瞄准角度与最小装药量，支持自动识别主手持有的弹种。
-
-#### 命令格式
-
-| 形式 | 说明 |
-|------|------|
-| `/cbc_aim_to <k> <cyaw> <cpitch> <tx> <ty> <tz>` | 将瞄准参数写入副手剪切板（主手自动检测弹种） |
-
-#### 参数说明
-
-| 参数 | 含义 | 范围 |
-|------|------|------|
-| `k` | 炮管长（含炮尾到出膛口距离） | 1 ~ 100 |
-| `cyaw` | 当前方位角（南=0°） | 0 ~ 360 |
-| `cpitch` | 当前仰角（水平=0°） | -89 ~ 89 |
-| `t` | 目标坐标 | ±3e7 |
-
-#### 使用流程
-
-1. **主手手持 CBC 炮弹**（自动识别弹种，无需手动输入），支持的弹药：
-   - 常规炮弹：`solid_shot` 实心弹、`he_shell` 高爆弹、`ap_shell` 穿甲弹、`ap_shot` AP实心弹、`shrapnel_shell` 榴霰弹、`bag_of_grapeshot` 葡萄弹、`smoke_shell` 烟雾弹、`fluid_shell` 流体弹、`drop_mortar_shell` 迫击炮弹、`mortar_stone` 迫击石、`traffic_cone` 交通锥
-   - 机炮弹药（重力减半，弹道平直）：`ap_autocannon_round`、`flak_autocannon_round`、`machine_gun_round`
-2. **副手持有剪切板** (`create:clipboard`)，执行 `/cbc_aim_to` 写入目标坐标 / 炮管长 / 当前角度 / 弹种
-3. **右键基座自动瞄准**：手持该剪切板右键 `createbigcannons:cannon_mount` / `createbigcannons:fixed_cannon_mount`：
-   - 自动获取基座坐标（方块底部中心）
-   - 计算最小装药量（1~50）、目标方位角与仰角，并写入基座实体：`cannon_mount` 用 `setYaw/setPitch`；`fixed_cannon_mount` 用 Create 剪贴板接口（角度截断到 ±45°）
-   - 输出齿轮箱调整量（8:1 传动比）与命中精度提示
-   - 注意：`cannon_mount` 需已组装且转速为 0，否则会被 tick 覆盖
-
-#### 计算逻辑说明
-
-- 弹道模型采用 Python 解析算法，按 `gravity` / `drag` 区分每种弹种的飞行特性
-- 仰角解采用扫描 + 二分法求解，限制在 -30° ~ 60°；自动曲射/直射优先：高度差 > 5 或距离 > 150 时优先曲射
-- 装药量从 1 递增，自动寻找首个能命中目标的最小装药（最高 50），输出"无法命中"提示说明超射程
-- 仰角误差 ≥5 时结果以黄色（非绿色）提示，表示命中精度欠佳
-
----
 
 ## UI 修改
 

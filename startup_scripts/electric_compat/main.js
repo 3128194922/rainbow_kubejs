@@ -67,11 +67,13 @@ function electricCompatGetEffect(cacheKey, namespace, path) {
 }
 
 function electricCompatGetElectrifiedEffect() {
-    return electricCompatGetEffect('electrified', 'eeeabsmobs', 'electrified_effect');
+    let parts = ELECTRIC_COMPAT_ELECTRIFIED_ID.split(':');
+    return electricCompatGetEffect('electrified', parts[0], parts[1]);
 }
 
 function electricCompatGetWetnessEffect() {
-    return electricCompatGetEffect('wetness', 'cataclysm', 'wetness');
+    let parts = ELECTRIC_COMPAT_WETNESS_ID.split(':');
+    return electricCompatGetEffect('wetness', parts[0], parts[1]);
 }
 
 /**

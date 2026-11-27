@@ -43,6 +43,10 @@ function createHarness() {
     const sandbox = {}
     sandbox.global = sandbox
     sandbox.console = { log: () => {} }
+    sandbox.ResourceLocation = class {
+        constructor(value) { this.value = value }
+        toString() { return this.value }
+    }
 
     function mergeDuration(current, incoming) {
         if (current < 0 || incoming < 0) return -1
@@ -57,10 +61,14 @@ function createHarness() {
                 amplifier: entry.amplifier,
                 duration: entry.duration,
                 isPermanent: () => entry.duration < 0,
+                setSource(uuid, name) {
+                    entry.sourceUuid = String(uuid)
+                    entry.sourceName = name
+                },
             }
         },
         apply(target, id, duration, amplifier) {
-            assert.equal(id, RADIATION_ID)
+            assert.equal(String(id), RADIATION_ID)
             const entry = instances.get(target.id)
             if (!entry) {
                 instances.set(target.id, { amplifier, duration })
@@ -76,7 +84,7 @@ function createHarness() {
             return true
         },
         setDuration(target, id, duration) {
-            assert.equal(id, RADIATION_ID)
+            assert.equal(String(id), RADIATION_ID)
             const entry = instances.get(target.id)
             if (!entry) return false
             entry.duration = duration

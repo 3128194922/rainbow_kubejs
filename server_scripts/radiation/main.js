@@ -80,16 +80,24 @@ function applyRadiation(target, source, baseDuration) {
         }
     }
 
-    // TheBuff.apply 对已有状态取 max(旧值, 新值)，所以附着后再显式写入计算出的时长。
+    // TheBuff.apply 的 5 参重载同时有 String / ResourceLocation 版本，Rhino 会报 ambiguous；
+    // 改用无歧义的 4 参 String 重载，再通过 BuffInstance.setSource 补上附着者归属。
+    // apply 对已有状态取 max(旧值, 新值)，所以附着后再显式写入计算出的时长。
     let entityId = target.getId()
     if (excess > 0) {
         global.RADIATION_PENDING_DAMAGE[entityId] = excess
     }
     let applied = false
     try {
-        applied = TheBuff.apply(target, RADIATION_ID, duration, newStacks - 1, source)
+        applied = TheBuff.apply(target, RADIATION_ID, duration, newStacks - 1)
         if (applied) {
             TheBuff.setDuration(target, RADIATION_ID, duration)
+            if (source != null) {
+                let instance = TheBuff.getInstance(target, RADIATION_ID)
+                if (instance != null) {
+                    instance.setSource(source.uuid, source.getDisplayName().getString())
+                }
+            }
         }
     }
     catch (err) {

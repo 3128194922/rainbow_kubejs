@@ -1,76 +1,123 @@
 // priority: 0
 // ==========================================================
-// Curios 槽位初始化
-// 玩家每次登录时：
-//   1. 头部槽位固定为 1 格；
-//   2. 历史遗留/非本包使用的自定义槽位收缩到 0 格。
-// 直接调用 CuriosApi 的槽位接口，不再逐个拼接 `/curios` 命令：
-//   - 避免显示名被当作实体选择器（昵称、队伍前缀会导致命令失败）；
-//   - 单个槽位异常不会中断后续槽位；
-//   - 日志只在确实发生变化时输出，避免每次登录刷屏。
+// Curios 槽位初始化（每名玩家只执行一次）
+// 配置格式：[保留的槽位类型, 数量]
+//   - 列出的槽位调整为指定数量；
+//   - 未列出的已注册槽位一律收缩到 0 格。
+// 当前保留：head=1、back=1、charm=4
+// 修改保留配置后，提升 CURIO_INIT_STORE 的版本号，老玩家才会重新初始化。
 // ==========================================================
 
-const CURIO_HEAD_SLOT = 'head'
-const CURIO_HEAD_SLOT_SIZE = 1
-// 需要清零的历史槽位类型；已去重。
-const CURIO_LEGACY_SLOTS = [
-    'body', 'belt', 'bracelet', 'curio', 'hands',
-    'necklace', 'ring', 'rings', 'feet',
-    'legs', 'heart', 'waist', 'talisman', 'informational',
+const CURIO_INIT_STORE = 'curios_slots_initialized_v1'
+const CURIO_KEEP_SLOTS = [
+    ['head', 1],
+    ['back', 1],
+    ['charm', 4],
 ]
 
-// 把指定槽位调整为 size 格；与 `/curios set` 使用同一套 CuriosApi。
-function setCurioSlotSize(player, slotType, size) {
-    CuriosApi.getSlotHelper().setSlotsForType(slotType, player, size)
-}
-
-// 返回调整前的槽位数量，用于判断是否需要写入以及输出变更日志。
 function getCurioSlotSize(player, slotType) {
     return CuriosApi.getSlotHelper().getSlotsForType(player, slotType)
 }
 
-// 重置单个历史槽位；失败只记录该槽位，不影响其他槽位。
-function resetLegacyCurioSlot(player, slotType) {
-    try {
-        let before = getCurioSlotSize(player, slotType)
-        if (before <= 0) return null
-        setCurioSlotSize(player, slotType, 0)
-        return slotType + ':' + before + '->0'
-    } catch (error) {
-        console.log('[CuriosInit] 槽位 ' + slotType + ' 重置失败: ' + error)
-        return null
-    }
+// 一次性标记存主世界 persistentData：玩家死亡重建实体时不会丢失。
+function getCurioInitStore(player) {
+    return player.server.overworld().persistentData.getCompound(CURIO_INIT_STORE)
 }
 
-// 初始化玩家 Curios 槽位，返回本次实际发生变化的槽位描述。
+function isCurioInitialized(player) {
+    return getCurioInitStore(player).getBoolean(String(player.uuid))
+}
+
+function markCurioInitialized(player) {
+    let worldData = player.server.overworld().persistentData
+    let store = worldData.getCompound(CURIO_INIT_STORE)
+    store.putBoolean(String(player.uuid), true)
+    worldData.put(CURIO_INIT_STORE, store)
+}
+
+function setCurioSlotSize(player, slotType, size) {
+    CuriosApi.getSlotHelper().setSlotsForType(slotType, player, size)
+}
+
+function isKeepCurioSlot(slotType) {
+    for (let i = 0; i < CURIO_KEEP_SLOTS.length; i++) {
+        if (CURIO_KEEP_SLOTS[i][0] === slotType) return true
+    }
+    return false
+}
+
+// 调整单个槽位并校验结果；无变化返回 null。
+function resizeCurioSlot(player, slotType, size) {
+    let before = getCurioSlotSize(player, slotType)
+    if (before === size) return null
+
+    setCurioSlotSize(player, slotType, size)
+
+    let after = getCurioSlotSize(player, slotType)
+    if (after !== size) {
+        throw new Error('目标 ' + size + '，实际 ' + after)
+    }
+    return slotType + ':' + before + '->' + after
+}
+
+// 返回 { changes, errors }；单个槽位失败不阻断其他槽位。
 function initCurioSlots(player) {
     let changes = []
+    let errors = []
 
-    let headBefore = getCurioSlotSize(player, CURIO_HEAD_SLOT)
-    if (headBefore !== CURIO_HEAD_SLOT_SIZE) {
-        setCurioSlotSize(player, CURIO_HEAD_SLOT, CURIO_HEAD_SLOT_SIZE)
-        changes.push(CURIO_HEAD_SLOT + ':' + headBefore + '->' + CURIO_HEAD_SLOT_SIZE)
+    for (let i = 0; i < CURIO_KEEP_SLOTS.length; i++) {
+        let slotType = CURIO_KEEP_SLOTS[i][0]
+        let size = CURIO_KEEP_SLOTS[i][1]
+        try {
+            let change = resizeCurioSlot(player, slotType, size)
+            if (change != null) changes.push(change)
+        } catch (error) {
+            errors.push(slotType + ' 保留失败: ' + error)
+        }
     }
 
-    for (let i = 0; i < CURIO_LEGACY_SLOTS.length; i++) {
-        let change = resetLegacyCurioSlot(player, CURIO_LEGACY_SLOTS[i])
-        if (change != null) changes.push(change)
+    let slotTypes = getCuriosSlotTypes(player)
+    if (slotTypes.length === 0) {
+        errors.push('未取得 Curios 槽位列表')
+    } else {
+        for (let i = 0; i < slotTypes.length; i++) {
+            let slotType = slotTypes[i]
+            if (isKeepCurioSlot(slotType)) continue
+            try {
+                let change = resizeCurioSlot(player, slotType, 0)
+                if (change != null) changes.push(change)
+            } catch (error) {
+                errors.push(slotType + ' 清除失败: ' + error)
+            }
+        }
     }
 
-    return changes
+    return { changes: changes, errors: errors }
 }
 
 PlayerEvents.loggedIn(event => {
-    // loggedIn 本身只在服务端触发；event.level 可能为空，保留显式判断兼容事件包装差异。
     if (event.level != null && event.level.isClientSide()) return
 
     let player = event.player
     if (player == null) return
 
+    // 已初始化过的玩家直接跳过，避免每次登录重复收缩槽位。
+    if (isCurioInitialized(player)) return
+
     try {
-        let changes = initCurioSlots(player)
-        if (changes.length > 0) {
-            console.log('[CuriosInit] ' + player.username + ' 槽位已初始化: ' + changes.join(', '))
+        let result = initCurioSlots(player)
+        if (result.errors.length > 0) {
+            console.log('[CuriosInit] ' + player.username + ' 初始化未完成: ' + result.errors.join('; '))
+            return
+        }
+
+        // 只有全部槽位处理成功才落标记，失败的玩家下次登录会重试。
+        markCurioInitialized(player)
+
+        if (result.changes.length > 0) {
+            console.log('[CuriosInit] ' + player.username + ' 首次初始化: ' + result.changes.join(', '))
+        } else {
+            console.log('[CuriosInit] ' + player.username + ' 首次初始化完成，槽位已是目标配置')
         }
     } catch (error) {
         console.log('[CuriosInit] 玩家 ' + player.username + ' 饰品初始化失败: ' + error)

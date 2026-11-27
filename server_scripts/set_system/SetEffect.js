@@ -13,6 +13,12 @@
 // 字段说明见 MyMods/SetJS/README.md。
 // ==========================================
 
+// 兼容原有 JS 套装写法：旧的 registerSet(id, config) 原样可用，
+// 实际转发给 SetJS，由 Java 引擎执行。
+function registerSet(id, config) {
+    SetJS.registerSet(id, config)
+}
+
 function registerAllSets() {
     SetJS.clear()
 
@@ -35,7 +41,7 @@ function registerAllSets() {
     }
 
     // ✅ 琥珀金套装：2件+1动能伤害，4件额外+2动能伤害（共+3）
-    SetJS.registerSet('oreganized:electrum', {
+    registerSet('oreganized:electrum', {
         name: '琥珀金套装',
         desc: [
             '§b2件套：§f+1 动能伤害',
@@ -66,7 +72,7 @@ function registerAllSets() {
     })
 
     // ✅ 骑士套装：2件+1宠物伤害，4件额外+2宠物伤害（共+3）
-    SetJS.registerSet('royalvariations:royal_knight', {
+    registerSet('royalvariations:royal_knight', {
         name: '骑士套装',
         desc: [
             '§b2件套：§f+1 宠物伤害',
@@ -108,7 +114,7 @@ function registerAllSets() {
             for (let i = 0; i < 5; i++) {
                 slots.push({ curios: true, item: relicCfg.relicId, relicElement: elementId })
             }
-            SetJS.registerSet('relic_' + elementId, {
+            registerSet('relic_' + elementId, {
                 name: def.name + '元素圣遗物',
                 slots: slots,
                 phases: [

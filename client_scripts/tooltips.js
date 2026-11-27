@@ -1303,9 +1303,9 @@ ItemEvents.tooltip((event) => {
         text.add(2, Text.gray("  三段独立结算并触发多段伤害机制"));
     })
     event.addAdvanced('rainbow:holy_blood', (item, advanced, text) => {
-        text.add(1, Text.aqua("▸ 周围 5 格内实体的火焰抗性降低 25%"));
-        text.add(2, Text.gray("  火焰抗性最低为 0；兼容灵魂火喷火"));
-        text.add(3, Text.gray("  无视目标药水免疫，可附着于免疫实体"));
+        text.add(1, Text.aqua("▸ 周围 5 格内敌人陷入火焰易伤特殊状态"));
+        text.add(2, Text.gray("  火焰抗性降低 25%，最低降至 0；兼容灵魂火喷火"));
+        text.add(3, Text.gray("  特殊状态独立显示，无视目标药水免疫"));
     })
     // 古圣头骨
     // 机制：受到的所有伤害转为债务，每 0.5 秒以真实伤害结算剩余债务的 20%

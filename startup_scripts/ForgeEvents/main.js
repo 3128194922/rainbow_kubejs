@@ -208,9 +208,8 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
     }
 });
 
-// 圣主之血：火焰易伤无视目标药水免疫强制附着。双事件覆盖两类免疫机制
-// （逻辑在 handleHolyBlood.js）：anka/vzling Boss 覆写 addEffect 丢弃有害效果 → 高优先级事件；
-// 常规 canBeAffected 免疫（灾变Boss等）→ MobEffectImmuneEvent。
+// 圣主之血已迁移为 TheBuff 特殊状态（accessory_rebalance/main.js），
+// TheBuff 不走 addEffect，无需再监听药水免疫事件；以下为旧强制附着实现，注释保留。
 /*ForgeEvents.onEvent('com.morecallback.event.MobEffectHighPriorityEvent', event => {
     try {
         handleHolyBloodForceAttach(event);
@@ -219,14 +218,6 @@ ForgeEvents.onEvent('com.morecallback.event.ApothicDodgeEvent', event => {
         console.log(e);
     }
 });*/
-ForgeEvents.onEvent('com.morecallback.event.MobEffectImmuneEvent', event => {
-    try {
-        handleHolyBloodForceAttach(event);
-    } catch (e) {
-        console.log('[圣主之血] MobEffectImmuneEvent入口出错：' + e);
-        console.log(e);
-    }
-});
 
 //物品动态属性修改事件 主入口
 ForgeEvents.onEvent('net.minecraftforge.event.ItemAttributeModifierEvent', (event) => {
